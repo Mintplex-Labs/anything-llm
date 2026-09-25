@@ -480,18 +480,175 @@ const webBrowsing = {
               return `There was an error searching for content. ${error}`;
 
             const data = [];
-            if (response.hasOwnProperty("knowledge_graph"))
-              data.push(response.knowledge_graph?.description);
-            if (response.hasOwnProperty("answer_box"))
-              data.push(response.answer_box?.answer);
-            response.organic_results?.forEach((searchResult) => {
-              const { title, link, snippet } = searchResult;
+            const knowledgeGraph = response.knowledge_graph;
+            const knowledgeGraphSnippet =
+              knowledgeGraph?.description || knowledgeGraph?.snippet;
+            if (knowledgeGraphSnippet)
               data.push({
-                title,
-                link,
-                snippet,
+                title: knowledgeGraph.title || query,
+                link:
+                  knowledgeGraph.source?.link ||
+                  knowledgeGraph.website ||
+                  knowledgeGraph.link ||
+                  response.search_metadata?.request_url,
+                snippet: knowledgeGraphSnippet,
               });
-            });
+            if (response.answer_box?.answer) {
+              const answerBox = response.answer_box;
+              data.push({
+                title:
+                  answerBox.organic_result?.title || answerBox.title || query,
+                link:
+                  answerBox.organic_result?.link ||
+                  answerBox.link ||
+                  response.search_metadata?.request_url,
+                snippet: answerBox.answer,
+              });
+            }
+            const takeTen = (results) => results?.slice(0, 10) ?? [];
+            const addLocalResults = (results) => {
+              takeTen(results).forEach((place) => {
+                const { title, address, place_id } = place;
+                const terms = [title, address].filter(Boolean).join(", ");
+                const mapUrl = new URL("https://www.google.com/maps/search/");
+                mapUrl.searchParams.set("api", "1");
+                mapUrl.searchParams.set("query", terms || query);
+                if (place_id)
+                  mapUrl.searchParams.set("query_place_id", place_id);
+                data.push({
+                  title,
+                  link: place.website || mapUrl.href,
+                  snippet: place.description,
+                  address,
+                  rating: place.rating,
+                  reviews: place.reviews,
+                });
+              });
+            };
+            switch (engine) {
+              case "google_jobs":
+                takeTen(response.jobs).forEach((job) => {
+                  data.push({
+                    title: job.title,
+                    company_name: job.company_name,
+                    location: job.location,
+                    link: job.apply_link || job.sharing_link,
+                    snippet: job.description,
+                  });
+                });
+                break;
+              case "google_maps":
+                addLocalResults(response.local_results);
+                break;
+              case "google_shopping":
+                takeTen(response.shopping_results).forEach((product) => {
+                  data.push({
+                    title: product.title,
+                    link: product.product_link,
+                    snippet: product.price,
+                    seller: product.seller,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                  });
+                });
+                break;
+              case "google_finance":
+                if (response.summary)
+                  data.push({
+                    ...response.summary,
+                    link: response.search_metadata?.request_url,
+                    snippet:
+                      response.knowledge_graph?.about?.description ||
+                      [response.summary.price, response.summary.currency]
+                        .filter((value) => value != null)
+                        .join(" "),
+                  });
+                break;
+              case "google_patents":
+                takeTen(response.organic_results).forEach((patent) => {
+                  const link = patent.patent_id
+                    ? new URL(patent.patent_id, "https://patents.google.com/")
+                        .href
+                    : response.search_metadata?.request_url;
+                  data.push({
+                    title: patent.title,
+                    link,
+                    snippet: patent.snippet,
+                    inventor: patent.inventor,
+                    assignee: patent.assignee,
+                    publication_number: patent.publication_number,
+                  });
+                });
+                break;
+              case "youtube":
+                takeTen(response.videos).forEach((video) => {
+                  data.push({
+                    title: video.title,
+                    link: video.link,
+                    snippet: video.description,
+                    channel: video.channel?.title,
+                    views: video.views,
+                    published_time: video.published_time,
+                  });
+                });
+                break;
+              case "amazon_search":
+                takeTen(response.organic_results).forEach((product) => {
+                  data.push({
+                    title: product.title,
+                    link: product.link,
+                    snippet: product.price,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                  });
+                });
+                break;
+              case "google_news":
+              case "bing_news":
+                takeTen(response.organic_results).forEach((article) => {
+                  const { title, link, snippet, source, date } = article;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    source,
+                    date,
+                  });
+                });
+                break;
+              case "google_scholar":
+                takeTen(response.organic_results).forEach((paper) => {
+                  const { title, link, snippet, publication } = paper;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    publication,
+                  });
+                });
+                break;
+              case "google":
+                takeTen(response.organic_results).forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                addLocalResults(response.local_results);
+                break;
+              default:
+                takeTen(response.organic_results).forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                break;
+            }
 
             if (data.length === 0)
               return `No information was found online for the search query.`;

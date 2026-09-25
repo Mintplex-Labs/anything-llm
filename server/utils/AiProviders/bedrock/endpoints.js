@@ -49,6 +49,23 @@ function isInferenceProfileId(modelId = "") {
 }
 
 /**
+ * Whether a model ID is a proprietary OpenAI GPT model (eg: `openai.gpt-6-sol`,
+ * `us.openai.gpt-5.5`). These are served on the `/openai/v1` route, not the
+ * Mantle `/v1` route. Open-weight `openai.gpt-oss-*` models are excluded since
+ * they are served on Mantle `/v1` like other catalog models.
+ * @param {string|null} modelId
+ * @returns {boolean}
+ */
+function isOpenAIModelId(modelId = "") {
+  if (!modelId) return false;
+  const prefix = INFERENCE_PROFILE_PREFIXES.find((p) => modelId.startsWith(p));
+  const baseId = prefix ? modelId.slice(prefix.length) : modelId;
+  return (
+    baseId.startsWith("openai.gpt-") && !baseId.startsWith("openai.gpt-oss")
+  );
+}
+
+/**
  * Base host for the Mantle (OpenAI-compatible catalog) endpoint.
  * @param {string} region
  * @returns {string}
@@ -85,12 +102,18 @@ function controlPlaneHost(region) {
 }
 
 /**
- * OpenAI-compatible base URL for chat completions.
+ * OpenAI-compatible base URL for chat completions. OpenAI GPT models use the
+ * `/openai/v1` route: inference profile IDs on bedrock-runtime, plain catalog
+ * IDs on Mantle. All other models use Mantle `/v1`.
  * @param {string} region
+ * @param {string|null} modelId
  * @returns {string}
  */
-function openaiBaseURL(region) {
-  return `${mantleHost(region)}/v1`;
+function openaiBaseURL(region, modelId = "") {
+  if (!isOpenAIModelId(modelId)) return `${mantleHost(region)}/v1`;
+  return isInferenceProfileId(modelId)
+    ? `${runtimeHost(region)}/openai/v1`
+    : `${mantleHost(region)}/openai/v1`;
 }
 
 /**
@@ -109,6 +132,7 @@ function anthropicBaseURL(region, modelId = "") {
 
 module.exports = {
   isInferenceProfileId,
+  isOpenAIModelId,
   mantleHost,
   runtimeHost,
   controlPlaneHost,

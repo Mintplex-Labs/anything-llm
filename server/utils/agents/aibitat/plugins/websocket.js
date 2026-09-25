@@ -479,8 +479,8 @@ const websocket = {
               };
 
               socket.handleFeedback = async (message) => {
-                const data = JSON.parse(message);
-                if (data.type !== "awaitingFeedback") return;
+                const data = safeJsonParse(message, null);
+                if (!data || data.type !== "awaitingFeedback") return;
 
                 // Intercept the /img slash command so it generates an image
                 // inline instead of being sent to the agent as a normal prompt.

@@ -11,19 +11,11 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 
+// Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
+// a 400, and every model accepts requests without it, so omitting it everywhere
+// avoids tracking per-model support as new models ship. The workspace temperature
+// setting therefore has no effect for Anthropic.
 class AnthropicLLM {
-  /**
-   * List of Anthropic models that do not support the `temperature` inference parameter.
-   * These models reject `temperature`/`top_p`/`top_k` with a 400 error.
-   * @type {string[]}
-   */
-  noTemperatureModels = [
-    "claude-opus-4-7",
-    "claude-opus-4-8",
-    "claude-sonnet-5",
-    // Add other models here if identified
-  ];
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
@@ -85,18 +77,6 @@ class AnthropicLLM {
     if (this.maxTokens) return this.maxTokens;
     this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
     return this.maxTokens;
-  }
-
-  /**
-   * Gets the temperature configuration for the Anthropic LLM.
-   * @param {number} temperature - The temperature to use.
-   * @returns {number|undefined} The temperature value or undefined if not supported.
-   */
-  temperatureParam(temperature = this.defaultTemp) {
-    if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
-    return parseFloat(temperature);
   }
 
   /**
@@ -210,7 +190,7 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(messages = null, _opts = {}) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -229,7 +209,6 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            temperature: this.temperatureParam(temperature),
           })
           .finalMessage()
       );
@@ -258,7 +237,7 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(messages = null, _opts = {}) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -267,7 +246,6 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: this.temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,
