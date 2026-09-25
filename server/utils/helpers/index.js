@@ -717,13 +717,16 @@ async function resolveProviderConnector({
   temperature = null,
 }) {
   const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  // An override that is not a usable temperature (eg: absent from an API request)
+  // defers to the workspace setting rather than omitting the parameter.
+  const temperatureOverride = parseFloat(temperature) >= 0 ? temperature : null;
 
   if (effectiveProvider !== "anythingllm-router") {
     return {
       connector: getLLMProvider({
         provider: workspace?.chatProvider,
         model: workspace?.chatModel,
-        temperature: temperature ?? workspace?.openAiTemp,
+        temperature: temperatureOverride ?? workspace?.openAiTemp,
       }),
       routingMetadata: null,
       prefetchedContext: null,
@@ -742,7 +745,11 @@ async function resolveProviderConnector({
           : null,
       };
 
-  const router = new AnythingLLMModelRouter(routerWorkspace, null, temperature);
+  const router = new AnythingLLMModelRouter(
+    routerWorkspace,
+    null,
+    temperatureOverride
+  );
   const ctx = await ModelRouterService.gatherRoutingContext({
     workspace,
     user,

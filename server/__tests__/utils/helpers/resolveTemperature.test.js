@@ -2,6 +2,7 @@
 const {
   resolveTemperature,
   getLLMProvider,
+  resolveProviderConnector,
 } = require("../../../utils/helpers");
 
 // Only OpenAI, Azure, Anthropic, and Bedrock define a `modelSupportsTemperature`
@@ -140,4 +141,45 @@ describe("getLLMProvider chat request temperature", () => {
       (await sentBody("mistral", "mistral-small-latest", 0.2)).temperature
     ).toBe(0.2);
   });
+});
+
+describe("resolveProviderConnector temperature override", () => {
+  const ORIGINAL_ENV = process.env;
+  const workspace = {
+    chatProvider: "generic-openai",
+    chatModel: "m",
+    openAiTemp: 0.5,
+  };
+
+  beforeEach(() => {
+    process.env = {
+      ...ORIGINAL_ENV,
+      GENERIC_OPEN_AI_BASE_PATH: "http://localhost:8080/v1",
+    };
+  });
+
+  afterEach(() => {
+    process.env = ORIGINAL_ENV;
+  });
+
+  async function connectorTemperature(temperature) {
+    const { connector } = await resolveProviderConnector({
+      workspace,
+      temperature,
+    });
+    return connector.temperature;
+  }
+
+  test("a valid override wins over the workspace temperature", async () => {
+    expect(await connectorTemperature(0.9)).toBe(0.9);
+    expect(await connectorTemperature(0)).toBe(0);
+    expect(await connectorTemperature("0.2")).toBe(0.2);
+  });
+
+  test.each([undefined, null, NaN, "", "abc", -1])(
+    "an unusable override %p defers to the workspace temperature",
+    async (temperature) => {
+      expect(await connectorTemperature(temperature)).toBe(0.5);
+    }
+  );
 });
