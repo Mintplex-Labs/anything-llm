@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { CaretUpDown } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -32,6 +32,8 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
+import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
+import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 const VECTOR_DBS = [
   {
@@ -117,11 +119,9 @@ export default function GeneralVectorDatabase() {
   const [hasEmbeddings, setHasEmbeddings] = useState(false);
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredVDBs, setFilteredVDBs] = useState([]);
   const [selectedVDB, setSelectedVDB] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchInputRef = useRef(null);
+  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
@@ -155,19 +155,9 @@ export default function GeneralVectorDatabase() {
   };
 
   const updateVectorChoice = (selection) => {
-    setSearchQuery("");
     setSelectedVDB(selection);
     setSearchMenuOpen(false);
     setHasChanges(true);
-  };
-
-  const handleXButton = () => {
-    if (searchQuery.length > 0) {
-      setSearchQuery("");
-      if (searchInputRef.current) searchInputRef.current.value = "";
-    } else {
-      setSearchMenuOpen(!searchMenuOpen);
-    }
   };
 
   useEffect(() => {
@@ -180,13 +170,6 @@ export default function GeneralVectorDatabase() {
     }
     fetchKeys();
   }, []);
-
-  useEffect(() => {
-    const filtered = VECTOR_DBS.filter((vdb) =>
-      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredVDBs(filtered);
-  }, [searchQuery, selectedVDB]);
 
   const selectedVDBObject =
     VECTOR_DBS.find((vdb) => vdb.value === selectedVDB) ?? VECTOR_DBS[0];
@@ -238,58 +221,26 @@ export default function GeneralVectorDatabase() {
                 {t("vector.provider.title")}
               </div>
               <div className="relative">
-                {searchMenuOpen && (
-                  <div
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
-                    onClick={() => setSearchMenuOpen(false)}
-                  />
-                )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                    <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                        <MagnifyingGlass
-                          size={20}
-                          weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                        />
-                        <input
-                          type="text"
-                          name="vdb-search"
-                          autoComplete="off"
-                          placeholder="Search all vector database providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          ref={searchInputRef}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") e.preventDefault();
-                          }}
-                        />
-                        <X
-                          size={20}
-                          weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
-                          onClick={handleXButton}
-                        />
-                      </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
-                        {filteredVDBs.map((vdb) => (
-                          <VectorDBItem
-                            key={vdb.name}
-                            name={vdb.name}
-                            value={vdb.value}
-                            image={vdb.logo}
-                            description={vdb.description}
-                            checked={selectedVDB === vdb.value}
-                            onClick={() => updateVectorChoice(vdb.value)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <ProviderSearchMenu
+                    items={VECTOR_DBS}
+                    placeholder="Search all vector database providers"
+                    onClose={() => setSearchMenuOpen(false)}
+                    renderItem={(vdb) => (
+                      <VectorDBItem
+                        name={vdb.name}
+                        value={vdb.value}
+                        image={vdb.logo}
+                        description={vdb.description}
+                        checked={selectedVDB === vdb.value}
+                        onClick={() => updateVectorChoice(vdb.value)}
+                      />
+                    )}
+                  />
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                    ref={searchMenuTrigger}
+                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >

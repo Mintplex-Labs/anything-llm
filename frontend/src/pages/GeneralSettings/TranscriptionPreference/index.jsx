@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
@@ -11,9 +11,11 @@ import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOpti
 import GenericOpenAiWhisperOptions from "@/components/TranscriptionSelection/GenericOpenAiOptions";
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { CaretUpDown } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
+import useRefocusOnClose from "@/hooks/useRefocusOnClose";
 
 const PROVIDERS = [
   {
@@ -45,11 +47,9 @@ export default function TranscriptionModelPreference() {
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchInputRef = useRef(null);
+  const searchMenuTrigger = useRefocusOnClose(searchMenuOpen);
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -72,19 +72,9 @@ export default function TranscriptionModelPreference() {
   };
 
   const updateProviderChoice = (selection) => {
-    setSearchQuery("");
     setSelectedProvider(selection);
     setSearchMenuOpen(false);
     setHasChanges(true);
-  };
-
-  const handleXButton = () => {
-    if (searchQuery.length > 0) {
-      setSearchQuery("");
-      if (searchInputRef.current) searchInputRef.current.value = "";
-    } else {
-      setSearchMenuOpen(!searchMenuOpen);
-    }
   };
 
   useEffect(() => {
@@ -96,13 +86,6 @@ export default function TranscriptionModelPreference() {
     }
     fetchKeys();
   }, []);
-
-  useEffect(() => {
-    const filtered = PROVIDERS.filter((provider) =>
-      provider.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredProviders(filtered);
-  }, [searchQuery, selectedProvider]);
 
   const selectedProviderObject = PROVIDERS.find(
     (provider) => provider.value === selectedProvider
@@ -151,58 +134,26 @@ export default function TranscriptionModelPreference() {
                 {t("transcription.provider")}
               </div>
               <div className="relative">
-                {searchMenuOpen && (
-                  <div
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
-                    onClick={() => setSearchMenuOpen(false)}
-                  />
-                )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                    <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                        <MagnifyingGlass
-                          size={20}
-                          weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                        />
-                        <input
-                          type="text"
-                          name="provider-search"
-                          autoComplete="off"
-                          placeholder="Search audio transcription providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          ref={searchInputRef}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") e.preventDefault();
-                          }}
-                        />
-                        <X
-                          size={20}
-                          weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
-                          onClick={handleXButton}
-                        />
-                      </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
-                        {filteredProviders.map((provider) => (
-                          <LLMItem
-                            key={provider.name}
-                            name={provider.name}
-                            value={provider.value}
-                            image={provider.logo}
-                            description={provider.description}
-                            checked={selectedProvider === provider.value}
-                            onClick={() => updateProviderChoice(provider.value)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <ProviderSearchMenu
+                    items={PROVIDERS}
+                    placeholder="Search audio transcription providers"
+                    onClose={() => setSearchMenuOpen(false)}
+                    renderItem={(provider) => (
+                      <LLMItem
+                        name={provider.name}
+                        value={provider.value}
+                        image={provider.logo}
+                        description={provider.description}
+                        checked={selectedProvider === provider.value}
+                        onClick={() => updateProviderChoice(provider.value)}
+                      />
+                    )}
+                  />
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                    ref={searchMenuTrigger}
+                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button focus:border-primary-button focus:outline-none transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >
