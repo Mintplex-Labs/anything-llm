@@ -57,11 +57,9 @@ async function asTxt({
 }
 
 /**
- * The text of a file in the encoding it was written in. A UTF-16 byte-order
- * mark decides first, then UTF-8 (its byte-order mark dropped). Anything else
- * is read as Windows-1252 ("ANSI"), what Notepad and Excel write by default on
- * Western-European Windows; read as UTF-8 it would lose every accented letter
- * to U+FFFD.
+ * Decodes a file's bytes as UTF-16 when it starts with a UTF-16 byte-order
+ * mark, otherwise as UTF-8 when the bytes are valid UTF-8, otherwise as
+ * Windows-1252.
  * @param {Buffer} buffer
  * @returns {string}
  */
