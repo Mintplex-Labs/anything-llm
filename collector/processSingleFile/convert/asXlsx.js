@@ -119,7 +119,7 @@ async function asXlsx({
         const sheetData = {
           id: v4(),
           url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
-          title: metadata.title || `${filename} - Sheet:${name}`,
+          title: `${metadata.title || filename} - Sheet:${name}`,
           docAuthor: metadata.docAuthor || "Unknown",
           description:
             metadata.description || `Spreadsheet data from sheet: ${name}`,
