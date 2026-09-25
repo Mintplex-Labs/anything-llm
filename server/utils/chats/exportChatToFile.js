@@ -5,6 +5,8 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
+const MAX_IMAGE_EDGE = 512;
+const JPEG_QUALITY = 0.8;
 const validExportTypes = ["pdf", "markdown", "plaintext", "json", "html"];
 
 // Extract thought chain content from assistant messages.
@@ -33,27 +35,62 @@ function stripThoughtChain(text = "") {
     .trim();
 }
 
+/**
+ * Downscale and re-encode an image so exports do not carry full-resolution
+ * originals. Returns it untouched if that saves nothing or canvas is missing.
+ * @param {string} dataUri - `data:image/xxx;base64,...`
+ * @returns {Promise<string>}
+ */
+async function shrinkImage(dataUri) {
+  try {
+    const { loadImage, createCanvas } = require("canvas");
+    const image = await loadImage(dataUri);
+    const scale = Math.min(
+      1,
+      MAX_IMAGE_EDGE / Math.max(image.width, image.height)
+    );
+    const width = Math.round(image.width * scale);
+    const height = Math.round(image.height * scale);
+
+    const canvas = createCanvas(width, height);
+    const context = canvas.getContext("2d");
+    // JPEG carries no alpha channel - without a ground, transparent pixels
+    // encode as black.
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+    context.drawImage(image, 0, 0, width, height);
+
+    const shrunk = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+    return shrunk.length < dataUri.length ? shrunk : dataUri;
+  } catch {
+    return dataUri;
+  }
+}
+
 // Every image tied to a message - what the user uploaded as context plus any
 // image the assistant generated while answering.
-function messageImages(msg = {}) {
+async function messageImages(msg = {}) {
   const { generatedImageAttachments } = require("../files/index.js");
-  return [
+  const images = [
     ...(msg.attachments || []).filter((a) =>
       a?.contentString?.startsWith("data:image")
     ),
     ...generatedImageAttachments(msg.outputs),
   ];
-}
 
-// Render a message's images as markdown so they appear inline in the export.
-function imagesToMarkdown(msg = {}) {
-  return messageImages(msg)
-    .map((a) => `![${a.name || "attachment"}](${a.contentString})`)
-    .join("\n\n");
+  return Promise.all(
+    images.map(async (image) => ({
+      ...image,
+      contentString: await shrinkImage(image.contentString),
+    }))
+  );
 }
 
 // Build a clean markdown document from a converted chat history.
-function chatHistoryToMarkdown(history = [], { workspaceName, threadName }) {
+async function chatHistoryToMarkdown(
+  history = [],
+  { workspaceName, threadName }
+) {
   const lines = [`**Workspace:** ${workspaceName}  `];
   if (threadName) lines.push(`**Thread:** ${threadName}  `);
   lines.push(`**Exported:** ${moment().format("MMMM D, YYYY h:mm A")}`, "");
@@ -64,7 +101,9 @@ function chatHistoryToMarkdown(history = [], { workspaceName, threadName }) {
       msg.role === "assistant"
         ? stripThoughtChain(msg.content)
         : (msg.content || "").trim();
-    const images = imagesToMarkdown(msg);
+    const images = (await messageImages(msg))
+      .map((a) => `![${a.name || "attachment"}](${a.contentString})`)
+      .join("\n\n");
     if (!content && !images) continue;
 
     lines.push(
@@ -129,7 +168,7 @@ function chatHistoryToJSON(history = [], { workspaceName, threadName }) {
   );
 }
 
-function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
+async function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
   const rawTitle = threadName
     ? `${workspaceName} — ${threadName}`
     : workspaceName;
@@ -153,7 +192,7 @@ function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
       msg.role === "assistant" ? stripThoughtChain(rawContent) : rawContent;
     const reasoning =
       msg.role === "assistant" ? extractThoughtChain(rawContent) : null;
-    const images = messageImages(msg)
+    const images = (await messageImages(msg))
       .map(
         (a) =>
           `<img src="${a.contentString}" alt="${escapeHtml(a.name || "attachment")}" class="max-w-full rounded-lg mt-2" />`
@@ -216,7 +255,7 @@ function chatHistoryToHTML(history = [], { workspaceName, threadName }) {
  * @returns {Promise<Buffer>}
  */
 async function chatHistoryToPDF(history = [], meta = {}) {
-  const markdown = chatHistoryToMarkdown(history, meta);
+  const markdown = await chatHistoryToMarkdown(history, meta);
   const { markdownToPdf } = await import("@mintplex-labs/mdpdf");
   const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
 
@@ -241,7 +280,7 @@ async function sendChatHistoryFile(response, chats, meta, type = "pdf") {
       return response.send(buffer);
     }
     case "markdown": {
-      const md = chatHistoryToMarkdown(convertToChatHistory(chats), meta);
+      const md = await chatHistoryToMarkdown(convertToChatHistory(chats), meta);
       response.setHeader("Content-Type", "text/markdown");
       return response.send(Buffer.from(md, "utf-8"));
     }
@@ -256,7 +295,7 @@ async function sendChatHistoryFile(response, chats, meta, type = "pdf") {
       return response.send(Buffer.from(json, "utf-8"));
     }
     case "html": {
-      const html = chatHistoryToHTML(convertToChatHistory(chats), meta);
+      const html = await chatHistoryToHTML(convertToChatHistory(chats), meta);
       response.setHeader("Content-Type", "text/html");
       return response.send(Buffer.from(html, "utf-8"));
     }
