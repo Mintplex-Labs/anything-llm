@@ -9,6 +9,7 @@ const SAVED_INDICATOR_MS = 2000;
  * Form that persists itself as the user edits: text fields save when they lose
  * focus, selects save on change, and custom controls call `markDirty` + `save`
  * from `useAutosaveForm`. Saves are skipped while the form is invalid.
+ * Only named fields take part in autosave.
  * @param {(form: HTMLFormElement) => Promise<boolean>} props.onSave - persists the form, resolves true on success
  */
 export default function AutosaveForm({ onSave, children, ...props }) {
@@ -58,10 +59,12 @@ export default function AutosaveForm({ onSave, children, ...props }) {
           save();
         }}
         onChange={(e) => {
+          if (!e.target.name) return;
           markDirty(e.target.name);
           if (e.target.tagName === "SELECT") save();
         }}
         onBlur={(e) => {
+          if (!e.target.name) return;
           if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) save();
         }}
         {...props}
