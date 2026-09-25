@@ -734,10 +734,6 @@ class Provider {
       completion_tokens: completionTokens,
     });
 
-    // Providers are only built with an effort already validated for their
-    // model, so a set effort is one that was applied to the request.
-    const reasoningEffort = this.reasoningEffort ?? null;
-
     this.lastUsage = {
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
@@ -748,7 +744,6 @@ class Provider {
       model: this.model,
       provider: this.constructor.name,
       timestamp,
-      ...(reasoningEffort ? { reasoningEffort } : {}),
       ...(cost ?? {}),
     };
 
@@ -764,7 +759,6 @@ class Provider {
     totals.model = this.model;
     totals.provider = this.constructor.name;
     totals.timestamp = timestamp;
-    if (reasoningEffort) totals.reasoningEffort = reasoningEffort;
     if (cost) {
       totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
       totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;

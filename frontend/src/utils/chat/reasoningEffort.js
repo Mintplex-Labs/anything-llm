@@ -1,15 +1,11 @@
 import { SESSION_REASONING_EFFORT_MAP } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
 
-/** Fired with `{ workspaceSlug, threadSlug }` when a session's reasoning effort changes. */
-export const SESSION_REASONING_EFFORT_EVENT =
-  "session_reasoning_effort_changed";
-
 /**
  * Reasoning effort is chosen per chat session - a thread, or a workspace's
  * default chat - and kept in this browser only, so one user's choice never
- * changes another user's chats. Sessions without a choice use the workspace
- * default, then the system default.
+ * changes another user's chats. Sessions without a choice use the system
+ * default.
  */
 function sessionKey(workspaceSlug, threadSlug = null) {
   return threadSlug ? `${workspaceSlug}:${threadSlug}` : workspaceSlug;
@@ -50,27 +46,22 @@ export function setSessionReasoningEffort(workspaceSlug, threadSlug, effort) {
     else delete map[key];
     localStorage.setItem(SESSION_REASONING_EFFORT_MAP, JSON.stringify(map));
   } catch {}
-  window.dispatchEvent(
-    new CustomEvent(SESSION_REASONING_EFFORT_EVENT, {
-      detail: { workspaceSlug, threadSlug },
-    })
-  );
 }
 
 /**
- * The effort a chat session will run with: its own choice, then the workspace
- * default, then the system default - skipping any the current model does not
- * support, the same way the server picks it.
- * @param {{sessionEffort?: string|null, workspaceEffort?: string|null, systemEffort?: string|null}} efforts
+ * The effort a chat session will run with: its own choice, then the system
+ * default - skipping any the current model does not support, the same way
+ * the server picks it.
+ * @param {{sessionEffort?: string|null, systemEffort?: string|null}} efforts
  * @param {string[]} reasoningOptions - Efforts the current model supports
  * @returns {string|null}
  */
 export function effectiveReasoningEffort(
-  { sessionEffort = null, workspaceEffort = null, systemEffort = null },
+  { sessionEffort = null, systemEffort = null },
   reasoningOptions = []
 ) {
   return (
-    [sessionEffort, workspaceEffort, systemEffort].find(
+    [sessionEffort, systemEffort].find(
       (effort) => !!effort && reasoningOptions.includes(effort)
     ) ?? null
   );

@@ -175,7 +175,7 @@ async function chatSync({
   });
 
   // Send the text completion.
-  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
+  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
   const { textResponse, metrics: completionMetrics } =
     await LLMConnector.getChatCompletion(messages, {
       temperature:
@@ -186,7 +186,6 @@ async function chatSync({
     routingMetadata,
     workspace,
     connector: LLMConnector,
-    reasoningEffort,
   });
 
   if (!textResponse) {
@@ -451,7 +450,7 @@ async function streamChat({
     return;
   }
 
-  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
+  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
   const stream = await LLMConnector.streamGetChatCompletion(messages, {
     temperature:
       temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
@@ -469,7 +468,6 @@ async function streamChat({
     routingMetadata,
     workspace,
     connector: LLMConnector,
-    reasoningEffort,
   });
 
   if (completeText?.length > 0) {

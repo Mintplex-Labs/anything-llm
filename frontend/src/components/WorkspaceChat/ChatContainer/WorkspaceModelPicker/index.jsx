@@ -14,33 +14,13 @@ import Workspace from "@/models/workspace";
 import System from "@/models/system";
 import ModelRouterAPI from "@/models/modelRouter";
 import { SIDEBAR_TOGGLE_EVENT } from "@/components/Sidebar/SidebarToggle";
-import {
-  SESSION_REASONING_EFFORT_EVENT,
-  effectiveReasoningEffort,
-  getSessionReasoningEffort,
-} from "@/utils/chat/reasoningEffort";
 
-async function resolveModelName(workspace, systemSettings, threadSlug, t) {
+async function resolveModelName(workspace, systemSettings, t) {
   const effectiveProvider =
     workspace.chatProvider ?? systemSettings?.LLMProvider;
 
-  if (effectiveProvider !== "anythingllm-router") {
-    const modelName = workspace.chatModel ?? systemSettings?.LLMModel ?? "";
-    const efforts = {
-      sessionEffort: getSessionReasoningEffort(workspace.slug, threadSlug),
-      workspaceEffort: workspace.reasoningEffort,
-      systemEffort: systemSettings?.ReasoningEffort,
-    };
-    if (!Object.values(efforts).some(Boolean)) return modelName;
-
-    // Only show an effort the current model supports, matching what gets sent.
-    const capabilities = await Workspace.llmCapabilities(workspace.slug);
-    const reasoningEffort = effectiveReasoningEffort(
-      efforts,
-      capabilities?.reasoningOptions
-    );
-    return reasoningEffort ? `${modelName} (${reasoningEffort})` : modelName;
-  }
+  if (effectiveProvider !== "anythingllm-router")
+    return workspace.chatModel ?? systemSettings?.LLMModel ?? "";
 
   const routerId = workspace.router_id || systemSettings?.ModelRouterId;
   if (!routerId) return t("model-router.metrics.model-router-default");
@@ -51,25 +31,19 @@ async function resolveModelName(workspace, systemSettings, threadSlug, t) {
   return router.name;
 }
 
-async function fetchModelName(slug, threadSlug, setModelName, t) {
+async function fetchModelName(slug, setModelName, t) {
   if (!slug) return;
   const [workspace, systemSettings] = await Promise.all([
     Workspace.bySlug(slug),
     System.keys(),
   ]);
-  setModelName(
-    await resolveModelName(workspace, systemSettings, threadSlug, t)
-  );
+  setModelName(await resolveModelName(workspace, systemSettings, t));
 }
 
-export default function WorkspaceModelPicker({
-  workspaceSlug = null,
-  threadSlug = null,
-}) {
+export default function WorkspaceModelPicker({ workspaceSlug = null }) {
   const { t } = useTranslation();
-  const { slug: urlSlug, threadSlug: urlThreadSlug } = useParams();
+  const { slug: urlSlug } = useParams();
   const slug = urlSlug ?? workspaceSlug;
-  const thread = urlThreadSlug ?? threadSlug;
   const { user } = useUser();
   const [showSelector, setShowSelector] = useState(false);
   const [modelName, setModelName] = useState("");
@@ -92,32 +66,19 @@ export default function WorkspaceModelPicker({
 
   // Fetch current model name for display
   useEffect(() => {
-    fetchModelName(slug, thread, setModelName, t);
-  }, [slug, thread]);
+    fetchModelName(slug, setModelName, t);
+  }, [slug]);
 
   // Close selector and refresh model name when model is saved
   useEffect(() => {
     function handleSave() {
       setShowSelector(false);
-      fetchModelName(slug, thread, setModelName, t);
+      fetchModelName(slug, setModelName, t);
     }
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
     return () =>
       window.removeEventListener(SAVE_LLM_SELECTOR_EVENT, handleSave);
-  }, [slug, thread]);
-
-  // Refresh the shown reasoning effort when this session's choice changes
-  useEffect(() => {
-    function handleEffortChange() {
-      fetchModelName(slug, thread, setModelName, t);
-    }
-    window.addEventListener(SESSION_REASONING_EFFORT_EVENT, handleEffortChange);
-    return () =>
-      window.removeEventListener(
-        SESSION_REASONING_EFFORT_EVENT,
-        handleEffortChange
-      );
-  }, [slug, thread]);
+  }, [slug]);
 
   // Handle provider setup request
   useEffect(() => {

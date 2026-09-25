@@ -156,21 +156,6 @@ describeValidation("chatModel", () => {
   });
 });
 
-describeValidation("reasoningEffort", () => {
-  it("passes valid efforts through", () => {
-    expect(Workspace.validations.reasoningEffort("low")).toBe("low");
-    expect(Workspace.validations.reasoningEffort("max")).toBe("max");
-    expect(Workspace.validations.reasoningEffort("off")).toBe("off");
-  });
-
-  it("returns null for invalid, null, or empty values", () => {
-    expect(Workspace.validations.reasoningEffort("turbo")).toBeNull();
-    expect(Workspace.validations.reasoningEffort(null)).toBeNull();
-    expect(Workspace.validations.reasoningEffort("")).toBeNull();
-    expect(Workspace.validations.reasoningEffort(123)).toBeNull();
-  });
-});
-
 describeValidation("agentProvider", () => {
   it("passes a valid string through", () => {
     expect(Workspace.validations.agentProvider("openai")).toBe("openai");

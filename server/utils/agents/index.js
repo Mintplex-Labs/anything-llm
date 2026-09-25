@@ -862,7 +862,6 @@ class AgentHandler {
   async #reasoningEffortForRoute() {
     const { getLLMProvider } = require("../helpers");
     return await resolveReasoningEffort(
-      this.invocation?.workspace,
       () => getLLMProvider({ provider: this.provider, model: this.model }),
       this.sessionReasoningEffort
     );

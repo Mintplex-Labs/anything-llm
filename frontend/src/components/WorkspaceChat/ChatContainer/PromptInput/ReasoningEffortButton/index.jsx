@@ -33,10 +33,7 @@ export default function ReasoningEffortButton({
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [sessionEffort, setSessionEffort] = useState(null);
-  const [defaults, setDefaults] = useState({
-    workspaceEffort: null,
-    systemEffort: null,
-  });
+  const [systemEffort, setSystemEffort] = useState(null);
 
   useEffect(() => {
     setSessionEffort(getSessionReasoningEffort(slug, thread));
@@ -45,18 +42,14 @@ export default function ReasoningEffortButton({
   useEffect(() => {
     if (!slug) return;
     async function load() {
-      const [capabilities, workspace, settings] = await Promise.all([
+      const [capabilities, settings] = await Promise.all([
         Workspace.llmCapabilities(slug),
-        Workspace.bySlug(slug),
         System.keys(),
       ]);
       setOptions(
         capabilities?.reasoning === true ? capabilities.reasoningOptions : []
       );
-      setDefaults({
-        workspaceEffort: workspace?.reasoningEffort ?? null,
-        systemEffort: settings?.ReasoningEffort ?? null,
-      });
+      setSystemEffort(settings?.ReasoningEffort ?? null);
     }
     load();
     window.addEventListener(SAVE_LLM_SELECTOR_EVENT, load);
@@ -71,13 +64,8 @@ export default function ReasoningEffortButton({
 
   if (!options.length) return null;
 
-  // Mirrors how the server picks the effort, so the chip only ever shows a
-  // level that will actually be sent to the current model.
-  const defaultEffort = effectiveReasoningEffort(defaults, options);
-  const effort = effectiveReasoningEffort(
-    { ...defaults, sessionEffort },
-    options
-  );
+  // The system default only applies when the current model supports it.
+  const defaultEffort = effectiveReasoningEffort({ systemEffort }, options);
   const usingDefault = !sessionEffort || !options.includes(sessionEffort);
 
   // The menu is positioned against the prompt input's outer wrapper (not this
@@ -107,11 +95,6 @@ export default function ReasoningEffortButton({
               : "text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800"
           }`}
         />
-        {effort && (
-          <span className="text-sm font-medium capitalize text-zinc-300 light:text-slate-600 group-hover:text-white light:group-hover:text-slate-800">
-            {effort}
-          </span>
-        )}
       </button>
       {!open && (
         <Tooltip

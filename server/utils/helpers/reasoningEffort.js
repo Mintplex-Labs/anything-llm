@@ -1,6 +1,5 @@
 /**
- * Every effort level a workspace, thread session, or the system default can
- * store. Which of these a request may actually carry depends on the provider
+ * Every effort level a chat session or the system default can store. Which of these a request may actually carry depends on the provider
  * and model - see getReasoningCapabilities.
  */
 const REASONING_EFFORT_LEVELS = [
@@ -144,25 +143,19 @@ async function getReasoningCapabilities(llm) {
 }
 
 /**
- * Picks the reasoning effort for a request. Candidates are tried in order -
- * the chat session's own choice, then the workspace default, then the system
- * default - and the first one the model's capabilities list wins. Anything the
- * model does not list is skipped, so a value left over from a model switch or
- * a provider without reasoning controls is never sent.
- * @param {{reasoningEffort?: string|null}|null} workspace
+ * Picks the reasoning effort for a request: the chat session's own choice,
+ * then the system default - whichever comes first that the model's
+ * capabilities list. Anything the model does not list is skipped, so a value
+ * left over from a model switch or a provider without reasoning controls is
+ * never sent.
  * @param {object|(() => object)|null} connector - LLM connector the request will use, or a
  *   function building it - only called when an effort is set, and a throw resolves to null
  * @param {string|null} [sessionEffort] - Effort chosen for this chat session
  * @returns {Promise<string|null>}
  */
-async function resolveReasoningEffort(
-  workspace,
-  connector,
-  sessionEffort = null
-) {
+async function resolveReasoningEffort(connector, sessionEffort = null) {
   const candidates = [
     ["session", sessionEffort],
-    ["workspace", workspace?.reasoningEffort],
     ["system", process.env.REASONING_EFFORT],
   ].filter(
     ([, value]) => !!value && REASONING_EFFORT_LEVELS.includes(String(value))
@@ -181,18 +174,17 @@ async function resolveReasoningEffort(
   if (!llm) return null;
 
   const { reasoningOptions } = await getReasoningCapabilities(llm);
-  for (const [source, value] of candidates) {
-    if (reasoningOptions.includes(value)) {
-      console.log(
-        `\x1b[36m[ReasoningEffort]\x1b[0m Using ${source} reasoning effort "${value}" for model "${llm.model}".`
-      );
-      return value;
-    }
-    console.log(
-      `\x1b[36m[ReasoningEffort]\x1b[0m Skipping ${source} reasoning effort "${value}" - not supported by model "${llm.model}".`
-    );
-  }
-  return null;
+  const match = candidates.find(([, value]) =>
+    reasoningOptions.includes(value)
+  );
+  console.log(
+    `\x1b[36m[ReasoningEffort]\x1b[0m ${llm.model}: ${
+      match
+        ? `${match[1]} (${match[0]})`
+        : `none - ${candidates.map(([source, value]) => `${source} "${value}"`).join(", ")} not supported`
+    }`
+  );
+  return match?.[1] ?? null;
 }
 
 module.exports = {

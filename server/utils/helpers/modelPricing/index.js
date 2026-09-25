@@ -366,26 +366,19 @@ function addCostToMetrics(
  * @param {Object|null} opts.routingMetadata - model router result (if routing is enabled)
  * @param {Object|null} opts.workspace - workspace record (fallback for provider)
  * @param {Object|null} opts.connector - LLM connector instance (fallback for model)
- * @param {string|null} opts.reasoningEffort - reasoning effort applied to the request (see resolveReasoningEffort)
  * @returns {Object} metrics, optionally extended with cost fields
  */
 function addChatCostToMetrics(
   metrics = {},
-  {
-    routingMetadata = null,
-    workspace = null,
-    connector = null,
-    reasoningEffort = null,
-  } = {}
+  { routingMetadata = null, workspace = null, connector = null } = {}
 ) {
-  const withCost = addCostToMetrics(metrics, {
+  return addCostToMetrics(metrics, {
     provider:
       routingMetadata?.routedTo?.provider ??
       workspace?.chatProvider ??
       process.env.LLM_PROVIDER,
     model: routingMetadata?.routedTo?.model ?? connector?.model,
   });
-  return reasoningEffort ? { ...withCost, reasoningEffort } : withCost;
 }
 
 module.exports = {

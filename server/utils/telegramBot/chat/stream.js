@@ -272,7 +272,7 @@ async function generateResponse({
 }) {
   let completeText = "";
   let metrics = {};
-  const reasoningEffort = await resolveReasoningEffort(workspace, LLMConnector);
+  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
 
   if (LLMConnector.streamingEnabled() === true) {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
@@ -308,7 +308,6 @@ async function generateResponse({
     routingMetadata,
     workspace,
     connector: LLMConnector,
-    reasoningEffort,
   });
   return { completeText, metrics };
 }

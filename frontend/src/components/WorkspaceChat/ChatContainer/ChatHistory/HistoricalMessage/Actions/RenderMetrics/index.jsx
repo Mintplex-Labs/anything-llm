@@ -34,14 +34,12 @@ function getAutoShowMetrics() {
  * - Model name
  * - Duration and output TPS
  * - Timestamp
- * @param {metrics: {duration:number, outputTps: number, model?: string, reasoningEffort?: string, timestamp?: number}} metrics
+ * @param {metrics: {duration:number, outputTps: number, model?: string, timestamp?: number}} metrics
  * @returns {string}
  */
 function buildMetricsString(metrics = {}) {
   return [
-    metrics?.model
-      ? `${metrics.model}${metrics?.reasoningEffort ? ` (${metrics.reasoningEffort})` : ""}`
-      : "",
+    metrics?.model ? metrics.model : "",
     `${formatDuration(metrics.duration)} (${formatTps(metrics.outputTps)} tok/s)`,
     metrics?.timestamp
       ? formatDateTimeAsMoment(metrics.timestamp, "MMM D, h:mm A")

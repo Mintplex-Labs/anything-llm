@@ -257,10 +257,7 @@ const TRANSLATIONS = {
     },
     reasoning_effort: {
       title: "Reasoning Effort",
-      description:
-        "Default for chats in this workspace - anyone can change it for their own chat from the chat input. Only shown for models that support reasoning controls.",
       default: "Provider default",
-      global_default: "Global default ({{value}})",
       session_default: "Default ({{value}})",
       cannot_disable: "This model cannot turn reasoning off.",
     },

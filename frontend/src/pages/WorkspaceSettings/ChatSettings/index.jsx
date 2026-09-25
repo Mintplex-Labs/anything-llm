@@ -10,13 +10,9 @@ import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
-import ReasoningEffortSettings from "./ReasoningEffortSettings";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
-  // Tracks saved updates so children depending on the workspace's current
-  // provider/model (eg: reasoning controls) re-render without a page refresh.
-  const [currentWorkspace, setCurrentWorkspace] = useState(workspace);
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
@@ -39,7 +35,6 @@ export default function ChatSettings({ workspace }) {
       // Returning false keeps the fields dirty so the next save retries them.
       return false;
     }
-    setCurrentWorkspace(updatedWorkspace);
     return true;
   };
 
@@ -52,10 +47,6 @@ export default function ChatSettings({ workspace }) {
         className="w-1/2 flex flex-col gap-y-[32px]"
       >
         <WorkspaceLLMSelection settings={settings} workspace={workspace} />
-        <ReasoningEffortSettings
-          settings={settings}
-          workspace={currentWorkspace ?? workspace}
-        />
         <ChatModeSelection workspace={workspace} />
         <ChatHistorySettings workspace={workspace} />
         <ChatPromptSettings workspace={workspace} />

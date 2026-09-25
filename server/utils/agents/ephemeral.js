@@ -519,7 +519,7 @@ class EphemeralAgentHandler extends AgentHandler {
    */
   async #reasoningEffortForRoute() {
     const { getLLMProvider } = require("../helpers");
-    return await resolveReasoningEffort(this.#workspace, () =>
+    return await resolveReasoningEffort(() =>
       getLLMProvider({ provider: this.provider, model: this.model })
     );
   }

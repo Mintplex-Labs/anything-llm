@@ -285,7 +285,6 @@ async function streamChatWithWorkspace(
   );
 
   const reasoningEffort = await resolveReasoningEffort(
-    workspace,
     LLMConnector,
     sessionReasoningEffort
   );
@@ -308,7 +307,6 @@ async function streamChatWithWorkspace(
       routingMetadata,
       workspace,
       connector: LLMConnector,
-      reasoningEffort,
     });
     writeResponseChunk(response, {
       uuid,
@@ -333,7 +331,6 @@ async function streamChatWithWorkspace(
       routingMetadata,
       workspace,
       connector: LLMConnector,
-      reasoningEffort,
     });
   }
 

@@ -262,96 +262,68 @@ describe("resolveReasoningEffort", () => {
   const supportsLowHigh = () =>
     fakeLLM({ reasoning: true, reasoningOptions: ["low", "high"] });
 
-  it("prefers the session effort over the workspace and system defaults", async () => {
+  it("prefers the session effort over the system default", async () => {
     process.env.REASONING_EFFORT = "high";
-    expect(
-      await resolveReasoningEffort(
-        { reasoningEffort: "high" },
-        supportsLowHigh(),
-        "low"
-      )
-    ).toBe("low");
+    expect(await resolveReasoningEffort(supportsLowHigh(), "low")).toBe("low");
   });
 
-  it("falls back to the workspace default, then the system default", async () => {
+  it("falls back to the system default without a session effort", async () => {
     process.env.REASONING_EFFORT = "high";
-    expect(
-      await resolveReasoningEffort(
-        { reasoningEffort: "low" },
-        supportsLowHigh()
-      )
-    ).toBe("low");
-    expect(
-      await resolveReasoningEffort({ reasoningEffort: null }, supportsLowHigh())
-    ).toBe("high");
-    expect(await resolveReasoningEffort(null, supportsLowHigh())).toBe("high");
+    expect(await resolveReasoningEffort(supportsLowHigh())).toBe("high");
+    expect(await resolveReasoningEffort(supportsLowHigh(), null)).toBe("high");
   });
 
-  it("skips a level the model does not support and uses the next one", async () => {
+  it("skips a session level the model does not support and uses the system default", async () => {
     process.env.REASONING_EFFORT = "high";
-    expect(
-      await resolveReasoningEffort(
-        { reasoningEffort: "max" },
-        supportsLowHigh(),
-        "off"
-      )
-    ).toBe("high");
+    expect(await resolveReasoningEffort(supportsLowHigh(), "off")).toBe("high");
   });
 
   it("returns null when no candidate is supported", async () => {
     process.env.REASONING_EFFORT = "max";
-    expect(
-      await resolveReasoningEffort(
-        { reasoningEffort: "xhigh" },
-        supportsLowHigh(),
-        "off"
-      )
-    ).toBeNull();
+    expect(await resolveReasoningEffort(supportsLowHigh(), "off")).toBeNull();
+  });
+
+  it("returns null with neither a session effort nor a system default", async () => {
+    expect(await resolveReasoningEffort(supportsLowHigh())).toBeNull();
   });
 
   it("never sends anything to a model without reasoning support", async () => {
+    process.env.REASONING_EFFORT = "low";
     const llm = fakeLLM({ reasoning: false, reasoningOptions: [] });
-    expect(
-      await resolveReasoningEffort({ reasoningEffort: "low" }, llm, "low")
-    ).toBeNull();
+    expect(await resolveReasoningEffort(llm, "low")).toBeNull();
   });
 
   it("drops the effort when the capability lookup fails", async () => {
     const llm = fakeLLM(new Error("timeout"));
-    expect(
-      await resolveReasoningEffort({ reasoningEffort: "low" }, llm)
-    ).toBeNull();
+    expect(await resolveReasoningEffort(llm, "low")).toBeNull();
   });
 
   it.each(["turbo", "LOW", " low", "null", "none", 123, true, {}, ["low"]])(
     "ignores the unknown session value %j",
     async (sessionEffort) => {
+      process.env.REASONING_EFFORT = "high";
       expect(
-        await resolveReasoningEffort(
-          { reasoningEffort: "high" },
-          supportsLowHigh(),
-          sessionEffort
-        )
+        await resolveReasoningEffort(supportsLowHigh(), sessionEffort)
       ).toBe("high");
     }
   );
 
   it("ignores an unknown system default", async () => {
     process.env.REASONING_EFFORT = "turbo";
-    expect(await resolveReasoningEffort(null, supportsLowHigh())).toBeNull();
+    expect(await resolveReasoningEffort(supportsLowHigh())).toBeNull();
   });
 
   it("does not build or query the connector when no effort is set", async () => {
     const factory = jest.fn(() => supportsLowHigh());
-    expect(await resolveReasoningEffort(null, factory)).toBeNull();
-    expect(await resolveReasoningEffort({}, factory, "")).toBeNull();
+    expect(await resolveReasoningEffort(factory)).toBeNull();
+    expect(await resolveReasoningEffort(factory, "")).toBeNull();
     expect(factory).not.toHaveBeenCalled();
   });
 
   it("builds the connector lazily from a factory", async () => {
     const llm = supportsLowHigh();
     const factory = jest.fn(() => llm);
-    expect(await resolveReasoningEffort(null, factory, "low")).toBe("low");
+    expect(await resolveReasoningEffort(factory, "low")).toBe("low");
     expect(factory).toHaveBeenCalledTimes(1);
   });
 
@@ -359,13 +331,11 @@ describe("resolveReasoningEffort", () => {
     const factory = () => {
       throw new Error("No API key was set.");
     };
-    await expect(resolveReasoningEffort(null, factory, "low")).resolves.toBe(
-      null
-    );
+    await expect(resolveReasoningEffort(factory, "low")).resolves.toBe(null);
   });
 
   it("resolves to null without a connector", async () => {
-    expect(await resolveReasoningEffort(null, null, "low")).toBeNull();
-    expect(await resolveReasoningEffort(null, () => null, "low")).toBeNull();
+    expect(await resolveReasoningEffort(null, "low")).toBeNull();
+    expect(await resolveReasoningEffort(() => null, "low")).toBeNull();
   });
 });

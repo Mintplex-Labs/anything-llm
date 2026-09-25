@@ -193,10 +193,7 @@ async function streamChatWithForEmbed(
     rawHistory
   );
 
-  const reasoningEffort = await resolveReasoningEffort(
-    embed.workspace,
-    LLMConnector
-  );
+  const reasoningEffort = await resolveReasoningEffort(LLMConnector);
 
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
@@ -214,7 +211,6 @@ async function streamChatWithForEmbed(
       routingMetadata,
       workspace: embed.workspace,
       connector: LLMConnector,
-      reasoningEffort,
     });
     writeResponseChunk(response, {
       uuid,
@@ -237,7 +233,6 @@ async function streamChatWithForEmbed(
       routingMetadata,
       workspace: embed.workspace,
       connector: LLMConnector,
-      reasoningEffort,
     });
   }
 

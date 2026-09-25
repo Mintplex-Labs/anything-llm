@@ -7,7 +7,6 @@ const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
 const { SystemSettings } = require("./systemSettings");
-const { REASONING_EFFORT_LEVELS } = require("../utils/helpers/reasoningEffort");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -25,7 +24,6 @@ function isNullOrNaN(value) {
  * @property {number} similarityThreshold - The similarity threshold of the workspace
  * @property {string} chatProvider - The chat provider of the workspace
  * @property {string} chatModel - The chat model of the workspace
- * @property {string|null} reasoningEffort - The reasoning effort for the chat model (null = provider default)
  * @property {number} topN - The top N of the workspace
  * @property {string} chatMode - The chat mode of the workspace
  * @property {string} agentProvider - The agent provider of the workspace
@@ -51,7 +49,6 @@ const Workspace = {
     "similarityThreshold",
     "chatProvider",
     "chatModel",
-    "reasoningEffort",
     "topN",
     "chatMode",
     "agentProvider",
@@ -108,10 +105,6 @@ const Workspace = {
     chatModel: (value) => {
       if (!value || typeof value !== "string") return null;
       return String(value);
-    },
-    reasoningEffort: (value) => {
-      if (!value || !REASONING_EFFORT_LEVELS.includes(value)) return null;
-      return value;
     },
     agentProvider: (value) => {
       if (!value || typeof value !== "string" || value === "none") return null;
@@ -275,19 +268,6 @@ const Workspace = {
       validatedUpdates.chatProvider !== "anythingllm-router"
     ) {
       validatedUpdates.router_id = null;
-    }
-
-    // A reasoning effort is picked for a specific model, so changing the
-    // provider or model clears it rather than carrying it to a model that
-    // may reject it or read the same level differently.
-    if ("chatProvider" in validatedUpdates || "chatModel" in validatedUpdates) {
-      const current = await prisma.workspaces.findUnique({ where: { id } });
-      const changed = ["chatProvider", "chatModel"].some(
-        (key) =>
-          key in validatedUpdates &&
-          (validatedUpdates[key] ?? null) !== (current?.[key] ?? null)
-      );
-      if (changed) validatedUpdates.reasoningEffort = null;
     }
 
     return this._update(id, validatedUpdates);
