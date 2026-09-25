@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tên không gian làm việc",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
+    saved: "Đã lưu",
     save: "Lưu thay đổi",
     previous: "Trang trước",
     next: "Trang tiếp theo",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Dừng",
     loading: "Đang tải",
     refresh: "Tái tạo",
+    noResults: "Không tìm thấy kết quả",
   },
   settings: {
     title: "Cài đặt hệ thống",

@@ -10,7 +10,15 @@ const {
   buildAnthropicParams,
   handleAnthropicChatStream,
 } = require("./anthropicChat");
-const { openaiBaseURL, anthropicBaseURL } = require("./endpoints");
+const {
+  buildResponsesParams,
+  handleResponsesChatStream,
+} = require("./openaiResponses");
+const {
+  openaiBaseURL,
+  anthropicBaseURL,
+  isOpenAIModelId,
+} = require("./endpoints");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
@@ -55,19 +63,17 @@ class AWSBedrockLLM {
     "us.deepseek.r1-v1:0",
   ];
 
-  static noTemperatureModels = [
-    "anthropic.claude-opus-4-7",
-    "anthropic.claude-opus-4-8",
-    "anthropic.claude-sonnet-5",
-  ];
-
   /**
-   * Whether the model supports the temperature parameter at all.
+   * Whether the model supports the temperature parameter at all. Anthropic
+   * models reject it (Opus 4.7 onward return a 400) and OpenAI GPT models use
+   * the Responses API, which never sends it.
    * @param {string} modelName
    * @returns {boolean}
    */
   static modelSupportsTemperature(modelName = "") {
-    return !this.noTemperatureModels.some((model) => modelName.includes(model));
+    if (modelName?.includes("anthropic")) return false;
+    if (isOpenAIModelId(modelName)) return false;
+    return true;
   }
 
   constructor(embedder = null, modelPreference = null) {
@@ -90,7 +96,7 @@ class AWSBedrockLLM {
 
     this.openai = new OpenAIApi({
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
-      baseURL: openaiBaseURL(this.region),
+      baseURL: openaiBaseURL(this.region, this.model),
     });
 
     if (this.model?.includes("anthropic")) {
@@ -110,6 +116,14 @@ class AWSBedrockLLM {
 
   get #isAnthropic() {
     return !!this.anthropic;
+  }
+
+  /**
+   * OpenAI GPT models on Bedrock are served via the Responses API, which is
+   * the only OpenAI API that supports their native tool calling.
+   */
+  get #usesResponsesAPI() {
+    return isOpenAIModelId(this.model);
   }
 
   get #maxTokens() {
@@ -233,6 +247,10 @@ class AWSBedrockLLM {
       return this.#anthropicChatCompletion(messages, temperature);
     }
 
+    if (this.#usesResponsesAPI) {
+      return this.#responsesChatCompletion(messages);
+    }
+
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -285,6 +303,20 @@ class AWSBedrockLLM {
       });
     }
 
+    if (this.#usesResponsesAPI) {
+      const stream = await this.openai.responses.create({
+        ...buildResponsesParams({ model: this.model, messages }),
+        stream: true,
+      });
+      return await LLMPerformanceMonitor.measureStream({
+        func: stream,
+        messages,
+        runPromptTokenCalculation: false,
+        modelTag: this.model,
+        provider: this.className,
+      });
+    }
+
     const stream = await this.openai.chat.completions.create({
       model: this.model,
       messages,
@@ -304,6 +336,8 @@ class AWSBedrockLLM {
   handleStream(response, stream, responseProps) {
     if (this.#isAnthropic)
       return handleAnthropicChatStream(response, stream, responseProps);
+    if (this.#usesResponsesAPI)
+      return handleResponsesChatStream(response, stream, responseProps);
     return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
@@ -340,6 +374,36 @@ class AWSBedrockLLM {
         },
         result.duration,
         completionTokens
+      ),
+    };
+  }
+
+  // --- OpenAI Responses API non-streaming completion ---
+
+  async #responsesChatCompletion(messages) {
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.responses
+        .create(buildResponsesParams({ model: this.model, messages }))
+        .catch((e) => {
+          this.#log(`Bedrock API Error (getChatCompletion): ${e.message}`, e);
+          throw new Error(`AWSBedrock::getChatCompletion failed. ${e.message}`);
+        })
+    );
+
+    const response = result.output;
+    const promptTokens = response.usage?.input_tokens ?? 0;
+    const completionTokens = response.usage?.output_tokens ?? 0;
+
+    return {
+      textResponse: response.output_text ?? null,
+      metrics: this.#buildMetrics(
+        {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens:
+            response.usage?.total_tokens ?? promptTokens + completionTokens,
+        },
+        result.duration
       ),
     };
   }

@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Werkruimten Naam",
     selection: "Model Selectie",
     saving: "Opslaan...",
+    saved: "Opgeslagen",
     save: "Wijzigingen opslaan",
     previous: "Vorige pagina",
     next: "Volgende pagina",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Gestopt",
     loading: "Laad",
     refresh: "Verfrissen",
+    noResults: "Geen resultaten gevonden",
   },
   settings: {
     title: "Instelling Instanties",

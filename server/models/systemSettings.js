@@ -168,6 +168,8 @@ const SystemSettings = {
             "crw-search",
             "you-search",
             "keenable-search",
+            "anysearch-search",
+            "firecrawl-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -610,6 +612,8 @@ const SystemSettings = {
       AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
       AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
       AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
+      AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
+      AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -929,6 +933,7 @@ const SystemSettings = {
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+      TogetherAiMaxTokens: process.env.TOGETHER_AI_MAX_TOKENS,
 
       // Fireworks AI API Keys
       FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -942,6 +947,7 @@ const SystemSettings = {
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
       OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
+      OpenRouterServiceTier: process.env.OPENROUTER_SERVICE_TIER,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,

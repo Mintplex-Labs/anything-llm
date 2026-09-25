@@ -51,6 +51,7 @@ const TRANSLATIONS = {
     "workspaces-name": "שם סביבת העבודה",
     selection: "בחירת מודל",
     saving: "שומר...",
+    saved: "נשמר",
     save: "שמור שינויים",
     previous: "עמוד קודם",
     next: "עמוד הבא",
@@ -65,6 +66,7 @@ const TRANSLATIONS = {
     stopped: "עצר",
     loading: "טעינה",
     refresh: "רענן",
+    noResults: "לא נמצאו תוצאות",
   },
   settings: {
     title: "הגדרות מופע",

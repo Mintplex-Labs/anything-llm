@@ -26,7 +26,9 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
-    this.maxTokens = Number(process.env.KOBOLD_CPP_MAX_TOKENS) || 2048;
+    this.maxTokens = process.env.KOBOLD_CPP_MAX_TOKENS
+      ? Number(process.env.KOBOLD_CPP_MAX_TOKENS)
+      : null;
     this.verbose = true;
   }
 
@@ -43,8 +45,8 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
       .create({
         model: this.model,
         ...temperatureParam(this.temperature),
-        messages,
-        max_tokens: this.maxTokens,
+        messages: this.formatMessagesWithAttachments(messages),
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -63,8 +65,8 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
       model: this.model,
       ...temperatureParam(this.temperature),
       stream: true,
-      messages,
-      max_tokens: this.maxTokens,
+      messages: this.formatMessagesWithAttachments(messages),
+      ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
     });
   }
 

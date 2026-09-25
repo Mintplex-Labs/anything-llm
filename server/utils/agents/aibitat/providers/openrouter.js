@@ -6,6 +6,7 @@ const {
   tooledStream,
   tooledComplete,
   temperatureParam,
+  serviceTierParam,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 
@@ -34,6 +35,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
     this.verbose = true;
     this._supportsToolCalling = null;
   }
@@ -52,6 +54,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         ...temperatureParam(this.temperature),
         messages,
+        ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
         user: this.executingUserId,
       })
       .then((result) => {
@@ -72,6 +75,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       ...temperatureParam(this.temperature),
       stream: true,
       messages,
+      ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
       user: this.executingUserId,
     });
   }
@@ -104,7 +108,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this }
+        { provider: this, serviceTier: this.serviceTier }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -143,7 +147,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this }
+        { provider: this, serviceTier: this.serviceTier }
       );
 
       if (result.retryWithError) {

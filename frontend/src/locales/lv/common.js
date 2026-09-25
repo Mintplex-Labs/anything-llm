@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Darba telpas nosaukums",
     selection: "Modeļa izvēle",
     saving: "Saglabā...",
+    saved: "Saglabāts",
     save: "Saglabāt izmaiņas",
     previous: "Iepriekšējā lapa",
     next: "Nākamā lapa",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Apstājās",
     loading: "Ielāde",
     refresh: "Atjaunot",
+    noResults: "Netika atrasti rezultāti",
   },
   settings: {
     title: "Instances iestatījumi",

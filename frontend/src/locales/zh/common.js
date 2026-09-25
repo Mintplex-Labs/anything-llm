@@ -51,6 +51,7 @@ const TRANSLATIONS = {
     selection: "模型选择",
     save: "保存更改",
     saving: "保存中...",
+    saved: "已保存",
     previous: "上一页",
     next: "下一页",
     optional: "可选",
@@ -64,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "正在加载…",
     refresh: "重新开始；更新",
+    noResults: "未找到任何结果",
   },
   settings: {
     title: "设置",

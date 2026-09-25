@@ -38,22 +38,32 @@ describe("resolveTemperature", () => {
     expect(resolveTemperature("openai", "gpt-4o-mini", 0.7)).toBe(0.7);
   });
 
-  test("omits temperature for Anthropic models that reject it", () => {
+  test("omits temperature for every Anthropic model", () => {
     expect(
       resolveTemperature("anthropic", "claude-sonnet-5", 0.7)
     ).toBeUndefined();
-    expect(resolveTemperature("anthropic", "claude-3-5-haiku-latest", 0.7)).toBe(
-      0.7
-    );
+    expect(
+      resolveTemperature("anthropic", "claude-3-5-haiku-latest", 0.7)
+    ).toBeUndefined();
+    expect(resolveTemperature("anthropic", "claude-3-5-haiku-latest", 0)).toBeUndefined();
   });
 
-  test("omits temperature for Bedrock models that reject it", () => {
+  test("omits temperature for Bedrock Anthropic and OpenAI GPT models only", () => {
     expect(
       resolveTemperature("bedrock", "us.anthropic.claude-sonnet-5-v1:0", 0.7)
     ).toBeUndefined();
     expect(
       resolveTemperature("bedrock", "anthropic.claude-3-5-sonnet-v1:0", 0.7)
-    ).toBe(0.7);
+    ).toBeUndefined();
+    expect(
+      resolveTemperature("bedrock", "us.openai.gpt-5-v1:0", 0.7)
+    ).toBeUndefined();
+    expect(resolveTemperature("bedrock", "openai.gpt-oss-120b-1:0", 0.7)).toBe(
+      0.7
+    );
+    expect(resolveTemperature("bedrock", "meta.llama3-70b-instruct-v1:0", 0.7)).toBe(
+      0.7
+    );
   });
 
   test("omits temperature for Azure reasoning deployments", () => {

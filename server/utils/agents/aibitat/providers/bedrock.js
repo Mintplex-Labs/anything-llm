@@ -12,16 +12,22 @@ const {
   anthropicTooledStream,
   anthropicTooledComplete,
 } = require("./helpers/anthropicTooled.js");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
 const { RetryError } = require("../error.js");
 const {
   openaiBaseURL,
   anthropicBaseURL,
+  isOpenAIModelId,
 } = require("../../../AiProviders/bedrock/endpoints.js");
 
 /**
  * The agent provider for the AWS Bedrock provider.
- * Uses the OpenAI-compatible Mantle API endpoint for non-Anthropic models,
- * and the Anthropic Messages API with native tool calling for Anthropic models.
+ * Uses the OpenAI-compatible Mantle API endpoint for most models, the OpenAI
+ * Responses API with native tool calling for OpenAI GPT models, and the
+ * Anthropic Messages API with native tool calling for Anthropic models.
  */
 class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -32,7 +38,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
     const client = new OpenAI({
-      baseURL: openaiBaseURL(region),
+      baseURL: openaiBaseURL(region, model),
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
     });
 
@@ -67,6 +73,15 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   get supportsAgentStreaming() {
     if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
     return true;
+  }
+
+  /**
+   * OpenAI GPT models on Bedrock reject function tools on Chat Completions and
+   * only support them via the Responses API.
+   * @returns {boolean}
+   */
+  get #usesResponsesAPI() {
+    return isOpenAIModelId(this.model);
   }
 
   get #maxTokens() {
@@ -132,6 +147,20 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       );
     }
 
+    if (this.#usesResponsesAPI) {
+      this.providerLog(
+        "Provider.stream (responses) - will process this chat completion."
+      );
+      return await responsesTooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    }
+
     this.providerLog(
       "Provider.stream (tooled) - will process this chat completion."
     );
@@ -179,6 +208,16 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    if (this.#usesResponsesAPI) {
+      return await responsesTooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        { provider: this }
       );
     }
 

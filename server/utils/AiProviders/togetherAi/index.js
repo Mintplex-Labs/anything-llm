@@ -8,7 +8,7 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const fs = require("fs");
 const path = require("path");
-const { safeJsonParse } = require("../../http");
+const { safeJsonParse, toValidNumber } = require("../../http");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
@@ -18,6 +18,15 @@ const cacheFolder = path.resolve(
     ? path.resolve(process.env.STORAGE_DIR, "models", "togetherAi")
     : path.resolve(__dirname, `../../../storage/models/togetherAi`)
 );
+
+function cachedTogetherAiModels() {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  if (!fs.existsSync(cacheModelPath)) return [];
+  return safeJsonParse(
+    fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+    []
+  );
+}
 
 async function togetherAiModels(apiKey = null) {
   const cacheModelPath = path.resolve(cacheFolder, "models.json");
@@ -92,6 +101,9 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
+    this.maxTokens = process.env.TOGETHER_AI_MAX_TOKENS
+      ? toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null)
+      : null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -99,6 +111,13 @@ class TogetherAiLLM {
     };
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
+    this.log(
+      `Initialized with model: ${this.model} (context window: ${this.promptWindowLimit()})`
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -142,14 +161,14 @@ class TogetherAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static async promptWindowLimit(modelName) {
-    const models = await togetherAiModels();
+  static promptWindowLimit(modelName) {
+    const models = cachedTogetherAiModels();
     const model = models.find((m) => m.id === modelName);
     return model?.maxLength || 4096;
   }
 
-  async promptWindowLimit() {
-    const models = await togetherAiModels();
+  promptWindowLimit() {
+    const models = cachedTogetherAiModels();
     const model = models.find((m) => m.id === this.model);
     return model?.maxLength || 4096;
   }
@@ -196,6 +215,7 @@ class TogetherAiLLM {
           model: this.model,
           messages,
           ...temperatureParam(temperature),
+          ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -238,6 +258,7 @@ class TogetherAiLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       }),
       messages,
       runPromptTokenCalculation: false,

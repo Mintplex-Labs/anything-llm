@@ -6,6 +6,7 @@ const {
   tooledStream,
   tooledComplete,
   temperatureParam,
+  maxTokensParam,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
@@ -81,7 +82,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         temperature: this.temperature ?? 0,
         messages,
-        max_tokens: this.maxTokens,
+        ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -101,7 +102,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       ...temperatureParam(this.temperature),
       stream: true,
       messages,
-      max_tokens: this.maxTokens,
+      ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
     });
   }
 
@@ -133,7 +134,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this, maxTokens: this.maxTokens }
+        {
+          provider: this,
+          maxTokens: this.maxTokens,
+          maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
+        }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -172,7 +177,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this, maxTokens: this.maxTokens }
+        {
+          provider: this,
+          maxTokens: this.maxTokens,
+          maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
+        }
       );
 
       if (result.retryWithError) {

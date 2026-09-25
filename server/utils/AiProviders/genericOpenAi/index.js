@@ -14,8 +14,9 @@ const { toValidNumber } = require("../../http");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 const { attachmentToContentBlock } = require("../../helpers/attachments");
 const {
+  maxTokensParam,
   temperatureParam,
-} = require("../../agents/aibitat/providers/helpers/tooled");
+} = require("../../agents/aibitat/providers/helpers/tooled.js");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -61,6 +62,16 @@ class GenericOpenAiLLM {
    * Format: "Header-Name:value,Another-Header:value2"
    * @returns {Object} Object with header key-value pairs
    */
+  /**
+   * Request field name for the output token budget. Defaults to `max_tokens`;
+   * set GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY for backends that expect a
+   * different field (eg: `max_completion_tokens`).
+   * @returns {string}
+   */
+  static maxTokensKey() {
+    return process.env.GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY || "max_tokens";
+  }
+
   static parseCustomHeaders() {
     const customHeadersEnv = process.env.GENERIC_OPEN_AI_CUSTOM_HEADERS;
     if (!customHeadersEnv) return {};
@@ -233,7 +244,7 @@ class GenericOpenAiLLM {
           model: this.model,
           messages,
           ...temperatureParam(temperature),
-          max_tokens: this.maxTokens,
+          ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -276,7 +287,7 @@ class GenericOpenAiLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
-        max_tokens: this.maxTokens,
+        ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
         ...this.#includeStreamOptionsUsage(),
       }),
       messages,

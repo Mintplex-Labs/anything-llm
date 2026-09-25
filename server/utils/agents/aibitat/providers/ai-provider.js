@@ -18,7 +18,7 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
-const { temperatureParam } = require("./helpers/tooled.js");
+const { maxTokensParam, temperatureParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
@@ -225,6 +225,15 @@ class Provider {
   }
 
   /**
+   * Whether the model is loaded into memory on the inference server.
+   * Local providers override this; overrides should resolve true on error.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return true;
+  }
+
+  /**
    *
    * @param {string} provider - the string key of the provider LLM being loaded.
    * @param {LangChainModelConfig} config - Config to be used to override default connection object.
@@ -285,6 +294,10 @@ class Provider {
             baseURL: "https://api.together.xyz/v1",
           },
           apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...maxTokensParam(
+            toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null),
+            "maxTokens"
+          ),
           ...config,
         });
       case "generic-openai":
@@ -293,9 +306,9 @@ class Provider {
             baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
           },
           apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
-          maxTokens: toValidNumber(
-            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
-            1024
+          ...maxTokensParam(
+            toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+            "maxTokens"
           ),
           ...config,
         });

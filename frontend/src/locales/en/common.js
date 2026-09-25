@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",
     saving: "Saving...",
+    saved: "Saved",
     save: "Save changes",
     previous: "Previous Page",
     next: "Next Page",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
       "Username must be 2-64 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     loading: "Loading",
     refresh: "Refresh",
+    noResults: "No results found",
   },
   home: {
     welcome: "Welcome",

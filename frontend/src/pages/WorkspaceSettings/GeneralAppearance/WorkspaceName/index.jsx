@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
+import { SavedIndicator } from "@/components/AutosaveForm";
 
-export default function WorkspaceName({ workspace, setHasChanges }) {
+export default function WorkspaceName({ workspace }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-y-[8px]">
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("common.workspaces-name")}
+          <SavedIndicator name="name" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("general.names.description")}
@@ -22,7 +24,6 @@ export default function WorkspaceName({ workspace, setHasChanges }) {
         placeholder="My Workspace"
         required={true}
         autoComplete="off"
-        onChange={() => setHasChanges(true)}
       />
     </div>
   );

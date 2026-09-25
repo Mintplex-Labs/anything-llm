@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Имя рабочих пространств",
     selection: "Выбор модели",
     saving: "Сохранение...",
+    saved: "Сохранено",
     save: "Сохранить изменения",
     previous: "Предыдущая страница",
     next: "Следующая страница",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Остановлен",
     loading: "Загрузка",
     refresh: "Обновить",
+    noResults: "Не найдено результатов",
   },
   settings: {
     title: "Настройки экземпляра",

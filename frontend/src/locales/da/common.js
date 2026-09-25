@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Navn på arbejdsområder",
     selection: "Modelvalg",
     saving: "Gemmer...",
+    saved: "Gemt",
     save: "Gem ændringer",
     previous: "Forrige side",
     next: "Næste side",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Stoppet",
     loading: "Indlæsning",
     refresh: "Opfrisk",
+    noResults: "Ingen resultater fundet",
   },
   settings: {
     title: "Instansindstillinger",

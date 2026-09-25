@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "اسم مساحة العمل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
+    saved: "تم الحفظ",
     save: "حفظ التغييرات",
     previous: "الصفحة السابقة",
     next: "الصفحة التالية",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
     stopped: "توقف",
     loading: "تحميل",
     refresh: "استعيد/جدد",
+    noResults: "لم يتم العثور على أي نتائج",
   },
   settings: {
     title: "إعدادات المثيل",

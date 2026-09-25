@@ -74,6 +74,7 @@ async function streamChatWithForEmbed(
       id: uuid,
       type: "textResponse",
       textResponse:
+        embed.workspace?.queryRefusalResponse ??
         "I do not have enough information to answer that. Try another question.",
       sources: [],
       close: true,
@@ -179,7 +180,11 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(embed.workspace, username),
+      // Embed visitors are anonymous - never pass request-supplied identity
+      // into chatPrompt and never inject stored memories into the prompt.
+      systemPrompt: await chatPrompt(embed.workspace, null, {
+        skipMemories: true,
+      }),
       userPrompt: message,
       contextTexts,
       chatHistory,

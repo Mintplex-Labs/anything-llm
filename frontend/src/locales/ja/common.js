@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "ワークスペース名",
     selection: "モデル選択",
     saving: "保存中...",
+    saved: "保存済み",
     save: "変更を保存",
     previous: "前のページ",
     next: "次のページ",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "読み込み中",
     refresh: "リフレッシュ",
+    noResults: "検索結果はありません",
   },
   settings: {
     title: "インスタンス設定",
