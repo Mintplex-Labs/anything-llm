@@ -435,15 +435,17 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const { feedback, attachments } = await socket.askForFeedback(
-            socket,
-            node
-          );
+          const { feedback, attachments, reasoningEffort } =
+            await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
             socket.close();
             return;
           }
 
+          // The chat session's reasoning effort can change between messages -
+          // apply it before the agent's next turn.
+          if (reasoningEffort !== undefined)
+            await aibitat.updateReasoningEffort?.(reasoningEffort);
           await aibitat.continue(feedback, attachments);
         });
 
@@ -504,6 +506,9 @@ const websocket = {
                     ...pendingImageAttachments,
                     ...(data.attachments || []),
                   ],
+                  // Undefined when the client did not send one, so the
+                  // current effort is kept.
+                  reasoningEffort: data.reasoningEffort,
                 });
                 return;
               };

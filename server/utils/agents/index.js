@@ -867,6 +867,22 @@ class AgentHandler {
     );
   }
 
+  /**
+   * Switches the session's reasoning effort mid-session. The new effort is
+   * validated against the current route's model and used from the next turn.
+   * @param {string|null} sessionEffort - null falls back to the system default
+   */
+  async #updateReasoningEffort(sessionEffort = null) {
+    const effort = typeof sessionEffort === "string" ? sessionEffort : null;
+    if (effort === this.sessionReasoningEffort) return;
+    this.sessionReasoningEffort = effort;
+    this.aibitat.defaultProvider.reasoningEffort =
+      await this.#reasoningEffortForRoute();
+    this.log(
+      `Reasoning effort for ${this.provider}:${this.model} is now ${this.aibitat.defaultProvider.reasoningEffort ?? "provider default"}.`
+    );
+  }
+
   async createAIbitat(
     args = {
       socket: null,
@@ -892,6 +908,11 @@ class AgentHandler {
     // Register callback so the websocket plugin can toggle tools on/off for the
     // running agent mid-session.
     this.aibitat.toggleAgentTool = (payload) => this.#toggleAgentTool(payload);
+
+    // Register callback so the websocket plugin can apply the reasoning effort
+    // the chat session sends with each message to the agent's next turn.
+    this.aibitat.updateReasoningEffort = (effort) =>
+      this.#updateReasoningEffort(effort);
 
     // If the workspace uses the model router, attach a resolver so routing
     // is re-evaluated on every agent turn instead of only at initialization.

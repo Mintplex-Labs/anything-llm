@@ -320,6 +320,10 @@ export default function ChatContainer({
             type: "awaitingFeedback",
             feedback: promptMessage?.userMessage,
             attachments,
+            reasoningEffort: getSessionReasoningEffort(
+              workspace.slug,
+              activeThreadSlug
+            ),
           })
         );
 
