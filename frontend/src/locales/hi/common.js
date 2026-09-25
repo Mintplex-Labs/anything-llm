@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "वर्कस्पेस का नाम",
     selection: "मॉडल चयन",
     saving: "सहेजा जा रहा है...",
+    saved: "सहेजा गया",
     save: "बदलाव सहेजें",
     previous: "पिछला पेज",
     next: "अगला पेज",

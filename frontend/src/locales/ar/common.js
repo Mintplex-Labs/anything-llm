@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "اسم مساحة العمل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
+    saved: "تم الحفظ",
     save: "حفظ التغييرات",
     previous: "الصفحة السابقة",
     next: "الصفحة التالية",

@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Darbo srities pavadinimas",
     selection: "Modelio pasirinkimas",
     saving: "Saugoma...",
+    saved: "Išsaugota",
     save: "Išsaugoti pakeitimus",
     previous: "Ankstesnis puslapis",
     next: "Kitas puslapis",
