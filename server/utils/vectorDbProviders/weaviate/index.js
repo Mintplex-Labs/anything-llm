@@ -38,6 +38,22 @@ class Weaviate extends VectorDatabase {
     return { client };
   }
 
+  /**
+   * Converts a cosine distance ([0, 2]: 0 identical, 1 orthogonal, 2 opposite)
+   * to a similarity score in [0, 1]. Distances at or past orthogonal floor at 0
+   * so unrelated chunks can never clear a similarity threshold.
+   * Weaviate's own `certainty` is 1 - distance / 2, which puts an orthogonal
+   * chunk at 0.5, so it is not comparable with the other providers' scores.
+   * @param {number|null} distance - Cosine distance from the vector search.
+   * @returns {number} Similarity score in [0, 1].
+   */
+  distanceToSimilarity(distance = null) {
+    if (distance === null || typeof distance !== "number") return 0.0;
+    if (distance >= 1.0) return 0;
+    if (distance < 0) return 1 - Math.abs(distance);
+    return 1 - distance;
+  }
+
   async heartbeat() {
     await this.connect();
     return { heartbeat: Number(new Date()) };
@@ -107,7 +123,7 @@ class Weaviate extends VectorDatabase {
     const queryResponse = await client.graphql
       .get()
       .withClassName(camelCase(namespace))
-      .withFields(`${fields} _additional { id certainty }`)
+      .withFields(`${fields} _additional { id distance }`)
       .withNearVector({ vector: queryVector })
       .withLimit(topN)
       .do();
@@ -117,10 +133,11 @@ class Weaviate extends VectorDatabase {
       // In Weaviate we have to pluck id from _additional and spread it into the rest
       // of the properties.
       const {
-        _additional: { id, certainty },
+        _additional: { id, distance },
         ...rest
       } = response;
-      if (certainty < similarityThreshold) return;
+      const score = this.distanceToSimilarity(distance);
+      if (score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
         this.logger(
           "A source was filtered from context as it's parent document is pinned."
@@ -128,8 +145,8 @@ class Weaviate extends VectorDatabase {
         return;
       }
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push({ ...rest, id, score: certainty });
-      result.scores.push(certainty);
+      result.sourceDocuments.push({ ...rest, id, score });
+      result.scores.push(score);
     });
 
     return result;
