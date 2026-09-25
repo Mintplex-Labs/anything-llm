@@ -466,7 +466,7 @@ const KEY_MAPPING = {
   },
   TogetherAiMaxTokens: {
     envKey: "TOGETHER_AI_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [nonNegative],
   },
 
   // Fireworks AI Options
