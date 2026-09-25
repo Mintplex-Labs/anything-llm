@@ -477,13 +477,18 @@ const webBrowsing = {
               return `There was an error searching for content. ${error}`;
 
             const data = [];
-            if (response.knowledge_graph?.description)
+            const knowledgeGraph = response.knowledge_graph;
+            const knowledgeGraphSnippet =
+              knowledgeGraph?.description || knowledgeGraph?.snippet;
+            if (knowledgeGraphSnippet)
               data.push({
-                title: response.knowledge_graph.title || query,
+                title: knowledgeGraph.title || query,
                 link:
-                  response.knowledge_graph.source?.link ||
+                  knowledgeGraph.source?.link ||
+                  knowledgeGraph.website ||
+                  knowledgeGraph.link ||
                   response.search_metadata?.request_url,
-                snippet: response.knowledge_graph.description,
+                snippet: knowledgeGraphSnippet,
               });
             if (response.answer_box?.answer) {
               const answerBox = response.answer_box;
