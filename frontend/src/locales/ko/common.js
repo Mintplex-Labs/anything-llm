@@ -66,6 +66,7 @@ const TRANSLATIONS = {
     stopped: "멈춤",
     loading: "로딩 중",
     refresh: "새롭게",
+    noResults: "결과가 없습니다",
   },
   settings: {
     title: "인스턴스 설정",

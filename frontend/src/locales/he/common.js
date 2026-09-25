@@ -65,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "עצר",
     loading: "טעינה",
     refresh: "רענן",
+    noResults: "לא נמצאו תוצאות",
   },
   settings: {
     title: "הגדרות מופע",

@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "متوقف شده",
     loading: "بارگذاری",
     refresh: "تازه‌سازی کردن",
+    noResults: "هیچ نتیجه‌ای یافت نشد",
   },
   settings: {
     title: "تنظیمات سامانه",

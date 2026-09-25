@@ -66,6 +66,7 @@ const TRANSLATIONS = {
     stopped: "توقف",
     loading: "تحميل",
     refresh: "استعيد/جدد",
+    noResults: "لم يتم العثور على أي نتائج",
   },
   settings: {
     title: "إعدادات المثيل",

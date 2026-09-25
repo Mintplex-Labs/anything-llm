@@ -68,6 +68,7 @@ const TRANSLATIONS = {
       "Användarnamnet måste bestå av 2–64 tecken, börja med en liten bokstav och endast innehålla små bokstäver, siffror, understreck, bindestreck och punkter.",
     loading: "Läser in",
     refresh: "Uppdatera",
+    noResults: "Inga resultat hittades",
   },
   home: {
     welcome: "Välkommen",

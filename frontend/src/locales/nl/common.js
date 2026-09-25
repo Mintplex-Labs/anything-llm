@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Gestopt",
     loading: "Laad",
     refresh: "Verfrissen",
+    noResults: "Geen resultaten gevonden",
   },
   settings: {
     title: "Instelling Instanties",
