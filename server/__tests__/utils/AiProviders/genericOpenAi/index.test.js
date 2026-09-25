@@ -174,3 +174,55 @@ describe("GenericOpenAiProvider (agent) attachment content", () => {
     });
   });
 });
+
+describe("GenericOpenAiLLM max_tokens payload", () => {
+  function stubCreate(provider) {
+    const create = jest.fn().mockResolvedValue({
+      choices: [{ message: { content: "ok" } }],
+      usage: {},
+    });
+    provider.openai = { chat: { completions: { create } } };
+    return create;
+  }
+
+  it("omits max_tokens when the ENV is set to zero", async () => {
+    process.env.GENERIC_OPEN_AI_MAX_TOKENS = "0";
+    const provider = new GenericOpenAiLLM();
+    const create = stubCreate(provider);
+    await provider.getChatCompletion([], { temperature: 0.7 });
+    expect(create.mock.calls[0][0]).not.toHaveProperty("max_tokens");
+  });
+
+  it("sends max_tokens when the ENV is a positive number", async () => {
+    process.env.GENERIC_OPEN_AI_MAX_TOKENS = "512";
+    const provider = new GenericOpenAiLLM();
+    const create = stubCreate(provider);
+    await provider.getChatCompletion([], { temperature: 0.7 });
+    expect(create.mock.calls[0][0].max_tokens).toBe(512);
+  });
+
+  it("sends the value under GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY when set", async () => {
+    process.env.GENERIC_OPEN_AI_MAX_TOKENS = "512";
+    process.env.GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY = "max_completion_tokens";
+    const provider = new GenericOpenAiLLM();
+    const create = stubCreate(provider);
+    await provider.getChatCompletion([], { temperature: 0.7 });
+    expect(create.mock.calls[0][0]).not.toHaveProperty("max_tokens");
+    expect(create.mock.calls[0][0].max_completion_tokens).toBe(512);
+  });
+
+  it("sends the custom key on the agent tooled path", async () => {
+    process.env.GENERIC_OPEN_AI_MAX_TOKENS = "256";
+    process.env.GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY = "max_completion_tokens";
+    const provider = new GenericOpenAiProvider({ model: "test-model" });
+    provider.supportsNativeToolCalling = async () => true;
+    const create = jest.fn().mockResolvedValue({
+      choices: [{ message: { content: "ok" } }],
+      usage: {},
+    });
+    provider._client = { chat: { completions: { create } } };
+    await provider.complete([{ role: "user", content: "hi" }], []);
+    expect(create.mock.calls[0][0]).not.toHaveProperty("max_tokens");
+    expect(create.mock.calls[0][0].max_completion_tokens).toBe(256);
+  });
+});
