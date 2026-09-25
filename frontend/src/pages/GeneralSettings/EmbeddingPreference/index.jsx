@@ -165,7 +165,11 @@ export default function GeneralEmbeddingPreference() {
 
   function embedderModelChanged(formEl) {
     try {
-      const newModel = new FormData(formEl).get("EmbeddingModelPref") ?? null;
+      const formData = new FormData(formEl);
+      const newModel =
+        formData.get("EmbeddingModelPref") ??
+        formData.get("AzureOpenAiEmbeddingModelPref") ??
+        null;
       if (newModel === null) return false;
       return settings?.EmbeddingModelPref !== newModel;
     } catch (error) {

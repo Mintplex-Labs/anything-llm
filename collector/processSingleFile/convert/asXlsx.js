@@ -41,7 +41,15 @@ async function asXlsx({
   const documents = [];
 
   try {
-    const workSheetsFromFile = xlsx.parse(fullFilePath);
+    // Spreadsheets store dates and times as numbers with a date format, so
+    // they are read as the formatted text the sheet shows. Other numbers stay
+    // raw so long IDs and phone numbers keep every digit instead of being
+    // shortened to Excel's General display (1.23457E+12).
+    const workSheetsFromFile = xlsx.parse(fullFilePath, {
+      cellDates: true,
+      raw: false,
+      rawNumbers: true,
+    });
 
     if (options.parseOnly) {
       const allSheetContents = [];
