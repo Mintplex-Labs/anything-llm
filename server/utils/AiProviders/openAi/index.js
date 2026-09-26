@@ -11,7 +11,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
-  PROVIDER_REASONING_EFFORTS,
+  modelsDevReasoningCapabilities,
   reasoningParams,
   createWithReasoningSummaryFallback,
 } = require("../../helpers/reasoningEffort");
@@ -151,12 +151,11 @@ class OpenAiLLM {
   }
 
   /**
-   * Returns the capabilities of the model.
-   * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
    */
   async getModelCapabilities() {
-    const reasoningOptions = PROVIDER_REASONING_EFFORTS.openai(this.model);
-    return { reasoning: reasoningOptions.length > 0, reasoningOptions };
+    return modelsDevReasoningCapabilities("openai", this.model);
   }
 
   async getChatCompletion(
@@ -176,7 +175,7 @@ class OpenAiLLM {
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
-          ...reasoningParams("openai", reasoningEffort),
+          ...reasoningParams("openai", reasoningEffort, this.model),
         }
       ).catch((e) => {
         throw new Error(e.message);
@@ -221,7 +220,7 @@ class OpenAiLLM {
           input: messages,
           store: false,
           temperature: this.#temperature(this.model, temperature),
-          ...reasoningParams("openai", reasoningEffort),
+          ...reasoningParams("openai", reasoningEffort, this.model),
         }
       ),
       messages,

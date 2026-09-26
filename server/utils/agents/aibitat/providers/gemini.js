@@ -57,7 +57,7 @@ class GeminiProvider extends Provider {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("gemini", this.reasoningEffort);
+    return reasoningParams("gemini", this.reasoningEffort, this.model);
   }
 
   /**

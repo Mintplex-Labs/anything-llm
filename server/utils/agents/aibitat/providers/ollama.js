@@ -49,7 +49,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("ollama", this.reasoningEffort);
+    return reasoningParams("ollama", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {

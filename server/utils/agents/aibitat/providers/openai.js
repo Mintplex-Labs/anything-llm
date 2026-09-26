@@ -36,7 +36,7 @@ class OpenAIProvider extends Provider {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("openai", this.reasoningEffort);
+    return reasoningParams("openai", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {

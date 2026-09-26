@@ -1,6 +1,7 @@
+const { MODEL_PRICING } = require("../../../utils/helpers/modelPricing");
 const {
-  REASONING_EFFORT_LEVELS,
   PROVIDER_REASONING_EFFORTS,
+  modelsDevReasoningCapabilities,
   reasoningParams,
   getReasoningCapabilities,
   resolveReasoningEffort,
@@ -39,67 +40,132 @@ function fakeLLM(capabilities, { model = "test-model", basePath } = {}) {
   };
 }
 
-describe("PROVIDER_REASONING_EFFORTS.openai", () => {
+// Reasoning options as models.dev lists them (copied from api.json).
+const MODELS_DEV = {
+  openai: {
+    "gpt-5.1": [{ type: "effort", values: ["none", "low", "medium", "high"] }],
+    "gpt-5": [{ type: "effort", values: ["minimal", "low", "medium", "high"] }],
+    "gpt-5-pro": [{ type: "effort", values: ["high"] }],
+    "gpt-5.4-pro": [{ type: "effort", values: ["medium", "high", "xhigh"] }],
+    "gpt-5.6": [
+      {
+        type: "effort",
+        values: ["none", "low", "medium", "high", "xhigh", "max"],
+      },
+    ],
+    "future-model": [{ type: "effort", values: ["low", "ultra"] }],
+  },
+  gemini: {
+    "gemini-3.8-flash": [{ type: "effort", values: ["low", "medium", "high"] }],
+    "gemini-3.5-flash": [
+      { type: "effort", values: ["minimal", "low", "medium", "high"] },
+    ],
+    "gemini-2.5-pro": [{ type: "budget_tokens", min: 128, max: 32768 }],
+    "gemini-2.5-flash": [
+      { type: "toggle" },
+      { type: "budget_tokens", min: 0, max: 24576 },
+    ],
+    "gemini-small-budget": [{ type: "budget_tokens", min: 2048, max: 4096 }],
+    "gemma-4-31b-it": [{ type: "toggle" }],
+  },
+  deepseek: {
+    "deepseek-flash": [
+      { type: "toggle" },
+      { type: "effort", values: ["low", "high", "max"] },
+    ],
+    "deepseek-toggle-only": [{ type: "toggle" }],
+  },
+};
+
+function mockModelsDev(table = MODELS_DEV) {
+  jest
+    .spyOn(MODEL_PRICING, "getReasoningOptions")
+    .mockImplementation((provider, model) =>
+      table === null ? null : (table[provider]?.[model] ?? [])
+    );
+}
+
+describe("modelsDevReasoningCapabilities", () => {
+  beforeEach(() => mockModelsDev());
+
   it.each([
-    ["gpt-5", ["minimal", "low", "medium", "high"]],
-    ["gpt-5-mini", ["minimal", "low", "medium", "high"]],
-    ["gpt-5-nano", ["minimal", "low", "medium", "high"]],
-    ["gpt-5-2025-08-07", ["minimal", "low", "medium", "high"]],
-    ["gpt-5.1", ["off", "low", "medium", "high"]],
-    ["gpt-5.4-mini", ["off", "low", "medium", "high"]],
-    ["gpt-5.6-sol", ["off", "low", "medium", "high"]],
-    ["gpt-5.12", ["off", "low", "medium", "high"]],
-    ["gpt-5-pro", ["high"]],
-    ["gpt-5-pro-2025-10-06", ["high"]],
-    ["gpt-5.2-pro", ["medium", "high"]],
-    ["gpt-5.5-pro", ["medium", "high"]],
-    ["o1", ["low", "medium", "high"]],
-    ["o3-pro", ["low", "medium", "high"]],
-    ["o4-mini", ["low", "medium", "high"]],
-  ])("%s accepts %j", (model, expected) => {
-    expect(PROVIDER_REASONING_EFFORTS.openai(model)).toEqual(expected);
+    ["openai", "gpt-5.1", ["off", "low", "medium", "high"]],
+    ["openai", "gpt-5", ["minimal", "low", "medium", "high"]],
+    ["openai", "gpt-5-pro", ["high"]],
+    ["openai", "gpt-5.4-pro", ["medium", "high", "xhigh"]],
+    ["openai", "gpt-5.6", ["off", "low", "medium", "high", "xhigh", "max"]],
+    ["gemini", "gemini-3.8-flash", ["low", "medium", "high"]],
+    ["gemini", "gemini-3.5-flash", ["minimal", "low", "medium", "high"]],
+    ["gemini", "gemini-2.5-pro", ["low", "medium", "high"]],
+    ["gemini", "gemini-2.5-flash", ["off", "low", "medium", "high"]],
+    ["deepseek", "deepseek-flash", ["off", "on", "low", "high", "max"]],
+    ["deepseek", "deepseek-toggle-only", ["off", "on"]],
+  ])("%s %s offers %j", (provider, model, expected) => {
+    expect(modelsDevReasoningCapabilities(provider, model)).toEqual({
+      reasoning: true,
+      reasoningOptions: expected,
+    });
+  });
+
+  it("drops levels it has no way to send", () => {
+    expect(
+      modelsDevReasoningCapabilities("openai", "future-model").reasoningOptions
+    ).toEqual(["low"]);
+  });
+
+  it("offers nothing for a Gemini toggle without a budget", () => {
+    expect(modelsDevReasoningCapabilities("gemini", "gemma-4-31b-it")).toEqual({
+      reasoning: false,
+      reasoningOptions: [],
+    });
+  });
+
+  it("only maps none to off for OpenAI", () => {
+    mockModelsDev({
+      deepseek: { x: [{ type: "effort", values: ["none", "low"] }] },
+    });
+    expect(
+      modelsDevReasoningCapabilities("deepseek", "x").reasoningOptions
+    ).toEqual(["low"]);
+  });
+
+  it.each(["gpt-4.1", "gpt-5-chat-latest", "", undefined])(
+    "offers nothing for %j, which models.dev does not list as reasoning",
+    (model) => {
+      expect(modelsDevReasoningCapabilities("openai", model)).toEqual({
+        reasoning: false,
+        reasoningOptions: [],
+      });
+    }
+  );
+
+  it("reports unknown until the models.dev data has loaded", () => {
+    mockModelsDev(null);
+    expect(modelsDevReasoningCapabilities("openai", "gpt-5.1")).toEqual({
+      reasoning: "unknown",
+      reasoningOptions: [],
+    });
   });
 
   it.each([
-    // Unverified or known to reject reasoning params.
-    "gpt-5-chat-latest",
-    "gpt-5.1-chat-latest",
-    "gpt-5.1-codex",
-    "o1-mini",
-    "omni-moderation-latest",
-    "o",
-    "gpt-4.1",
-    "gpt-4o",
-    "GPT-5",
-    " gpt-5",
-    "gpt-5 ",
-    "my-gpt-5",
-    "",
-  ])("%j gets no reasoning controls", (model) => {
-    expect(PROVIDER_REASONING_EFFORTS.openai(model)).toEqual([]);
-  });
-
-  it("handles a missing model", () => {
-    expect(PROVIDER_REASONING_EFFORTS.openai()).toEqual([]);
-    expect(PROVIDER_REASONING_EFFORTS.openai(undefined)).toEqual([]);
+    [[{ type: "effort" }]],
+    [[{ type: "effort", values: "high" }]],
+    [[null, { values: ["high"] }]],
+    [[{ type: "budget_tokens" }]],
+  ])("tolerates malformed options %j", (options) => {
+    mockModelsDev({ openai: { m: options }, gemini: { m: options } });
+    expect(() => modelsDevReasoningCapabilities("openai", "m")).not.toThrow();
+    expect(
+      modelsDevReasoningCapabilities("openai", "m").reasoningOptions
+    ).toEqual([]);
   });
 });
 
-describe("PROVIDER_REASONING_EFFORTS other providers", () => {
-  it("has no static list for providers with a live lookup", () => {
-    expect(PROVIDER_REASONING_EFFORTS.anthropic).toBeUndefined();
+describe("PROVIDER_REASONING_EFFORTS local providers", () => {
+  it("has no static list for cloud providers", () => {
+    for (const provider of ["openai", "anthropic", "gemini", "deepseek"])
+      expect(PROVIDER_REASONING_EFFORTS[provider]).toBeUndefined();
   });
-
-  it.each(["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3.8-flash", ""])(
-    "gemini %j offers low/medium/high but never minimal",
-    (model) => {
-      expect(PROVIDER_REASONING_EFFORTS.gemini(model)).toEqual([
-        "low",
-        "medium",
-        "high",
-      ]);
-    }
-  );
 
   it.each(["ollama", "lemonade"])(
     "%s gives gpt-oss levels and other models a toggle",
@@ -116,62 +182,115 @@ describe("PROVIDER_REASONING_EFFORTS other providers", () => {
       expect(PROVIDER_REASONING_EFFORTS[provider]()).toEqual(["on", "off"]);
     }
   );
-
-  it("only lists levels every caller can store", () => {
-    for (const listFor of Object.values(PROVIDER_REASONING_EFFORTS)) {
-      for (const model of ["", "gpt-oss", "gemini-pro", "gpt-5", "gpt-5.1"])
-        for (const level of listFor(model))
-          expect(REASONING_EFFORT_LEVELS).toContain(level);
-    }
-  });
 });
 
 describe("reasoningParams", () => {
+  beforeEach(() => mockModelsDev());
+
+  const thinkingConfig = (thinking_config) => ({
+    extra_body: { google: { thinking_config } },
+  });
+
   it.each([
-    ["openai", "off", { reasoning: { effort: "none" } }],
+    ["openai", "off", null, { reasoning: { effort: "none" } }],
     [
       "openai",
-      "minimal",
-      { reasoning: { effort: "minimal", summary: "auto" } },
+      "xhigh",
+      null,
+      { reasoning: { effort: "xhigh", summary: "auto" } },
     ],
-    ["openai", "high", { reasoning: { effort: "high", summary: "auto" } }],
-    ["anthropic", "max", { output_config: { effort: "max" } }],
-    ["anthropic", "xhigh", { output_config: { effort: "xhigh" } }],
-    ...[
-      ["low", 1024],
-      ["medium", 8192],
-      ["high", 24576],
-    ].map(([effort, thinking_budget]) => [
+    ["openai", "max", null, { reasoning: { effort: "max", summary: "auto" } }],
+    ["anthropic", "max", null, { output_config: { effort: "max" } }],
+    [
       "gemini",
-      effort,
-      {
-        extra_body: {
-          google: {
-            thinking_config: { thinking_budget, include_thoughts: true },
-          },
-        },
-      },
-    ]),
-    ["ollama", "on", { think: true }],
-    ["ollama", "off", { think: false }],
-    ["ollama", "high", { think: "high" }],
-    ["lmstudio", "off", { reasoning_effort: "none" }],
-    ["lmstudio", "on", { reasoning_effort: "medium" }],
-    ["lmstudio", "low", { reasoning_effort: "low" }],
-    ["lemonade", "on", { chat_template_kwargs: { enable_thinking: true } }],
-    ["lemonade", "off", { chat_template_kwargs: { enable_thinking: false } }],
-    ["lemonade", "low", { chat_template_kwargs: { reasoning_effort: "low" } }],
-    ["deepseek", "on", { thinking: { type: "enabled" } }],
-    ["deepseek", "off", { thinking: { type: "disabled" } }],
-  ])("%s %s -> %j", (provider, effort, expected) => {
-    expect(reasoningParams(provider, effort)).toEqual(expected);
+      "minimal",
+      "gemini-3.5-flash",
+      thinkingConfig({ thinking_level: "minimal", include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "high",
+      "gemini-3.8-flash",
+      thinkingConfig({ thinking_level: "high", include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "low",
+      "gemini-2.5-pro",
+      thinkingConfig({ thinking_budget: 1024, include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "medium",
+      "gemini-2.5-pro",
+      thinkingConfig({ thinking_budget: 8192, include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "high",
+      "gemini-2.5-flash",
+      thinkingConfig({ thinking_budget: 24576, include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "off",
+      "gemini-2.5-flash",
+      thinkingConfig({ thinking_budget: 0 }),
+    ],
+    [
+      "gemini",
+      "low",
+      "gemini-small-budget",
+      thinkingConfig({ thinking_budget: 2048, include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "high",
+      "gemini-small-budget",
+      thinkingConfig({ thinking_budget: 4096, include_thoughts: true }),
+    ],
+    ["ollama", "on", null, { think: true }],
+    ["ollama", "off", null, { think: false }],
+    ["ollama", "high", null, { think: "high" }],
+    ["lmstudio", "off", null, { reasoning_effort: "none" }],
+    ["lmstudio", "on", null, { reasoning_effort: "medium" }],
+    ["lmstudio", "low", null, { reasoning_effort: "low" }],
+    [
+      "lemonade",
+      "on",
+      null,
+      { chat_template_kwargs: { enable_thinking: true } },
+    ],
+    [
+      "lemonade",
+      "low",
+      null,
+      { chat_template_kwargs: { reasoning_effort: "low" } },
+    ],
+    ["deepseek", "on", null, { thinking: { type: "enabled" } }],
+    ["deepseek", "off", null, { thinking: { type: "disabled" } }],
+    [
+      "deepseek",
+      "max",
+      null,
+      { thinking: { type: "enabled" }, reasoning_effort: "max" },
+    ],
+  ])("%s %s (%s) -> %j", (provider, effort, model, expected) => {
+    expect(reasoningParams(provider, effort, model)).toEqual(expected);
+  });
+
+  it("sends Gemini a thinking level when models.dev data is unavailable", () => {
+    mockModelsDev(null);
+    expect(reasoningParams("gemini", "high", "gemini-2.5-pro")).toEqual(
+      thinkingConfig({ thinking_level: "high", include_thoughts: true })
+    );
   });
 
   it.each([null, undefined, ""])(
     "sends nothing when the effort is %j",
     (effort) => {
-      for (const provider of ["openai", "anthropic", "ollama", "deepseek"])
-        expect(reasoningParams(provider, effort)).toEqual({});
+      for (const provider of ["openai", "anthropic", "gemini", "deepseek"])
+        expect(reasoningParams(provider, effort, "m")).toEqual({});
     }
   );
 

@@ -50,7 +50,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("lmstudio", this.reasoningEffort);
+    return reasoningParams("lmstudio", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {

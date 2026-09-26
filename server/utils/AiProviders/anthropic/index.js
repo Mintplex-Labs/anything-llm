@@ -231,7 +231,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            ...reasoningParams("anthropic", reasoningEffort),
+            ...reasoningParams("anthropic", reasoningEffort, this.model),
           })
           .finalMessage()
       );
@@ -272,7 +272,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        ...reasoningParams("anthropic", reasoningEffort),
+        ...reasoningParams("anthropic", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

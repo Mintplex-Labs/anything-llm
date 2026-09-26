@@ -166,7 +166,7 @@ class LemonadeLLM {
         model: this.model,
         messages,
         temperature,
-        ...reasoningParams("lemonade", reasoningEffort),
+        ...reasoningParams("lemonade", reasoningEffort, this.model),
       })
     );
 
@@ -202,7 +202,7 @@ class LemonadeLLM {
         stream: true,
         messages,
         temperature,
-        ...reasoningParams("lemonade", reasoningEffort),
+        ...reasoningParams("lemonade", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: true,

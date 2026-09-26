@@ -50,7 +50,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("lemonade", this.reasoningEffort);
+    return reasoningParams("lemonade", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {

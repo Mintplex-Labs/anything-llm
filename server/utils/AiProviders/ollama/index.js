@@ -282,7 +282,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
-          ...reasoningParams("ollama", reasoningEffort),
+          ...reasoningParams("ollama", reasoningEffort, this.model),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -338,7 +338,7 @@ class OllamaAILLM {
         stream: true,
         messages,
         keep_alive: this.keepAlive,
-        ...reasoningParams("ollama", reasoningEffort),
+        ...reasoningParams("ollama", reasoningEffort, this.model),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),

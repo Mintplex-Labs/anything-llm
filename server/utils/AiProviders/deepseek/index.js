@@ -7,7 +7,7 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const {
-  PROVIDER_REASONING_EFFORTS,
+  modelsDevReasoningCapabilities,
   reasoningParams,
 } = require("../../helpers/reasoningEffort");
 
@@ -99,14 +99,11 @@ class DeepSeekLLM {
   }
 
   /**
-   * Returns the capabilities of the model.
-   * @returns {Promise<{reasoning: boolean, reasoningOptions: string[]}>}
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
    */
   async getModelCapabilities() {
-    return {
-      reasoning: true,
-      reasoningOptions: PROVIDER_REASONING_EFFORTS.deepseek(this.model),
-    };
+    return modelsDevReasoningCapabilities("deepseek", this.model);
   }
 
   async getChatCompletion(
@@ -124,7 +121,7 @@ class DeepSeekLLM {
           model: this.model,
           messages,
           temperature,
-          ...reasoningParams("deepseek", reasoningEffort),
+          ...reasoningParams("deepseek", reasoningEffort, this.model),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -169,7 +166,7 @@ class DeepSeekLLM {
         stream: true,
         messages,
         temperature,
-        ...reasoningParams("deepseek", reasoningEffort),
+        ...reasoningParams("deepseek", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

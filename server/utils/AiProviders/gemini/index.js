@@ -12,7 +12,7 @@ const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
 const {
-  PROVIDER_REASONING_EFFORTS,
+  modelsDevReasoningCapabilities,
   reasoningParams,
 } = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
@@ -382,24 +382,11 @@ class GeminiLLM {
   }
 
   /**
-   * Returns the capabilities of the model.
+   * Returns the reasoning capabilities models.dev lists for the model.
    * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
    */
   async getModelCapabilities() {
-    try {
-      const modelInfo = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${this.model}?key=${process.env.GEMINI_API_KEY}`
-      ).then((res) => res.json());
-      if (modelInfo.thinking !== true)
-        return { reasoning: false, reasoningOptions: [] };
-      return {
-        reasoning: true,
-        reasoningOptions: PROVIDER_REASONING_EFFORTS.gemini(this.model),
-      };
-    } catch (error) {
-      console.error("Gemini:getModelCapabilities", error.message);
-      return { reasoning: "unknown", reasoningOptions: [] };
-    }
+    return modelsDevReasoningCapabilities("gemini", this.model);
   }
 
   async getChatCompletion(
@@ -412,7 +399,7 @@ class GeminiLLM {
           model: this.model,
           messages,
           temperature: temperature,
-          ...reasoningParams("gemini", reasoningEffort),
+          ...reasoningParams("gemini", reasoningEffort, this.model),
         })
         .catch((e) => {
           console.error(e);
@@ -451,7 +438,7 @@ class GeminiLLM {
         stream: true,
         messages,
         temperature: temperature,
-        ...reasoningParams("gemini", reasoningEffort),
+        ...reasoningParams("gemini", reasoningEffort, this.model),
         stream_options: {
           include_usage: true,
         },

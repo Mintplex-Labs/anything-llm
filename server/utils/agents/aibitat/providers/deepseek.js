@@ -38,7 +38,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("deepseek", this.reasoningEffort);
+    return reasoningParams("deepseek", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {

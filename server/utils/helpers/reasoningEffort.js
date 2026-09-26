@@ -1,3 +1,5 @@
+const { MODEL_PRICING } = require("./modelPricing");
+
 /**
  * Every effort level a chat session can pick. Which of these a request may actually carry depends on the provider
  * and model - see getReasoningCapabilities.
@@ -13,44 +15,14 @@ const REASONING_EFFORT_LEVELS = [
   "max",
 ];
 
-// Optional dated snapshot suffix, eg: gpt-5-2025-08-07.
-const SNAPSHOT = "(-\\d{4}-\\d{2}-\\d{2})?";
-
 /**
- * OpenAI models whose accepted `reasoning.effort` values were verified against
- * the live Responses API. Models not listed here get no reasoning controls.
- * @type {Array<[RegExp, string[]]>}
- */
-const OPENAI_REASONING_MODELS = [
-  [new RegExp(`^gpt-5-pro${SNAPSHOT}$`), ["high"]],
-  [new RegExp(`^gpt-5\\.\\d+-pro${SNAPSHOT}$`), ["medium", "high"]],
-  [
-    new RegExp(`^gpt-5(-mini|-nano)?${SNAPSHOT}$`),
-    ["minimal", "low", "medium", "high"],
-  ],
-  [
-    new RegExp(`^gpt-5\\.\\d+(-mini|-nano|-luna|-terra|-sol)?${SNAPSHOT}$`),
-    ["off", "low", "medium", "high"],
-  ],
-  [
-    new RegExp(`^(o1|o1-pro|o3|o3-mini|o3-pro|o4-mini)${SNAPSHOT}$`),
-    ["low", "medium", "high"],
-  ],
-];
-
-/**
- * Reasoning effort levels a provider accepts for a model it already reports as
- * reasoning capable. Providers with a live capability lookup (Anthropic,
- * LM Studio) are not listed - their lookup is the only source of truth.
+ * Reasoning effort levels a local provider accepts for a model its own API
+ * reports as reasoning capable. Local models are not listed on models.dev, so
+ * the level style is picked from the model family. Cloud providers read their
+ * levels from models.dev instead - see modelsDevReasoningCapabilities.
  * @type {Record<string, (model?: string) => string[]>}
  */
 const PROVIDER_REASONING_EFFORTS = {
-  // "off" is sent as "none".
-  openai: (model = "") =>
-    OPENAI_REASONING_MODELS.find(([pattern]) => pattern.test(model))?.[1] ?? [],
-  // Verified on every thinking model the API lists (2.5 and 3.x) - "minimal"
-  // is rejected by pro and newer flash models, and none can turn thinking off.
-  gemini: () => ["low", "medium", "high"],
   // gpt-oss takes a reasoning level and ignores booleans, other thinking
   // models only take the on/off toggle.
   ollama: (model = "") =>
@@ -62,12 +34,70 @@ const PROVIDER_REASONING_EFFORTS = {
   // thinking models only a toggle.
   lemonade: (model = "") =>
     model.includes("gpt-oss") ? ["low", "medium", "high"] : ["on", "off"],
-  // Only the thinking toggle is documented.
-  deepseek: () => ["on", "off"],
 };
 
 // Google's documented thinking budgets for each OpenAI-compatible reasoning_effort.
 const GEMINI_THINKING_BUDGETS = { low: 1024, medium: 8192, high: 24576 };
+
+/** The models.dev reasoning options of a model, by option type. */
+function modelsDevOptions(provider, model) {
+  const options = MODEL_PRICING.getReasoningOptions(provider, model);
+  if (options === null) return null;
+  const effort = options.find((option) => option?.type === "effort");
+  return {
+    effortValues: Array.isArray(effort?.values) ? effort.values : [],
+    budget: options.find((option) => option?.type === "budget_tokens") ?? null,
+    toggle: options.some((option) => option?.type === "toggle"),
+  };
+}
+
+/**
+ * The reasoning capabilities models.dev lists for a cloud model, as levels
+ * this provider's request format can send. A model models.dev does not list
+ * gets no reasoning controls.
+ * @param {"openai"|"gemini"|"deepseek"} provider
+ * @param {string} model
+ * @returns {{reasoning: 'unknown'|boolean, reasoningOptions: string[]}}
+ */
+function modelsDevReasoningCapabilities(provider, model) {
+  const options = modelsDevOptions(provider, model);
+  if (!options) return { reasoning: "unknown", reasoningOptions: [] };
+
+  const levels = new Set();
+  for (const value of options.effortValues)
+    levels.add(provider === "openai" && value === "none" ? "off" : value);
+  if (provider === "deepseek" && options.toggle) {
+    levels.add("on");
+    levels.add("off");
+  }
+  if (provider === "gemini" && options.budget) {
+    for (const level of Object.keys(GEMINI_THINKING_BUDGETS)) levels.add(level);
+    // A thinking toggle alongside a budget means a zero budget is allowed.
+    if (options.toggle) levels.add("off");
+  }
+
+  const reasoningOptions = REASONING_EFFORT_LEVELS.filter((level) =>
+    levels.has(level)
+  );
+  return { reasoning: reasoningOptions.length > 0, reasoningOptions };
+}
+
+/** The Gemini `thinking_config` for an effort, shaped by the model's options. */
+function geminiThinkingConfig(effort, model) {
+  const { budget = null } = modelsDevOptions("gemini", model) ?? {};
+  if (!budget) return { thinking_level: effort, include_thoughts: true };
+  if (effort === "off") return { thinking_budget: 0 };
+
+  const min = Number.isFinite(budget.min) ? budget.min : 0;
+  const max = Number.isFinite(budget.max) ? budget.max : Infinity;
+  return {
+    thinking_budget: Math.min(
+      Math.max(GEMINI_THINKING_BUDGETS[effort], min),
+      max
+    ),
+    include_thoughts: true,
+  };
+}
 
 /**
  * Request body fields that apply a reasoning effort for a provider. The effort
@@ -75,9 +105,10 @@ const GEMINI_THINKING_BUDGETS = { low: 1024, medium: 8192, high: 24576 };
  * this only translates it to the provider's wire format.
  * @param {string} provider - Provider slug
  * @param {string|null} effort - Validated reasoning effort
+ * @param {string|null} [model] - Model the request targets (shapes Gemini's thinking config)
  * @returns {object} Fields to spread into the request body, empty when no effort applies
  */
-function reasoningParams(provider, effort = null) {
+function reasoningParams(provider, effort = null, model = null) {
   if (!effort) return {};
   const toggle = ["on", "off"].includes(effort);
   switch (provider) {
@@ -92,16 +123,11 @@ function reasoningParams(provider, effort = null) {
       return { output_config: { effort } };
     case "gemini":
       // `reasoning_effort` cannot be combined with `include_thoughts`, so the
-      // effort is sent as the thinking budget it maps to - which every 2.5
-      // and 3.x model accepts - and the thoughts are returned in <thought> tags.
+      // effort goes in the thinking config - a level for 3.x models, a budget
+      // for 2.5 models - and the thoughts are returned in <thought> tags.
       return {
         extra_body: {
-          google: {
-            thinking_config: {
-              thinking_budget: GEMINI_THINKING_BUDGETS[effort],
-              include_thoughts: true,
-            },
-          },
+          google: { thinking_config: geminiThinkingConfig(effort, model) },
         },
       };
     case "ollama":
@@ -119,7 +145,9 @@ function reasoningParams(provider, effort = null) {
           : { reasoning_effort: effort },
       };
     case "deepseek":
-      return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
+      if (toggle)
+        return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
+      return { thinking: { type: "enabled" }, reasoning_effort: effort };
     default:
       return {};
   }
@@ -251,6 +279,7 @@ async function resolveReasoningEffort(connector, sessionEffort = null) {
 module.exports = {
   REASONING_EFFORT_LEVELS,
   PROVIDER_REASONING_EFFORTS,
+  modelsDevReasoningCapabilities,
   reasoningParams,
   getReasoningCapabilities,
   resolveReasoningEffort,

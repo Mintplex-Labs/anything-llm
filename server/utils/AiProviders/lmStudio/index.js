@@ -246,7 +246,7 @@ class LMStudioLLM {
         model: this.model,
         messages,
         temperature,
-        ...reasoningParams("lmstudio", reasoningEffort),
+        ...reasoningParams("lmstudio", reasoningEffort, this.model),
       })
     );
 
@@ -286,7 +286,7 @@ class LMStudioLLM {
         stream: true,
         messages,
         temperature,
-        ...reasoningParams("lmstudio", reasoningEffort),
+        ...reasoningParams("lmstudio", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: true,

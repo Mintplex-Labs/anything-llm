@@ -42,7 +42,7 @@ class AnthropicProvider extends Provider {
    * @returns {object}
    */
   get reasoningConfig() {
-    return reasoningParams("anthropic", this.reasoningEffort);
+    return reasoningParams("anthropic", this.reasoningEffort, this.model);
   }
 
   /**
