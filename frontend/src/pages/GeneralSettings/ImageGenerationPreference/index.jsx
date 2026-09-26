@@ -9,6 +9,7 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import LlmmanLogo from "@/media/llmprovider/llmman.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/ImageGenerationSelection/OpenAiOptions";
@@ -16,6 +17,7 @@ import OllamaOptions from "@/components/ImageGenerationSelection/OllamaOptions";
 import LemonadeOptions from "@/components/ImageGenerationSelection/LemonadeOptions";
 import OpenRouterOptions from "@/components/ImageGenerationSelection/OpenRouterOptions";
 import LocalAiOptions from "@/components/ImageGenerationSelection/LocalAiOptions";
+import LlmmanOptions from "@/components/ImageGenerationSelection/LlmmanOptions";
 import ImageGenerationItem from "@/components/ImageGenerationSelection/ImageGenerationItem";
 
 import CTAButton from "@/components/lib/CTAButton";
@@ -50,6 +52,13 @@ const PROVIDERS = [
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Generate images locally on your own machine using LocalAI.",
+  },
+  {
+    name: "llmman",
+    value: "llmman",
+    logo: LlmmanLogo,
+    options: (settings) => <LlmmanOptions settings={settings} />,
+    description: "Generate images locally on your own machine using llmman.",
   },
   {
     name: "OpenRouter",

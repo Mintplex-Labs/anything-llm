@@ -344,6 +344,9 @@ function getImageGeneratorProvider() {
     case "localai":
       const { LocalAiImageGenerator } = require("../ImageGenerators/localAi");
       return new LocalAiImageGenerator();
+    case "llmman":
+      const { LlmmanImageGenerator } = require("../ImageGenerators/llmman");
+      return new LlmmanImageGenerator();
     case "openrouter":
       const {
         OpenRouterImageGenerator,

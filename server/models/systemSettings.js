@@ -517,6 +517,8 @@ const SystemSettings = {
       ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
       ImageGenerationLocalAiBasePath: process.env.IMAGE_GEN_LOCALAI_BASE_PATH,
       ImageGenerationLocalAiApiKey: !!process.env.IMAGE_GEN_LOCALAI_API_KEY,
+      ImageGenerationLlmmanBasePath: process.env.IMAGE_GEN_LLMMAN_BASE_PATH,
+      ImageGenerationLlmmanAuthToken: !!process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

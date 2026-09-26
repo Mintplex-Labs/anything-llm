@@ -341,6 +341,14 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_LOCALAI_API_KEY",
     checks: [],
   },
+  ImageGenerationLlmmanBasePath: {
+    envKey: "IMAGE_GEN_LLMMAN_BASE_PATH",
+    checks: [isNotEmpty, isValidURL, validDockerizedUrl],
+  },
+  ImageGenerationLlmmanAuthToken: {
+    envKey: "IMAGE_GEN_LLMMAN_AUTH_TOKEN",
+    checks: [],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
@@ -1272,7 +1280,14 @@ function supportedVectorDB(input = "") {
 }
 
 function supportedImageGenerationProvider(input = "") {
-  const supported = ["openai", "ollama", "lemonade", "openrouter", "localai"];
+  const supported = [
+    "openai",
+    "ollama",
+    "lemonade",
+    "openrouter",
+    "localai",
+    "llmman",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
