@@ -419,16 +419,10 @@ function workspaceEndpoints(app) {
 
   app.get(
     "/workspace/:slug/llm-capabilities",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async (request, response) => {
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_request, response) => {
       try {
-        const { slug } = request.params;
-        const user = await userFromSession(request, response);
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-        if (!workspace) return response.sendStatus(400);
-
+        const workspace = response.locals.workspace;
         const capabilities = await getReasoningCapabilities(
           getLLMProvider({
             provider: workspace.chatProvider,
