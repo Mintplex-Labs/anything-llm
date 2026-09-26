@@ -48,11 +48,9 @@ const PROVIDER_REASONING_EFFORTS = {
   // "off" is sent as "none".
   openai: (model = "") =>
     OPENAI_REASONING_MODELS.find(([pattern]) => pattern.test(model))?.[1] ?? [],
-  // No model accepts "none"; pro models also reject "minimal".
-  gemini: (model = "") =>
-    model.includes("pro")
-      ? ["low", "medium", "high"]
-      : ["minimal", "low", "medium", "high"],
+  // Verified on every thinking model the API lists (2.5 and 3.x) - "minimal"
+  // is rejected by pro and newer flash models, and none can turn thinking off.
+  gemini: () => ["low", "medium", "high"],
   // gpt-oss takes a reasoning level and ignores booleans, other thinking
   // models only take the on/off toggle.
   ollama: (model = "") =>
@@ -67,6 +65,9 @@ const PROVIDER_REASONING_EFFORTS = {
   // Only the thinking toggle is documented.
   deepseek: () => ["on", "off"],
 };
+
+// Google's documented thinking budgets for each OpenAI-compatible reasoning_effort.
+const GEMINI_THINKING_BUDGETS = { low: 1024, medium: 8192, high: 24576 };
 
 /**
  * Request body fields that apply a reasoning effort for a provider. The effort
@@ -90,7 +91,19 @@ function reasoningParams(provider, effort = null) {
     case "anthropic":
       return { output_config: { effort } };
     case "gemini":
-      return { reasoning_effort: effort };
+      // `reasoning_effort` cannot be combined with `include_thoughts`, so the
+      // effort is sent as the thinking budget it maps to - which every 2.5
+      // and 3.x model accepts - and the thoughts are returned in <thought> tags.
+      return {
+        extra_body: {
+          google: {
+            thinking_config: {
+              thinking_budget: GEMINI_THINKING_BUDGETS[effort],
+              include_thoughts: true,
+            },
+          },
+        },
+      };
     case "ollama":
       return { think: toggle ? effort === "on" : effort };
     case "lmstudio":

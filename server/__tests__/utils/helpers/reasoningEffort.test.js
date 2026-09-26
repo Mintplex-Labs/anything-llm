@@ -90,19 +90,16 @@ describe("PROVIDER_REASONING_EFFORTS other providers", () => {
     expect(PROVIDER_REASONING_EFFORTS.anthropic).toBeUndefined();
   });
 
-  it("gemini pro models reject minimal", () => {
-    expect(PROVIDER_REASONING_EFFORTS.gemini("gemini-2.5-pro")).toEqual([
-      "low",
-      "medium",
-      "high",
-    ]);
-    expect(PROVIDER_REASONING_EFFORTS.gemini("gemini-2.5-flash")).toEqual([
-      "minimal",
-      "low",
-      "medium",
-      "high",
-    ]);
-  });
+  it.each(["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3.8-flash", ""])(
+    "gemini %j offers low/medium/high but never minimal",
+    (model) => {
+      expect(PROVIDER_REASONING_EFFORTS.gemini(model)).toEqual([
+        "low",
+        "medium",
+        "high",
+      ]);
+    }
+  );
 
   it.each(["ollama", "lemonade"])(
     "%s gives gpt-oss levels and other models a toggle",
@@ -140,7 +137,21 @@ describe("reasoningParams", () => {
     ["openai", "high", { reasoning: { effort: "high", summary: "auto" } }],
     ["anthropic", "max", { output_config: { effort: "max" } }],
     ["anthropic", "xhigh", { output_config: { effort: "xhigh" } }],
-    ["gemini", "minimal", { reasoning_effort: "minimal" }],
+    ...[
+      ["low", 1024],
+      ["medium", 8192],
+      ["high", 24576],
+    ].map(([effort, thinking_budget]) => [
+      "gemini",
+      effort,
+      {
+        extra_body: {
+          google: {
+            thinking_config: { thinking_budget, include_thoughts: true },
+          },
+        },
+      },
+    ]),
     ["ollama", "on", { think: true }],
     ["ollama", "off", { think: false }],
     ["ollama", "high", { think: "high" }],
