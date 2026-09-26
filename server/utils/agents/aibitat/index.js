@@ -944,16 +944,9 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     // Re-evaluate model router before each turn if a resolver is attached.
     // This ensures routing rules are applied per-message, not just at initialization.
     if (this.resolveRoute) {
-      const resolved = await this.resolveRoute(
-        userPrompt || route.content || ""
+      this.applyResolvedRoute(
+        await this.resolveRoute(userPrompt || route.content || "")
       );
-      if (resolved) {
-        this.defaultProvider = {
-          ...this.defaultProvider,
-          provider: resolved.provider,
-          model: resolved.model,
-        };
-      }
     }
 
     this.providerInstance = this.getProviderForConfig({
@@ -1434,6 +1427,22 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * @param config The provider configuration.
    * @returns {Providers.OpenAIProvider} The provider instance.
    */
+  /**
+   * Switches the default provider to a route the model router resolved. The
+   * route's reasoning effort replaces the previous one, since an effort is
+   * only validated for the model it was resolved against.
+   * @param {{provider: string, model: string, reasoningEffort?: string|null}|null} resolved
+   */
+  applyResolvedRoute(resolved) {
+    if (!resolved) return;
+    this.defaultProvider = {
+      ...this.defaultProvider,
+      provider: resolved.provider,
+      model: resolved.model,
+      reasoningEffort: resolved.reasoningEffort ?? null,
+    };
+  }
+
   getProviderForConfig(config) {
     const provider = this.#buildProviderForConfig(config);
     // Record the slug the instance was built from so usage metrics can be
@@ -1453,16 +1462,35 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    */
   #buildProviderForConfig(config) {
     if (typeof config.provider === "object") return config.provider;
+    // The effort was validated for the default provider + model only - any
+    // other provider or model this config points at gets no reasoning params.
+    const reasoningEffort =
+      config.provider === this.defaultProvider?.provider &&
+      config.model === this.defaultProvider?.model
+        ? config.reasoningEffort ?? null
+        : null;
 
     switch (config.provider) {
       case "openai":
-        return new Providers.OpenAIProvider({ model: config.model });
+        return new Providers.OpenAIProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "anthropic":
-        return new Providers.AnthropicProvider({ model: config.model });
+        return new Providers.AnthropicProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "lmstudio":
-        return new Providers.LMStudioProvider({ model: config.model });
+        return new Providers.LMStudioProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "ollama":
-        return new Providers.OllamaProvider({ model: config.model });
+        return new Providers.OllamaProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "groq":
         return new Providers.GroqProvider({ model: config.model });
       case "togetherai":
@@ -1492,7 +1520,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "moonshotai":
         return new Providers.MoonshotAiProvider({ model: config.model });
       case "deepseek":
-        return new Providers.DeepSeekProvider({ model: config.model });
+        return new Providers.DeepSeekProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "litellm":
         return new Providers.LiteLLMProvider({ model: config.model });
       case "apipie":
@@ -1506,7 +1537,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "ppio":
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":
-        return new Providers.GeminiProvider({ model: config.model });
+        return new Providers.GeminiProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "cometapi":
         return new Providers.CometApiProvider({ model: config.model });
       case "foundry":
@@ -1522,7 +1556,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "sambanova":
         return new Providers.SambaNovaProvider({ model: config.model });
       case "lemonade":
-        return new Providers.LemonadeProvider({ model: config.model });
+        return new Providers.LemonadeProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "omlx":
         return new Providers.OMLXProvider({ model: config.model });
       case "minimax":

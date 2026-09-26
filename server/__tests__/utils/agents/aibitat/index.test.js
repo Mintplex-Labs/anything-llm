@@ -1,7 +1,5 @@
 const AIbitat = require("../../../../utils/agents/aibitat");
-const {
-  MODEL_PRICING,
-} = require("../../../../utils/helpers/modelPricing");
+const { MODEL_PRICING } = require("../../../../utils/helpers/modelPricing");
 
 describe("AIbitat.getProviderForConfig providerSlug wiring", () => {
   const originalOpenAiKey = process.env.OPEN_AI_KEY;
@@ -134,5 +132,101 @@ describe("AIbitat model loading status", () => {
 
     expect(provider.isModelLoaded).not.toHaveBeenCalled();
     expect(aibitat.introspect).not.toHaveBeenCalled();
+  });
+});
+
+describe("AIbitat reasoning effort per route", () => {
+  const ORIGINAL_ENV = process.env;
+
+  beforeEach(() => {
+    process.env = {
+      ...ORIGINAL_ENV,
+      OPEN_AI_KEY: "test-key",
+      ANTHROPIC_API_KEY: "test-key",
+      OLLAMA_BASE_PATH: "http://localhost:11434",
+    };
+  });
+
+  afterEach(() => {
+    process.env = ORIGINAL_ENV;
+  });
+
+  test("applies the effort to the provider + model it was validated for", () => {
+    const aibitat = new AIbitat({
+      provider: "anthropic",
+      model: "claude-sonnet-5",
+      reasoningEffort: "max",
+    });
+    const provider = aibitat.getProviderForConfig({
+      ...aibitat.defaultProvider,
+    });
+    expect(provider.reasoningConfig).toEqual({
+      output_config: { effort: "max" },
+    });
+  });
+
+  test.each([
+    ["a different model", { provider: "anthropic", model: "claude-haiku-4-5" }],
+    ["a different provider", { provider: "openai", model: "claude-sonnet-5" }],
+  ])("sends no reasoning params for an agent config on %s", (_, override) => {
+    const aibitat = new AIbitat({
+      provider: "anthropic",
+      model: "claude-sonnet-5",
+      reasoningEffort: "max",
+    });
+    const provider = aibitat.getProviderForConfig({
+      ...aibitat.defaultProvider,
+      ...override,
+    });
+    expect(provider.reasoningEffort).toBeNull();
+    expect(provider.reasoningConfig).toEqual({});
+  });
+
+  test("a route switch replaces the effort with the one resolved for the new route", () => {
+    const aibitat = new AIbitat({
+      provider: "anthropic",
+      model: "claude-sonnet-5",
+      reasoningEffort: "max",
+    });
+    aibitat.applyResolvedRoute({
+      provider: "ollama",
+      model: "qwen3:8b",
+      reasoningEffort: "on",
+    });
+    const provider = aibitat.getProviderForConfig({
+      ...aibitat.defaultProvider,
+    });
+    expect(provider.reasoningConfig).toEqual({ think: true });
+  });
+
+  test("a route switch without a resolved effort drops the previous one", () => {
+    const aibitat = new AIbitat({
+      provider: "anthropic",
+      model: "claude-sonnet-5",
+      reasoningEffort: "max",
+    });
+    aibitat.applyResolvedRoute({
+      provider: "anthropic",
+      model: "claude-haiku-4-5",
+    });
+    expect(aibitat.defaultProvider.reasoningEffort).toBeNull();
+    const provider = aibitat.getProviderForConfig({
+      ...aibitat.defaultProvider,
+    });
+    expect(provider.reasoningConfig).toEqual({});
+  });
+
+  test("a failed route resolution keeps the current route and effort", () => {
+    const aibitat = new AIbitat({
+      provider: "openai",
+      model: "gpt-5.1",
+      reasoningEffort: "off",
+    });
+    aibitat.applyResolvedRoute(null);
+    expect(aibitat.defaultProvider).toMatchObject({
+      provider: "openai",
+      model: "gpt-5.1",
+      reasoningEffort: "off",
+    });
   });
 });

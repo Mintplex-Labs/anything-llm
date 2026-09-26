@@ -28,6 +28,10 @@ import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/Works
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import {
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 import MemoriesSidebar from "@/components/WorkspaceChat/ChatContainer/MemoriesSidebar";
 
 async function getTargetWorkspace() {
@@ -220,7 +224,16 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       if (!targetThread) {
         const { thread } = await Workspace.threads.new(targetWorkspace.slug);
         targetThread = thread?.slug;
-        if (thread) setThreadSlug(thread.slug);
+        if (thread) {
+          // Carry the reasoning effort picked before the thread existed over
+          // to the thread the message is sent in.
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            thread.slug,
+            getSessionReasoningEffort(targetWorkspace.slug)
+          );
+          setThreadSlug(thread.slug);
+        }
       }
 
       sessionStorage.setItem(

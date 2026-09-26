@@ -10,6 +10,7 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { reasoningParams } = require("../../helpers/reasoningEffort");
 
 // Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
 // a 400, and every model accepts requests without it, so omitting it everywhere
@@ -190,7 +191,28 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, _opts = {}) {
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const model = await this.anthropic.models.retrieve(this.model);
+      const effortCapabilities = model.capabilities?.effort;
+      if (!effortCapabilities?.supported)
+        return { reasoning: false, reasoningOptions: [] };
+
+      const reasoningOptions = Object.entries(effortCapabilities)
+        .filter(([level, config]) => level !== "supported" && config?.supported)
+        .map(([level]) => level);
+      return { reasoning: true, reasoningOptions };
+    } catch (error) {
+      console.error("Anthropic:getModelCapabilities", error.message);
+      return { reasoning: "unknown", reasoningOptions: [] };
+    }
+  }
+
+  async getChatCompletion(messages = null, { reasoningEffort = null } = {}) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -209,6 +231,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
+            ...reasoningParams("anthropic", reasoningEffort, this.model),
           })
           .finalMessage()
       );
@@ -242,7 +265,10 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null, _opts = {}) {
+  async streamGetChatCompletion(
+    messages = null,
+    { reasoningEffort = null } = {}
+  ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -251,6 +277,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
+        ...reasoningParams("anthropic", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

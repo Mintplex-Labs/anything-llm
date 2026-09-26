@@ -255,6 +255,11 @@ const TRANSLATIONS = {
       "desc-end":
         "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
     },
+    reasoning_effort: {
+      title: "Reasoning Effort",
+      default: "Provider default",
+      cannot_disable: "This model cannot turn reasoning off.",
+    },
   },
   "vector-workspace": {
     identifier: "Vector database identifier",

@@ -6,6 +6,10 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -94,7 +98,18 @@ class DeepSeekLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("deepseek", this.model);
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `DeepSeek chat: ${this.model} is not valid for chat completion!`
@@ -106,6 +121,7 @@ class DeepSeekLLM {
           model: this.model,
           messages,
           temperature,
+          ...reasoningParams("deepseek", reasoningEffort, this.model),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -135,7 +151,10 @@ class DeepSeekLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, reasoningEffort = null }
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `DeepSeek chat: ${this.model} is not valid for chat completion!`
@@ -147,6 +166,7 @@ class DeepSeekLLM {
         stream: true,
         messages,
         temperature,
+        ...reasoningParams("deepseek", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,
