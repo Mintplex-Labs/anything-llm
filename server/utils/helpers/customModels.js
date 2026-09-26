@@ -61,6 +61,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama-imggen",
   "lemonade-imggen",
   "localai-imggen",
+  "llmman-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -153,6 +154,8 @@ async function getCustomModels(
       );
     case "localai-imggen":
       return await getLocalAiImageModels(basePath, apiKey);
+    case "llmman-imggen":
+      return await getLlmmanImageModels(basePath, apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1568,6 +1571,59 @@ async function getOllamaImageModels(basePath = null, authToken = null) {
     )
     .catch((e) => {
       console.error(`Ollama:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
+ * Lists the image-capable models installed on a llmman server.
+ * @param {string|null} basePath - llmman base path; defaults to IMAGE_GEN_LLMMAN_BASE_PATH when null
+ * @param {string|boolean|null} authToken - llmman bearer token; defaults to IMAGE_GEN_LLMMAN_AUTH_TOKEN when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getLlmmanImageModels(basePath = null, authToken = null) {
+  let url;
+  try {
+    const urlPath = basePath ?? process.env.IMAGE_GEN_LLMMAN_BASE_PATH;
+    new URL(urlPath);
+    url = urlPath.replace(/\/+$/, "");
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+
+  const _authToken =
+    unmaskedSecret(authToken) ||
+    process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN ||
+    null;
+  const headers = _authToken ? { Authorization: `Bearer ${_authToken}` } : {};
+  // llmman only reports model capabilities on /api/show, not /api/tags.
+  const models = await fetch(`${url}/api/tags`, { headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not reach llmman! ${res.status}`);
+      return res.json();
+    })
+    .then((data) =>
+      Promise.all(
+        (data?.models || []).map((model) =>
+          fetch(`${url}/api/show`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ model: model.name }),
+          })
+            .then((res) => res.json())
+            .then((info) =>
+              info?.capabilities?.includes("image")
+                ? { id: model.name, name: model.name }
+                : null
+            )
+            .catch(() => null)
+        )
+      )
+    )
+    .then((models) => models.filter(Boolean))
+    .catch((e) => {
+      console.error(`llmman:listImageModels`, e.message);
       return [];
     });
   return { models, error: null };
