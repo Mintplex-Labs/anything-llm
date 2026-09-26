@@ -217,7 +217,12 @@ class AnthropicLLM {
       const completionTokens = result.output.usage.output_tokens;
 
       return {
-        textResponse: result.output.content[0].text,
+        // Models that think by default put a thinking block before the answer,
+        // so the reply is read from the text blocks rather than the first block.
+        textResponse: result.output.content
+          .filter((block) => block.type === "text")
+          .map((block) => block.text)
+          .join(""),
         metrics: {
           prompt_tokens: promptTokens,
           completion_tokens: completionTokens,
