@@ -247,6 +247,7 @@ const TRANSLATIONS = {
       title: "Temperatura do LLM",
       "desc-end":
         "Valores mais altos geram respostas mais criativas, mas para alguns modelos podem se tornar incoerentes.",
+      placeholder: "Padrão do provedor",
     },
   },
   "vector-workspace": {

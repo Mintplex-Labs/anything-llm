@@ -9,6 +9,9 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { Ollama } = require("ollama");
 const { v4: uuidv4 } = require("uuid");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 // Talks the Ollama API, which llmman serves alongside OpenAI- and
 // Anthropic-compatible ones, so the same client library is reused.
@@ -38,7 +41,6 @@ class LlmmanLLM {
       fetch: LlmmanLLM.applyLlmmanFetch(),
     });
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
@@ -325,7 +327,10 @@ class LlmmanLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -334,7 +339,7 @@ class LlmmanLLM {
           messages,
           keep_alive: this.keepAlive,
           options: {
-            temperature,
+            ...temperatureParam(temperature),
             num_ctx: this.promptWindowLimit(),
           },
         })
@@ -378,7 +383,10 @@ class LlmmanLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
@@ -386,7 +394,7 @@ class LlmmanLLM {
         messages,
         keep_alive: this.keepAlive,
         options: {
-          temperature,
+          ...temperatureParam(temperature),
           num_ctx: this.promptWindowLimit(),
         },
       }),

@@ -196,6 +196,18 @@ function serviceTierParam(serviceTier, log = null) {
 }
 
 /**
+ * Build the `temperature` request field, spread so the key is absent entirely
+ * when no temperature is set or the value is not a finite number.
+ * @param {unknown} temperature
+ * @returns {{temperature?: number}}
+ */
+function temperatureParam(temperature) {
+  if (typeof temperature !== "number" || !Number.isFinite(temperature))
+    return {};
+  return { temperature };
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -235,6 +247,7 @@ async function tooledStream(
 
   const stream = await client.chat.completions.create({
     model,
+    ...temperatureParam(provider?.temperature),
     stream: true,
     stream_options: { include_usage: true },
     messages: formattedMessages,
@@ -415,6 +428,7 @@ async function tooledComplete(
 
   const response = await client.chat.completions.create({
     model,
+    ...temperatureParam(provider?.temperature),
     stream: false,
     messages: formattedMessages,
     ...maxTokensParam(maxTokens, maxTokensKey),
@@ -491,6 +505,7 @@ module.exports = {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  temperatureParam,
   serviceTierParam,
   maxTokensParam,
 };

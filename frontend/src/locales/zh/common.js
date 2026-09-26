@@ -238,6 +238,7 @@ const TRANSLATIONS = {
       title: "LLM 温度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
+      placeholder: "提供商默认值",
     },
   },
   "vector-workspace": {

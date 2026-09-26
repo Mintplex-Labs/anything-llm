@@ -258,6 +258,7 @@ const TRANSLATIONS = {
       title: "LLM temperatura",
       "desc-end":
         "Što je broj veći, to je odgovor kreativniji. Kod nekih modela ovo može dovesti do nekoherentnih odgovora ako je postavljeno preveliko.",
+      placeholder: "Zadano od pružatelja",
     },
   },
   "vector-workspace": {

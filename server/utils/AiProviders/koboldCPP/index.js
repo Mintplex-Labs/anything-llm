@@ -6,6 +6,9 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class KoboldCPPLLM {
   static contextWindowSize = null;
@@ -27,7 +30,6 @@ class KoboldCPPLLM {
     if (!this.model) throw new Error("KoboldCPP must have a valid model set.");
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.maxTokens = process.env.KOBOLD_CPP_MAX_TOKENS
       ? Number(process.env.KOBOLD_CPP_MAX_TOKENS)
       : null;
@@ -167,13 +169,16 @@ class KoboldCPPLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
           ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
         })
         .catch((e) => {
@@ -203,13 +208,16 @@ class KoboldCPPLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       }),
       messages,

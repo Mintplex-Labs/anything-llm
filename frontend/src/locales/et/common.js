@@ -244,6 +244,7 @@ const TRANSLATIONS = {
       title: "LLM-i temperatuur",
       "desc-end":
         "Kõrgem väärtus = loovam, ent liiga kõrge võib tekitada ebaühtlasi vastuseid.",
+      placeholder: "Teenusepakkuja vaikeväärtus",
     },
   },
   "vector-workspace": {

@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const { RetryError } = require("../../error.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../../http");
+const { temperatureParam } = require("./tooled.js");
 
 /**
  * Shared OpenAI Responses API tool-calling utilities.
@@ -92,6 +93,7 @@ function formatResponsesTools(functions = []) {
 function buildRequest(model, messages, functions, provider) {
   return {
     model,
+    ...temperatureParam(provider?.temperature),
     input: formatToResponsesInput(messages, provider),
     store: false,
     parallel_tool_calls: false,

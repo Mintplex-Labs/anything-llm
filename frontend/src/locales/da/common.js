@@ -243,6 +243,7 @@ const TRANSLATIONS = {
       title: "LLM-temperatur",
       "desc-end":
         "Jo højere tallet er, desto mere kreative bliver svarene. For nogle modeller kan for høje værdier føre til usammenhængende svar.",
+      placeholder: "Udbyderens standard",
     },
   },
   "vector-workspace": {

@@ -19,6 +19,9 @@ const {
   anthropicBaseURL,
   isOpenAIModelId,
 } = require("./endpoints");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 /**
  * Bedrock's OpenAI-compatible stream reports usage in a final chunk that
@@ -60,6 +63,19 @@ class AWSBedrockLLM {
     "us.deepseek.r1-v1:0",
   ];
 
+  /**
+   * Whether the model supports the temperature parameter at all. Anthropic
+   * models reject it (Opus 4.7 onward return a 400) and OpenAI GPT models use
+   * the Responses API, which never sends it.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName = "") {
+    if (modelName?.includes("anthropic")) return false;
+    if (isOpenAIModelId(modelName)) return false;
+    return true;
+  }
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.AWS_BEDROCK_LLM_API_KEY)
       throw new Error("AWS_BEDROCK_LLM_API_KEY is required for AWS Bedrock.");
@@ -93,7 +109,6 @@ class AWSBedrockLLM {
     }
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.#log(
       `Initialized with model: ${this.model}. Region: ${this.region}. Context Window: ${contextWindowLimit}.`
     );
@@ -115,13 +130,9 @@ class AWSBedrockLLM {
     return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
   }
 
-  // Temperature is omitted for all Anthropic models (Opus 4.7 onward reject it
-  // with a 400) and passed through for the rest of Bedrock's catalog. OpenAI
-  // GPT models use the Responses API, which never sends it.
-  temperatureParam(temperature = this.defaultTemp) {
-    if (typeof temperature !== "number") return undefined;
-    if (this.#isAnthropic) return undefined;
-    return parseFloat(temperature);
+  temperatureParam(temperature = this.temperature) {
+    if (!AWSBedrockLLM.modelSupportsTemperature(this.model)) return {};
+    return temperatureParam(temperature);
   }
 
   #appendContext(contextTexts = []) {
@@ -223,7 +234,10 @@ class AWSBedrockLLM {
 
   // --- Chat completions ---
 
-  async getChatCompletion(messages = null, { temperature }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!messages?.length)
       throw new Error(
         "AWSBedrock::getChatCompletion requires a non-empty messages array."
@@ -242,7 +256,7 @@ class AWSBedrockLLM {
         .create({
           model: this.model,
           messages,
-          temperature: this.temperatureParam(temperature),
+          ...this.temperatureParam(temperature),
         })
         .catch((e) => {
           this.#log(`Bedrock API Error (getChatCompletion): ${e.message}`, e);
@@ -262,7 +276,10 @@ class AWSBedrockLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!Array.isArray(messages) || messages.length === 0) {
       throw new Error(
         "AWSBedrock::streamGetChatCompletion requires a non-empty messages array."
@@ -274,7 +291,7 @@ class AWSBedrockLLM {
         model: this.model,
         maxTokens: this.#maxTokens,
         messages,
-        temperature: this.temperatureParam(temperature),
+        ...this.temperatureParam(temperature),
       });
       const stream = this.anthropic.messages.stream(params);
       return await LLMPerformanceMonitor.measureStream({
@@ -303,7 +320,7 @@ class AWSBedrockLLM {
     const stream = await this.openai.chat.completions.create({
       model: this.model,
       messages,
-      temperature: this.temperatureParam(temperature),
+      ...this.temperatureParam(temperature),
       stream: true,
       stream_options: { include_usage: true },
     });
@@ -331,7 +348,7 @@ class AWSBedrockLLM {
       model: this.model,
       maxTokens: this.#maxTokens,
       messages,
-      temperature: this.temperatureParam(temperature),
+      ...this.temperatureParam(temperature),
     });
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.anthropic.messages

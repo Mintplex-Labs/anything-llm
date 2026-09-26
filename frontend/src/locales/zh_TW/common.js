@@ -230,6 +230,7 @@ const TRANSLATIONS = {
       title: "LLM 溫度",
       "desc-end":
         "數值越高，創意度越高。對於某些模型，設定過高可能會導致不連貫的回應。",
+      placeholder: "供應商預設值",
     },
   },
   "vector-workspace": {
