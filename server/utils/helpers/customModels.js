@@ -1576,6 +1576,12 @@ async function getOllamaImageModels(basePath = null, authToken = null) {
   return { models, error: null };
 }
 
+/**
+ * Lists the image-capable models installed on a llmman server.
+ * @param {string|null} basePath - llmman base path; defaults to IMAGE_GEN_LLMMAN_BASE_PATH when null
+ * @param {string|boolean|null} authToken - llmman bearer token; defaults to IMAGE_GEN_LLMMAN_AUTH_TOKEN when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
 async function getLlmmanImageModels(basePath = null, authToken = null) {
   let url;
   try {
