@@ -231,18 +231,20 @@ async function streamChatWithForEmbed(
     });
   }
 
-  await EmbedChats.new({
-    embedId: embed.id,
-    prompt: message,
-    response: { text: completeText, type: chatMode, sources, metrics },
-    connection_information: response.locals.connection
-      ? {
-          ...response.locals.connection,
-          username: !!username ? String(username) : null,
-        }
-      : { username: !!username ? String(username) : null },
-    sessionId,
-  });
+  if (completeText?.length > 0) {
+    await EmbedChats.new({
+      embedId: embed.id,
+      prompt: message,
+      response: { text: completeText, type: chatMode, sources, metrics },
+      connection_information: response.locals.connection
+        ? {
+            ...response.locals.connection,
+            username: !!username ? String(username) : null,
+          }
+        : { username: !!username ? String(username) : null },
+      sessionId,
+    });
+  }
   return;
 }
 
