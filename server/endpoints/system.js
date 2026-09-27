@@ -1265,7 +1265,7 @@ function systemEndpoints(app) {
       if (username !== sessionUser.username)
         updates.username = User.validations.username(String(username));
       if (password) updates.password = String(password);
-      if (bio) updates.bio = String(bio);
+      if (bio || bio === "") updates.bio = String(bio);
 
       if (Object.keys(updates).length === 0) {
         response
