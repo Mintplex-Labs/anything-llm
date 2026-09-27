@@ -305,3 +305,26 @@ describe("Workspace.validateFields", () => {
     expect(validated.openAiHistory).toBe(20);
   });
 });
+
+describe("Workspace.update", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Workspace, "_update")
+      .mockResolvedValue({ workspace: null, message: null });
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  it("clears router_id when switching back to the system default", async () => {
+    await Workspace.update(1, { chatProvider: "default" });
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      chatProvider: null,
+      chatModel: null,
+      router_id: null,
+    });
+  });
+
+  it("keeps router_id when the update does not change the provider", async () => {
+    await Workspace.update(1, { name: "Renamed" });
+    expect(Workspace._update).toHaveBeenCalledWith(1, { name: "Renamed" });
+  });
+});
