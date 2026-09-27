@@ -267,6 +267,29 @@ describe("WebsiteDepth websiteScraper", () => {
     );
   });
 
+  it("resolves child-page relative links while keeping the start page's scope", async () => {
+    mockSite({
+      "https://example.com/docs/index.html":
+        '<a href="guide/intro.html">Guide</a>',
+      "https://example.com/docs/guide/intro.html":
+        '<a href="install.html">Install</a><a href="../api/index.html">API</a>',
+      "https://example.com/docs/guide/install.html": "install content",
+      "https://example.com/docs/api/index.html": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/index.html",
+      2
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/index.html",
+      "link://https://example.com/docs/guide/intro.html",
+      "link://https://example.com/docs/guide/install.html",
+      "link://https://example.com/docs/api/index.html",
+    ]);
+  });
+
   it("stops discovering once maxLinks is reached", async () => {
     mockSite({
       "https://example.com/docs/page":
