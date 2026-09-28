@@ -310,17 +310,17 @@ const TRANSLATIONS = {
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
         description:
-          "Cho phép đại lý của bạn tìm kiếm trên web để trả lời các câu hỏi của bạn bằng cách kết nối với nhà cung cấp dịch vụ tìm kiếm trên web (SERP).",
+          "Cho phép agent của bạn tìm kiếm trên web để trả lời các câu hỏi của bạn bằng cách kết nối với nhà cung cấp dịch vụ tìm kiếm trên web (SERP).",
       },
       sql: {
         title: "Kết nối SQL",
         description:
-          "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
+          "Cho phép agent của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
       },
       filesystem: {
         title: "Quyền truy cập hệ thống tệp",
         description:
-          "Cho phép đại lý của bạn đọc, ghi, tìm kiếm và quản lý các tệp tin trong một thư mục được chỉ định. Hỗ trợ chỉnh sửa tệp, điều hướng thư mục và tìm kiếm nội dung.",
+          "Cho phép agent của bạn đọc, ghi, tìm kiếm và quản lý các tệp tin trong một thư mục được chỉ định. Hỗ trợ chỉnh sửa tệp, điều hướng thư mục và tìm kiếm nội dung.",
         learnMore: "Tìm hiểu thêm về cách sử dụng kỹ năng này.",
         configuration: "Cấu hình",
         readActions: "Đọc hành động",
@@ -376,7 +376,7 @@ const TRANSLATIONS = {
       createFiles: {
         title: "Tạo tài liệu",
         description:
-          "Cho phép đại lý của bạn tạo các định dạng tài liệu nhị phân như bài thuyết trình PowerPoint, bảng tính Excel, tài liệu Word và PDF. Các tệp có thể tải xuống trực tiếp từ cửa sổ trò chuyện.",
+          "Cho phép agent của bạn tạo các định dạng tài liệu nhị phân như bài thuyết trình PowerPoint, bảng tính Excel, tài liệu Word và PDF. Các tệp có thể tải xuống trực tiếp từ cửa sổ trò chuyện.",
         configuration: "Các loại tài liệu có sẵn",
         skills: {
           "create-text-file": {
@@ -409,7 +409,7 @@ const TRANSLATIONS = {
       gmail: {
         title: "Kết nối GMail",
         description:
-          "Cho phép đại lý của bạn tương tác với Gmail – tìm kiếm email, đọc các cuộc trò chuyện, soạn thảo bản nháp, gửi email và quản lý hộp thư. Đọc tài liệu hướng dẫn<a>.",
+          "Cho phép agent của bạn tương tác với Gmail – tìm kiếm email, đọc các cuộc trò chuyện, soạn thảo bản nháp, gửi email và quản lý hộp thư. Đọc tài liệu hướng dẫn<a>.",
         multiUserWarning:
           "Tính năng tích hợp với Gmail không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
         configuration: "Cấu hình Gmail",
@@ -528,7 +528,7 @@ const TRANSLATIONS = {
       outlook: {
         title: "Kết nối Outlook",
         description:
-          "Cho phép đại lý của bạn tương tác với Microsoft Outlook – tìm kiếm email, đọc các cuộc thảo luận, soạn thảo bản nháp, gửi email và quản lý hộp thư đến thông qua Microsoft Graph API. Đọc tài liệu hướng dẫn <a>.",
+          "Cho phép agent của bạn tương tác với Microsoft Outlook – tìm kiếm email, đọc các cuộc thảo luận, soạn thảo bản nháp, gửi email và quản lý hộp thư đến thông qua Microsoft Graph API. Đọc tài liệu hướng dẫn <a>.",
         multiUserWarning:
           "Tính năng tích hợp với Outlook không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
         configuration: "Cấu hình Outlook",
@@ -626,7 +626,7 @@ const TRANSLATIONS = {
       googleCalendar: {
         title: "Kết nối Google Calendar",
         description:
-          "Cho phép đại lý của bạn tương tác với Google Calendar - xem lịch, lấy thông tin sự kiện, tạo và cập nhật sự kiện, và quản lý xác nhận tham dự. <a>Đọc tài liệu</a>.",
+          "Cho phép agent của bạn tương tác với Google Calendar - xem lịch, lấy thông tin sự kiện, tạo và cập nhật sự kiện, và quản lý xác nhận tham dự. <a>Đọc tài liệu</a>.",
         multiUserWarning:
           "Tính năng tích hợp với Google Calendar không khả dụng ở chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
         configuration: "Cấu hình Google Calendar",
@@ -713,12 +713,12 @@ const TRANSLATIONS = {
       scheduledJob: {
         title: "Tạo các công việc theo lịch trình",
         description:
-          'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
+          'Cho phép agents tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
       },
       generateImage: {
         title: "Tạo hình ảnh",
         description:
-          "Cho phép đại lý tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
+          "Cho phép agents tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
       },
     },
     mcp: {
@@ -759,7 +759,7 @@ const TRANSLATIONS = {
         },
       },
       "clarifying-questions": {
-        title: "Cho phép đại lý đặt câu hỏi để làm rõ",
+        title: "Cho phép agents đặt câu hỏi để làm rõ",
         "beta-badge": "Giai đoạn thử nghiệm",
         description:
           "Khi được kích hoạt, các trợ lý có thể tạm dừng để đặt câu hỏi ngắn gọn để làm rõ nếu yêu cầu của bạn không rõ ràng.",
@@ -855,13 +855,13 @@ const TRANSLATIONS = {
     "warn-end": "Mô hình tích hợp sẽ tự động tải xuống khi sử dụng lần đầu.",
   },
   embedding: {
-    title: "Tùy chọn nhúng",
+    title: "Tùy chọn embedding",
     "desc-start":
       "Khi sử dụng LLM không hỗ trợ bộ máy nhúng nguyên bản - bạn có thể cần chỉ định thêm thông tin đăng nhập để nhúng văn bản.",
     "desc-end":
       "Nhúng là quá trình chuyển đổi văn bản thành vector. Thông tin đăng nhập này cần thiết để chuyển đổi tệp và prompt của bạn thành định dạng mà chatbot có thể sử dụng để xử lý.",
     provider: {
-      title: "Nhà cung cấp Nhúng",
+      title: "Nhà cung cấp embedding",
     },
   },
   text: {
@@ -904,12 +904,12 @@ const TRANSLATIONS = {
     },
   },
   "embed-chats": {
-    title: "Lịch sử Nhúng Trò chuyện",
+    title: "Lịch sử Embedding Trò chuyện",
     export: "Xuất",
     description:
-      "Đây là tất cả các cuộc trò chuyện và tin nhắn đã được ghi lại từ bất kỳ nhúng nào mà bạn đã xuất bản.",
+      "Đây là tất cả các cuộc trò chuyện và tin nhắn đã được ghi lại từ bất kỳ Embedding nào mà bạn đã xuất bản.",
     table: {
-      embed: "Nhúng",
+      embed: "Embedding",
       sender: "Người gửi",
       message: "Tin nhắn",
       response: "Phản hồi",
@@ -1206,7 +1206,7 @@ const TRANSLATIONS = {
     select_model: "Chọn mẫu",
     sources: "Nguồn",
     document: "Tài liệu",
-    similarity_match: "trận đấu",
+    similarity_match: "Độ tương đồng",
     source_count_one: "{{count}} tham khảo",
     source_count_other: "{{count}} – Tham khảo",
     add_new: "Thêm mới",
@@ -1214,23 +1214,23 @@ const TRANSLATIONS = {
     publish: "Đăng tải",
     stop_generating: "Dừng tạo ra phản hồi",
     slash_commands: "Lệnh tắt/bật",
-    agent_skills: "Kỹ năng của đại lý",
-    manage_agent_skills: "Quản lý kỹ năng của đại lý",
+    agent_skills: "Kỹ năng của agent",
+    manage_agent_skills: "Quản lý kỹ năng của agent",
     agent_skills_disabled_in_session:
       "Không thể thay đổi kỹ năng trong khi đang tham gia phiên làm việc. Trước tiên, hãy sử dụng lệnh /exit để kết thúc phiên làm việc.",
-    start_agent_session: "Bắt đầu phiên làm việc với đại lý",
+    start_agent_session: "Bắt đầu phiên làm việc với agent",
     use_agent_session_to_use_tools:
       "Bạn có thể sử dụng các công cụ trong cuộc trò chuyện bằng cách bắt đầu một phiên với trợ lý bằng cách sử dụng '@agent' ở đầu yêu cầu của bạn.",
     agent_invocation: {
-      model_wants_to_call: "Người mẫu muốn gọi",
+      model_wants_to_call: "Mô hình LLM muốn gọi",
       approve: "Chấp thuận",
       reject: "Từ chối",
       always_allow: "Luôn luôn đảm bảo {{skillName}}",
-      tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
+      tool_call_was_approved: "Đã được phê duyệt yêu cầu gọi công cụ.",
       tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
-      clarifying_skip: "Để đại lý quyết định",
+      clarifying_skip: "Để agent quyết định",
       clarifying_submit: "Gửi",
-      clarifying_skipped: "Bạn để đại lý quyết định.",
+      clarifying_skipped: "Bạn để agent quyết định.",
       clarifying_timeout: "Không có phản hồi được gửi đúng thời hạn.",
       clarifying_pagination: "{{current}} thuộc về {{total}}",
       clarifying_prev_aria: "Câu hỏi trước",
@@ -1245,18 +1245,18 @@ const TRANSLATIONS = {
       answer_skipped: "[người dùng bỏ qua]",
     },
     custom_skills: "Kỹ năng tùy chỉnh",
-    agent_flows: "Dòng chảy của đại lý",
+    agent_flows: "Luồng thực thi của Agent",
     no_tools_found: "Không tìm thấy công cụ tương ứng.",
     loading_mcp_servers: "Đang tải các máy chủ MCP...",
     app_integrations: "Tích hợp ứng dụng",
     sub_skills: "Kỹ năng chuyên môn",
     memories: {
-      title: "Những kỷ niệm",
+      title: "Bộ nhớ",
       empty:
-        "Hiện tại chưa có thông tin nào. Sau khi bạn tương tác với chatbot, các thông tin sẽ dần được điền vào.",
-      empty_cta: "tạo ra một ký ức mới",
+        "Hiện tại chưa có thông tin nào. Sau khi bạn tương tác với chatbot, các bộ nhớ sẽ được kích hoạt.",
+      empty_cta: "tạo ra một bộ nhớ mới",
       tab_workspace: "Không gian làm việc",
-      tab_global: "Toàn cầu",
+      tab_global: "Toàn hệ thống",
       toggle: {
         label: "Kích hoạt tùy chỉnh",
         description:
@@ -1270,11 +1270,11 @@ const TRANSLATIONS = {
       menu: {
         edit: "Chỉnh sửa",
         delete: "Xóa",
-        move_to_global: "Di chuyển sang cấp toàn cầu",
+        move_to_global: "Di chuyển sang cấp toàn hệ thống",
         move_to_workspace: "Di chuyển đến không gian làm việc",
       },
       modal: {
-        create_title: "Tạo ra ký ức",
+        create_title: "Tạo bộ nhớ",
         edit_title: "Chỉnh sửa bộ nhớ",
         create_description:
           'Những ghi nhớ nên là một câu ngắn gọn và rõ ràng. Ví dụ: "Người dùng thích Python hơn JavaScript".',
@@ -1292,7 +1292,7 @@ const TRANSLATIONS = {
     stt_mic_denied: "Không thể truy cập micro. Vui lòng cấp quyền và thử lại.",
     stt_transcription_failed: "Không thể chuyển đổi: {{error}}",
     export: "Xuất trò chuyện dưới dạng...",
-    exporting: "Xuất khẩu...",
+    exporting: "Đang export ...",
     preset_img_description: "Tạo một hình ảnh từ một đoạn mô tả bằng văn bản.",
     generating_response: "Tạo ra câu trả lời",
     response_failed: "Không thể phản hồi tin nhắn.",
@@ -1422,7 +1422,7 @@ const TRANSLATIONS = {
   },
   "main-page": {
     quickActions: {
-      createAgent: "Tạo một đại lý",
+      createAgent: "Tạo một agent",
       editWorkspace: "Chỉnh sửa không gian làm việc",
       uploadDocument: "Tải lên một tài liệu",
     },
