@@ -1405,7 +1405,7 @@ async function moveWeaviateWorkspacesToCurrentLayout(_, prevValue, nextValue) {
     .moveAllToCurrentLayout()
     .then((report) =>
       console.log(
-        `Weaviate multi-tenancy ${nextValue === "true" ? "enabled" : "disabled"}: moved ${report.moved} workspaces, ${report.failed.length} failed.`
+        `Weaviate multi-tenancy ${nextValue === "true" ? "enabled" : "disabled"}: checked ${report.checked} workspaces, moved ${report.moved}, ${report.failed.length} failed.`
       )
     )
     .catch((e) =>

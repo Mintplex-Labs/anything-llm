@@ -527,6 +527,7 @@ class Weaviate extends VectorDatabase {
    * the other one, e.g. right after WEAVIATE_MULTI_TENANCY was switched.
    * Runs once per namespace and layout in this process; concurrent callers
    * share the same move.
+   * @returns {Promise<number|null>} objects moved, or null if nothing was moved
    */
   async moveToCurrentLayout(client, namespace) {
     const layout = this.isMultiTenant()
@@ -539,15 +540,16 @@ class Weaviate extends VectorDatabase {
       checkedLayout = layout;
     }
     const key = `${layout}|${namespace}`;
-    if (checkedLayouts.has(key)) return;
+    if (checkedLayouts.has(key)) return null;
     if (!layoutMoves.has(key)) {
       const move = this.moveNamespace(client, namespace).finally(() =>
         layoutMoves.delete(key)
       );
       layoutMoves.set(key, move);
     }
-    await layoutMoves.get(key);
+    const moved = await layoutMoves.get(key);
     checkedLayouts.add(key);
+    return moved;
   }
 
   /**
@@ -651,11 +653,12 @@ class Weaviate extends VectorDatabase {
     const { Workspace } = require("../../../models/workspace");
     const { client } = await this.connect();
     const workspaces = await Workspace.where({});
-    const report = { moved: 0, failed: [] };
+    const report = { checked: 0, moved: 0, failed: [] };
     for (const { slug } of workspaces) {
       try {
-        await this.moveToCurrentLayout(client, slug);
-        report.moved++;
+        const moved = await this.moveToCurrentLayout(client, slug);
+        report.checked++;
+        if (moved !== null) report.moved++;
       } catch (e) {
         this.logger(`moveAllToCurrentLayout ${slug}`, e.message);
         report.failed.push(slug);

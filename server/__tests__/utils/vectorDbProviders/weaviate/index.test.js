@@ -1211,11 +1211,14 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
       seedLegacy("Beta", 2);
       seedLegacy("Unrelated", 2); // not an AnythingLLM workspace
       enable();
-      const where = jest
-        .spyOn(Workspace, "where")
-        .mockResolvedValue([{ slug: "alpha" }, { slug: "beta" }]);
+      const where = jest.spyOn(Workspace, "where").mockResolvedValue([
+        { slug: "alpha" },
+        { slug: "beta" },
+        { slug: "empty" }, // a workspace with nothing stored yet
+      ]);
       try {
         expect(await new Weaviate().moveAllToCurrentLayout()).toEqual({
+          checked: 3,
           moved: 2,
           failed: [],
         });
