@@ -86,9 +86,8 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
 
     // Split context from system prompt - cannonball since its over the window.
     // We assume the context + user prompt is enough tokens to fit.
-    // Split on the "Context:" header the providers append before [CONTEXT 0],
-    // not on every "Context:" - the workspace prompt or a document chunk may
-    // contain the word too, and splitting there would drop the context after it.
+    // Split at the "Context:" header providers append before [CONTEXT 0], since
+    // the workspace prompt or a document chunk can also contain "Context:".
     const { prompt, context } = splitSystemContext(system.content);
     let compressedPrompt;
     let compressedContext;
