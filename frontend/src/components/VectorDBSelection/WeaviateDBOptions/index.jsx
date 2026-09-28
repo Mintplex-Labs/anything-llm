@@ -33,6 +33,9 @@ function initialDeployment(settings) {
 export default function WeaviateDBOptions({ settings }) {
   const [deployment, setDeployment] = useState(initialDeployment(settings));
   const isCloud = deployment === "cloud";
+  const [multiTenancy, setMultiTenancy] = useState(
+    settings?.WeaviateMultiTenancy === "true" ? "true" : "false"
+  );
 
   return (
     <div className="w-full flex flex-col gap-y-7">
@@ -134,6 +137,45 @@ export default function WeaviateDBOptions({ settings }) {
       <p className="text-theme-text-secondary text-xs -mt-4">
         Compresses vectors to cut memory use, with a small loss of search
         accuracy. Applies to workspaces created after the change.
+      </p>
+
+      <div className="w-full flex items-center gap-[36px]">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Workspace storage
+          </label>
+          <select
+            name="WeaviateMultiTenancy"
+            value={multiTenancy}
+            onChange={(e) => setMultiTenancy(e.target.value)}
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          >
+            <option value="false">One collection per workspace</option>
+            <option value="true">Multi-tenant (one shared collection)</option>
+          </select>
+        </div>
+        {multiTenancy === "true" && (
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Shared collection name
+            </label>
+            <input
+              type="text"
+              name="WeaviateCollection"
+              className={INPUT_CLASS}
+              placeholder="AnythingLLM"
+              defaultValue={settings?.WeaviateCollection}
+              pattern="[A-Za-z][A-Za-z0-9_]*"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        )}
+      </div>
+      <p className="text-theme-text-secondary text-xs -mt-4">
+        Multi-tenant stores each workspace as a tenant of one collection, which
+        scales better with many workspaces. Existing workspaces are moved
+        automatically when you switch, without re-embedding.
       </p>
     </div>
   );

@@ -551,8 +551,152 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       );
     });
 
+    describe("multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
+      afterEach(async () => {
+        delete process.env.WEAVIATE_MULTI_TENANCY;
+        delete process.env.WEAVIATE_COLLECTION;
+        await dropAllCollections(TEST_URL);
+      });
+
+      it("stores workspaces as isolated tenants of one collection", async () => {
+        process.env.WEAVIATE_MULTI_TENANCY = "true";
+        process.env.WEAVIATE_COLLECTION = "ItShared";
+        const w = new Weaviate();
+        await w.addDocumentToNamespace(
+          "alpha",
+          fruitDoc({
+            docId: "a",
+            pageContent: "Alpha keeps notes about zebras and stripes.",
+          })
+        );
+        await w.addDocumentToNamespace(
+          "beta",
+          fruitDoc({
+            docId: "b",
+            pageContent: "Beta keeps notes about volcanoes and lava.",
+          })
+        );
+
+        const schema = await rest(TEST_URL, "GET", "/v1/schema/ItShared");
+        expect(schema.multiTenancyConfig).toEqual(
+          expect.objectContaining({
+            enabled: true,
+            autoTenantCreation: true,
+            autoTenantActivation: true,
+          })
+        );
+        const { classes } = await rest(TEST_URL, "GET", "/v1/schema");
+        expect(classes.map((c) => c.class)).toEqual(["ItShared"]);
+        const tenants = await rest(
+          TEST_URL,
+          "GET",
+          "/v1/schema/ItShared/tenants"
+        );
+        expect(tenants.map((t) => t.name).sort()).toEqual(["alpha", "beta"]);
+
+        const search = await w.performSimilaritySearch({
+          namespace: "beta",
+          input: "zebras stripes",
+          LLMConnector: mockEmbedder,
+          similarityThreshold: 0,
+          topN: 10,
+        });
+        expect(search.contextTexts.join(" ")).not.toMatch(/zebras/);
+        expect(await w.totalVectors()).toBe(
+          (await w.namespaceCount("alpha")) + (await w.namespaceCount("beta"))
+        );
+
+        await w.deleteDocumentFromNamespace("alpha", "a");
+        expect(await w.namespaceCount("alpha")).toBe(0);
+        await w["delete-namespace"]({ namespace: "alpha" });
+        const left = await rest(TEST_URL, "GET", "/v1/schema/ItShared/tenants");
+        expect(left.map((t) => t.name)).toEqual(["beta"]);
+      });
+
+      it("moves legacy per-workspace data into tenants and back, keeping ids and vectors", async () => {
+        // A workspace stored the legacy way (the v1 client's REST shape).
+        await rest(TEST_URL, "POST", "/v1/schema", {
+          class: "OldSpace",
+          description: "Class created by AnythingLLM named OldSpace",
+          vectorizer: "none",
+        });
+        // Well-spread deterministic vectors. (The toy bag-of-words embedder
+        // yields only ~17 distinct vectors for 620 near-identical texts, and
+        // approximate HNSW search cannot reliably find one point among so many
+        // exact duplicates - with or without a migration.)
+        const chunkText = (i) => `legacy chunk ${i}`;
+        const vectorFor = (i) => {
+          let seed = i + 1;
+          return Array.from({ length: 16 }, () => {
+            seed = (seed * 1103515245 + 12345) % 2147483648;
+            return seed / 2147483648 - 0.5;
+          });
+        };
+        const uniqueVector = vectorFor(417);
+        const ids = Array.from(
+          { length: 620 },
+          (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, "0")}`
+        );
+        for (let i = 0; i < ids.length; i += 200)
+          await rest(TEST_URL, "POST", "/v1/batch/objects", {
+            objects: ids.slice(i, i + 200).map((id, j) => ({
+              class: "OldSpace",
+              id,
+              vector: vectorFor(i + j),
+              properties: { text: chunkText(i + j), wordCount: 3 },
+            })),
+          });
+        const vectorOf = async (path) =>
+          (await rest(TEST_URL, "GET", `${path}?include=vector`)).vector;
+        const before = await vectorOf(`/v1/objects/OldSpace/${ids[417]}`);
+
+        process.env.WEAVIATE_MULTI_TENANCY = "true";
+        const w = new Weaviate();
+        expect(await w.hasNamespace("old-space")).toBe(true);
+        let { classes } = await rest(TEST_URL, "GET", "/v1/schema");
+        expect(classes.map((c) => c.class)).toEqual(["AnythingLLM"]);
+        expect(await w.namespaceCount("old-space")).toBe(620);
+        const inTenant = await rest(
+          TEST_URL,
+          "GET",
+          `/v1/objects/AnythingLLM/${ids[417]}?include=vector&tenant=old-space`
+        );
+        expect(inTenant.vector).toEqual(before);
+        expect(inTenant.properties).toEqual({
+          text: "legacy chunk 417",
+          wordCount: 3,
+        });
+        const search = await w.performSimilaritySearch({
+          namespace: "old-space",
+          input: "chunk 417",
+          LLMConnector: { embedTextInput: async () => uniqueVector },
+          similarityThreshold: 0,
+          topN: 1,
+        });
+        expect(search.sources[0].id).toBe(ids[417]);
+
+        // Switch back: the data returns to its own collection.
+        process.env.WEAVIATE_MULTI_TENANCY = "false";
+        expect(await w.hasNamespace("old-space")).toBe(true);
+        expect(await w.namespaceCount("old-space")).toBe(620);
+        expect(await vectorOf(`/v1/objects/OldSpace/${ids[417]}`)).toEqual(
+          before
+        );
+        const tenants = await rest(
+          TEST_URL,
+          "GET",
+          "/v1/schema/AnythingLLM/tenants"
+        );
+        expect(tenants).toEqual([]);
+      });
+    });
+
     it("never calls GraphQL and always sends the integration header", () => {
       expect(proxy.requests.length).toBeGreaterThan(10);
+      // Runs last, so the traffic covers the multi-tenancy tests too.
+      expect(proxy.requests.some((r) => r.path.includes("/tenants"))).toBe(
+        true
+      );
       const graphql = proxy.requests.filter((r) =>
         r.path.startsWith("/v1/graphql")
       );

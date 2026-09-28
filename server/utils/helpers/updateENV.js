@@ -415,6 +415,26 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
   },
+  WeaviateMultiTenancy: {
+    envKey: "WEAVIATE_MULTI_TENANCY",
+    checks: [
+      (input = "") =>
+        ["", "true", "false"].includes(input)
+          ? null
+          : 'Weaviate multi-tenancy must be "true" or "false".',
+    ],
+    postUpdate: [moveWeaviateWorkspacesToCurrentLayout],
+  },
+  WeaviateCollection: {
+    envKey: "WEAVIATE_COLLECTION",
+    // Shared collection used when multi-tenancy is on. Empty means "AnythingLLM".
+    checks: [
+      (input = "") =>
+        !input || /^[A-Za-z][A-Za-z0-9_]*$/.test(input)
+          ? null
+          : "Weaviate collection name must start with a letter and contain only letters, digits and underscores.",
+    ],
+  },
   WeaviateQuantization: {
     envKey: "WEAVIATE_QUANTIZATION",
     // Empty means the server default. Applies to collections created afterwards.
@@ -1371,6 +1391,26 @@ function noRestrictedChars(input = "") {
   return !regExp.test(input)
     ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
+}
+
+/**
+ * After Weaviate multi-tenancy is switched on or off, move existing workspaces
+ * into the new layout in the background. Workspaces are also moved on first
+ * use, so this only warms things up and never blocks the settings update.
+ */
+async function moveWeaviateWorkspacesToCurrentLayout(_, prevValue, nextValue) {
+  if (prevValue === nextValue || process.env.VECTOR_DB !== "weaviate") return;
+  const { Weaviate } = require("../vectorDbProviders/weaviate");
+  new Weaviate()
+    .moveAllToCurrentLayout()
+    .then((report) =>
+      console.log(
+        `Weaviate multi-tenancy ${nextValue === "true" ? "enabled" : "disabled"}: moved ${report.moved} workspaces, ${report.failed.length} failed.`
+      )
+    )
+    .catch((e) =>
+      console.error("Weaviate: moving workspaces failed:", e.message)
+    );
 }
 
 async function handleVectorStoreReset(key, prevValue, nextValue) {

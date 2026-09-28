@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const weaviate = require("weaviate-client");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
@@ -34,9 +35,21 @@ const QUANTIZATION_OPTIONS = {
   pq: { config: { pq: { enabled: true } }, minVersion: [1, 29, 0] },
 };
 
+// Multi-tenancy (WEAVIATE_MULTI_TENANCY): all workspaces share one collection
+// and each workspace is a tenant. Tenant names must match TENANT_NAME; other
+// namespaces get a stable hashed name.
+const DEFAULT_MULTI_TENANT_COLLECTION = "AnythingLLM";
+const TENANT_NAME = /^[A-Za-z0-9_-]{1,64}$/;
+
 // A gRPC channel is expensive to open, so the client is shared by every
 // Weaviate instance in this process and only rebuilt when the settings change.
 let cachedConnection = null; // { key: string, promise: Promise<WeaviateClient> }
+// Namespaces whose data has already been checked for moving between the
+// per-collection and multi-tenant layouts in this process, and the moves in
+// flight, keyed by layout + namespace.
+const checkedLayouts = new Set();
+const layoutMoves = new Map();
+let checkedLayout = null;
 
 class Weaviate extends VectorDatabase {
   constructor() {
@@ -169,6 +182,8 @@ class Weaviate extends VectorDatabase {
     ].join("|");
 
     if (cachedConnection?.key !== key) {
+      // A different server may hold data in either layout.
+      checkedLayouts.clear();
       const previous = cachedConnection;
       const promise = this.createClient();
       cachedConnection = { key, promise };
@@ -189,6 +204,7 @@ class Weaviate extends VectorDatabase {
   static async disconnect() {
     const previous = cachedConnection;
     cachedConnection = null;
+    checkedLayouts.clear();
     await previous?.promise.then((client) => client.close()).catch(() => {});
   }
 
@@ -220,9 +236,9 @@ class Weaviate extends VectorDatabase {
 
   async totalVectors() {
     const { client } = await this.connect();
-    const collectionNames = await this.allNamespaces(client);
+    const namespaces = await this.allNamespaces(client);
     var totalVectors = 0;
-    for (const name of collectionNames) {
+    for (const name of namespaces) {
       totalVectors += await this.namespaceCountWithClient(client, name);
     }
     return totalVectors;
@@ -230,9 +246,10 @@ class Weaviate extends VectorDatabase {
 
   async namespaceCountWithClient(client, namespace) {
     try {
-      const { totalCount } = await client.collections
-        .get(camelCase(namespace))
-        .aggregate.overAll();
+      const { totalCount } = await this.collectionFor(
+        client,
+        namespace
+      ).aggregate.overAll();
       return totalCount || 0;
     } catch (e) {
       this.logger(`namespaceCountWithClient`, e.message);
@@ -264,12 +281,13 @@ class Weaviate extends VectorDatabase {
       scores: [],
     };
 
-    const { objects = [] } = await client.collections
-      .get(camelCase(namespace))
-      .query.nearVector(queryVector, {
-        limit: topN,
-        returnMetadata: ["distance"],
-      });
+    const { objects = [] } = await this.collectionFor(
+      client,
+      namespace
+    ).query.nearVector(queryVector, {
+      limit: topN,
+      returnMetadata: ["distance"],
+    });
 
     objects.forEach(({ uuid: id, properties = {}, metadata = {} }) => {
       const score = this.distanceToSimilarity(metadata?.distance);
@@ -288,8 +306,18 @@ class Weaviate extends VectorDatabase {
     return result;
   }
 
+  /**
+   * Collection names in per-collection mode, tenant names in multi-tenant mode.
+   */
   async allNamespaces(client) {
     try {
+      if (this.isMultiTenant()) {
+        const collection = client.collections.get(
+          this.multiTenantCollectionName()
+        );
+        if (!(await collection.exists())) return [];
+        return Object.keys(await collection.tenants.get());
+      }
       const collections = await client.collections.listAll();
       return (collections ?? []).map((collection) => collection.name);
     } catch (e) {
@@ -303,22 +331,84 @@ class Weaviate extends VectorDatabase {
     if (!(await this.namespaceExists(client, namespace))) return null;
 
     const config = await client.collections
-      .get(camelCase(namespace))
+      .get(
+        this.isMultiTenant()
+          ? this.multiTenantCollectionName()
+          : camelCase(namespace)
+      )
       .config.get();
 
     return {
       ...config,
+      ...(this.isMultiTenant() ? { tenant: this.tenantName(namespace) } : {}),
       vectorCount: await this.namespaceCountWithClient(client, namespace),
     };
   }
 
   /**
-   * Creates the collection for a namespace if it does not exist yet. Uses the
-   * same raw schema as the legacy client did, so collections created before
-   * and after the v3 client migration are identical.
+   * Whether workspaces are stored as tenants of one shared collection
+   * (WEAVIATE_MULTI_TENANCY=true) instead of one collection per workspace.
+   */
+  isMultiTenant() {
+    return ["true", "1", "yes", "on"].includes(
+      String(process.env.WEAVIATE_MULTI_TENANCY ?? "")
+        .trim()
+        .toLowerCase()
+    );
+  }
+
+  /**
+   * The shared collection used in multi-tenant mode (WEAVIATE_COLLECTION,
+   * default "AnythingLLM").
+   */
+  multiTenantCollectionName() {
+    const raw =
+      process.env.WEAVIATE_COLLECTION?.trim() ||
+      DEFAULT_MULTI_TENANT_COLLECTION;
+    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+    if (!/^[A-Z][A-Za-z0-9_]*$/.test(name))
+      throw new Error(
+        `Weaviate::Invalid WEAVIATE_COLLECTION "${raw}" - use letters, digits and underscores, starting with a letter.`
+      );
+    return name;
+  }
+
+  /**
+   * The tenant for a namespace (workspace slug). Slugs that are valid tenant
+   * names are used as-is; anything else (too long, other characters) gets a
+   * stable hashed name.
+   */
+  tenantName(namespace) {
+    if (TENANT_NAME.test(namespace)) return namespace;
+    const hash = crypto.createHash("sha256").update(namespace).digest("hex");
+    return `ws-${hash.slice(0, 32)}`;
+  }
+
+  /**
+   * The collection handle holding a namespace's objects: its own collection,
+   * or its tenant of the shared collection.
+   */
+  collectionFor(client, namespace) {
+    if (!this.isMultiTenant())
+      return client.collections.get(camelCase(namespace));
+    return client.collections
+      .get(this.multiTenantCollectionName())
+      .withTenant(this.tenantName(namespace));
+  }
+
+  /**
+   * Creates the storage for a namespace if it does not exist yet: its own
+   * collection (same raw schema as the legacy client used, so collections
+   * created before and after the v3 client migration are identical), or its
+   * tenant in the shared collection.
    */
   async ensureCollection(client, namespace) {
     if (await this.namespaceExists(client, namespace)) return;
+    if (this.isMultiTenant()) {
+      await this.ensureMultiTenantCollection(client);
+      await this.ensureTenant(client, namespace);
+      return;
+    }
     const vectorIndexConfig = await this.quantizationConfig(client);
     await client.collections.createFromSchema({
       class: camelCase(namespace),
@@ -326,6 +416,39 @@ class Weaviate extends VectorDatabase {
       vectorizer: "none",
       ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
     });
+  }
+
+  async ensureMultiTenantCollection(client) {
+    const name = this.multiTenantCollectionName();
+    if (await client.collections.exists(name)) return;
+    const vectorIndexConfig = await this.quantizationConfig(client);
+    try {
+      await client.collections.createFromSchema({
+        class: name,
+        description:
+          "Collection created by AnythingLLM. Each tenant is a workspace.",
+        vectorizer: "none",
+        multiTenancyConfig: {
+          enabled: true,
+          autoTenantCreation: true,
+          autoTenantActivation: true,
+        },
+        ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
+      });
+    } catch (e) {
+      // Another process may have created it at the same time.
+      if (!(await client.collections.exists(name))) throw e;
+    }
+  }
+
+  async ensureTenant(client, namespace) {
+    const collection = client.collections.get(this.multiTenantCollectionName());
+    const tenant = this.tenantName(namespace);
+    try {
+      await collection.tenants.create([{ name: tenant }]);
+    } catch (e) {
+      if (!(await collection.tenants.getByName(tenant))) throw e;
+    }
   }
 
   /**
@@ -353,34 +476,27 @@ class Weaviate extends VectorDatabase {
   }
 
   /**
-   * Inserts vector records in batches of BATCH_SIZE.
+   * Inserts vector records into a namespace in batches of BATCH_SIZE.
    * @param {object} client - weaviate-client instance
-   * @param {{id: string, class: string, vector: number[], properties: object}[]} vectors
+   * @param {{id: string, vector: number[], properties: object}[]} vectors
+   * @param {string} namespace
    * @returns {Promise<{success: boolean, errors: (string|null)[]}>}
    */
-  async addVectors(client, vectors = []) {
+  async addVectors(client, vectors = [], namespace) {
     const response = { success: true, errors: new Set([]) };
-    const byCollection = new Map();
-    for (const record of vectors) {
-      if (!byCollection.has(record.class)) byCollection.set(record.class, []);
-      byCollection.get(record.class).push(record);
-    }
-
-    for (const [name, records] of byCollection) {
-      const collection = client.collections.get(name);
-      for (const batch of toChunks(records, BATCH_SIZE)) {
-        const result = await collection.data.insertMany(
-          batch.map(({ id, vector, properties }) => ({
-            id,
-            properties,
-            vectors: vector,
-          }))
-        );
-        if (!result.hasErrors) continue;
-        response.success = false;
-        for (const error of Object.values(result.errors))
-          response.errors.add(error?.message || null);
-      }
+    const collection = this.collectionFor(client, namespace);
+    for (const batch of toChunks(vectors, BATCH_SIZE)) {
+      const result = await collection.data.insertMany(
+        batch.map(({ id, vector, properties }) => ({
+          id,
+          properties,
+          vectors: vector,
+        }))
+      );
+      if (!result.hasErrors) continue;
+      response.success = false;
+      for (const error of Object.values(result.errors))
+        response.errors.add(error?.message || null);
     }
 
     response.errors = [...response.errors];
@@ -395,10 +511,166 @@ class Weaviate extends VectorDatabase {
 
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    return await client.collections.exists(camelCase(namespace));
+    await this.moveToCurrentLayout(client, namespace);
+    if (!this.isMultiTenant())
+      return await client.collections.exists(camelCase(namespace));
+
+    const collection = client.collections.get(this.multiTenantCollectionName());
+    if (!(await collection.exists())) return false;
+    return (
+      (await collection.tenants.getByName(this.tenantName(namespace))) !== null
+    );
+  }
+
+  /**
+   * Moves a namespace's data into the current layout if it is still stored in
+   * the other one, e.g. right after WEAVIATE_MULTI_TENANCY was switched.
+   * Runs once per namespace and layout in this process; concurrent callers
+   * share the same move.
+   */
+  async moveToCurrentLayout(client, namespace) {
+    const layout = this.isMultiTenant()
+      ? `mt|${this.multiTenantCollectionName()}`
+      : "collection";
+    // A namespace checked under one layout must be checked again after the
+    // layout changes (e.g. multi-tenancy switched off and back on).
+    if (checkedLayout !== layout) {
+      checkedLayouts.clear();
+      checkedLayout = layout;
+    }
+    const key = `${layout}|${namespace}`;
+    if (checkedLayouts.has(key)) return;
+    if (!layoutMoves.has(key)) {
+      const move = this.moveNamespace(client, namespace).finally(() =>
+        layoutMoves.delete(key)
+      );
+      layoutMoves.set(key, move);
+    }
+    await layoutMoves.get(key);
+    checkedLayouts.add(key);
+  }
+
+  /**
+   * Copies a namespace from the other layout into the current one (same
+   * object ids, properties and vectors, so nothing is re-embedded), checks the
+   * copy, then deletes the source. Safe to re-run: re-copying upserts by id.
+   * @returns {Promise<number|null>} objects moved, or null if nothing to move
+   */
+  async moveNamespace(client, namespace) {
+    const collectionName = camelCase(namespace);
+    const sharedName = this.multiTenantCollectionName();
+    if (collectionName === sharedName) return null;
+    const shared = client.collections.get(sharedName);
+    const tenant = this.tenantName(namespace);
+
+    let source, target, dropSource;
+    if (this.isMultiTenant()) {
+      const own = client.collections.get(collectionName);
+      if (!(await own.exists())) return null;
+      // Only move per-workspace collections, never another shared collection.
+      const config = await own.config.get();
+      if (config?.multiTenancy?.enabled) return null;
+      await this.ensureMultiTenantCollection(client);
+      await this.ensureTenant(client, namespace);
+      source = own;
+      target = shared.withTenant(tenant);
+      dropSource = () => client.collections.delete(collectionName);
+    } else {
+      if (!(await shared.exists())) return null;
+      if (!(await shared.tenants.getByName(tenant))) return null;
+      if (!(await client.collections.exists(collectionName))) {
+        const vectorIndexConfig = await this.quantizationConfig(client);
+        await client.collections.createFromSchema({
+          class: collectionName,
+          description: `Class created by AnythingLLM named ${collectionName}`,
+          vectorizer: "none",
+          ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
+        });
+      }
+      source = shared.withTenant(tenant);
+      target = client.collections.get(collectionName);
+      dropSource = () => shared.tenants.remove([tenant]);
+    }
+
+    this.logger(
+      `Moving workspace "${namespace}" to the ${this.isMultiTenant() ? `multi-tenant collection ${sharedName} (tenant ${tenant})` : `collection ${collectionName}`}.`
+    );
+    const moved = await this.copyObjects(source, target);
+    const [sourceCount, targetCount] = await Promise.all([
+      source.aggregate.overAll().then((r) => r.totalCount),
+      target.aggregate.overAll().then((r) => r.totalCount),
+    ]);
+    if (targetCount < sourceCount)
+      throw new Error(
+        `Weaviate::Moving workspace "${namespace}" copied ${targetCount} of ${sourceCount} objects - the source was kept.`
+      );
+    await dropSource();
+    this.logger(`Moved ${moved} objects of workspace "${namespace}".`);
+    return moved;
+  }
+
+  /**
+   * Copies every object (id, properties, vector) from one collection handle to
+   * another, in batches of BATCH_SIZE.
+   * @returns {Promise<number>} objects copied
+   */
+  async copyObjects(source, target) {
+    let batch = [];
+    let copied = 0;
+    const flush = async () => {
+      if (batch.length === 0) return;
+      const result = await target.data.insertMany(batch);
+      if (result.hasErrors) {
+        const messages = [
+          ...new Set(Object.values(result.errors).map((e) => e?.message)),
+        ];
+        throw new Error(`Weaviate::Copy failed: ${messages.join("; ")}`);
+      }
+      copied += batch.length;
+      batch = [];
+    };
+
+    for await (const obj of source.iterator({ includeVector: true })) {
+      batch.push({
+        id: obj.uuid,
+        properties: obj.properties,
+        vectors: obj.vectors?.default ?? obj.vectors,
+      });
+      if (batch.length >= BATCH_SIZE) await flush();
+    }
+    await flush();
+    return copied;
+  }
+
+  /**
+   * Moves every workspace into the current layout. Runs in the background
+   * after WEAVIATE_MULTI_TENANCY changes; workspaces not reached yet are moved
+   * on first use anyway.
+   */
+  async moveAllToCurrentLayout() {
+    const { Workspace } = require("../../../models/workspace");
+    const { client } = await this.connect();
+    const workspaces = await Workspace.where({});
+    const report = { moved: 0, failed: [] };
+    for (const { slug } of workspaces) {
+      try {
+        await this.moveToCurrentLayout(client, slug);
+        report.moved++;
+      } catch (e) {
+        this.logger(`moveAllToCurrentLayout ${slug}`, e.message);
+        report.failed.push(slug);
+      }
+    }
+    return report;
   }
 
   async deleteVectorsInNamespace(client, namespace = null) {
+    if (this.isMultiTenant()) {
+      await client.collections
+        .get(this.multiTenantCollectionName())
+        .tenants.remove([this.tenantName(namespace)]);
+      return true;
+    }
     await client.collections.delete(camelCase(namespace));
     return true;
   }
@@ -447,7 +719,7 @@ class Weaviate extends VectorDatabase {
             });
 
             const { success: additionResult, errors = [] } =
-              await this.addVectors(client, vectors);
+              await this.addVectors(client, vectors, namespace);
             if (!additionResult) {
               this.logger("addVectors failed to insert", errors);
               throw new Error("Error embedding into Weaviate");
@@ -516,7 +788,8 @@ class Weaviate extends VectorDatabase {
         this.logger("Inserting vectorized chunks into Weaviate collection.");
         const { success: additionResult, errors = [] } = await this.addVectors(
           client,
-          vectors
+          vectors,
+          namespace
         );
         if (!additionResult) {
           this.logger("addVectors failed to insert", errors);
@@ -541,7 +814,7 @@ class Weaviate extends VectorDatabase {
     const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
-    const collection = client.collections.get(camelCase(namespace));
+    const collection = this.collectionFor(client, namespace);
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
     for (const ids of toChunks(vectorIds, BATCH_SIZE)) {
       const { failed = 0 } = await collection.data.deleteMany(
@@ -622,6 +895,12 @@ class Weaviate extends VectorDatabase {
 
   async reset() {
     const { client } = await this.connect();
+    if (this.isMultiTenant()) {
+      const name = this.multiTenantCollectionName();
+      if (await client.collections.exists(name))
+        await client.collections.delete(name);
+      return { reset: true };
+    }
     const weaviateClasses = await this.allNamespaces(client);
     for (const weaviateClass of weaviateClasses) {
       await client.collections.delete(weaviateClass);

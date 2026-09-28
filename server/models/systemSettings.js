@@ -860,6 +860,8 @@ const SystemSettings = {
       WeaviateGrpcEndpoint: process.env.WEAVIATE_GRPC_ENDPOINT,
       WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
       WeaviateQuantization: process.env.WEAVIATE_QUANTIZATION,
+      WeaviateMultiTenancy: process.env.WEAVIATE_MULTI_TENANCY,
+      WeaviateCollection: process.env.WEAVIATE_COLLECTION,
 
       // QDrant DB Keys
       QdrantEndpoint: process.env.QDRANT_ENDPOINT,

@@ -29,17 +29,32 @@ function cosineDistance(a, b) {
 
 function createFakeClient({ version = "1.39.0" } = {}) {
   const store = new Map(); // collection name -> Map(uuid -> {vector, properties})
+  // multi-tenant collection name -> { config, tenants: Map(tenant -> Map(uuid -> obj)) }
+  const mtStore = new Map();
   const insertErrors = new Map(); // uuid -> error message to simulate
   const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 
-  const collectionHandle = (rawName) => {
-    const name = capitalize(rawName);
-    const objects = () => {
+  const collectionHandle = (name, tenant = null) => {
+    const objects = ({ create = false } = {}) => {
+      if (mtStore.has(name)) {
+        const { tenants, config } = mtStore.get(name);
+        if (!tenant)
+          throw new Error(`${name} is multi-tenant: tenant required`);
+        if (!tenants.has(tenant)) {
+          if (!create || !config.autoTenantCreation)
+            throw new Error(`tenant ${tenant} not found in ${name}`);
+          tenants.set(tenant, new Map());
+        }
+        return tenants.get(tenant);
+      }
+      if (tenant) throw new Error(`${name} is not multi-tenant`);
       if (!store.has(name)) throw new Error(`collection ${name} not found`);
       return store.get(name);
     };
-    return {
+    const handle = {
       name,
+      tenant,
+      exists: jest.fn(async () => store.has(name) || mtStore.has(name)),
       aggregate: {
         overAll: jest.fn(async () => ({ totalCount: objects().size })),
       },
@@ -63,7 +78,7 @@ function createFakeClient({ version = "1.39.0" } = {}) {
               errors[i] = { message: insertErrors.get(obj.id), object: obj };
               return;
             }
-            objects().set(obj.id, {
+            objects({ create: true }).set(obj.id, {
               vector: obj.vectors,
               properties: obj.properties,
             });
@@ -80,15 +95,66 @@ function createFakeClient({ version = "1.39.0" } = {}) {
         byId: () => ({ containsAny: (ids) => ({ ids }) }),
       },
       config: {
-        get: jest.fn(async () => ({ name, vectorizers: {}, properties: [] })),
+        get: jest.fn(async () => ({
+          name,
+          vectorizers: {},
+          properties: [],
+          multiTenancy: { enabled: mtStore.has(name) },
+        })),
       },
+      iterator: jest.fn(() => ({
+        [Symbol.asyncIterator]: async function* () {
+          for (const [uuid, obj] of [...objects().entries()])
+            yield {
+              uuid,
+              properties: obj.properties,
+              vectors: { default: obj.vector },
+            };
+        },
+      })),
+      tenants: {
+        get: jest.fn(async () =>
+          Object.fromEntries(
+            [...(mtStore.get(name)?.tenants.keys() ?? [])].map((t) => [
+              t,
+              { name: t, activityStatus: "ACTIVE" },
+            ])
+          )
+        ),
+        getByName: jest.fn(async (t) =>
+          mtStore.get(name)?.tenants.has(t)
+            ? { name: t, activityStatus: "ACTIVE" }
+            : null
+        ),
+        create: jest.fn(async (list) => {
+          const { tenants } = mtStore.get(name);
+          for (const { name: t } of list) {
+            if (tenants.has(t)) throw new Error(`tenant ${t} already exists`);
+            tenants.set(t, new Map());
+          }
+        }),
+        remove: jest.fn(async (list) => {
+          for (const t of list) mtStore.get(name)?.tenants.delete(t);
+        }),
+      },
+      withTenant: jest.fn((t) => handleFor(name, t)),
     };
+    return handle;
   };
 
   const handles = new Map();
+  const handleFor = (rawName, tenant = null) => {
+    const name = capitalize(rawName);
+    const key = `${name}|${tenant ?? ""}`;
+    if (!handles.has(key)) handles.set(key, collectionHandle(name, tenant));
+    return handles.get(key);
+  };
+
   const client = {
     store,
+    mtStore,
     insertErrors,
+    handleFor,
     closed: false,
     getWeaviateVersion: jest.fn(async () => fakeVersion(version)),
     isLive: jest.fn(async () => true),
@@ -96,19 +162,29 @@ function createFakeClient({ version = "1.39.0" } = {}) {
       client.closed = true;
     }),
     collections: {
-      listAll: jest.fn(async () => [...store.keys()].map((name) => ({ name }))),
-      exists: jest.fn(async (name) => store.has(capitalize(name))),
+      listAll: jest.fn(async () =>
+        [...store.keys(), ...mtStore.keys()].map((name) => ({ name }))
+      ),
+      exists: jest.fn(
+        async (name) =>
+          store.has(capitalize(name)) || mtStore.has(capitalize(name))
+      ),
       createFromSchema: jest.fn(async (schema) => {
-        store.set(capitalize(schema.class), new Map());
+        const name = capitalize(schema.class);
+        if (store.has(name) || mtStore.has(name))
+          throw new Error(`class ${name} already exists`);
+        if (schema.multiTenancyConfig?.enabled)
+          mtStore.set(name, {
+            config: schema.multiTenancyConfig,
+            tenants: new Map(),
+          });
+        else store.set(name, new Map());
       }),
       delete: jest.fn(async (name) => {
         store.delete(capitalize(name));
+        mtStore.delete(capitalize(name));
       }),
-      get: jest.fn((name) => {
-        const key = capitalize(name);
-        if (!handles.has(key)) handles.set(key, collectionHandle(key));
-        return handles.get(key);
-      }),
+      get: jest.fn((name) => handleFor(name)),
     },
   };
   return client;
@@ -199,6 +275,8 @@ const ENV_KEYS = [
   "VECTOR_DB",
   "WEAVIATE_DEPLOYMENT",
   "WEAVIATE_QUANTIZATION",
+  "WEAVIATE_MULTI_TENANCY",
+  "WEAVIATE_COLLECTION",
   "WEAVIATE_ENDPOINT",
   "WEAVIATE_GRPC_ENDPOINT",
   "WEAVIATE_API_KEY",
@@ -658,7 +736,7 @@ describe("Weaviate.addVectors", () => {
   ])("%i records -> %i insertMany calls", async (n, calls) => {
     const { client } = await new Weaviate().connect();
     await client.collections.createFromSchema({ class: "Ws" });
-    const result = await new Weaviate().addVectors(client, records(n));
+    const result = await new Weaviate().addVectors(client, records(n), "ws");
     expect(result).toEqual({ success: true, errors: [] });
     expect(client.collections.get("Ws").data.insertMany).toHaveBeenCalledTimes(
       calls
@@ -669,22 +747,23 @@ describe("Weaviate.addVectors", () => {
   it("maps legacy records to v3 DataObjects", async () => {
     const { client } = await new Weaviate().connect();
     await client.collections.createFromSchema({ class: "Ws" });
-    await new Weaviate().addVectors(client, records(1));
+    await new Weaviate().addVectors(client, records(1), "ws");
     expect(client.collections.get("Ws").data.insertMany).toHaveBeenCalledWith([
       { id: "id-0", properties: { text: "t0" }, vectors: [1, 0] },
     ]);
   });
 
-  it("groups records by collection", async () => {
+  it("writes to the namespace's collection, whatever class the records carry", async () => {
+    // Cached vectors keep the class of the workspace they were first embedded in.
     const { client } = await new Weaviate().connect();
-    await client.collections.createFromSchema({ class: "A" });
-    await client.collections.createFromSchema({ class: "B" });
-    await new Weaviate().addVectors(client, [
-      ...records(2, "A"),
-      ...records(3, "B"),
-    ]);
-    expect(client.store.get("A").size).toBe(2);
-    expect(client.store.get("B").size).toBe(3);
+    await client.collections.createFromSchema({ class: "Target" });
+    await new Weaviate().addVectors(
+      client,
+      records(3, "OldWorkspace"),
+      "target"
+    );
+    expect(client.store.get("Target").size).toBe(3);
+    expect(client.store.has("OldWorkspace")).toBe(false);
   });
 
   it("reports partial failures with de-duplicated messages", async () => {
@@ -693,7 +772,7 @@ describe("Weaviate.addVectors", () => {
     client.insertErrors.set("id-1", "invalid vector length");
     client.insertErrors.set("id-2", "invalid vector length");
     client.insertErrors.set("id-600", "property type mismatch");
-    const result = await new Weaviate().addVectors(client, records(700));
+    const result = await new Weaviate().addVectors(client, records(700), "ws");
     expect(result.success).toBe(false);
     expect(result.errors.sort()).toEqual([
       "invalid vector length",
@@ -904,6 +983,323 @@ describe("Weaviate vector compression (WEAVIATE_QUANTIZATION)", () => {
     await w.addDocumentToNamespace("ws", doc({ docId: "doc-2" }));
     expect(fakeClient.collections.createFromSchema).toHaveBeenCalledTimes(1);
     expect(created()[0]).not.toHaveProperty("vectorIndexConfig");
+  });
+});
+
+describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
+  const { Workspace } = require("../../../../models/workspace");
+  const enable = (extra = {}) =>
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true", ...extra });
+  const tenantObjects = (tenant, collection = "AnythingLLM") =>
+    fakeClient.mtStore.get(collection)?.tenants.get(tenant);
+
+  // A per-workspace collection as written before multi-tenancy was enabled.
+  function seedLegacy(name, n, prefix = name) {
+    fakeClient.store.set(
+      name,
+      new Map(
+        Array.from({ length: n }, (_, i) => [
+          `${prefix}-${i}`,
+          {
+            vector: embed(`${prefix} ${i}`),
+            properties: { text: `${prefix} ${i}` },
+          },
+        ])
+      )
+    );
+  }
+
+  describe("naming", () => {
+    const w = new Weaviate();
+    it.each(["my-workspace", "ws_1", "a", "x".repeat(64)])(
+      "keeps valid slug %p as the tenant name",
+      (slug) => expect(w.tenantName(slug)).toBe(slug)
+    );
+
+    it.each(["x".repeat(65), "café", "a.b", "hello world", "q?"])(
+      "hashes %p into a valid, stable tenant name",
+      (slug) => {
+        const name = w.tenantName(slug);
+        expect(name).toMatch(/^ws-[0-9a-f]{32}$/);
+        expect(w.tenantName(slug)).toBe(name);
+      }
+    );
+
+    it("gives different slugs different hashed names", () => {
+      expect(w.tenantName("x".repeat(65))).not.toBe(
+        w.tenantName("x".repeat(66))
+      );
+    });
+
+    it("uses AnythingLLM by default and capitalizes custom names", () => {
+      expect(w.multiTenantCollectionName()).toBe("AnythingLLM");
+      setEnv({ WEAVIATE_COLLECTION: "sharedDocs" });
+      expect(w.multiTenantCollectionName()).toBe("SharedDocs");
+      setEnv({ WEAVIATE_COLLECTION: "bad-name" });
+      expect(() => w.multiTenantCollectionName()).toThrow(
+        'Invalid WEAVIATE_COLLECTION "bad-name"'
+      );
+    });
+
+    it.each([
+      ["true", true],
+      ["TRUE", true],
+      ["1", true],
+      ["on", true],
+      ["false", false],
+      ["", false],
+      [undefined, false],
+    ])("WEAVIATE_MULTI_TENANCY=%p -> %p", (value, expected) => {
+      setEnv({ WEAVIATE_MULTI_TENANCY: value });
+      expect(w.isMultiTenant()).toBe(expected);
+    });
+  });
+
+  it("stores workspaces as tenants of one shared collection", async () => {
+    enable({ WEAVIATE_QUANTIZATION: "rq-8" });
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    await w.addDocumentToNamespace("beta", doc({ docId: "doc-b" }));
+
+    expect(fakeClient.collections.createFromSchema).toHaveBeenCalledTimes(1);
+    expect(fakeClient.collections.createFromSchema).toHaveBeenCalledWith({
+      class: "AnythingLLM",
+      description:
+        "Collection created by AnythingLLM. Each tenant is a workspace.",
+      vectorizer: "none",
+      multiTenancyConfig: {
+        enabled: true,
+        autoTenantCreation: true,
+        autoTenantActivation: true,
+      },
+      vectorIndexConfig: { rq: { enabled: true, bits: 8 } },
+    });
+    expect(fakeClient.store.size).toBe(0); // no per-workspace collections
+    const alpha = tenantObjects("alpha").size;
+    const beta = tenantObjects("beta").size;
+    expect(alpha).toBeGreaterThan(1);
+    expect(beta).toBeGreaterThan(1);
+
+    expect(await w.hasNamespace("alpha")).toBe(true);
+    expect(await w.hasNamespace("gamma")).toBe(false);
+    expect(await w.namespaceCount("alpha")).toBe(alpha);
+    expect((await w.allNamespaces(fakeClient)).sort()).toEqual([
+      "alpha",
+      "beta",
+    ]);
+    expect(await w.totalVectors()).toBe(alpha + beta);
+    expect(await w["namespace-stats"]({ namespace: "alpha" })).toEqual(
+      expect.objectContaining({
+        name: "AnythingLLM",
+        tenant: "alpha",
+        vectorCount: alpha,
+      })
+    );
+  });
+
+  it("keeps workspaces isolated from each other", async () => {
+    enable();
+    const w = new Weaviate();
+    await w.addDocumentToNamespace(
+      "alpha",
+      doc({ pageContent: "Only alpha knows about zebras." })
+    );
+    await w.addDocumentToNamespace(
+      "beta",
+      doc({ docId: "doc-b", pageContent: "Beta talks about volcanoes." })
+    );
+    const result = await w.performSimilaritySearch({
+      namespace: "beta",
+      input: "zebras",
+      LLMConnector: mockEmbedder,
+      similarityThreshold: 0,
+      topN: 10,
+    });
+    expect(result.contextTexts.join(" ")).not.toMatch(/zebras/);
+    expect(result.contextTexts.join(" ")).toMatch(/volcanoes/);
+  });
+
+  it("deletes documents, tenants and the shared collection", async () => {
+    enable();
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    await w.addDocumentToNamespace("alpha", doc({ docId: "keep" }));
+    await w.addDocumentToNamespace("beta", doc({ docId: "doc-b" }));
+
+    await w.deleteDocumentFromNamespace("alpha", "doc-1");
+    const keepIds = mockDocumentVectors.rows
+      .filter((r) => r.docId === "keep")
+      .map((r) => r.vectorId);
+    expect([...tenantObjects("alpha").keys()].sort()).toEqual(keepIds.sort());
+
+    await w["delete-namespace"]({ namespace: "alpha" });
+    expect(tenantObjects("alpha")).toBeUndefined();
+    expect(tenantObjects("beta").size).toBeGreaterThan(0);
+
+    expect(await w.reset()).toEqual({ reset: true });
+    expect(fakeClient.mtStore.has("AnythingLLM")).toBe(false);
+  });
+
+  it("uses a hashed tenant for slugs that are not valid tenant names", async () => {
+    enable();
+    const w = new Weaviate();
+    const slug = "a".repeat(80);
+    await w.addDocumentToNamespace(slug, doc());
+    expect(tenantObjects(w.tenantName(slug)).size).toBeGreaterThan(0);
+    expect(await w.hasNamespace(slug)).toBe(true);
+  });
+
+  it("tolerates a tenant created concurrently by another process", async () => {
+    enable();
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await w.ensureMultiTenantCollection(client);
+    const shared = client.collections.get("AnythingLLM");
+    shared.tenants.create.mockImplementationOnce(async () => {
+      fakeClient.mtStore.get("AnythingLLM").tenants.set("alpha", new Map());
+      throw new Error("tenant alpha already exists");
+    });
+    await expect(w.ensureTenant(client, "alpha")).resolves.toBeUndefined();
+  });
+
+  describe("moving existing data between layouts", () => {
+    it("moves a per-workspace collection into its tenant on first use", async () => {
+      seedLegacy("Alpha", 7);
+      seedLegacy("Beta", 3);
+      enable();
+      const w = new Weaviate();
+
+      expect(await w.hasNamespace("alpha")).toBe(true);
+      const moved = tenantObjects("alpha");
+      expect([...moved.keys()].sort()).toEqual(
+        Array.from({ length: 7 }, (_, i) => `Alpha-${i}`).sort()
+      );
+      expect(moved.get("Alpha-3")).toEqual({
+        vector: embed("Alpha 3"),
+        properties: { text: "Alpha 3" },
+      });
+      expect(fakeClient.store.has("Alpha")).toBe(false);
+      // Beta is only moved when used.
+      expect(fakeClient.store.has("Beta")).toBe(true);
+      expect(mockEmbedder.embedChunks).not.toHaveBeenCalled();
+
+      const search = await w.performSimilaritySearch({
+        namespace: "beta",
+        input: "Beta 1",
+        LLMConnector: mockEmbedder,
+        similarityThreshold: 0,
+        topN: 1,
+      });
+      expect(search.sources[0].id).toMatch(/^Beta-/);
+      expect(fakeClient.store.has("Beta")).toBe(false);
+    });
+
+    it("moves more than one batch", async () => {
+      seedLegacy("Big", 1234);
+      enable();
+      expect(await new Weaviate().namespaceCount("big")).toBe(0); // counting never moves
+      expect(await new Weaviate().hasNamespace("big")).toBe(true);
+      expect(tenantObjects("big").size).toBe(1234);
+      const insertMany = fakeClient.collections
+        .get("AnythingLLM")
+        .withTenant("big").data.insertMany;
+      expect(insertMany).toHaveBeenCalledTimes(3);
+    });
+
+    it("moves every workspace in the background after the switch", async () => {
+      seedLegacy("Alpha", 2);
+      seedLegacy("Beta", 2);
+      seedLegacy("Unrelated", 2); // not an AnythingLLM workspace
+      enable();
+      const where = jest
+        .spyOn(Workspace, "where")
+        .mockResolvedValue([{ slug: "alpha" }, { slug: "beta" }]);
+      try {
+        expect(await new Weaviate().moveAllToCurrentLayout()).toEqual({
+          moved: 2,
+          failed: [],
+        });
+      } finally {
+        where.mockRestore();
+      }
+      expect([...fakeClient.store.keys()]).toEqual(["Unrelated"]);
+      expect(tenantObjects("alpha").size).toBe(2);
+      expect(tenantObjects("beta").size).toBe(2);
+    });
+
+    it("moves tenants back to per-workspace collections when switched off", async () => {
+      enable();
+      const w = new Weaviate();
+      await w.addDocumentToNamespace("alpha", doc());
+      const ids = [...tenantObjects("alpha").keys()].sort();
+
+      setEnv({ WEAVIATE_MULTI_TENANCY: "false" });
+      expect(await w.hasNamespace("alpha")).toBe(true);
+      expect([...fakeClient.store.get("Alpha").keys()].sort()).toEqual(ids);
+      expect(tenantObjects("alpha")).toBeUndefined();
+
+      // ...and on again, in the same process.
+      enable();
+      expect(await w.hasNamespace("alpha")).toBe(true);
+      expect([...tenantObjects("alpha").keys()].sort()).toEqual(ids);
+      expect(fakeClient.store.has("Alpha")).toBe(false);
+    });
+
+    it("keeps the source when copying fails, and retries on the next use", async () => {
+      seedLegacy("Alpha", 3);
+      enable();
+      fakeClient.insertErrors.set("Alpha-1", "disk full");
+      const w = new Weaviate();
+      await expect(w.hasNamespace("alpha")).rejects.toThrow(
+        "Weaviate::Copy failed: disk full"
+      );
+      expect(fakeClient.store.get("Alpha").size).toBe(3);
+
+      fakeClient.insertErrors.clear();
+      expect(await w.hasNamespace("alpha")).toBe(true);
+      expect(tenantObjects("alpha").size).toBe(3);
+      expect(fakeClient.store.has("Alpha")).toBe(false);
+    });
+
+    it("keeps the source when the copy is incomplete", async () => {
+      seedLegacy("Alpha", 3);
+      enable();
+      const w = new Weaviate();
+      const { client } = await w.connect();
+      await w.ensureMultiTenantCollection(client);
+      await w.ensureTenant(client, "alpha");
+      client.collections
+        .get("AnythingLLM")
+        .withTenant("alpha")
+        .aggregate.overAll.mockResolvedValueOnce({ totalCount: 1 });
+      await expect(w.hasNamespace("alpha")).rejects.toThrow(
+        /copied 1 of 3 objects - the source was kept/
+      );
+      expect(fakeClient.store.get("Alpha").size).toBe(3);
+    });
+
+    it("copies only once when many callers hit the same workspace at once", async () => {
+      seedLegacy("Alpha", 5);
+      enable();
+      const results = await Promise.all(
+        [1, 2, 3, 4, 5].map(() => new Weaviate().hasNamespace("alpha"))
+      );
+      expect(results).toEqual([true, true, true, true, true]);
+      expect(fakeClient.handleFor("Alpha").iterator).toHaveBeenCalledTimes(1);
+    });
+
+    it("never moves a collection that is itself multi-tenant", async () => {
+      enable({ WEAVIATE_COLLECTION: "Shared" });
+      const w = new Weaviate();
+      const { client } = await w.connect();
+      // Another AnythingLLM instance's shared collection, named like a workspace.
+      await client.collections.createFromSchema({
+        class: "Other",
+        multiTenancyConfig: { enabled: true },
+      });
+      expect(await w.hasNamespace("other")).toBe(false);
+      expect(fakeClient.mtStore.has("Other")).toBe(true);
+    });
   });
 });
 
