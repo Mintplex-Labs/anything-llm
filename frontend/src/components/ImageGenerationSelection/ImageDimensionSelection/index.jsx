@@ -1,6 +1,19 @@
 const PROVIDER_DIMENSIONS = {
   "openai-imggen": ["auto", "1024x1024", "1024x1536", "1536x1024"],
   "lemonade-imggen": ["256x256", "512x512", "768x768", "1024x1024"],
+  // Gemini uses aspect ratios, not pixel sizes.
+  "gemini-imggen": [
+    "1:1",
+    "16:9",
+    "9:16",
+    "4:3",
+    "3:4",
+    "3:2",
+    "2:3",
+    "5:4",
+    "4:5",
+    "21:9",
+  ],
 };
 const DEFAULT_DIMENSIONS = ["512x512", "1024x1024"];
 
@@ -18,7 +31,7 @@ export default function ImageDimensionSelection({ provider, settings }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Image Dimensions
+        {provider === "gemini-imggen" ? "Aspect Ratio" : "Image Dimensions"}
       </label>
       <select
         name="ImageGenerationDimensions"

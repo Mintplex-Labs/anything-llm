@@ -61,6 +61,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama-imggen",
   "lemonade-imggen",
   "localai-imggen",
+  "gemini-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -153,6 +154,8 @@ async function getCustomModels(
       );
     case "localai-imggen":
       return await getLocalAiImageModels(basePath, apiKey);
+    case "gemini-imggen":
+      return await getGeminiImageModels(apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1613,6 +1616,54 @@ async function getLocalAiImageModels(basePath = null, apiKey = null) {
       return [];
     });
   return { models, error: null };
+}
+
+/**
+ * Default Gemini image models used when the live models API is unreachable or
+ * does not yet advertise image-capable models. IDs match Google's Nano Banana
+ * family: https://ai.google.dev/gemini-api/docs/image-generation
+ */
+const DEFAULT_GEMINI_IMAGE_MODELS = [
+  { id: "gemini-3.1-flash-image", name: "Gemini 3.1 Flash Image" },
+  { id: "gemini-3-pro-image", name: "Gemini 3 Pro Image" },
+  { id: "gemini-2.5-flash-image", name: "Gemini 2.5 Flash Image" },
+  { id: "gemini-3.1-flash-lite-image", name: "Gemini 3.1 Flash Lite Image" },
+];
+
+/**
+ * Lists Gemini models that can generate images by filtering the account's live
+ * model list for ids/names containing "image". Falls back to the known Nano
+ * Banana model IDs when the API cannot be reached.
+ * @param {string|boolean|null} apiKey
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getGeminiImageModels(apiKey = null) {
+  const { GeminiLLM } = require("../AiProviders/gemini");
+  const key =
+    unmaskedSecret(apiKey) ||
+    process.env.IMAGE_GEN_GEMINI_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    null;
+  const models = await GeminiLLM.fetchModels(key)
+    .then((all) =>
+      all
+        .filter(
+          (model) => /image/i.test(model.id) || /image/i.test(model.name || "")
+        )
+        .map((model) => ({
+          id: model.id,
+          name: model.name || model.id,
+        }))
+    )
+    .catch((e) => {
+      console.error(`Gemini:listImageModels`, e.message);
+      return [];
+    });
+
+  return {
+    models: models.length > 0 ? models : DEFAULT_GEMINI_IMAGE_MODELS,
+    error: null,
+  };
 }
 
 /**
