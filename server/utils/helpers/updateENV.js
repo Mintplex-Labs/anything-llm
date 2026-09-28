@@ -394,6 +394,14 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_ENDPOINT",
     checks: [isValidURL, validDockerizedUrl],
   },
+  WeaviateGrpcEndpoint: {
+    envKey: "WEAVIATE_GRPC_ENDPOINT",
+    // Optional: when empty, the gRPC endpoint is derived from WEAVIATE_ENDPOINT.
+    checks: [
+      (input = "") => (input ? isValidURL(input) : null),
+      (input = "") => (input ? validDockerizedUrl(input) : null),
+    ],
+  },
   WeaviateApiKey: {
     envKey: "WEAVIATE_API_KEY",
     checks: [],

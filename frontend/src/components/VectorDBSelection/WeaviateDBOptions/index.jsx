@@ -20,6 +20,21 @@ export default function WeaviateDBOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
+            gRPC Endpoint (optional)
+          </label>
+          <input
+            type="url"
+            name="WeaviateGrpcEndpoint"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="http://localhost:50051"
+            defaultValue={settings?.WeaviateGrpcEndpoint}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
             API Key
           </label>
           <input

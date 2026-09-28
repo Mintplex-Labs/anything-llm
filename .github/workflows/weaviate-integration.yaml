@@ -1,0 +1,38 @@
+name: Weaviate integration tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "server/utils/vectorDbProviders/weaviate/**"
+      - "server/__tests__/utils/vectorDbProviders/weaviate/**"
+      - ".github/workflows/weaviate-integration.yaml"
+
+jobs:
+  weaviate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install root dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        run: cd server && yarn install --frozen-lockfile
+
+      - name: Setup environment and Prisma
+        run: yarn setup:envs && yarn prisma:setup
+
+      - name: Run Weaviate integration tests across server versions
+        run: server/__tests__/utils/vectorDbProviders/weaviate/run-integration.sh
