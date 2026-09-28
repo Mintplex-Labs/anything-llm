@@ -564,6 +564,41 @@ export function FirecrawlSearchOptions({ settings }) {
   );
 }
 
+export function LinkupSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        Linkup requires a free API key{" "}
+        <a
+          href="https://app.linkup.so"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from the Linkup dashboard.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentLinkupApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Linkup API Key"
+            required={true}
+            defaultValue={settings?.AgentLinkupApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function ExaSearchOptions({ settings }) {
   return (
     <>

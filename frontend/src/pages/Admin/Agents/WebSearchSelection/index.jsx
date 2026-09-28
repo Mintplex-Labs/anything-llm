@@ -17,6 +17,7 @@ import YouSearchIcon from "./icons/you.png";
 import KeenableSearchIcon from "./icons/keenable.png";
 import AnySearchSearchIcon from "./icons/anysearch.png";
 import FirecrawlSearchIcon from "./icons/firecrawl.png";
+import LinkupSearchIcon from "./icons/linkup.png";
 import { ListMagnifyingGlass } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import { DefaultBadge } from "../Badges/default";
@@ -41,6 +42,7 @@ import {
   KeenableSearchOptions,
   AnySearchOptions,
   FirecrawlSearchOptions,
+  LinkupSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -171,6 +173,14 @@ const SEARCH_PROVIDERS = [
     logo: FirecrawlSearchIcon,
     options: (settings) => <FirecrawlSearchOptions settings={settings} />,
     description: "Web search API for AI agents. Requires a free API key.",
+  },
+  {
+    name: "Linkup",
+    value: "linkup-search",
+    logo: LinkupSearchIcon,
+    options: (settings) => <LinkupSearchOptions settings={settings} />,
+    description:
+      "Real-time web search for AI agents with citable sources. Requires a free API key.",
   },
 ];
 
