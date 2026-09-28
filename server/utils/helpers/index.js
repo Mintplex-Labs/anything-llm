@@ -352,6 +352,9 @@ function getImageGeneratorProvider() {
         OpenRouterImageGenerator,
       } = require("../ImageGenerators/openRouter");
       return new OpenRouterImageGenerator();
+    case "gemini":
+      const { GeminiImageGenerator } = require("../ImageGenerators/gemini");
+      return new GeminiImageGenerator();
     default:
       throw new Error(
         `No valid image generation provider was set. Got: ${provider}`

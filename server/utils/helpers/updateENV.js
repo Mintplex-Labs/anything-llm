@@ -349,6 +349,10 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_LLMMAN_AUTH_TOKEN",
     checks: [],
   },
+  ImageGenerationGeminiApiKey: {
+    envKey: "IMAGE_GEN_GEMINI_API_KEY",
+    checks: [isNotEmpty],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
@@ -1287,6 +1291,7 @@ function supportedImageGenerationProvider(input = "") {
     "openrouter",
     "localai",
     "llmman",
+    "gemini",
   ];
   return supported.includes(input)
     ? null

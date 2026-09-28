@@ -519,6 +519,7 @@ const SystemSettings = {
       ImageGenerationLocalAiApiKey: !!process.env.IMAGE_GEN_LOCALAI_API_KEY,
       ImageGenerationLlmmanBasePath: process.env.IMAGE_GEN_LLMMAN_BASE_PATH,
       ImageGenerationLlmmanAuthToken: !!process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN,
+      ImageGenerationGeminiApiKey: !!process.env.IMAGE_GEN_GEMINI_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

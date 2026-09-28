@@ -10,6 +10,7 @@ import LemonadeLogo from "@/media/llmprovider/lemonade.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import LlmmanLogo from "@/media/llmprovider/llmman.png";
+import GeminiLogo from "@/media/llmprovider/gemini.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/ImageGenerationSelection/OpenAiOptions";
@@ -18,6 +19,7 @@ import LemonadeOptions from "@/components/ImageGenerationSelection/LemonadeOptio
 import OpenRouterOptions from "@/components/ImageGenerationSelection/OpenRouterOptions";
 import LocalAiOptions from "@/components/ImageGenerationSelection/LocalAiOptions";
 import LlmmanOptions from "@/components/ImageGenerationSelection/LlmmanOptions";
+import GeminiOptions from "@/components/ImageGenerationSelection/GeminiOptions";
 import ImageGenerationItem from "@/components/ImageGenerationSelection/ImageGenerationItem";
 
 import CTAButton from "@/components/lib/CTAButton";
@@ -31,6 +33,14 @@ const PROVIDERS = [
     logo: OpenAiLogo,
     options: (settings) => <OpenAiOptions settings={settings} />,
     description: "Generate images with OpenAI's DALL-E and image models.",
+  },
+  {
+    name: "Gemini",
+    value: "gemini",
+    logo: GeminiLogo,
+    options: (settings) => <GeminiOptions settings={settings} />,
+    description:
+      "Generate and edit images with Google Gemini (Nano Banana) models.",
   },
   {
     name: "Ollama",

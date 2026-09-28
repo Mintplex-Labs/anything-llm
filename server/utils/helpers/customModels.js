@@ -62,6 +62,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "lemonade-imggen",
   "localai-imggen",
   "llmman-imggen",
+  "gemini-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -156,6 +157,8 @@ async function getCustomModels(
       return await getLocalAiImageModels(basePath, apiKey);
     case "llmman-imggen":
       return await getLlmmanImageModels(basePath, apiKey);
+    case "gemini-imggen":
+      return await getGeminiImageModels(apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -1669,6 +1672,51 @@ async function getLocalAiImageModels(basePath = null, apiKey = null) {
       return [];
     });
   return { models, error: null };
+}
+
+/**
+ * Lists Gemini image models from the v1 models API - the same API version the
+ * image generator calls, so every listed model can be used for generation.
+ * The API exposes no output modality, so image models are matched by id.
+ * @param {string|boolean|null} apiKey
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getGeminiImageModels(apiKey = null) {
+  const _apiKey =
+    unmaskedSecret(apiKey) || process.env.IMAGE_GEN_GEMINI_API_KEY || null;
+  if (!_apiKey) return { models: [], error: "No Gemini API key was set." };
+
+  const url = new URL("https://generativelanguage.googleapis.com/v1/models");
+  url.searchParams.set("pageSize", 1000);
+  return await fetch(url.toString(), {
+    headers: { "x-goog-api-key": _apiKey },
+  })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok)
+        throw new Error(data?.error?.message || `Gemini API ${res.status}`);
+      return data?.models || [];
+    })
+    .then((models) => ({
+      models: models
+        .filter(
+          (model) =>
+            /image/i.test(model.name) &&
+            model.supportedGenerationMethods?.includes("generateContent")
+        )
+        .map((model) => {
+          const id = model.name.split("/").pop();
+          return {
+            id,
+            name: model.displayName ? `${model.displayName} (${id})` : id,
+          };
+        }),
+      error: null,
+    }))
+    .catch((e) => {
+      console.error(`Gemini:listImageModels`, e.message);
+      return { models: [], error: e.message };
+    });
 }
 
 /**
