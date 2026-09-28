@@ -17,7 +17,35 @@ on:
       - "frontend/eslint.config.js"
 
 jobs:
+  # Reads the PR's changed files from the GitHub API (no checkout) so lint jobs
+  # for untouched packages are skipped without ever starting a runner.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      collector: ${{ steps.filter.outputs.collector }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            server:
+              - "server/**/*.js"
+              - "server/eslint.config.mjs"
+            frontend:
+              - "frontend/src/**/*.js"
+              - "frontend/src/**/*.jsx"
+              - "frontend/eslint.config.js"
+            collector:
+              - "collector/**/*.js"
+              - "collector/eslint.config.mjs"
+
   lint-server:
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +62,8 @@ jobs:
       - run: cd server && yarn lint:check
 
   lint-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +80,8 @@ jobs:
       - run: cd frontend && yarn lint:check
 
   lint-collector:
+    needs: changes
+    if: needs.changes.outputs.collector == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
