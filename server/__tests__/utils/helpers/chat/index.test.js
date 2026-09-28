@@ -462,11 +462,15 @@ describe("messageArrayCompressor", () => {
 
   describe("a system prompt whose text contains another `Context:`", () => {
     // The exact context block every provider's #appendContext builds.
-    const appendContext = (texts) =>
-      "\nContext:\n" +
-      texts
-        .map((text, i) => `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`)
-        .join("");
+    const appendContext = (texts) => {
+      if (!texts.length) return "";
+      return (
+        "\nContext:\n" +
+        texts
+          .map((text, i) => `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`)
+          .join("")
+      );
+    };
 
     async function compressSystem(systemPrompt, contextTexts) {
       const messages = [
@@ -504,6 +508,19 @@ describe("messageArrayCompressor", () => {
       expect(content).toContain("Answer only from the Context: below.");
       expect(content).toContain("FIRST_CHUNK");
       expect(content).toContain("[END CONTEXT 1]");
+    });
+
+    it("treats the whole message as prompt when no context was retrieved", async () => {
+      const content = await compressSystem(
+        `Use the Context: ${tokensOfText("INSTRUCTIONS", 400)}`,
+        []
+      );
+
+      // Without a [CONTEXT 0] block there is nothing to split off, so the
+      // prompt's own "Context:" stays in place and is not relabelled as context.
+      expect(content.startsWith("Use the Context: INSTRUCTIONS")).toBe(true);
+      expect(content).not.toContain("\nContext:");
+      expect(content).toContain(CANNONBALL_MARKER);
     });
   });
 });

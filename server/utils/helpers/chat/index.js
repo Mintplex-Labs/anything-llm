@@ -193,13 +193,16 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
 
 /**
  * Splits a system prompt into the instruction and the appended context block.
+ * Providers append retrieved chunks as "\nContext:\n[CONTEXT 0]:..." after the
+ * workspace prompt, so the first occurrence of that header marks the split.
+ * Without it no context was appended and the whole content is the prompt,
+ * even if the prompt itself says "Context:".
  * @param {string} content - The system prompt content.
  * @returns {{prompt: string, context: string}}
  */
 function splitSystemContext(content = "") {
   const header = "Context:";
-  let idx = content.indexOf(`${header}\n[CONTEXT 0]:`);
-  if (idx === -1) idx = content.indexOf(header);
+  const idx = content.indexOf(`${header}\n[CONTEXT 0]:`);
   if (idx === -1) return { prompt: content, context: "" };
   return {
     prompt: content.slice(0, idx),
