@@ -37,9 +37,6 @@ export default function GeminiImageOptions({ settings }) {
         />
         <ImageDimensionSelection provider="gemini-imggen" settings={settings} />
       </div>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-        Gemini uses aspect ratios (e.g. 1:1, 16:9) rather than pixel dimensions.
-      </p>
     </div>
   );
 }

@@ -1619,51 +1619,48 @@ async function getLocalAiImageModels(basePath = null, apiKey = null) {
 }
 
 /**
- * Default Gemini image models used when the live models API is unreachable or
- * does not yet advertise image-capable models. IDs match Google's Nano Banana
- * family: https://ai.google.dev/gemini-api/docs/image-generation
- */
-const DEFAULT_GEMINI_IMAGE_MODELS = [
-  { id: "gemini-3.1-flash-image", name: "Gemini 3.1 Flash Image" },
-  { id: "gemini-3-pro-image", name: "Gemini 3 Pro Image" },
-  { id: "gemini-2.5-flash-image", name: "Gemini 2.5 Flash Image" },
-  { id: "gemini-3.1-flash-lite-image", name: "Gemini 3.1 Flash Lite Image" },
-];
-
-/**
- * Lists Gemini models that can generate images by filtering the account's live
- * model list for ids/names containing "image". Falls back to the known Nano
- * Banana model IDs when the API cannot be reached.
+ * Lists Gemini image models from the v1 models API - the same API version the
+ * image generator calls, so every listed model can be used for generation.
+ * The API exposes no output modality, so image models are matched by id.
  * @param {string|boolean|null} apiKey
  * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
  */
 async function getGeminiImageModels(apiKey = null) {
-  const { GeminiLLM } = require("../AiProviders/gemini");
-  const key =
-    unmaskedSecret(apiKey) ||
-    process.env.IMAGE_GEN_GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    null;
-  const models = await GeminiLLM.fetchModels(key)
-    .then((all) =>
-      all
+  const _apiKey =
+    unmaskedSecret(apiKey) || process.env.IMAGE_GEN_GEMINI_API_KEY || null;
+  if (!_apiKey) return { models: [], error: "No Gemini API key was set." };
+
+  const url = new URL("https://generativelanguage.googleapis.com/v1/models");
+  url.searchParams.set("pageSize", 1000);
+  return await fetch(url.toString(), {
+    headers: { "x-goog-api-key": _apiKey },
+  })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok)
+        throw new Error(data?.error?.message || `Gemini API ${res.status}`);
+      return data?.models || [];
+    })
+    .then((models) => ({
+      models: models
         .filter(
-          (model) => /image/i.test(model.id) || /image/i.test(model.name || "")
+          (model) =>
+            /image/i.test(model.name) &&
+            model.supportedGenerationMethods?.includes("generateContent")
         )
-        .map((model) => ({
-          id: model.id,
-          name: model.name || model.id,
-        }))
-    )
+        .map((model) => {
+          const id = model.name.split("/").pop();
+          return {
+            id,
+            name: model.displayName ? `${model.displayName} (${id})` : id,
+          };
+        }),
+      error: null,
+    }))
     .catch((e) => {
       console.error(`Gemini:listImageModels`, e.message);
-      return [];
+      return { models: [], error: e.message };
     });
-
-  return {
-    models: models.length > 0 ? models : DEFAULT_GEMINI_IMAGE_MODELS,
-    error: null,
-  };
 }
 
 /**
