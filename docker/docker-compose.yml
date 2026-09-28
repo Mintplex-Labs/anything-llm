@@ -1,12 +1,12 @@
-name: anythingllm
+name: law-assistant
 
 networks:
   anything-llm:
     driver: bridge
 
 services:
-  anything-llm:
-    container_name: anythingllm
+  law-assistant:
+    container_name: law-assistant
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile
