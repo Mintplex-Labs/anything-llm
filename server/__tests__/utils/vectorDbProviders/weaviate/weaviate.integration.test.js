@@ -9,6 +9,8 @@
  *   WEAVIATE_TEST_URL / WEAVIATE_TEST_GRPC_URL             anonymous server
  *   WEAVIATE_TEST_AUTH_URL / WEAVIATE_TEST_AUTH_GRPC_URL   API-key server (optional)
  *   WEAVIATE_TEST_API_KEY                                  key for the API-key server
+ *   WEAVIATE_TEST_ALLOW_DROP=true                          allow dropping collections
+ *                                                          that already exist on the server
  *   WEAVIATE_TEST_EXPECT_UNSUPPORTED=true                  the server is older than
  *                                                          the minimum; only the
  *                                                          version gate is tested
@@ -90,9 +92,7 @@ jest.mock("../../../../utils/helpers", () => ({
   getEmbeddingEngineSelection: () => mockEmbedder,
 }));
 
-const {
-  Weaviate,
-} = require("../../../../utils/vectorDbProviders/weaviate");
+const { Weaviate } = require("../../../../utils/vectorDbProviders/weaviate");
 const { version: APP_VERSION } = require("../../../../package.json");
 
 jest.setTimeout(120_000);
@@ -148,8 +148,21 @@ async function rest(baseUrl, method, path, body, apiKey) {
   return text ? JSON.parse(text) : null;
 }
 
+// Refuse to wipe a server that holds data these tests did not create, unless
+// WEAVIATE_TEST_ALLOW_DROP=true (run-integration.sh sets it for its own containers).
 async function dropAllCollections(baseUrl, apiKey) {
-  const { classes = [] } = await rest(baseUrl, "GET", "/v1/schema", null, apiKey);
+  const { classes = [] } = await rest(
+    baseUrl,
+    "GET",
+    "/v1/schema",
+    null,
+    apiKey
+  );
+  if (classes.length > 0 && process.env.WEAVIATE_TEST_ALLOW_DROP !== "true")
+    throw new Error(
+      `Refusing to drop ${classes.length} existing collection(s) on ${baseUrl}. ` +
+        "Use an empty, disposable Weaviate or set WEAVIATE_TEST_ALLOW_DROP=true."
+    );
   for (const { class: name } of classes)
     await rest(baseUrl, "DELETE", `/v1/schema/${name}`, null, apiKey);
 }
@@ -291,9 +304,9 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       expect(search.sources[0].score).toBeGreaterThanOrEqual(
         search.sources[1].score
       );
-      expect(
-        mockDocumentVectors.rows.map((r) => r.vectorId)
-      ).toContain(search.sources[0].id);
+      expect(mockDocumentVectors.rows.map((r) => r.vectorId)).toContain(
+        search.sources[0].id
+      );
 
       // Threshold of 1 filters everything that is not an exact match.
       const strict = await w.performSimilaritySearch({
@@ -327,20 +340,25 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       expect(await w.namespaceCount("lifecycle ws")).toBe(chunkCount * 2);
 
       // Deleting one document leaves the other untouched.
-      expect(await w.deleteDocumentFromNamespace("lifecycle ws", "fruits")).toBe(
-        true
-      );
+      expect(
+        await w.deleteDocumentFromNamespace("lifecycle ws", "fruits")
+      ).toBe(true);
       expect(await w.namespaceCount("lifecycle ws")).toBe(chunkCount);
-      expect(mockDocumentVectors.rows.every((r) => r.docId === "fruits-copy")).toBe(
-        true
-      );
+      expect(
+        mockDocumentVectors.rows.every((r) => r.docId === "fruits-copy")
+      ).toBe(true);
 
       const stats = await w["namespace-stats"]({ namespace: "lifecycle ws" });
       expect(stats).toEqual(
-        expect.objectContaining({ name: "LifecycleWs", vectorCount: chunkCount })
+        expect.objectContaining({
+          name: "LifecycleWs",
+          vectorCount: chunkCount,
+        })
       );
 
-      expect(await w["delete-namespace"]({ namespace: "lifecycle ws" })).toEqual({
+      expect(
+        await w["delete-namespace"]({ namespace: "lifecycle ws" })
+      ).toEqual({
         message: `Namespace LifecycleWs was deleted along with ${chunkCount} vectors.`,
       });
       expect(await w.hasNamespace("lifecycle ws")).toBe(false);
@@ -360,7 +378,11 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
         cached.slice(1000),
       ]);
       expect(
-        await w.addDocumentToNamespace("big ws", fruitDoc({ docId: "big" }), "big.json")
+        await w.addDocumentToNamespace(
+          "big ws",
+          fruitDoc({ docId: "big" }),
+          "big.json"
+        )
       ).toEqual({ vectorized: true, error: null });
       expect(await w.namespaceCount("big ws")).toBe(1234);
 
@@ -469,6 +491,64 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       const { classes } = await rest(TEST_URL, "GET", "/v1/schema");
       expect(classes).toEqual([]);
       expect(await w.totalVectors()).toBe(0);
+    });
+
+    describe("vector compression (WEAVIATE_QUANTIZATION)", () => {
+      const OPTIONS = [
+        ["rq-8", "rq", { bits: 8 }, [1, 32, 0]],
+        ["rq-1", "rq", { bits: 1 }, [1, 33, 0]],
+        ["bq", "bq", {}, [1, 29, 0]],
+        ["sq", "sq", {}, [1, 29, 0]],
+        ["pq", "pq", {}, [1, 29, 0]],
+      ];
+      const atLeast = (version, [ma, mi, pa]) => {
+        const [a, b, c] = version.split(".").map(Number);
+        return a !== ma ? a > ma : b !== mi ? b > mi : c >= pa;
+      };
+
+      afterEach(() => {
+        delete process.env.WEAVIATE_QUANTIZATION;
+      });
+
+      it.each(OPTIONS)(
+        "%s: compresses new collections on supported servers, refuses on older ones",
+        async (value, key, extra, minVersion) => {
+          process.env.WEAVIATE_QUANTIZATION = value;
+          const w = new Weaviate();
+          const namespace = `quant ${value}`;
+          const collection = `Quant${value.replace("-", "")}`.replace(
+            /^(Quant)(.)/,
+            (_, a, b) => a + b.toUpperCase()
+          );
+          const result = await w.addDocumentToNamespace(namespace, fruitDoc());
+
+          if (!atLeast(serverVersion, minVersion)) {
+            expect(result.vectorized).toBe(false);
+            expect(result.error).toMatch(/requires Weaviate/);
+            expect(await w.hasNamespace(namespace)).toBe(false);
+            return;
+          }
+
+          expect(result).toEqual({ vectorized: true, error: null });
+          const schema = await rest(
+            TEST_URL,
+            "GET",
+            `/v1/schema/${collection}`
+          );
+          expect(schema.vectorIndexConfig[key]).toEqual(
+            expect.objectContaining({ enabled: true, ...extra })
+          );
+          const search = await w.performSimilaritySearch({
+            namespace,
+            input: "bananas tropical plantations",
+            LLMConnector: mockEmbedder,
+            similarityThreshold: 0,
+            topN: 1,
+          });
+          expect(search.contextTexts[0]).toMatch(/Bananas/);
+          await w["delete-namespace"]({ namespace });
+        }
+      );
     });
 
     it("never calls GraphQL and always sends the integration header", () => {

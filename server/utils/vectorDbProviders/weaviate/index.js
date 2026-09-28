@@ -17,6 +17,22 @@ const DEFAULT_GRPC_PORT = 50051;
 const BATCH_SIZE = 500;
 // Weaviate Cloud clusters derive their gRPC host from the REST host.
 const WEAVIATE_CLOUD_DOMAINS = [".weaviate.cloud", ".weaviate.network"];
+// Vector compression options for WEAVIATE_QUANTIZATION, with the HNSW
+// vectorIndexConfig each one sets and the oldest server that supports it.
+// Servers older than that ignore or reject the setting, so it is checked here.
+const QUANTIZATION_OPTIONS = {
+  "rq-8": {
+    config: { rq: { enabled: true, bits: 8 } },
+    minVersion: [1, 32, 0],
+  },
+  "rq-1": {
+    config: { rq: { enabled: true, bits: 1 } },
+    minVersion: [1, 33, 0],
+  },
+  bq: { config: { bq: { enabled: true } }, minVersion: [1, 29, 0] },
+  sq: { config: { sq: { enabled: true } }, minVersion: [1, 29, 0] },
+  pq: { config: { pq: { enabled: true } }, minVersion: [1, 29, 0] },
+};
 
 // A gRPC channel is expensive to open, so the client is shared by every
 // Weaviate instance in this process and only rebuilt when the settings change.
@@ -303,11 +319,37 @@ class Weaviate extends VectorDatabase {
    */
   async ensureCollection(client, namespace) {
     if (await this.namespaceExists(client, namespace)) return;
+    const vectorIndexConfig = await this.quantizationConfig(client);
     await client.collections.createFromSchema({
       class: camelCase(namespace),
       description: `Class created by AnythingLLM named ${camelCase(namespace)}`,
       vectorizer: "none",
+      ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
     });
+  }
+
+  /**
+   * The vectorIndexConfig for the WEAVIATE_QUANTIZATION setting, used when a
+   * collection is created. Unset means no explicit compression: the server
+   * default applies (none, unless the server sets DEFAULT_QUANTIZATION).
+   * @returns {Promise<object|null>}
+   * @throws if the value is unknown or the server is too old for it
+   */
+  async quantizationConfig(client) {
+    const value = process.env.WEAVIATE_QUANTIZATION?.trim().toLowerCase();
+    if (!value) return null;
+    const option = QUANTIZATION_OPTIONS[value];
+    if (!option)
+      throw new Error(
+        `Weaviate::Invalid WEAVIATE_QUANTIZATION "${value}" - use one of ${Object.keys(QUANTIZATION_OPTIONS).join(", ")}.`
+      );
+
+    const version = await client.getWeaviateVersion();
+    if (!version.isAtLeast(...option.minVersion))
+      throw new Error(
+        `Weaviate::Vector compression "${value}" requires Weaviate ${option.minVersion.join(".")} or later (server is ${version.show()}).`
+      );
+    return option.config;
   }
 
   /**

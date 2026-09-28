@@ -198,6 +198,7 @@ const { version: APP_VERSION } = require("../../../../package.json");
 const ENV_KEYS = [
   "VECTOR_DB",
   "WEAVIATE_DEPLOYMENT",
+  "WEAVIATE_QUANTIZATION",
   "WEAVIATE_ENDPOINT",
   "WEAVIATE_GRPC_ENDPOINT",
   "WEAVIATE_API_KEY",
@@ -832,6 +833,77 @@ describe("Weaviate.addDocumentToNamespace", () => {
     const result = await new Weaviate().addDocumentToNamespace("ws", doc());
     expect(result.vectorized).toBe(false);
     expect(result.error).toMatch(/requires Weaviate 1\.29\.0/);
+  });
+});
+
+describe("Weaviate vector compression (WEAVIATE_QUANTIZATION)", () => {
+  const created = () =>
+    fakeClient.collections.createFromSchema.mock.calls.map(
+      ([schema]) => schema
+    );
+
+  it("sends no vectorIndexConfig when unset, so the server default applies", async () => {
+    await new Weaviate().addDocumentToNamespace("ws", doc());
+    expect(created()[0]).not.toHaveProperty("vectorIndexConfig");
+  });
+
+  it.each([
+    ["rq-8", { rq: { enabled: true, bits: 8 } }],
+    ["rq-1", { rq: { enabled: true, bits: 1 } }],
+    ["bq", { bq: { enabled: true } }],
+    ["sq", { sq: { enabled: true } }],
+    ["pq", { pq: { enabled: true } }],
+    [" RQ-8 ", { rq: { enabled: true, bits: 8 } }],
+  ])("%p creates the collection with %p", async (value, vectorIndexConfig) => {
+    setEnv({ WEAVIATE_QUANTIZATION: value });
+    const result = await new Weaviate().addDocumentToNamespace("ws", doc());
+    expect(result).toEqual({ vectorized: true, error: null });
+    expect(created()[0]).toEqual({
+      class: "Ws",
+      description: "Class created by AnythingLLM named Ws",
+      vectorizer: "none",
+      vectorIndexConfig,
+    });
+  });
+
+  it.each([
+    ["rq-8", "1.31.9", false],
+    ["rq-8", "1.32.0", true],
+    ["rq-1", "1.32.27", false],
+    ["rq-1", "1.33.0", true],
+    ["bq", "1.29.0", true],
+    ["sq", "1.29.0", true],
+    ["pq", "1.29.0", true],
+  ])("%p on Weaviate %p supported=%p", async (value, version, supported) => {
+    useFakeClient({ version });
+    setEnv({ WEAVIATE_QUANTIZATION: value });
+    const result = await new Weaviate().addDocumentToNamespace("ws", doc());
+    if (supported) {
+      expect(result).toEqual({ vectorized: true, error: null });
+    } else {
+      expect(result.vectorized).toBe(false);
+      expect(result.error).toMatch(
+        new RegExp(`Vector compression "${value}" requires Weaviate`)
+      );
+      expect(fakeClient.collections.createFromSchema).not.toHaveBeenCalled();
+      expect(mockDocumentVectors.bulkInsert).not.toHaveBeenCalled();
+    }
+  });
+
+  it("rejects an unknown value without creating anything", async () => {
+    setEnv({ WEAVIATE_QUANTIZATION: "fp8" });
+    const result = await new Weaviate().addDocumentToNamespace("ws", doc());
+    expect(result.error).toMatch('Invalid WEAVIATE_QUANTIZATION "fp8"');
+    expect(fakeClient.collections.createFromSchema).not.toHaveBeenCalled();
+  });
+
+  it("does not touch existing collections", async () => {
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("ws", doc());
+    setEnv({ WEAVIATE_QUANTIZATION: "rq-8" });
+    await w.addDocumentToNamespace("ws", doc({ docId: "doc-2" }));
+    expect(fakeClient.collections.createFromSchema).toHaveBeenCalledTimes(1);
+    expect(created()[0]).not.toHaveProperty("vectorIndexConfig");
   });
 });
 

@@ -1,6 +1,14 @@
 import { useState } from "react";
 
 const WEAVIATE_CLOUD_DOMAINS = [".weaviate.cloud", ".weaviate.network"];
+const QUANTIZATION_OPTIONS = [
+  { value: "", label: "Server default" },
+  { value: "rq-8", label: "RQ 8-bit (recommended, Weaviate 1.32+)" },
+  { value: "rq-1", label: "RQ 1-bit (Weaviate 1.33+)" },
+  { value: "bq", label: "Binary (BQ)" },
+  { value: "sq", label: "Scalar (SQ)" },
+  { value: "pq", label: "Product (PQ)" },
+];
 const INPUT_CLASS =
   "border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5";
 
@@ -103,6 +111,29 @@ export default function WeaviateDBOptions({ settings }) {
         {isCloud
           ? "Use the REST endpoint and an API key from your Weaviate Cloud cluster. The gRPC endpoint is derived automatically."
           : "Weaviate 1.29 or later. The gRPC endpoint defaults to the REST host on port 50051."}
+      </p>
+
+      <div className="w-full flex items-center gap-[36px]">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Vector compression
+          </label>
+          <select
+            name="WeaviateQuantization"
+            defaultValue={settings?.WeaviateQuantization || ""}
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          >
+            {QUANTIZATION_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <p className="text-theme-text-secondary text-xs -mt-4">
+        Compresses vectors to cut memory use, with a small loss of search
+        accuracy. Applies to workspaces created after the change.
       </p>
     </div>
   );

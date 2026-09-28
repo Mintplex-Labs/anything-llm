@@ -415,6 +415,16 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
   },
+  WeaviateQuantization: {
+    envKey: "WEAVIATE_QUANTIZATION",
+    // Empty means the server default. Applies to collections created afterwards.
+    checks: [
+      (input = "") =>
+        ["", "rq-8", "rq-1", "bq", "sq", "pq"].includes(input)
+          ? null
+          : "Weaviate vector compression must be one of: rq-8, rq-1, bq, sq, pq.",
+    ],
+  },
 
   // QDrant Options
   QdrantEndpoint: {

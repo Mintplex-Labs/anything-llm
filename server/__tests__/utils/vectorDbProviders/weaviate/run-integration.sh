@@ -29,13 +29,31 @@ wait_ready() {
 cleanup() { "${COMPOSE[@]}" down -v >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
+# The tests drop every collection on the servers they use, so never run them
+# against something else that happens to listen on these ports.
+cleanup
+for port in $WEAVIATE_HTTP_PORT $WEAVIATE_GRPC_PORT $WEAVIATE_DEBUG_PORT $WEAVIATE_AUTH_HTTP_PORT $WEAVIATE_AUTH_GRPC_PORT; do
+  if lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "Port $port is already in use. Stop whatever listens on it, or change the *_PORT variables." >&2
+    exit 1
+  fi
+done
+
 declare -a RESULTS=()
 for version in "${VERSIONS[@]}"; do
   echo "=== Weaviate $version"
   cleanup
-  WEAVIATE_VERSION="$version" "${COMPOSE[@]}" up -d --quiet-pull >/dev/null 2>&1
+  if ! out=$(WEAVIATE_VERSION="$version" "${COMPOSE[@]}" up -d --quiet-pull 2>&1); then
+    echo "$out" >&2
+    exit 1
+  fi
   wait_ready "$WEAVIATE_HTTP_PORT"
   wait_ready "$WEAVIATE_AUTH_HTTP_PORT"
+  served=$(curl -fs "http://127.0.0.1:$WEAVIATE_HTTP_PORT/v1/meta" | sed -E 's/.*"version":"([^"]+)".*/\1/')
+  if [ "$served" != "$version" ]; then
+    echo "Expected Weaviate $version on :$WEAVIATE_HTTP_PORT but found $served" >&2
+    exit 1
+  fi
 
   unsupported=false
   version_lt "$version" "$MIN_SUPPORTED" && unsupported=true
@@ -47,6 +65,7 @@ for version in "${VERSIONS[@]}"; do
     WEAVIATE_TEST_AUTH_GRPC_URL="http://127.0.0.1:$WEAVIATE_AUTH_GRPC_PORT" \
     WEAVIATE_TEST_API_KEY="anythingllm-test-key" \
     WEAVIATE_TEST_EXPECT_UNSUPPORTED="$unsupported" \
+    WEAVIATE_TEST_ALLOW_DROP=true \
     npx jest server/__tests__/utils/vectorDbProviders/weaviate/weaviate.integration.test.js); then
     RESULTS+=("PASS  $version (unsupported=$unsupported)")
   else
