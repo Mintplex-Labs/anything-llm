@@ -14,6 +14,7 @@ import {
   Hammer,
   FlowArrow,
   Package,
+  FileText,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
@@ -34,7 +35,10 @@ import ServerPanel from "./MCPServers/ServerPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
+import MarkdownSkills from "@/models/markdownSkills";
 import AgentSkillSettings from "./AgentSkillSettings";
+import MarkdownSkillList from "./MarkdownSkills/MarkdownSkillList";
+import MarkdownSkillEditor from "./MarkdownSkills/MarkdownSkillEditor";
 
 const IGNORE_CHANGE_SETTINGS = [
   "agentSkillRerankerEnabled",
@@ -64,6 +68,12 @@ export default function AdminAgents() {
   // MCP Servers are lazy loaded to not block the UI thread
   const [mcpServers, setMcpServers] = useState([]);
   const [selectedMcpServer, setSelectedMcpServer] = useState(null);
+
+  const [brokenMdSkills, setBrokenMdSkills] = useState([]);
+  // Markdown skills (agentskills.io format). `selectedMdSkill` is a skill
+  // record to edit, the string "new" when creating, or null when none is open.
+  const [markdownSkills, setMarkdownSkills] = useState([]);
+  const [selectedMdSkill, setSelectedMdSkill] = useState(null);
 
   const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
     useState(false);
@@ -142,10 +152,61 @@ export default function AdminAgents() {
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
+      const mdSkills = await MarkdownSkills.list();
+      setMarkdownSkills(mdSkills.skills);
+      setBrokenMdSkills(mdSkills.brokenSkills);
       setLoading(false);
     }
     fetchSettings();
   }, []);
+
+  const handleMdSkillClick = (skill) => {
+    setSelectedSkill(null);
+    setSelectedFlow(null);
+    setSelectedMcpServer(null);
+    setSelectedMdSkill(skill);
+    if (isMobile) setShowSkillModal(true);
+  };
+
+  const handleMdSkillSaved = (saved) => {
+    setMarkdownSkills((prev) => {
+      const without = prev.filter((s) => s.name !== saved.name);
+      return [...without, saved].sort((a, b) => a.name.localeCompare(b.name));
+    });
+    setBrokenMdSkills((prev) => prev.filter((b) => b.dir !== saved.name));
+    setSelectedMdSkill(saved);
+  };
+
+  const handleMdSkillDeleted = (name) => {
+    setMarkdownSkills((prev) => prev.filter((s) => s.name !== name));
+    setBrokenMdSkills((prev) => prev.filter((b) => b.dir !== name));
+    setSelectedMdSkill(null);
+  };
+
+  const handleMdSkillRenamed = (oldName, renamed) => {
+    setMarkdownSkills((prev) => {
+      const without = prev.filter((s) => s.name !== renamed.name);
+      return [...without, renamed].sort((a, b) => a.name.localeCompare(b.name));
+    });
+    setBrokenMdSkills((prev) => prev.filter((b) => b.dir !== oldName));
+    setSelectedMdSkill(renamed);
+  };
+
+  const handleMdSkillRenameFix = async (oldName, newName) => {
+    const { skill, error } = await MarkdownSkills.rename(oldName, newName);
+    if (error || !skill) {
+      showToast(
+        error || `Could not rename "${oldName}" to "${newName}".`,
+        "error",
+        { clear: true }
+      );
+      return;
+    }
+    handleMdSkillRenamed(oldName, skill);
+    showToast(`Renamed "${oldName}" to "${newName}".`, "success", {
+      clear: true,
+    });
+  };
 
   const toggleDefaultSkill = (skillName) => {
     setDisabledAgentSkills((prev) => {
@@ -236,7 +297,9 @@ export default function AdminAgents() {
   };
 
   let SelectedSkillComponent = null;
-  if (selectedFlow) {
+  if (selectedMdSkill != null) {
+    SelectedSkillComponent = MarkdownSkillEditor;
+  } else if (selectedFlow) {
     SelectedSkillComponent = FlowPanel;
   } else if (selectedMcpServer) {
     SelectedSkillComponent = ServerPanel;
@@ -355,7 +418,9 @@ export default function AdminAgents() {
       >
         <form
           onSubmit={handleSubmit}
-          onChange={() => !selectedFlow && setHasChanges(true)}
+          onChange={() =>
+            !selectedFlow && selectedMdSkill == null && setHasChanges(true)
+          }
           ref={formEl}
           className="flex flex-col w-full p-4 mt-10"
         >
@@ -422,6 +487,21 @@ export default function AdminAgents() {
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
+              <FileText size={24} />
+              <p className="text-lg font-medium">Markdown Skills</p>
+            </div>
+            <MarkdownSkillList
+              skills={markdownSkills}
+              brokenSkills={brokenMdSkills}
+              selectedSkill={
+                typeof selectedMdSkill === "object" ? selectedMdSkill : null
+              }
+              handleClick={handleMdSkillClick}
+              onNewSkill={() => handleMdSkillClick("new")}
+              onRenameFix={handleMdSkillRenameFix}
+            />
+
+            <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
               <FlowArrow size={24} />
               <p className="text-lg font-medium">Agent Flows</p>
             </div>
@@ -477,7 +557,19 @@ export default function AdminAgents() {
                   <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll overflow-x-visible no-scroll">
                     {SelectedSkillComponent ? (
                       <>
-                        {selectedMcpServer ? (
+                        {selectedMdSkill != null ? (
+                          <MarkdownSkillEditor
+                            skill={
+                              typeof selectedMdSkill === "object"
+                                ? selectedMdSkill
+                                : null
+                            }
+                            onRenamed={handleMdSkillRenamed}
+                            isNew={selectedMdSkill === "new"}
+                            onSaved={handleMdSkillSaved}
+                            onDeleted={handleMdSkillDeleted}
+                          />
+                        ) : selectedMcpServer ? (
                           <ServerPanel
                             server={selectedMcpServer}
                             toggleServer={toggleMCP}
@@ -573,6 +665,7 @@ export default function AdminAgents() {
         onSubmit={handleSubmit}
         onChange={(e) => {
           if (IGNORE_CHANGE_SETTINGS.includes(e.target.name)) return;
+          if (selectedMdSkill != null) return;
           if (!selectedSkill?.imported && !selectedFlow) setHasChanges(true);
         }}
         ref={formEl}
@@ -649,6 +742,21 @@ export default function AdminAgents() {
                 handleClick={handleSkillClick}
               />
 
+              <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
+                <FileText size={24} />
+                <p className="text-lg font-medium">Markdown Skills</p>
+              </div>
+              <MarkdownSkillList
+                skills={markdownSkills}
+                brokenSkills={brokenMdSkills}
+                selectedSkill={
+                  typeof selectedMdSkill === "object" ? selectedMdSkill : null
+                }
+                handleClick={handleMdSkillClick}
+                onNewSkill={() => handleMdSkillClick("new")}
+                onRenameFix={handleMdSkillRenameFix}
+              />
+
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
                 <div className="flex items-center gap-x-2">
                   <FlowArrow size={24} />
@@ -703,7 +811,22 @@ export default function AdminAgents() {
           <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll overflow-x-visible no-scroll">
             {SelectedSkillComponent ? (
               <>
-                {selectedMcpServer ? (
+                {selectedMdSkill != null ? (
+                  <MarkdownSkillEditor
+                    key={
+                      selectedMdSkill === "new" ? "new" : selectedMdSkill.name
+                    }
+                    skill={
+                      typeof selectedMdSkill === "object"
+                        ? selectedMdSkill
+                        : null
+                    }
+                    onRenamed={handleMdSkillRenamed}
+                    isNew={selectedMdSkill === "new"}
+                    onSaved={handleMdSkillSaved}
+                    onDeleted={handleMdSkillDeleted}
+                  />
+                ) : selectedMcpServer ? (
                   <ServerPanel
                     server={selectedMcpServer}
                     toggleServer={toggleMCP}

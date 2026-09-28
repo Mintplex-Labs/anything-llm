@@ -7,10 +7,14 @@ const {
 } = require("../../../utils/chats");
 const { SlashCommandPresets } = require("../../../models/slashCommandsPresets");
 const { promptWithMemories } = require("../../../utils/memories");
+const { promptWithSkills } = require("../../../utils/skills");
 
 jest.mock("../../../models/slashCommandsPresets");
 jest.mock("../../../utils/memories", () => ({
   promptWithMemories: jest.fn(async ({ systemPrompt }) => systemPrompt),
+}));
+jest.mock("../../../utils/skills", () => ({
+  promptWithSkills: jest.fn(async ({ systemPrompt }) => systemPrompt),
 }));
 jest.mock("../../../models/systemPromptVariables", () => ({
   SystemPromptVariables: {
@@ -163,7 +167,10 @@ describe("grepAllSlashCommands", () => {
 describe("chatPrompt", () => {
   const workspace = { id: 7, openAiPrompt: "Workspace prompt." };
 
-  beforeEach(() => promptWithMemories.mockClear());
+  beforeEach(() => {
+    promptWithMemories.mockClear();
+    promptWithSkills.mockClear();
+  });
 
   it("injects memories scoped to the provided user", async () => {
     await chatPrompt(workspace, { id: 3 });
@@ -181,11 +188,24 @@ describe("chatPrompt", () => {
     );
   });
 
+  it("runs skill injection by default", async () => {
+    await chatPrompt(workspace, null, { prompt: "hi" });
+    expect(promptWithSkills).toHaveBeenCalledWith(
+      expect.objectContaining({ prompt: "hi" })
+    );
+  });
+
+  it("skips skill injection when skipSkills is set", async () => {
+    await chatPrompt(workspace, null, { skipSkills: true });
+    expect(promptWithSkills).not.toHaveBeenCalled();
+  });
+
   it("never looks up memories when skipMemories is set", async () => {
     const result = await chatPrompt(workspace, null, { skipMemories: true });
 
     expect(result).toBe("Workspace prompt.");
     expect(promptWithMemories).not.toHaveBeenCalled();
+    expect(promptWithSkills).toHaveBeenCalled();
   });
 
   it("does not treat a non-object user (eg: a username string) as an identity", async () => {

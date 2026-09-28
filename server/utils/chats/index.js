@@ -109,6 +109,8 @@ async function recentChatHistory({
  * @property {object[]} [rawHistory] - Recent chat history rows. Used to rerank injected memories.
  * @property {boolean} [skipMemories] - When true, no stored memories are looked up or injected.
  * Set this for unauthenticated contexts (eg: embeds) where there is no real user identity.
+ * @property {boolean} [skipSkills] - When true, markdown skills are not detected or injected.
+ * Set this for unauthenticated contexts (eg: embeds) that should not receive personalization.
  */
 
 /**
@@ -130,17 +132,33 @@ async function chatPrompt(workspace, user = null, opts = {}) {
     workspace?.id
   );
 
-  // Memories are scoped per-user, but in single-user mode they are stored with a
-  // null userId. Never inject them into anonymous/unauthenticated contexts.
-  if (opts.skipMemories === true) return systemPrompt;
+  // Memories and markdown skills are independent enrichment steps; each can be
+  // skipped independently. Both default to on.
+  let enriched = systemPrompt;
 
-  return promptWithMemories({
-    systemPrompt,
-    userId: user?.id ?? null,
-    workspaceId: workspace?.id,
-    prompt: opts.prompt ?? "",
-    rawHistory: opts.rawHistory ?? [],
-  });
+  if (opts.skipMemories !== true) {
+    // Memories are scoped per-user, but in single-user mode they are stored
+    // with a null userId. Never inject them into anonymous/unauthenticated
+    // contexts (callers pass skipMemories for those).
+    enriched = await promptWithMemories({
+      systemPrompt: enriched,
+      userId: user?.id ?? null,
+      workspaceId: workspace?.id,
+      prompt: opts.prompt ?? "",
+      rawHistory: opts.rawHistory ?? [],
+    });
+  }
+
+  if (opts.skipSkills !== true) {
+    const { promptWithSkills } = require("../skills");
+    enriched = await promptWithSkills({
+      systemPrompt: enriched,
+      prompt: opts.prompt ?? "",
+      rawHistory: opts.rawHistory ?? [],
+    });
+  }
+
+  return enriched;
 }
 
 // We use this util function to deduplicate sources from similarity searching

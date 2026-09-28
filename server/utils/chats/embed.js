@@ -180,9 +180,11 @@ async function streamChatWithForEmbed(
   const messages = await LLMConnector.compressMessages(
     {
       // Embed visitors are anonymous - never pass request-supplied identity
-      // into chatPrompt and never inject stored memories into the prompt.
+      // into chatPrompt and never inject stored memories or markdown skills
+      // into the prompt.
       systemPrompt: await chatPrompt(embed.workspace, null, {
         skipMemories: true,
+        skipSkills: true,
       }),
       userPrompt: message,
       contextTexts,
