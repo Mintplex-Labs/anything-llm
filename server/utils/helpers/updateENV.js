@@ -390,6 +390,15 @@ const KEY_MAPPING = {
   },
 
   // Weaviate Options
+  WeaviateDeployment: {
+    envKey: "WEAVIATE_DEPLOYMENT",
+    checks: [
+      (input = "") =>
+        ["cloud", "custom"].includes(input)
+          ? null
+          : 'Weaviate deployment must be "cloud" or "custom".',
+    ],
+  },
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
     checks: [isValidURL, validDockerizedUrl],

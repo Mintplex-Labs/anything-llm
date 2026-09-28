@@ -855,6 +855,7 @@ const SystemSettings = {
       ChromaCloudDatabase: process.env.CHROMACLOUD_DATABASE,
 
       // Weaviate DB Keys
+      WeaviateDeployment: process.env.WEAVIATE_DEPLOYMENT,
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
       WeaviateGrpcEndpoint: process.env.WEAVIATE_GRPC_ENDPOINT,
       WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,

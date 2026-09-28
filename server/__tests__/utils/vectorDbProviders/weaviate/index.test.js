@@ -197,6 +197,7 @@ const { version: APP_VERSION } = require("../../../../package.json");
 // ---- Helpers ----
 const ENV_KEYS = [
   "VECTOR_DB",
+  "WEAVIATE_DEPLOYMENT",
   "WEAVIATE_ENDPOINT",
   "WEAVIATE_GRPC_ENDPOINT",
   "WEAVIATE_API_KEY",
@@ -361,27 +362,71 @@ describe("Weaviate.connectionConfig", () => {
       },
     },
     {
-      name: "Weaviate Cloud (.weaviate.cloud) uses connectToWeaviateCloud",
+      name: "inferred: Weaviate Cloud host (.weaviate.cloud) is cloud",
       env: {
         WEAVIATE_ENDPOINT: "https://abc123.c0.europe-west3.gcp.weaviate.cloud",
+        WEAVIATE_API_KEY: "wcd-key",
       },
       expected: {
         method: "cloud",
         url: "https://abc123.c0.europe-west3.gcp.weaviate.cloud",
-        options: { headers: header },
+        options: {
+          headers: header,
+          authCredentials: expect.objectContaining({ apiKey: "wcd-key" }),
+        },
       },
     },
     {
-      name: "legacy Weaviate Cloud (.weaviate.network) uses connectToWeaviateCloud",
-      env: { WEAVIATE_ENDPOINT: "https://my-sandbox.weaviate.network" },
+      name: "inferred: legacy Weaviate Cloud host (.weaviate.network) is cloud",
+      env: {
+        WEAVIATE_ENDPOINT: "https://my-sandbox.weaviate.network",
+        WEAVIATE_API_KEY: "wcd-key",
+      },
       expected: expect.objectContaining({ method: "cloud" }),
     },
     {
-      name: "Weaviate Cloud with an explicit gRPC endpoint falls back to custom",
+      name: "inferred: Weaviate Cloud host with an explicit gRPC endpoint is custom",
       env: {
         WEAVIATE_ENDPOINT: "https://abc123.c0.europe-west3.gcp.weaviate.cloud",
         WEAVIATE_GRPC_ENDPOINT:
           "https://grpc-abc123.c0.europe-west3.gcp.weaviate.cloud:443",
+      },
+      expected: expect.objectContaining({ method: "custom" }),
+    },
+    {
+      name: "explicit cloud works for any host and ignores WEAVIATE_GRPC_ENDPOINT",
+      env: {
+        WEAVIATE_DEPLOYMENT: "cloud",
+        WEAVIATE_ENDPOINT: "https://vectors.my-company.com/",
+        WEAVIATE_GRPC_ENDPOINT: "http://ignored:50051",
+        WEAVIATE_API_KEY: "wcd-key",
+      },
+      expected: expect.objectContaining({
+        method: "cloud",
+        url: "https://vectors.my-company.com",
+      }),
+    },
+    {
+      name: "explicit custom wins over a Weaviate Cloud host",
+      env: {
+        WEAVIATE_DEPLOYMENT: "custom",
+        WEAVIATE_ENDPOINT: "https://abc123.c0.europe-west3.gcp.weaviate.cloud",
+      },
+      expected: {
+        method: "custom",
+        options: expect.objectContaining({
+          httpHost: "abc123.c0.europe-west3.gcp.weaviate.cloud",
+          httpPort: 443,
+          grpcPort: 50051,
+          grpcSecure: true,
+        }),
+      },
+    },
+    {
+      name: "deployment value is case and whitespace insensitive",
+      env: {
+        WEAVIATE_DEPLOYMENT: "  Custom ",
+        WEAVIATE_ENDPOINT: "https://abc123.c0.europe-west3.gcp.weaviate.cloud",
       },
       expected: expect.objectContaining({ method: "custom" }),
     },
@@ -401,6 +446,23 @@ describe("Weaviate.connectionConfig", () => {
     setEnv({ WEAVIATE_API_KEY: "   " });
     expect(new Weaviate().connectionConfig().options).not.toHaveProperty(
       "authCredentials"
+    );
+  });
+
+  it("requires an API key for Weaviate Cloud", () => {
+    setEnv({
+      WEAVIATE_DEPLOYMENT: "cloud",
+      WEAVIATE_ENDPOINT: "https://abc123.c0.europe-west3.gcp.weaviate.cloud",
+    });
+    expect(() => new Weaviate().connectionConfig()).toThrow(
+      "Weaviate::Weaviate Cloud requires an API key."
+    );
+  });
+
+  it("rejects an unknown deployment value", () => {
+    setEnv({ WEAVIATE_DEPLOYMENT: "serverless" });
+    expect(() => new Weaviate().connectionConfig()).toThrow(
+      'Weaviate::Invalid WEAVIATE_DEPLOYMENT "serverless"'
     );
   });
 
@@ -424,7 +486,10 @@ describe("Weaviate.connect", () => {
     expect(weaviate.connectToCustom).toHaveBeenCalledTimes(1);
     expect(weaviate.connectToWeaviateCloud).not.toHaveBeenCalled();
 
-    setEnv({ WEAVIATE_ENDPOINT: "https://x.c0.us-east1.gcp.weaviate.cloud" });
+    setEnv({
+      WEAVIATE_ENDPOINT: "https://x.c0.us-east1.gcp.weaviate.cloud",
+      WEAVIATE_API_KEY: "wcd-key",
+    });
     await new Weaviate().connect();
     expect(weaviate.connectToWeaviateCloud).toHaveBeenCalledWith(
       "https://x.c0.us-east1.gcp.weaviate.cloud",
@@ -473,7 +538,16 @@ describe("Weaviate.connect", () => {
     expect(weaviate.connectToCustom).toHaveBeenCalledTimes(1);
   });
 
+  it("fails to connect to Weaviate Cloud without an API key", async () => {
+    setEnv({ WEAVIATE_DEPLOYMENT: "cloud" });
+    await expect(new Weaviate().connect()).rejects.toThrow(
+      "Weaviate Cloud requires an API key"
+    );
+    expect(weaviate.connectToWeaviateCloud).not.toHaveBeenCalled();
+  });
+
   it.each([
+    ["WEAVIATE_DEPLOYMENT", "custom"],
     ["WEAVIATE_ENDPOINT", "http://other:8080"],
     ["WEAVIATE_GRPC_ENDPOINT", "http://other:50051"],
     ["WEAVIATE_API_KEY", "rotated"],

@@ -32,9 +32,34 @@ class Weaviate extends VectorDatabase {
   }
 
   /**
+   * The deployment type: "cloud" (Weaviate Cloud) or "custom" (self-hosted or
+   * any other deployment). Set explicitly with WEAVIATE_DEPLOYMENT. Configs from
+   * before that setting existed are inferred from the endpoint: a Weaviate Cloud
+   * host with no explicit gRPC endpoint is "cloud".
+   * @returns {"cloud"|"custom"}
+   */
+  deploymentMode() {
+    const explicit = process.env.WEAVIATE_DEPLOYMENT?.trim().toLowerCase();
+    if (explicit === "cloud" || explicit === "custom") return explicit;
+    if (explicit)
+      throw new Error(
+        `Weaviate::Invalid WEAVIATE_DEPLOYMENT "${explicit}" - use "cloud" or "custom".`
+      );
+
+    const { hostname } = new URL(process.env.WEAVIATE_ENDPOINT);
+    const isCloudHost = WEAVIATE_CLOUD_DOMAINS.some((domain) =>
+      hostname.endsWith(domain)
+    );
+    return isCloudHost && !process.env.WEAVIATE_GRPC_ENDPOINT?.trim()
+      ? "cloud"
+      : "custom";
+  }
+
+  /**
    * Builds the weaviate-client connection options from the ENV settings.
-   * - Weaviate Cloud hosts use `connectToWeaviateCloud`, which derives the gRPC host.
-   * - Everything else uses `connectToCustom`. The gRPC endpoint is taken from
+   * - "cloud" uses `connectToWeaviateCloud`, which derives the gRPC host from
+   *   the cluster URL and requires an API key.
+   * - "custom" uses `connectToCustom`. The gRPC endpoint is taken from
    *   WEAVIATE_GRPC_ENDPOINT, or defaults to the REST host on port 50051.
    * @returns {{method: "cloud"|"custom", url?: string, options: object}}
    */
@@ -49,10 +74,9 @@ class Weaviate extends VectorDatabase {
       ...(apiKey ? { authCredentials: new weaviate.ApiKey(apiKey) } : {}),
     };
 
-    const isWeaviateCloud = WEAVIATE_CLOUD_DOMAINS.some((domain) =>
-      restUrl.hostname.endsWith(domain)
-    );
-    if (isWeaviateCloud && !grpcEndpoint) {
+    if (this.deploymentMode() === "cloud") {
+      if (!apiKey)
+        throw new Error("Weaviate::Weaviate Cloud requires an API key.");
       return {
         method: "cloud",
         url: restUrl.origin,
@@ -122,6 +146,7 @@ class Weaviate extends VectorDatabase {
       throw new Error("Weaviate::Invalid ENV settings");
 
     const key = [
+      process.env.WEAVIATE_DEPLOYMENT,
       process.env.WEAVIATE_ENDPOINT,
       process.env.WEAVIATE_GRPC_ENDPOINT,
       process.env.WEAVIATE_API_KEY,
