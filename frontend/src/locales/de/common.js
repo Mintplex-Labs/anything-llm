@@ -782,6 +782,11 @@ const TRANSLATIONS = {
             "Die maximale Anzahl der auszuwählenden Werkzeuge für jede Abfrage. Wir empfehlen, diesen Wert für größere Modelle mit größerem Kontext auf einen höheren Wert einzustellen.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Max. injizierte Markdown-Skills",
+        description:
+          "Die maximale Anzahl an Markdown-Skills, die in den System-Prompt injiziert werden, wenn es mehr Skills als diesen Limit gibt. Bei oder unter dem Limit werden immer alle Skills injiziert.",
+      },
       "clarifying-questions": {
         title:
           "Ermöglichen Sie dem Vertreter, Nachfragen zu stellen, um Unklarheiten zu beseitigen.",

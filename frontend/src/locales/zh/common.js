@@ -718,6 +718,11 @@ const TRANSLATIONS = {
             "可以选取的工具的最大数量，用于每个查询。我们建议将此值设置为较高的值，以便在处理大型上下文模型时。",
         },
       },
+      "markdown-skill-injection": {
+        title: "最大注入的 Markdown 技能数",
+        description:
+          "当技能数量超过此限制时，注入到系统提示中的 Markdown 技能的最大数量。等于或低于限制时，始终注入所有技能。",
+      },
       "clarifying-questions": {
         title: "允许代理人提出进一步的疑问",
         "beta-badge": "测试版",

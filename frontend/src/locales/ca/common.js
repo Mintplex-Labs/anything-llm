@@ -788,6 +788,11 @@ const TRANSLATIONS = {
             "El nombre màxim d'eines a seleccionar per a cada consulta. Recomanem valors més alts per a models amb contextos més grans.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Màxim d'habilitats Markdown injectades",
+        description:
+          "El nombre màxim d'habilitats Markdown injectades al prompt del sistema quan hi ha més habilitats que aquest límit. Al límit o per sota, sempre s'injecten totes les habilitats.",
+      },
       "clarifying-questions": {
         title: "Permetre que l'agent faci preguntes per aclarir aspectes.",
         "beta-badge": "Versió beta",

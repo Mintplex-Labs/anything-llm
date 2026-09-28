@@ -742,6 +742,11 @@ const TRANSLATIONS = {
             "각 쿼리에 사용할 수 있는 최대 도구 수입니다. 큰 컨텍스트 모델의 경우, 이 값을 더 높은 값으로 설정하는 것을 권장합니다.",
         },
       },
+      "markdown-skill-injection": {
+        title: "주입할 최대 Markdown 스킬 수",
+        description:
+          "이 제한보다 스킬이 많을 때 시스템 프롬프트에 주입되는 Markdown 스킬의 최대 수입니다. 제한 이하에서는 항상 모든 스킬이 주입됩니다.",
+      },
       "clarifying-questions": {
         title: "대리인에게 추가 질문을 할 수 있도록 허용",
         "beta-badge": "베타",

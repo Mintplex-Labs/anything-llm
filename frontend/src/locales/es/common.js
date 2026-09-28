@@ -789,6 +789,11 @@ const TRANSLATIONS = {
             "El número máximo de herramientas que se pueden seleccionar para cada consulta. Recomendamos establecer este valor en un número más alto para modelos con un contexto más amplio.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Máximo de habilidades Markdown inyectadas",
+        description:
+          "El número máximo de habilidades Markdown inyectadas en el prompt del sistema cuando hay más habilidades que este límite. Al límite o por debajo, siempre se inyectan todas las habilidades.",
+      },
       "clarifying-questions": {
         title: "Permitir que el agente formule preguntas para aclarar.",
         "beta-badge": "Versión de prueba",

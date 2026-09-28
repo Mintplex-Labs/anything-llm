@@ -763,6 +763,11 @@ const TRANSLATIONS = {
             "Högsta antal verktyg att välja för varje fråga. Högre värden passar bättre för modeller med större kontext.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Max antal injicerade Markdown-färdigheter",
+        description:
+          "Det maximala antalet Markdown-färdigheter som injiceras i systemprompten när det finns fler färdigheter än denna gräns. Vid eller under gränsen injiceras alltid alla färdigheter.",
+      },
       "clarifying-questions": {
         title: "Låt agenten ställa förtydligande frågor",
         "beta-badge": "BETA",

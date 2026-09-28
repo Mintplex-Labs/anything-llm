@@ -773,6 +773,11 @@ const TRANSLATIONS = {
             "Maksimalan broj alata koji se odabire za svaki upit. Preporučujemo postavljanje veće vrijednosti za modele s većim kontekstom.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Maks. ubačenih Markdown vještina",
+        description:
+          "Maksimalan broj Markdown vještina ubačenih u sustavni prompt kada postoji više vještina od ovog limita. Na ili ispod limita, uvijek se ubace sve vještine.",
+      },
       "clarifying-questions": {
         title: "Dopusti agentu postavljanje pitanja za razjašnjenje",
         "beta-badge": "BETA",

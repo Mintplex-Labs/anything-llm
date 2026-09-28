@@ -1333,6 +1333,11 @@ const TRANSLATIONS = {
             "Numărul maxim de instrumente care pot fi selectate pentru fiecare interogare. Recomandăm stabilirea acestui parametru la valori mai mari pentru modelele cu un context mai amplu.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Număr maxim de abilități Markdown injectate",
+        description:
+          "Numărul maxim de abilități Markdown injectate în promptul de sistem când există mai multe abilități decât această limită. La limita sau sub ea, toate abilitățile sunt mereu injectate.",
+      },
       "clarifying-questions": {
         title:
           "Permite agentului să pună întrebări suplimentare pentru a clarifica anumite aspecte.",

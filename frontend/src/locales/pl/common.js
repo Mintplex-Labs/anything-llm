@@ -778,6 +778,11 @@ const TRANSLATIONS = {
             "Maksymalna liczba narzędzi, które można wybrać dla każdego zapytania. Zalecamy ustawienie tej wartości na wyższe poziomy dla modeli o większym kontekście.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Maks. liczba wstrzykiwanych umiejętności Markdown",
+        description:
+          "Maksymalna liczba umiejętności Markdown wstrzykiwanych do systemu, gdy umiejętności jest więcej niż ten limit. Przy lub poniżej limitu zawsze wstrzykiwane są wszystkie umiejętności.",
+      },
       "clarifying-questions": {
         title:
           "Pozwól agentowi zadawać pytania, które pomogą wyjaśnić sytuację.",

@@ -766,6 +766,11 @@ const TRANSLATIONS = {
             "Jumlah maksimum alat yang dipilih untuk setiap kueri. Kami merekomendasikan pengaturan ini ke nilai yang lebih tinggi untuk model konteks besar.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Maksimal keterampilan Markdown yang disuntikkan",
+        description:
+          "Jumlah maksimum keterampilan Markdown yang disuntikkan ke prompt sistem ketika ada lebih banyak keterampilan dari batas ini. Pada atau di bawah batas, semua keterampilan selalu disuntikkan.",
+      },
       "clarifying-questions": {
         title: "Izinkan agen mengajukan pertanyaan klarifikasi",
         "beta-badge": "BETA",

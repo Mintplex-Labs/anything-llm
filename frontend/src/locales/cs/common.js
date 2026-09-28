@@ -772,6 +772,11 @@ const TRANSLATIONS = {
             "Maximální počet nástrojů, které lze vybrat pro každou dotaz. Doporučujeme nastavit tuto hodnotu na vyšší, pro modely s větším kontextem.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Max. vložených markdown dovedností",
+        description:
+          "Maximální počet markdown dovedností vložených do systémového promptu, pokud je jich více než tento limit. Při nebo pod limitem se vždy vloží všechny dovednosti.",
+      },
       "clarifying-questions": {
         title: "Umožněte zástupci, aby kladl upřesňující otázky.",
         "beta-badge": "BETA",

@@ -776,6 +776,11 @@ const TRANSLATIONS = {
             "Il numero massimo di strumenti da selezionare per ogni query. Si raccomanda di impostare questo valore su un valore più elevato per i modelli con un contesto più ampio.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Numero massimo di abilità Markdown iniettate",
+        description:
+          "Il numero massimo di abilità Markdown iniettate nel prompt di sistema quando ci sono più abilità di questo limite. A o sotto il limite, tutte le abilità vengono sempre iniettate.",
+      },
       "clarifying-questions": {
         title:
           "Permettere all'agente di porre domande per chiarire i dettagli.",

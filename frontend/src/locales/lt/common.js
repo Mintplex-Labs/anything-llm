@@ -772,6 +772,11 @@ const TRANSLATIONS = {
             "Maksimalus įrankių skaičius, kurį galima parinkti kiekvienai užklausai. Rekomenduojame nustatyti didesnes reikšmes didelio konteksto modeliams.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Didžiausias įterpiamų Markdown įgūdžių skaičius",
+        description:
+          "Didžiausias Markdown įgūdžių skaičius, įterpiamų į sistemos užklausą, kai įgūdžių yra daugiau nei šis ribojimas. Pasiekus arba nepasiekus ribos, visada įterpiami visi įgūdžiai.",
+      },
       "clarifying-questions": {
         title: "Leisk agentui klausti, kad geriau suprastų",
         "beta-badge": "BETA",

@@ -754,6 +754,11 @@ const TRANSLATIONS = {
             "Det maksimale antal værktøjer, der kan vælges for hver forespørgsel. Vi anbefaler at indstille dette til højere værdier for større modeller med mere kontekst.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Maks. injicerede markdown-færdigheder",
+        description:
+          "Det maksimale antal markdown-færdigheder, der injiceres i systemprompten, når der er flere færdigheder end dette limit. Ved eller under limiten injiceres altid alle færdigheder.",
+      },
       "clarifying-questions": {
         title: "Lad agenten stille afklarende spørgsmål",
         "beta-badge": "TESTVERSION",

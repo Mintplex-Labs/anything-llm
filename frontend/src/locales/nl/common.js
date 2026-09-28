@@ -763,6 +763,11 @@ const TRANSLATIONS = {
             "Het maximale aantal tools dat kan worden geselecteerd voor elke query. Wij raden aan om deze waarde hoger in te stellen voor modellen met een grotere context.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Max. geïnjecteerde Markdown vaardigheden",
+        description:
+          "Het maximale aantal Markdown vaardigheden dat in de systeem-prompt wordt geïnjecteerd wanneer er meer vaardigheden zijn dan deze limiet. Op of onder de limiet worden altijd alle vaardigheden geïnjecteerd.",
+      },
       "clarifying-questions": {
         title:
           "Laat de agent vragen stellen om de situatie beter te begrijpen.",

@@ -770,6 +770,11 @@ const TRANSLATIONS = {
             "Her sorgu için seçilebilecek maksimum araç sayısı. Daha büyük bağlam modelleri için bu değeri daha yüksek bir değere ayarlamayı öneririz.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Enjekte Edilen Maksimum Markdown Becerisi",
+        description:
+          "Bu sınırdan daha fazla beceri olduğunda sistem istemine enjekte edilen Markdown becerilerinin maksimum sayısı. Sınırda veya sınırın altında, her zaman tüm beceriler enjekte edilir.",
+      },
       "clarifying-questions": {
         title:
           "Temsilcinin, konuyu daha iyi anlaması için açıklayıcı sorular sormasına izin verin.",

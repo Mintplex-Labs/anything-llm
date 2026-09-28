@@ -711,6 +711,11 @@ const TRANSLATIONS = {
             "可選取的工具的最大數量，適用於每個查詢。我們建議將此值設定為較高的值，以適用於較大的模型。",
         },
       },
+      "markdown-skill-injection": {
+        title: "最大注入的 Markdown 技能數",
+        description:
+          "當技能數量超過此限制時，注入到系統提示中的 Markdown 技能的最大數量。等於或低於限制時，始終注入所有技能。",
+      },
       "clarifying-questions": {
         title: "允許經紀人提出確認性問題",
         "beta-badge": "測試版",

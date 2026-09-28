@@ -757,6 +757,11 @@ const TRANSLATIONS = {
             "Số lượng công cụ tối đa có thể chọn cho mỗi truy vấn. Chúng tôi khuyến nghị đặt giá trị này thành các giá trị lớn hơn đối với các mô hình có ngữ cảnh lớn hơn.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Số lượng kỹ năng Markdown được tiêm tối đa",
+        description:
+          "Số lượng kỹ năng Markdown tối đa được tiêm vào prompt hệ thống khi có nhiều kỹ năng hơn giới hạn này. Tại hoặc dưới giới hạn, tất cả các kỹ năng luôn được tiêm.",
+      },
       "clarifying-questions": {
         title: "Cho phép đại lý đặt câu hỏi để làm rõ",
         "beta-badge": "Giai đoạn thử nghiệm",

@@ -770,6 +770,11 @@ const TRANSLATIONS = {
             "Maksimālais rīku skaits, kas var tikt izvēlts katrai meklēšanai. Mēs iesakām iestatīt šo vērtību, lai iegūtu lielāku kontekstu modelus.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Maksimālais ievietoto Markdown prasmju skaits",
+        description:
+          "Maksimālais Markdown prasmju skaits, kas tiek ievietots sistēmas uztverē, ja prasmju ir vairāk nekā šis ierobežojums. Pie ierobežojuma vai zem tā, vienmēr tiek ievietotas visas prasmes.",
+      },
       "clarifying-questions": {
         title: "Ļauj aģentam uzdot skaidrotas jautājumus",
         "beta-badge": "BETA",
