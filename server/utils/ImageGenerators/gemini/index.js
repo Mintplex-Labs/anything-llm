@@ -4,7 +4,9 @@ const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1/models";
 const DEFAULT_MODEL = "gemini-3.1-flash-image";
 const DEFAULT_ASPECT_RATIO = "1:1";
 
-// Gemini image models take aspect ratios, not WxH pixel sizes.
+// Gemini image models take aspect ratios, not WxH pixel sizes. WxH sizes are
+// mapped to the nearest ratio every Gemini image model accepts - extreme ratios
+// like 1:4 or 8:1 are model-specific and must be passed explicitly.
 // https://ai.google.dev/gemini-api/docs/image-generation
 const SUPPORTED_ASPECT_RATIOS = [
   ["1:1", 1],
@@ -17,10 +19,6 @@ const SUPPORTED_ASPECT_RATIOS = [
   ["5:4", 5 / 4],
   ["4:5", 4 / 5],
   ["21:9", 21 / 9],
-  ["1:4", 1 / 4],
-  ["4:1", 4],
-  ["1:8", 1 / 8],
-  ["8:1", 8],
 ];
 
 /**
