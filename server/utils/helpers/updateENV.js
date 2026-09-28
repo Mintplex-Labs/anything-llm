@@ -341,6 +341,14 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_LOCALAI_API_KEY",
     checks: [],
   },
+  ImageGenerationLlmmanBasePath: {
+    envKey: "IMAGE_GEN_LLMMAN_BASE_PATH",
+    checks: [isNotEmpty, isValidURL, validDockerizedUrl],
+  },
+  ImageGenerationLlmmanAuthToken: {
+    envKey: "IMAGE_GEN_LLMMAN_AUTH_TOKEN",
+    checks: [],
+  },
   ImageGenerationGeminiApiKey: {
     envKey: "IMAGE_GEN_GEMINI_API_KEY",
     checks: [isNotEmpty],
@@ -1282,6 +1290,7 @@ function supportedImageGenerationProvider(input = "") {
     "lemonade",
     "openrouter",
     "localai",
+    "llmman",
     "gemini",
   ];
   return supported.includes(input)
