@@ -44,14 +44,15 @@ async function asMbox({
       `-- Working on message "${mail.subject || "Unknown subject"}" --`
     );
 
+    const messageTitle = mail?.subject
+      ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
+      : `msg_${item}-${filename}`;
     const data = {
       id: v4(),
       url: "file://" + fullFilePath,
-      title:
-        metadata.title ||
-        (mail?.subject
-          ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
-          : `msg_${item}-${filename}`),
+      title: metadata.title
+        ? `${metadata.title} - ${messageTitle}`
+        : messageTitle,
       docAuthor: metadata.docAuthor || mail?.from?.text,
       description: metadata.description || "No description found.",
       docSource:
