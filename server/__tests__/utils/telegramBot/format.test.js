@@ -47,6 +47,26 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("keeps parentheses inside a link URL", () => {
+      expect(
+        markdownToTelegram(
+          "see [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) here"
+        )
+      ).toBe(
+        'see <a href="https://en.wikipedia.org/wiki/Python_(programming_language)">Python</a> here'
+      );
+    });
+
+    test("does not apply emphasis to markdown characters inside a link URL", () => {
+      expect(
+        markdownToTelegram(
+          "see [**init**](https://docs.python.org/3/reference/datamodel.html#object.__init__) and [glob](https://example.com/a*b*c)"
+        )
+      ).toBe(
+        'see <a href="https://docs.python.org/3/reference/datamodel.html#object.__init__"><b>init</b></a> and <a href="https://example.com/a*b*c">glob</a>'
+      );
+    });
+
     test("converts headings to <b>", () => {
       expect(markdownToTelegram("# Title\nbody")).toBe("<b>Title</b>\nbody");
       expect(markdownToTelegram("### Subsection")).toBe("<b>Subsection</b>");
