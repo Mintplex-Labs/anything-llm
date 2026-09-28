@@ -78,7 +78,7 @@ async function getPageLinks(url, baseUrl) {
     });
     const docs = await loader.load();
     const html = docs[0].pageContent;
-    const links = extractLinks(html, baseUrl);
+    const links = extractLinks(html, baseUrl, new URL(url));
     return links;
   } catch (error) {
     console.error(`Failed to get page links from ${url}.`, error);
@@ -86,7 +86,7 @@ async function getPageLinks(url, baseUrl) {
   }
 }
 
-function extractLinks(html, baseUrl) {
+function extractLinks(html, baseUrl, pageUrl = baseUrl) {
   const root = parse(html);
   const links = root.querySelectorAll("a");
   const extractedLinks = new Set();
@@ -107,7 +107,7 @@ function extractLinks(html, baseUrl) {
     // extraction of the page's remaining links.
     let absoluteUrl;
     try {
-      absoluteUrl = new URL(href, baseUrl.href);
+      absoluteUrl = new URL(href, pageUrl.href);
     } catch {
       continue;
     }
