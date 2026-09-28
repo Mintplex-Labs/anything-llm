@@ -341,6 +341,10 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_LOCALAI_API_KEY",
     checks: [],
   },
+  ImageGenerationGeminiApiKey: {
+    envKey: "IMAGE_GEN_GEMINI_API_KEY",
+    checks: [isNotEmpty],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
@@ -1272,7 +1276,14 @@ function supportedVectorDB(input = "") {
 }
 
 function supportedImageGenerationProvider(input = "") {
-  const supported = ["openai", "ollama", "lemonade", "openrouter", "localai"];
+  const supported = [
+    "openai",
+    "ollama",
+    "lemonade",
+    "openrouter",
+    "localai",
+    "gemini",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
