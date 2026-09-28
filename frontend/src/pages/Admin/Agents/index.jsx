@@ -70,6 +70,10 @@ export default function AdminAgents() {
   const [selectedMcpServer, setSelectedMcpServer] = useState(null);
 
   const [brokenMdSkills, setBrokenMdSkills] = useState([]);
+  // Last skill detection status from the server: { mode, count, reason? }.
+  // mode is "all" (every skill injected), "reranked" (top-N by relevance),
+  // or "fallback" (reranker unavailable, first N used).
+  const [skillDetection, setSkillDetection] = useState(null);
   // Markdown skills (agentskills.io format). `selectedMdSkill` is a skill
   // record to edit, the string "new" when creating, or null when none is open.
   const [markdownSkills, setMarkdownSkills] = useState([]);
@@ -155,6 +159,7 @@ export default function AdminAgents() {
       const mdSkills = await MarkdownSkills.list();
       setMarkdownSkills(mdSkills.skills);
       setBrokenMdSkills(mdSkills.brokenSkills);
+      setSkillDetection(mdSkills.detection || null);
       setLoading(false);
     }
     fetchSettings();
@@ -493,6 +498,7 @@ export default function AdminAgents() {
             <MarkdownSkillList
               skills={markdownSkills}
               brokenSkills={brokenMdSkills}
+              detection={skillDetection}
               selectedSkill={
                 typeof selectedMdSkill === "object" ? selectedMdSkill : null
               }
@@ -749,6 +755,7 @@ export default function AdminAgents() {
               <MarkdownSkillList
                 skills={markdownSkills}
                 brokenSkills={brokenMdSkills}
+                detection={skillDetection}
                 selectedSkill={
                   typeof selectedMdSkill === "object" ? selectedMdSkill : null
                 }

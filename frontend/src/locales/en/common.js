@@ -759,6 +759,11 @@ const TRANSLATIONS = {
             "The maximum number of tools to select for each query. We recommend setting this to higher values for larger context models.",
         },
       },
+      "markdown-skill-injection": {
+        title: "Max Markdown Skills Injected",
+        description:
+          "The maximum number of markdown skills injected into the system prompt when there are more skills than this limit. At or under the limit, all skills are always injected.",
+      },
       "clarifying-questions": {
         title: "Allow agent to ask clarifying questions",
         "beta-badge": "BETA",

@@ -88,6 +88,7 @@ const SystemSettings = {
     "agent_sql_connections",
     "agent_clarifying_questions_enabled",
     "agent_clarifying_questions_max_per_turn",
+    "markdown_skills_max_injected",
     "custom_app_name",
     "default_system_prompt",
 
@@ -413,6 +414,11 @@ const SystemSettings = {
       if (!Number.isFinite(n) || n < 1) return 3;
       return Math.min(Math.floor(n), 10);
     },
+    markdown_skills_max_injected: (update) => {
+      const n = Number(update);
+      if (!Number.isFinite(n) || n < 1) return 5;
+      return Math.min(Math.floor(n), 50);
+    },
     experimental_live_file_sync: (update) => {
       if (typeof update === "boolean")
         return update === true ? "enabled" : "disabled";
@@ -645,6 +651,12 @@ const SystemSettings = {
           { label: "agent_clarifying_questions_max_per_turn" },
           "3"
         )) || 3
+      ),
+      MarkdownSkillsMaxInjected: Number(
+        (await this.getValueOrFallback(
+          { label: "markdown_skills_max_injected" },
+          "5"
+        )) || 5
       ),
     };
   },

@@ -20,10 +20,41 @@
  */
 const { store, isValidName } = require("./store");
 
-/** Max skill bodies injected per prompt. Keeps context cost bounded. */
-const MAX_INJECTED_SKILLS = 5;
+/** Default max skill bodies injected per prompt. Overridable via the
+ * `markdown_skills_max_injected` system setting. Keeps context cost bounded. */
+const DEFAULT_MAX_INJECTED_SKILLS = 5;
+/** Hard bounds for the admin-configurable limit. */
+const MIN_INJECTED_SKILLS = 1;
+const MAX_INJECTED_SKILLS_CEILING = 50;
 /** Hard cap on a single skill's body so a runaway file cannot blow the context. */
 const MAX_SKILL_BODY_CHARS = 12000;
+
+/**
+ * Resolve the user-configurable injection limit from system settings.
+ * Falls back to the default when unset or invalid.
+ * @returns {Promise<number>}
+ */
+async function getMaxInjectedSkills() {
+  try {
+    const SystemSettings = require("../../models/systemSettings.js");
+    const raw = await SystemSettings.getValueOrFallback(
+      {
+        label: "markdown_skills_max_injected",
+      },
+      null
+    );
+    const value = Number(raw);
+    if (isNaN(value) || value < MIN_INJECTED_SKILLS)
+      return DEFAULT_MAX_INJECTED_SKILLS;
+    return Math.min(Math.floor(value), MAX_INJECTED_SKILLS_CEILING);
+  } catch (error) {
+    console.error(
+      "[Skill Detection] Could not read max injected skills:",
+      error.message
+    );
+    return DEFAULT_MAX_INJECTED_SKILLS;
+  }
+}
 
 /**
  * Status of the most recent skill detection, for surfacing in the admin UI.
@@ -45,10 +76,16 @@ function getSkillDetectionStatus() {
  * @param {object[]} skills
  * @param {string} prompt
  * @param {object[]} rawHistory
+ * @param {number} [maxInjected] - Injection limit (defaults to the system setting).
  * @returns {Promise<object[]>}
  */
-async function selectRelevantSkills(skills, prompt, rawHistory) {
-  if (skills.length <= MAX_INJECTED_SKILLS) {
+async function selectRelevantSkills(
+  skills,
+  prompt,
+  rawHistory,
+  maxInjected = DEFAULT_MAX_INJECTED_SKILLS
+) {
+  if (skills.length <= maxInjected) {
     lastDetection = { mode: "all", count: skills.length };
     return skills;
   }
@@ -69,7 +106,7 @@ async function selectRelevantSkills(skills, prompt, rawHistory) {
       text: `${s.name}\n${s.description}`,
     }));
     const reranked = await reranker.rerank(query, documents, {
-      topK: MAX_INJECTED_SKILLS,
+      topK: maxInjected,
     });
     lastDetection = { mode: "reranked", count: reranked.length };
     return reranked.map((r) => skills[r.rerank_corpus_id]);
@@ -80,10 +117,10 @@ async function selectRelevantSkills(skills, prompt, rawHistory) {
     );
     lastDetection = {
       mode: "fallback",
-      count: MAX_INJECTED_SKILLS,
+      count: maxInjected,
       reason: error.message,
     };
-    return skills.slice(0, MAX_INJECTED_SKILLS);
+    return skills.slice(0, maxInjected);
   }
 }
 
@@ -135,7 +172,13 @@ async function promptWithSkills({
       return systemPrompt;
     }
 
-    const relevant = await selectRelevantSkills(all, prompt, rawHistory);
+    const maxInjected = await getMaxInjectedSkills();
+    const relevant = await selectRelevantSkills(
+      all,
+      prompt,
+      rawHistory,
+      maxInjected
+    );
     const section = formatSkillsSection(relevant);
     return section ? `${systemPrompt}\n\n${section}` : systemPrompt;
   } catch (error) {
@@ -146,10 +189,13 @@ async function promptWithSkills({
 
 module.exports = {
   getSkillDetectionStatus,
+  getMaxInjectedSkills,
   promptWithSkills,
   selectRelevantSkills,
+  DEFAULT_MAX_INJECTED_SKILLS,
+  // Backwards-compatible alias for existing consumers/tests.
+  MAX_INJECTED_SKILLS: DEFAULT_MAX_INJECTED_SKILLS,
   formatSkillsSection,
   store,
   isValidName,
-  MAX_INJECTED_SKILLS,
 };

@@ -10,18 +10,39 @@ import { CaretRight, Plus, WarningCircle } from "@phosphor-icons/react";
 export default function MarkdownSkillList({
   skills = [],
   brokenSkills = [],
+  detection = null,
   selectedSkill,
   handleClick,
   onNewSkill,
   onRenameFix,
 }) {
+  // Only surface a notice when detection degraded: the reranker was
+  // unavailable, so the first N skills were injected instead of the most
+  // relevant ones.
+  const showDetection = Boolean(
+    detection && detection.mode === "fallback" && detection.count > 0
+  );
   return (
     <div className="bg-theme-bg-secondary text-white rounded-xl w-full md:min-w-[360px] overflow-hidden">
+      {showDetection && (
+        <div
+          className="py-3 px-4 flex items-start gap-x-2 rounded-t-xl border-b border-white/10 bg-amber-400/10 text-amber-300/90"
+          title="Status of the most recent skill detection. Updated after each chat."
+        >
+          <WarningCircle
+            size={16}
+            className="flex-none mt-0.5 text-amber-400"
+          />
+          <span className="text-xs leading-snug">
+            {`Top ${detection.count} of ${skills.length} skills shown — reranker unavailable (${detection.reason}).`}
+          </span>
+        </div>
+      )}
       {skills.map((skill, index) => (
         <div
           key={skill.name}
           className={`py-3 px-4 flex items-center justify-between gap-x-3 ${
-            index === 0 ? "rounded-t-xl" : ""
+            index === 0 && !showDetection ? "rounded-t-xl" : ""
           } ${
             index === skills.length - 1 && !onNewSkill ? "rounded-b-xl" : ""
           } ${index !== 0 ? "border-t border-white/10" : ""} cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${

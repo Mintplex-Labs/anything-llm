@@ -451,6 +451,9 @@ function adminEndpoints(app) {
             case "memory_auto_extraction":
               requestedSettings[label] = setting?.value ?? "true";
               break;
+            case "markdown_skills_max_injected":
+              requestedSettings[label] = setting?.value ?? "5";
+              break;
             default:
               break;
           }
