@@ -151,7 +151,7 @@ function inferCellType(value) {
     }
   }
 
-  const currencyMatch = trimmed.match(/^[$€£¥₹]?\s*(-?\d+(?:[,.\d]*\d)?)\s*$/);
+  const currencyMatch = trimmed.match(/^[$€£¥₹]\s*(-?\d+(?:[,.\d]*\d)?)\s*$/);
   if (currencyMatch) {
     const num = parseFloat(currencyMatch[1].replace(/,/g, ""));
     if (!isNaN(num) && isFinite(num)) {
