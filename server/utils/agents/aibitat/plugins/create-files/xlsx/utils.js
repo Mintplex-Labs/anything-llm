@@ -71,9 +71,14 @@ function validateCSVData(data) {
     return { valid: false, error: "CSV data contains no meaningful content" };
   }
 
-  const columnCounts = data.map((row) => row.length);
-  const maxColumns = Math.max(...columnCounts);
-  const minColumns = Math.min(...columnCounts);
+  // A loop rather than Math.max(...counts), which overflows the call stack
+  // on sheets with a few hundred thousand rows.
+  let maxColumns = 0;
+  let minColumns = Infinity;
+  for (const row of data) {
+    maxColumns = Math.max(maxColumns, row.length);
+    minColumns = Math.min(minColumns, row.length);
+  }
 
   if (maxColumns !== minColumns) {
     warnings.push(
