@@ -159,11 +159,14 @@ function apiDocumentEndpoints(app) {
           documentName: originalname,
         });
 
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
-            addToWorkspaces,
-            documents?.[0].location
-          );
+        if (!!addToWorkspaces) {
+          for (const document of documents) {
+            await Document.api.uploadToWorkspace(
+              addToWorkspaces,
+              document.location
+            );
+          }
+        }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -308,11 +311,14 @@ function apiDocumentEndpoints(app) {
           folder,
         });
 
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
-            addToWorkspaces,
-            documents?.[0].location
-          );
+        if (!!addToWorkspaces) {
+          for (const document of documents) {
+            await Document.api.uploadToWorkspace(
+              addToWorkspaces,
+              document.location
+            );
+          }
+        }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
