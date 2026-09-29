@@ -535,8 +535,12 @@ class Weaviate extends VectorDatabase {
         if (!(await collection.exists())) return [];
         return Object.keys(await collection.tenants.get());
       }
+      // Multi-tenant collections (e.g. a shared collection from multi-tenant
+      // mode) are not workspaces in this layout.
       const collections = await client.collections.listAll();
-      return (collections ?? []).map((collection) => collection.name);
+      return (collections ?? [])
+        .filter((collection) => !collection.multiTenancy?.enabled)
+        .map((collection) => collection.name);
     } catch (e) {
       this.logger("AllNamespace", e);
       return [];

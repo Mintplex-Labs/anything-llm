@@ -162,9 +162,16 @@ function createFakeClient({ version = "1.39.0" } = {}) {
       client.closed = true;
     }),
     collections: {
-      listAll: jest.fn(async () =>
-        [...store.keys(), ...mtStore.keys()].map((name) => ({ name }))
-      ),
+      listAll: jest.fn(async () => [
+        ...[...store.keys()].map((name) => ({
+          name,
+          multiTenancy: { enabled: false },
+        })),
+        ...[...mtStore.keys()].map((name) => ({
+          name,
+          multiTenancy: { enabled: true },
+        })),
+      ]),
       exists: jest.fn(
         async (name) =>
           store.has(capitalize(name)) || mtStore.has(capitalize(name))
@@ -1879,6 +1886,21 @@ describe("Weaviate namespaces and counts", () => {
     expect(await w.namespaceCount("one")).toBe(one);
     expect(await w.namespaceCount("two")).toBe(two);
     expect(await w.totalVectors()).toBe(one + two);
+  });
+
+  it("ignores multi-tenant collections when not in multi-tenant mode", async () => {
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("one", doc());
+    const { client } = await w.connect();
+    await client.collections.createFromSchema({
+      class: "Shared",
+      multiTenancyConfig: { enabled: true },
+    });
+    expect(await w.allNamespaces(client)).toEqual(["One"]);
+    expect(await w.totalVectors()).toBe(fakeClient.store.get("One").size);
+    expect(
+      fakeClient.handleFor("Shared").aggregate.overAll
+    ).not.toHaveBeenCalled();
   });
 
   it("returns 0 when counting fails", async () => {
