@@ -78,6 +78,16 @@ function env(key) {
   return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
 }
 
+/**
+ * A secret or header ENV value, decoding the "b64:" form the settings page
+ * uses for values the .env writer would otherwise truncate.
+ */
+function envDecoded(key) {
+  const value = env(key);
+  if (!value?.startsWith("b64:")) return value;
+  return Buffer.from(value.slice(4), "base64").toString("utf8");
+}
+
 /** A boolean ENV value, or null when unset. */
 function envBoolean(key) {
   const value = env(key)?.toLowerCase();
@@ -114,17 +124,38 @@ const FUSION_TYPES = { relativescore: "RelativeScore", ranked: "Ranked" };
 const DEFAULT_MULTI_TENANT_COLLECTION = "AnythingLLM";
 const TENANT_NAME = /^[A-Za-z0-9_-]{1,64}$/;
 
+// Descriptions AnythingLLM writes on the collections it creates. Only
+// collections carrying them are ever moved or deleted by a layout move.
+const COLLECTION_DESCRIPTION_PREFIX = "Class created by AnythingLLM named ";
+const SHARED_COLLECTION_DESCRIPTION =
+  "Collection created by AnythingLLM. Each tenant is a workspace.";
+// The layouts ("collection" or "mt:<name>") that may still hold this
+// instance's data, as a JSON array in the system settings. The configured
+// layout is always included; the others are moved from until empty.
+const LAYOUT_SETTING = "weaviate_storage_layouts";
+// A replaced client is closed after this delay, so in-flight calls finish.
+const CLIENT_CLOSE_GRACE_MS = 30_000;
+
 // A gRPC channel is expensive to open, so the client is shared by every
 // Weaviate instance in this process and only rebuilt when the settings change.
 let cachedConnection = null; // { key: string, promise: Promise<WeaviateClient> }
-// Namespaces whose data has already been checked for moving between the
-// per-collection and multi-tenant layouts in this process, and the moves in
-// flight, keyed by layout + namespace.
-const checkedLayouts = new Set();
-const layoutMoves = new Map();
-let checkedLayout = null;
+// Layout moves run only in the server process (see enableLayoutMoves), one
+// at a time per workspace whatever their direction.
+let layoutMovesEnabled = false;
+let recordedLayouts; // cached LAYOUT_SETTING, undefined until loaded
+const namespaceMoves = new Map(); // namespace -> Promise of the running move
+const movedNamespaces = new Set(); // "<sources>><to>|<namespace>" done in this process
+let movedNamespacesTarget = null; // the layout movedNamespaces refers to
+let moveAllRun = null;
+// The client sets process.env.grpc_proxy globally for a gRPC proxy; remember
+// the value we caused so it can be removed when the proxy is cleared.
+let appliedGrpcProxy = null;
+const verifiedSharedCollections = new Set();
 
 class Weaviate extends VectorDatabase {
+  /** Delay before a replaced client is closed (overridable in tests). */
+  static clientCloseGraceMs = CLIENT_CLOSE_GRACE_MS;
+
   constructor() {
     super();
   }
@@ -212,9 +243,9 @@ class Weaviate extends VectorDatabase {
    * - WEAVIATE_HTTP_HOST set: the WEAVIATE_HTTP_* settings are used as given
    *   (port 8080, no TLS and no path by default).
    * - Otherwise they are read from the WEAVIATE_ENDPOINT URL (older configs).
-   * - gRPC: WEAVIATE_GRPC_* when WEAVIATE_GRPC_HOST is set, else the
-   *   WEAVIATE_GRPC_ENDPOINT URL, else the HTTP host on port 50051 with the
-   *   same TLS setting as HTTP.
+   * - gRPC: WEAVIATE_GRPC_* when WEAVIATE_GRPC_HOST is set, else (older
+   *   configs without WEAVIATE_HTTP_HOST) the WEAVIATE_GRPC_ENDPOINT URL,
+   *   else the HTTP host on port 50051 with the same TLS setting as HTTP.
    */
   customConnectionOptions() {
     let http;
@@ -252,7 +283,10 @@ class Weaviate extends VectorDatabase {
           DEFAULT_GRPC_PORT,
         grpcSecure,
       };
-    } else if (env("WEAVIATE_GRPC_ENDPOINT")) {
+    } else if (!env("WEAVIATE_HTTP_HOST") && env("WEAVIATE_GRPC_ENDPOINT")) {
+      // Only for older URL-based configs: once the explicit HTTP settings are
+      // used, a leftover WEAVIATE_GRPC_ENDPOINT (e.g. still set in a docker
+      // compose file) must not override "same host as HTTP".
       const endpoint = env("WEAVIATE_GRPC_ENDPOINT");
       const url = new URL(
         /^[a-z]+:\/\//i.test(endpoint)
@@ -262,7 +296,8 @@ class Weaviate extends VectorDatabase {
       const grpcSecure = url.protocol === "https:";
       grpc = {
         grpcHost: url.hostname,
-        grpcPort: Number(url.port) || (grpcSecure ? 443 : 80),
+        // Without a port, use the gRPC default rather than the web one.
+        grpcPort: Number(url.port) || (grpcSecure ? 443 : DEFAULT_GRPC_PORT),
         grpcSecure,
       };
     } else {
@@ -287,11 +322,11 @@ class Weaviate extends VectorDatabase {
   authCredentials() {
     const method =
       env("WEAVIATE_AUTH_METHOD")?.toLowerCase() ??
-      (env("WEAVIATE_API_KEY") ? "api-key" : "none");
+      (envDecoded("WEAVIATE_API_KEY") ? "api-key" : "none");
     const require = (key) => {
-      if (!env(key))
+      if (!envDecoded(key))
         throw new Error(`Weaviate::${key} is required for ${method} auth.`);
-      return env(key);
+      return envDecoded(key);
     };
     const scopes = env("WEAVIATE_OIDC_SCOPES")
       ?.split(/[\s,]+/)
@@ -319,8 +354,8 @@ class Weaviate extends VectorDatabase {
           expiresIn:
             envNumber("WEAVIATE_ACCESS_TOKEN_EXPIRES_IN", { integer: true }) ??
             3600,
-          ...(env("WEAVIATE_REFRESH_TOKEN")
-            ? { refreshToken: env("WEAVIATE_REFRESH_TOKEN") }
+          ...(envDecoded("WEAVIATE_REFRESH_TOKEN")
+            ? { refreshToken: envDecoded("WEAVIATE_REFRESH_TOKEN") }
             : {}),
         });
       default:
@@ -331,12 +366,13 @@ class Weaviate extends VectorDatabase {
   }
 
   /**
-   * Extra request headers from WEAVIATE_HEADERS (a JSON object of strings),
+   * Extra request headers from WEAVIATE_HEADERS (a JSON object of strings,
+   * optionally stored as "b64:<base64 JSON>" as the settings page saves it),
    * plus the integration header, which always wins.
    */
   headers() {
     let extra = {};
-    const raw = env("WEAVIATE_HEADERS");
+    const raw = envDecoded("WEAVIATE_HEADERS");
     if (raw) {
       try {
         extra = JSON.parse(raw);
@@ -353,9 +389,21 @@ class Weaviate extends VectorDatabase {
           "Weaviate::WEAVIATE_HEADERS must be a JSON object of string values."
         );
     }
+    for (const [name, value] of Object.entries(extra)) {
+      if (!/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/.test(name))
+        throw new Error(`Weaviate::Invalid header name "${name}".`);
+      if (/[\r\n]/.test(value))
+        throw new Error(`Weaviate::Header "${name}" contains a line break.`);
+    }
+    const integrationHeader = "X-Weaviate-Client-Integration";
+    const withoutIntegration = Object.fromEntries(
+      Object.entries(extra).filter(
+        ([name]) => name.toLowerCase() !== integrationHeader.toLowerCase()
+      )
+    );
     return {
-      ...extra,
-      "X-Weaviate-Client-Integration": `anything-llm/${ANYTHINGLLM_VERSION}`,
+      ...withoutIntegration,
+      [integrationHeader]: `anything-llm/${ANYTHINGLLM_VERSION}`,
     };
   }
 
@@ -367,6 +415,14 @@ class Weaviate extends VectorDatabase {
    */
   async createClient() {
     const { method, url, options } = this.connectionConfig();
+    const grpcProxy = options.proxies?.grpc ?? null;
+    if (
+      !grpcProxy &&
+      appliedGrpcProxy &&
+      process.env.grpc_proxy === appliedGrpcProxy
+    )
+      delete process.env.grpc_proxy;
+    appliedGrpcProxy = grpcProxy;
     let client;
     try {
       client =
@@ -405,8 +461,9 @@ class Weaviate extends VectorDatabase {
     );
 
     if (cachedConnection?.key !== key) {
-      // A different server may hold data in either layout.
-      checkedLayouts.clear();
+      // A different server may hold different data.
+      movedNamespaces.clear();
+      verifiedSharedCollections.clear();
       const previous = cachedConnection;
       const promise = this.createClient();
       cachedConnection = { key, promise };
@@ -414,7 +471,16 @@ class Weaviate extends VectorDatabase {
       promise.catch(() => {
         if (cachedConnection?.promise === promise) cachedConnection = null;
       });
-      previous?.promise.then((client) => client.close()).catch(() => {});
+      // Close the replaced client later, so calls still using it can finish.
+      previous?.promise
+        .then((client) => {
+          const timer = setTimeout(
+            () => client.close().catch(() => {}),
+            Weaviate.clientCloseGraceMs
+          );
+          timer.unref?.();
+        })
+        .catch(() => {});
     }
 
     return { client: await cachedConnection.promise };
@@ -427,7 +493,9 @@ class Weaviate extends VectorDatabase {
   static async disconnect() {
     const previous = cachedConnection;
     cachedConnection = null;
-    checkedLayouts.clear();
+    movedNamespaces.clear();
+    verifiedSharedCollections.clear();
+    recordedLayouts = undefined;
     await previous?.promise.then((client) => client.close()).catch(() => {});
   }
 
@@ -483,6 +551,7 @@ class Weaviate extends VectorDatabase {
   async namespaceCount(namespace = null) {
     try {
       const { client } = await this.connect();
+      await this.moveToCurrentLayout(client, namespace);
       return await this.namespaceCountWithClient(client, namespace);
     } catch (e) {
       this.logger(`namespaceCount`, e.message);
@@ -526,12 +595,18 @@ class Weaviate extends VectorDatabase {
           returnMetadata: ["distance"],
         });
 
+    // Hybrid scores are fused and only meaningful within one result set (with
+    // ranked fusion they are around 1/60), so they are scaled to the best
+    // match = 1 and the similarity threshold does not apply; topN limits the
+    // results.
+    const bestHybridScore = hybrid
+      ? Math.max(0, ...objects.map((o) => o.metadata?.score ?? 0))
+      : 0;
     objects.forEach(({ uuid: id, properties = {}, metadata = {} }) => {
-      // Hybrid scores are fused and relative to the result set, so they are
-      // reported as-is and the similarity threshold does not apply; topN
-      // limits the results.
       const score = hybrid
-        ? Math.min(1, Math.max(0, metadata?.score ?? 0))
+        ? bestHybridScore > 0
+          ? Math.max(0, metadata?.score ?? 0) / bestHybridScore
+          : 0
         : this.distanceToSimilarity(metadata?.distance);
       if (!hybrid && score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(properties))) {
@@ -555,41 +630,58 @@ class Weaviate extends VectorDatabase {
    * @returns {Promise<{mode: "vector"|"hybrid", alpha: number|null, fusionType: "RelativeScore"|"Ranked"|null}>}
    */
   async searchSettings(namespace) {
-    const appMode = env("WEAVIATE_SEARCH_MODE")?.toLowerCase() ?? "vector";
-    if (!SEARCH_MODES.includes(appMode))
-      throw new Error(
-        `Weaviate::Invalid WEAVIATE_SEARCH_MODE "${appMode}" - use vector or hybrid.`
-      );
-    const rawAlpha = env("WEAVIATE_HYBRID_ALPHA");
-    const appAlpha = rawAlpha === null ? null : Number(rawAlpha);
-    if (appAlpha !== null && !(appAlpha >= 0 && appAlpha <= 1))
-      throw new Error(
-        `Weaviate::WEAVIATE_HYBRID_ALPHA must be between 0 and 1, got "${rawAlpha}".`
-      );
-    const fusion = env("WEAVIATE_HYBRID_FUSION")?.toLowerCase() ?? null;
-    if (fusion !== null && !(fusion in FUSION_TYPES))
-      throw new Error(
-        `Weaviate::Invalid WEAVIATE_HYBRID_FUSION "${fusion}" - use relativeScore or ranked.`
-      );
-
+    const defaults = this.appSearchSettings();
     let workspace = null;
     try {
-      const { Workspace } = require("../../../models/workspace");
-      workspace = await Workspace.get({ slug: String(namespace) });
+      workspace = await this.workspaceSearchPreference(namespace);
     } catch (e) {
       this.logger("searchSettings: using the app settings", e.message);
     }
-
     return {
       mode: SEARCH_MODES.includes(workspace?.vectorSearchMode)
         ? workspace.vectorSearchMode
-        : appMode,
+        : defaults.mode,
       alpha:
         typeof workspace?.vectorSearchAlpha === "number"
           ? workspace.vectorSearchAlpha
-          : appAlpha,
-      fusionType: fusion === null ? null : FUSION_TYPES[fusion],
+          : defaults.alpha,
+      fusionType: defaults.fusionType,
     };
+  }
+
+  /**
+   * The app-level search settings. Invalid values (only possible when set
+   * directly in the environment) are logged and ignored, so they never break
+   * searching.
+   */
+  appSearchSettings() {
+    const settings = { mode: "vector", alpha: null, fusionType: null };
+    const mode = env("WEAVIATE_SEARCH_MODE")?.toLowerCase();
+    if (mode && SEARCH_MODES.includes(mode)) settings.mode = mode;
+    else if (mode)
+      this.logger(`Ignoring invalid WEAVIATE_SEARCH_MODE "${mode}".`);
+
+    const rawAlpha = env("WEAVIATE_HYBRID_ALPHA");
+    const alpha = rawAlpha === null ? null : Number(rawAlpha);
+    if (alpha !== null && alpha >= 0 && alpha <= 1) settings.alpha = alpha;
+    else if (rawAlpha !== null)
+      this.logger(`Ignoring invalid WEAVIATE_HYBRID_ALPHA "${rawAlpha}".`);
+
+    const fusion = env("WEAVIATE_HYBRID_FUSION")?.toLowerCase();
+    if (fusion && fusion in FUSION_TYPES)
+      settings.fusionType = FUSION_TYPES[fusion];
+    else if (fusion)
+      this.logger(`Ignoring invalid WEAVIATE_HYBRID_FUSION "${fusion}".`);
+    return settings;
+  }
+
+  /** The workspace's search preference fields only (a light query). */
+  async workspaceSearchPreference(slug) {
+    const prisma = require("../../prisma");
+    return await prisma.workspaces.findFirst({
+      where: { slug: String(slug) },
+      select: { vectorSearchMode: true, vectorSearchAlpha: true },
+    });
   }
 
   /**
@@ -702,21 +794,37 @@ class Weaviate extends VectorDatabase {
     const vectorIndexConfig = await this.quantizationConfig(client);
     await client.collections.createFromSchema({
       class: camelCase(namespace),
-      description: `Class created by AnythingLLM named ${camelCase(namespace)}`,
+      description: `${COLLECTION_DESCRIPTION_PREFIX}${camelCase(namespace)}`,
       vectorizer: "none",
       ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
     });
   }
 
+  /**
+   * Throws a clear error if the configured shared collection exists but is
+   * not multi-tenant (e.g. WEAVIATE_COLLECTION names an existing collection).
+   */
+  async assertMultiTenant(client, name) {
+    if (verifiedSharedCollections.has(name)) return;
+    const config = await client.collections.get(name).config.get();
+    if (!config?.multiTenancy?.enabled)
+      throw new Error(
+        `Weaviate::Collection ${name} already exists and is not multi-tenant - choose another shared collection name (WEAVIATE_COLLECTION).`
+      );
+    verifiedSharedCollections.add(name);
+  }
+
   async ensureMultiTenantCollection(client) {
     const name = this.multiTenantCollectionName();
-    if (await client.collections.exists(name)) return;
+    if (await client.collections.exists(name)) {
+      await this.assertMultiTenant(client, name);
+      return;
+    }
     const vectorIndexConfig = await this.quantizationConfig(client);
     try {
       await client.collections.createFromSchema({
         class: name,
-        description:
-          "Collection created by AnythingLLM. Each tenant is a workspace.",
+        description: SHARED_COLLECTION_DESCRIPTION,
         vectorizer: "none",
         multiTenancyConfig: {
           enabled: true,
@@ -805,146 +913,277 @@ class Weaviate extends VectorDatabase {
     if (!this.isMultiTenant())
       return await client.collections.exists(camelCase(namespace));
 
-    const collection = client.collections.get(this.multiTenantCollectionName());
-    if (!(await collection.exists())) return false;
+    const name = this.multiTenantCollectionName();
+    if (!(await client.collections.exists(name))) return false;
+    await this.assertMultiTenant(client, name);
     return (
-      (await collection.tenants.getByName(this.tenantName(namespace))) !== null
+      (await client.collections
+        .get(name)
+        .tenants.getByName(this.tenantName(namespace))) !== null
     );
   }
 
   /**
-   * Moves a namespace's data into the current layout if it is still stored in
-   * the other one, e.g. right after WEAVIATE_MULTI_TENANCY was switched.
-   * Runs once per namespace and layout in this process; concurrent callers
-   * share the same move.
+   * Allows this process to move data between layouts. Called once by the
+   * server at boot; background workers never move data.
+   */
+  static enableLayoutMoves(enabled = true) {
+    layoutMovesEnabled = enabled;
+  }
+
+  /** The configured layout: "collection" or "mt:<shared collection>". */
+  layoutId() {
+    return this.isMultiTenant()
+      ? `mt:${this.multiTenantCollectionName()}`
+      : "collection";
+  }
+
+  /**
+   * The layouts that may still hold this instance's data. Before anything was
+   * recorded, data can only be in per-workspace collections (the original
+   * layout) or the configured layout.
+   */
+  async recordedLayouts() {
+    if (recordedLayouts === undefined) {
+      const value = (await SystemSettings.get({ label: LAYOUT_SETTING }))
+        ?.value;
+      let layouts = ["collection"];
+      try {
+        const parsed = value ? JSON.parse(value) : null;
+        if (Array.isArray(parsed) && parsed.length > 0) layouts = parsed;
+      } catch {}
+      recordedLayouts = layouts;
+    }
+    return recordedLayouts;
+  }
+
+  async recordLayouts(layouts) {
+    const unique = [...new Set(layouts)];
+    await SystemSettings._updateSettings({
+      [LAYOUT_SETTING]: JSON.stringify(unique),
+    });
+    recordedLayouts = unique;
+  }
+
+  /**
+   * The other layouts to move data from, if this process moves data. Adds the
+   * configured layout to the record first, so data written to it stays
+   * reachable if the setting is switched back before every move finished.
+   * @returns {Promise<string[]>}
+   */
+  async pendingLayoutSources() {
+    if (!layoutMovesEnabled) return [];
+    const current = this.layoutId();
+    const layouts = await this.recordedLayouts();
+    if (!layouts.includes(current))
+      await this.recordLayouts([...layouts, current]);
+    return (await this.recordedLayouts()).filter((l) => l !== current);
+  }
+
+  /**
+   * Moves a namespace from the other recorded layouts to the configured one,
+   * e.g. right after WEAVIATE_MULTI_TENANCY or WEAVIATE_COLLECTION changed.
+   * Runs at most once per namespace and move in this process; moves of the
+   * same namespace never overlap, whatever their direction.
    * @returns {Promise<number|null>} objects moved, or null if nothing was moved
    */
   async moveToCurrentLayout(client, namespace) {
-    const layout = this.isMultiTenant()
-      ? `mt|${this.multiTenantCollectionName()}`
-      : "collection";
-    // A namespace checked under one layout must be checked again after the
-    // layout changes (e.g. multi-tenancy switched off and back on).
-    if (checkedLayout !== layout) {
-      checkedLayouts.clear();
-      checkedLayout = layout;
+    const sources = await this.pendingLayoutSources();
+    if (sources.length === 0) return null;
+    const to = this.layoutId();
+    // Moves done towards another layout say nothing about this one.
+    if (movedNamespacesTarget !== to) {
+      movedNamespaces.clear();
+      movedNamespacesTarget = to;
     }
-    const key = `${layout}|${namespace}`;
-    if (checkedLayouts.has(key)) return null;
-    if (!layoutMoves.has(key)) {
-      const move = this.moveNamespace(client, namespace).finally(() =>
-        layoutMoves.delete(key)
-      );
-      layoutMoves.set(key, move);
+    const key = `${sources.join(",")}>${to}|${namespace}`;
+    while (namespaceMoves.has(namespace))
+      await namespaceMoves.get(namespace).catch(() => {});
+    if (movedNamespaces.has(key)) return null;
+
+    const move = (async () => {
+      let moved = null;
+      for (const from of sources) {
+        const count = await this.moveNamespace(client, namespace, {
+          from,
+          to,
+        });
+        if (count !== null) moved = (moved ?? 0) + count;
+      }
+      return moved;
+    })();
+    namespaceMoves.set(namespace, move);
+    try {
+      const moved = await move;
+      movedNamespaces.add(key);
+      return moved;
+    } finally {
+      namespaceMoves.delete(namespace);
     }
-    const moved = await layoutMoves.get(key);
-    checkedLayouts.add(key);
-    return moved;
   }
 
   /**
-   * Copies a namespace from the other layout into the current one (same
-   * object ids, properties and vectors, so nothing is re-embedded), checks the
-   * copy, then deletes the source. Safe to re-run: re-copying upserts by id.
-   * @returns {Promise<number|null>} objects moved, or null if nothing to move
+   * Where a namespace's data lives in a layout, if AnythingLLM created it.
+   * Collections without AnythingLLM's description are never touched.
+   * @returns {Promise<{handle: object, drop: () => Promise<void>}|null>}
    */
-  async moveNamespace(client, namespace) {
-    const collectionName = camelCase(namespace);
-    const sharedName = this.multiTenantCollectionName();
-    if (collectionName === sharedName) return null;
-    const shared = client.collections.get(sharedName);
-    const tenant = this.tenantName(namespace);
+  async layoutSource(client, layout, namespace) {
+    if (layout === "collection") {
+      const name = camelCase(namespace);
+      if (!(await client.collections.exists(name))) return null;
+      const config = await client.collections.get(name).config.get();
+      if (
+        config?.multiTenancy?.enabled ||
+        !config?.description?.startsWith(COLLECTION_DESCRIPTION_PREFIX)
+      ) {
+        this.logger(
+          `Not moving collection ${name}: it was not created by AnythingLLM.`
+        );
+        return null;
+      }
+      return {
+        handle: client.collections.get(name),
+        drop: () => client.collections.delete(name),
+      };
+    }
 
-    let source, target, dropSource;
-    if (this.isMultiTenant()) {
-      const own = client.collections.get(collectionName);
-      if (!(await own.exists())) return null;
-      // Only move per-workspace collections, never another shared collection.
-      const config = await own.config.get();
-      if (config?.multiTenancy?.enabled) return null;
+    const name = layout.slice("mt:".length);
+    if (!(await client.collections.exists(name))) return null;
+    const config = await client.collections.get(name).config.get();
+    if (
+      !config?.multiTenancy?.enabled ||
+      config?.description !== SHARED_COLLECTION_DESCRIPTION
+    ) {
+      this.logger(
+        `Not moving from collection ${name}: it is not an AnythingLLM shared collection.`
+      );
+      return null;
+    }
+    const shared = client.collections.get(name);
+    const tenant = this.tenantName(namespace);
+    if (!(await shared.tenants.getByName(tenant))) return null;
+    return {
+      handle: shared.withTenant(tenant),
+      drop: () => shared.tenants.remove([tenant]),
+    };
+  }
+
+  /**
+   * Creates the namespace's storage in the configured layout and returns it.
+   * Refuses to write into a same-named collection AnythingLLM did not create.
+   */
+  async layoutTarget(client, layout, namespace) {
+    if (layout !== "collection") {
       await this.ensureMultiTenantCollection(client);
       await this.ensureTenant(client, namespace);
-      source = own;
-      target = shared.withTenant(tenant);
-      dropSource = () => client.collections.delete(collectionName);
-    } else {
-      if (!(await shared.exists())) return null;
-      if (!(await shared.tenants.getByName(tenant))) return null;
-      if (!(await client.collections.exists(collectionName))) {
-        const vectorIndexConfig = await this.quantizationConfig(client);
-        await client.collections.createFromSchema({
-          class: collectionName,
-          description: `Class created by AnythingLLM named ${collectionName}`,
-          vectorizer: "none",
-          ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
-        });
-      }
-      source = shared.withTenant(tenant);
-      target = client.collections.get(collectionName);
-      dropSource = () => shared.tenants.remove([tenant]);
+      return this.collectionFor(client, namespace);
     }
-
-    this.logger(
-      `Moving workspace "${namespace}" to the ${this.isMultiTenant() ? `multi-tenant collection ${sharedName} (tenant ${tenant})` : `collection ${collectionName}`}.`
-    );
-    const moved = await this.copyObjects(source, target);
-    const [sourceCount, targetCount] = await Promise.all([
-      source.aggregate.overAll().then((r) => r.totalCount),
-      target.aggregate.overAll().then((r) => r.totalCount),
-    ]);
-    if (targetCount < sourceCount)
-      throw new Error(
-        `Weaviate::Moving workspace "${namespace}" copied ${targetCount} of ${sourceCount} objects - the source was kept.`
-      );
-    await dropSource();
-    this.logger(`Moved ${moved} objects of workspace "${namespace}".`);
-    return moved;
+    const name = camelCase(namespace);
+    if (await client.collections.exists(name)) {
+      const config = await client.collections.get(name).config.get();
+      if (!config?.description?.startsWith(COLLECTION_DESCRIPTION_PREFIX))
+        throw new Error(
+          `Weaviate::Collection ${name} exists but was not created by AnythingLLM - not moving workspace "${namespace}" into it.`
+        );
+    } else {
+      const vectorIndexConfig = await this.quantizationConfig(client);
+      await client.collections.createFromSchema({
+        class: name,
+        description: `${COLLECTION_DESCRIPTION_PREFIX}${name}`,
+        vectorizer: "none",
+        ...(vectorIndexConfig ? { vectorIndexConfig } : {}),
+      });
+    }
+    return client.collections.get(name);
   }
 
   /**
-   * Copies every object (id, properties, vector) from one collection handle to
-   * another, in batches of BATCH_SIZE.
+   * Copies a namespace from one layout to another (same object ids,
+   * properties and vectors, so nothing is re-embedded), verifies the copy,
+   * then deletes the source. The source is kept if anything looks off.
+   * Safe to re-run: re-copying upserts by id.
+   * @returns {Promise<number|null>} objects moved, or null if nothing to move
+   */
+  async moveNamespace(client, namespace, { from, to }) {
+    if (to !== "collection" && camelCase(namespace) === to.slice(3))
+      return null; // the workspace's own collection is the shared collection
+    const source = await this.layoutSource(client, from, namespace);
+    if (!source) return null;
+    const target = await this.layoutTarget(client, to, namespace);
+
+    this.logger(`Moving workspace "${namespace}" from ${from} to ${to}.`);
+    const copied = await this.copyObjects(source.handle, target);
+    const [sourceCount, targetCount] = await Promise.all([
+      source.handle.aggregate.overAll().then((r) => r.totalCount),
+      target.aggregate.overAll().then((r) => r.totalCount),
+    ]);
+    if (copied !== sourceCount || targetCount < copied)
+      throw new Error(
+        `Weaviate::Moving workspace "${namespace}" copied ${copied} of ${sourceCount} objects, the target has ${targetCount} - the source was kept.`
+      );
+    if (this.layoutId() !== to)
+      throw new Error(
+        `Weaviate::The storage setting changed while moving workspace "${namespace}" - the source was kept.`
+      );
+    await source.drop();
+    this.logger(`Moved ${copied} objects of workspace "${namespace}".`);
+    return copied;
+  }
+
+  /**
+   * Copies every object (id, properties, vector) from one collection handle
+   * to another, paging through the source BATCH_SIZE objects at a time.
    * @returns {Promise<number>} objects copied
    */
   async copyObjects(source, target) {
-    let batch = [];
+    let after;
     let copied = 0;
-    const flush = async () => {
-      if (batch.length === 0) return;
-      const result = await target.data.insertMany(batch);
+    for (;;) {
+      const { objects = [] } = await source.query.fetchObjects({
+        limit: BATCH_SIZE,
+        includeVector: true,
+        ...(after ? { after } : {}),
+      });
+      if (objects.length === 0) break;
+      const result = await target.data.insertMany(
+        objects.map((obj) => ({
+          id: obj.uuid,
+          properties: obj.properties,
+          vectors: obj.vectors?.default ?? obj.vectors,
+        }))
+      );
       if (result.hasErrors) {
         const messages = [
           ...new Set(Object.values(result.errors).map((e) => e?.message)),
         ];
         throw new Error(`Weaviate::Copy failed: ${messages.join("; ")}`);
       }
-      copied += batch.length;
-      batch = [];
-    };
-
-    for await (const obj of source.iterator({ includeVector: true })) {
-      batch.push({
-        id: obj.uuid,
-        properties: obj.properties,
-        vectors: obj.vectors?.default ?? obj.vectors,
-      });
-      if (batch.length >= BATCH_SIZE) await flush();
+      copied += objects.length;
+      after = objects[objects.length - 1].uuid;
     }
-    await flush();
     return copied;
   }
 
   /**
-   * Moves every workspace into the current layout. Runs in the background
-   * after WEAVIATE_MULTI_TENANCY changes; workspaces not reached yet are moved
-   * on first use anyway.
+   * Moves every workspace into the configured layout and, once all of them
+   * are moved, records it as this instance's layout. Runs in the background
+   * at boot and after the storage settings change; workspaces not reached yet
+   * are moved on first use.
    */
   async moveAllToCurrentLayout() {
+    if (!moveAllRun)
+      moveAllRun = this.#moveAll().finally(() => (moveAllRun = null));
+    return await moveAllRun;
+  }
+
+  async #moveAll() {
+    const report = { checked: 0, moved: 0, failed: [] };
+    if ((await this.pendingLayoutSources()).length === 0) return report;
+    const to = this.layoutId();
+
     const { Workspace } = require("../../../models/workspace");
     const { client } = await this.connect();
-    const workspaces = await Workspace.where({});
-    const report = { checked: 0, moved: 0, failed: [] };
-    for (const { slug } of workspaces) {
+    for (const { slug } of await Workspace.where({})) {
       try {
         const moved = await this.moveToCurrentLayout(client, slug);
         report.checked++;
@@ -954,14 +1193,19 @@ class Weaviate extends VectorDatabase {
         report.failed.push(slug);
       }
     }
+    // Every workspace is in the configured layout: nothing left to move from.
+    if (report.failed.length === 0 && this.layoutId() === to)
+      await this.recordLayouts([to]);
     return report;
   }
 
   async deleteVectorsInNamespace(client, namespace = null) {
     if (this.isMultiTenant()) {
-      await client.collections
-        .get(this.multiTenantCollectionName())
-        .tenants.remove([this.tenantName(namespace)]);
+      const name = this.multiTenantCollectionName();
+      if (await client.collections.exists(name))
+        await client.collections
+          .get(name)
+          .tenants.remove([this.tenantName(namespace)]);
       return true;
     }
     await client.collections.delete(camelCase(namespace));
@@ -1193,12 +1437,14 @@ class Weaviate extends VectorDatabase {
       const name = this.multiTenantCollectionName();
       if (await client.collections.exists(name))
         await client.collections.delete(name);
-      return { reset: true };
+    } else {
+      const weaviateClasses = await this.allNamespaces(client);
+      for (const weaviateClass of weaviateClasses) {
+        await client.collections.delete(weaviateClass);
+      }
     }
-    const weaviateClasses = await this.allNamespaces(client);
-    for (const weaviateClass of weaviateClasses) {
-      await client.collections.delete(weaviateClass);
-    }
+    // Nothing is left to move.
+    if (layoutMovesEnabled) await this.recordLayouts([this.layoutId()]);
     return { reset: true };
   }
 

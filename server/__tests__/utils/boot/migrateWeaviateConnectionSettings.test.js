@@ -36,7 +36,10 @@ describe("migrateWeaviateConnectionSettings", () => {
       "docker service with API key",
       { WEAVIATE_ENDPOINT: "http://weaviate:8080", WEAVIATE_API_KEY: "k" },
     ],
-    ["https without port", { WEAVIATE_ENDPOINT: "https://vectors.example.com" }],
+    [
+      "https without port",
+      { WEAVIATE_ENDPOINT: "https://vectors.example.com" },
+    ],
     [
       "path behind a reverse proxy",
       { WEAVIATE_ENDPOINT: "https://proxy.example.com/weaviate/" },
@@ -157,6 +160,39 @@ describe("migrateWeaviateConnectionSettings", () => {
     const before = { ...process.env };
     expect(await migrateWeaviateConnectionSettings()).toBeNull();
     expect(process.env).toEqual(before);
+  });
+
+  it("re-converts when the old URLs change after migrating (e.g. docker compose edited)", async () => {
+    setLegacyEnv({ WEAVIATE_ENDPOINT: "http://old-host:8080" });
+    await migrateWeaviateConnectionSettings();
+    expect(process.env.WEAVIATE_HTTP_HOST).toBe("old-host");
+    expect(process.env.WEAVIATE_MIGRATED_FROM).toBeTruthy();
+
+    // The environment now points somewhere else; the saved explicit settings
+    // (in .env) would otherwise keep the old host forever.
+    process.env.WEAVIATE_ENDPOINT = "https://new-host.example.com";
+    const written = await migrateWeaviateConnectionSettings();
+    expect(written).toEqual(
+      expect.objectContaining({
+        WeaviateHttpHost: "new-host.example.com",
+        WeaviateHttpPort: "443",
+        WeaviateHttpSecure: "true",
+        WeaviateGrpcHost: "new-host.example.com",
+      })
+    );
+    expect(new Weaviate().connectionConfig().options.httpHost).toBe(
+      "new-host.example.com"
+    );
+    expect(await migrateWeaviateConnectionSettings()).toBeNull();
+  });
+
+  it("keeps settings changed on the settings page after migrating", async () => {
+    setLegacyEnv({ WEAVIATE_ENDPOINT: "http://weaviate:8080" });
+    await migrateWeaviateConnectionSettings();
+    process.env.WEAVIATE_HTTP_HOST = "edited-in-ui"; // old URLs unchanged
+    process.env.WEAVIATE_TIMEOUT_QUERY = "45";
+    expect(await migrateWeaviateConnectionSettings()).toBeNull();
+    expect(process.env.WEAVIATE_HTTP_HOST).toBe("edited-in-ui");
   });
 
   it("keeps settings it cannot interpret unchanged", async () => {

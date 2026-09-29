@@ -28,7 +28,9 @@ Advanced settings, for both deployments:
 | Skip init checks | `WEAVIATE_SKIP_INIT_CHECKS` | `false`. When `true`, the client's startup health checks and AnythingLLM's server version check are skipped. |
 | Additional headers | `WEAVIATE_HEADERS`, a JSON object of strings | none |
 
-**Upgrading:** configs that only have the older `WEAVIATE_ENDPOINT` URL (and optionally `WEAVIATE_GRPC_ENDPOINT` and `WEAVIATE_API_KEY`) are converted to these settings automatically on startup, with the same resulting connection. The old values are kept, so an older AnythingLLM version still works after a rollback.
+Secrets and headers containing quotes, backticks or `#` are saved as `b64:<base64>` in the `.env` file, because the file writer would otherwise cut them short.
+
+**Upgrading:** configs that only have the older `WEAVIATE_ENDPOINT` URL (and optionally `WEAVIATE_GRPC_ENDPOINT` and `WEAVIATE_API_KEY`) are converted to these settings automatically on startup, with the same resulting connection. If you later change those old URL settings (for example `WEAVIATE_ENDPOINT` in docker compose), they are converted again on the next startup; settings changed on the settings page are kept. The old values are kept, so an older AnythingLLM version still works after a rollback.
 
 ### Search: vector or hybrid
 
@@ -40,7 +42,7 @@ Advanced settings, for both deployments:
 | Alpha: 0 = keyword only, 1 = vector only | `WEAVIATE_HYBRID_ALPHA`, empty = Weaviate default (0.75) | Optional override |
 | Fusion | `WEAVIATE_HYBRID_FUSION`: `relativeScore` or `ranked`, empty = Weaviate default | - |
 
-In hybrid mode the document similarity threshold is not applied: Weaviate would apply it to the whole result and drop exact keyword matches whose vectors are far from the question. The workspace's max context snippets limits the results instead. Hybrid scores are relative to each result set, so the best match always scores close to 1.
+In hybrid mode the document similarity threshold, including the `scoreThreshold` of the developer API's vector-search endpoint, is not applied: Weaviate would apply it to the whole result and drop exact keyword matches whose vectors are far from the question. The workspace's max context snippets (or `topN`) limits the results instead. Hybrid scores are relative to each result set and scaled so the best match scores 1.
 
 ### Vector compression
 
@@ -59,8 +61,9 @@ If the server is too old for the selected option, embedding into a new workspace
 
 By default each workspace gets its own Weaviate collection. Set **Workspace storage** to **Multi-tenant** to store every workspace as a [tenant](https://docs.weaviate.io/weaviate/manage-collections/multi-tenancy) of one shared collection (`AnythingLLM` by default). This scales much better when you have many workspaces.
 
-- Switching in either direction moves existing workspaces automatically, without re-embedding: objects keep their ids and vectors. The move starts in the background when you save the setting, and any workspace not moved yet is moved the first time it is used.
-- A workspace's old copy is only deleted after its objects were copied and counted. If a move fails, the old copy is kept and the move is retried on next use.
+- Switching in either direction, or renaming the shared collection, moves existing workspaces automatically, without re-embedding: objects keep their ids and vectors. The move starts in the background when you save the setting (or at startup after the setting was changed in the `.env` file), and any workspace not moved yet is moved the first time it is used.
+- AnythingLLM records which layouts hold its data, and only moves data out of layouts it has used itself. It only moves or deletes collections it created (recognised by their description), so other applications' collections, or another AnythingLLM instance's tenants on the same Weaviate, are never touched.
+- A workspace's old copy is only deleted after the copy was verified (every object copied, nothing added to the source meanwhile, and the setting unchanged). Otherwise the old copy is kept and the move is retried on next use. Only the AnythingLLM server process moves data; background workers never do.
 - Tenant names are the workspace slugs. Slugs that are not valid tenant names (longer than 64 characters, or with characters other than letters, digits, `-` and `_`) use a stable hashed name.
 - Vector compression applies to the shared collection when it is created.
 

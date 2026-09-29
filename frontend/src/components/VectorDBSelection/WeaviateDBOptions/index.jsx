@@ -84,7 +84,7 @@ function initialCustomConnection(settings) {
     httpSecure: httpSecure ? "true" : "false",
     httpPath: path,
     grpcHost: grpc?.hostname || "",
-    grpcPort: grpc?.port || "50051",
+    grpcPort: grpc?.port || (grpc?.protocol === "https:" ? "443" : "50051"),
     grpcSecure: grpc ? String(grpc.protocol === "https:") : "",
   };
 }
@@ -227,9 +227,6 @@ export default function WeaviateDBOptions({ settings }) {
         </Row>
       ) : (
         <>
-          {/* The explicit fields below replace the older URL settings. */}
-          <input type="hidden" name="WeaviateEndpoint" value="" />
-          <input type="hidden" name="WeaviateGrpcEndpoint" value="" />
           <p className="text-theme-text-secondary text-xs -mt-4">
             Every option of a{" "}
             <DocLink href={DOCS.customConnection}>custom connection</DocLink>.
@@ -425,7 +422,7 @@ export default function WeaviateDBOptions({ settings }) {
           <Field label="Query timeout (s)" hint="Default 30">
             <TextInput
               type="number"
-              min={0}
+              min={0.001}
               step="any"
               name="WeaviateTimeoutQuery"
               placeholder="30"
@@ -435,7 +432,7 @@ export default function WeaviateDBOptions({ settings }) {
           <Field label="Insert timeout (s)" hint="Default 90">
             <TextInput
               type="number"
-              min={0}
+              min={0.001}
               step="any"
               name="WeaviateTimeoutInsert"
               placeholder="90"
@@ -445,7 +442,7 @@ export default function WeaviateDBOptions({ settings }) {
           <Field label="Init timeout (s)" hint="Default 2">
             <TextInput
               type="number"
-              min={0}
+              min={0.001}
               step="any"
               name="WeaviateTimeoutInit"
               placeholder="2"
@@ -548,7 +545,8 @@ export default function WeaviateDBOptions({ settings }) {
       </Row>
       <p className="text-theme-text-secondary text-xs -mt-4">
         Compresses vectors to cut memory use, with a small loss of search
-        accuracy. Applies to workspaces created after the change.{" "}
+        accuracy. Applies to collections created after the change: new
+        workspaces, or the shared collection in multi-tenant mode.{" "}
         <DocLink href={DOCS.compression}>
           Learn about vector compression
         </DocLink>

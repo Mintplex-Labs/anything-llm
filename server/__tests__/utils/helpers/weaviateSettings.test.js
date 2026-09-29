@@ -3,7 +3,9 @@
  * Validation of the Weaviate settings saved from the vector database settings
  * page (updateENV).
  */
-const { updateENV } = require("../../../utils/helpers/updateENV");
+const fs = require("fs");
+const { updateENV, dumpENV } = require("../../../utils/helpers/updateENV");
+const { Weaviate } = require("../../../utils/vectorDbProviders/weaviate");
 
 const ORIGINAL_ENV = process.env;
 
@@ -46,7 +48,98 @@ describe("Weaviate settings validation", () => {
     expect(process.env.WEAVIATE_HTTP_PATH).toBe("/weaviate");
     expect(process.env.WEAVIATE_AUTH_METHOD).toBe("oidc-password");
     expect(process.env.WEAVIATE_TIMEOUT_INIT).toBe("1.5");
-    expect(process.env.WEAVIATE_HEADERS).toBe('{"X-Gateway": "abc"}');
+    // Stored base64-encoded (see the .env round-trip test below).
+    expect(process.env.WEAVIATE_HEADERS).toBe(
+      `b64:${Buffer.from('{"X-Gateway": "abc"}').toString("base64")}`
+    );
+    expect(new Weaviate().headers()).toEqual(
+      expect.objectContaining({ "X-Gateway": "abc" })
+    );
+  });
+
+  it("every Weaviate setting survives the .env writer unchanged", async () => {
+    // dumpENV cuts values at quotes, "#", backticks and some whitespace. It
+    // runs after every settings save in production, so a value it truncates
+    // is silently broken after the next restart.
+    const { error } = await updateENV({
+      WeaviateDeployment: "custom",
+      WeaviateEndpoint: "https://weaviate.example.com/path",
+      WeaviateGrpcEndpoint: "https://grpc.example.com:443",
+      WeaviateHttpHost: "weaviate.example.com",
+      WeaviateHttpPort: "443",
+      WeaviateHttpSecure: "true",
+      WeaviateHttpPath: "/weaviate",
+      WeaviateGrpcHost: "grpc.example.com",
+      WeaviateGrpcPort: "443",
+      WeaviateGrpcSecure: "true",
+      WeaviateGrpcProxy: "http://user:pass@proxy.example.com:3128",
+      WeaviateAuthMethod: "oidc-client-credentials",
+      WeaviateApiKey: "abc#123'x\"y",
+      WeaviateOidcClientSecret: "s3cr3t`#value",
+      WeaviateOidcUsername: "user@example.com",
+      WeaviateOidcPassword: "p4ss#w0rd'\"",
+      WeaviateOidcScopes: "openid offline_access",
+      WeaviateAccessToken: "eyJhbGciOi.eyJzdWIi.sig-_",
+      WeaviateAccessTokenExpiresIn: "3600",
+      WeaviateRefreshToken: "refresh#token",
+      WeaviateHeaders:
+        '{"X-Gateway": "abc", "Authorization": "Bearer x#y\'z", "X-Json": "{\\"a\\": 1}"}',
+      WeaviateTimeoutQuery: "30.5",
+      WeaviateTimeoutInsert: "90",
+      WeaviateTimeoutInit: "2",
+      WeaviateSkipInitChecks: "false",
+      WeaviateSearchMode: "hybrid",
+      WeaviateHybridAlpha: "0.75",
+      WeaviateHybridFusion: "relativeScore",
+      WeaviateQuantization: "rq-8",
+      WeaviateMultiTenancy: "false",
+      WeaviateCollection: "AnythingLLM",
+    });
+    expect(error).toBe(false);
+
+    const write = jest.spyOn(fs, "writeFileSync").mockImplementation(() => {});
+    try {
+      dumpENV();
+      const written = Object.fromEntries(
+        write.mock.calls[0][1]
+          .split("\n")
+          .filter((line) => line.startsWith("WEAVIATE_"))
+          .map((line) => {
+            const at = line.indexOf("=");
+            return [line.slice(0, at), line.slice(at + 2, -1)];
+          })
+      );
+      // Only the settings AnythingLLM manages (the shell may define others).
+      const weaviateKeys = Object.keys(written);
+      expect(weaviateKeys.length).toBeGreaterThan(25);
+      for (const key of weaviateKeys)
+        expect([key, written[key]]).toEqual([key, process.env[key]]);
+    } finally {
+      write.mockRestore();
+    }
+    // Secrets with such characters decode back to the original value.
+    const decoded = (key) => {
+      const v = process.env[key];
+      return v.startsWith("b64:")
+        ? Buffer.from(v.slice(4), "base64").toString()
+        : v;
+    };
+    expect(decoded("WEAVIATE_API_KEY")).toBe("abc#123'x\"y");
+    expect(decoded("WEAVIATE_OIDC_CLIENT_SECRET")).toBe("s3cr3t`#value");
+    expect(decoded("WEAVIATE_OIDC_PASSWORD")).toBe("p4ss#w0rd'\"");
+    expect(decoded("WEAVIATE_REFRESH_TOKEN")).toBe("refresh#token");
+    // Safe values stay readable (and readable by older versions).
+    expect(process.env.WEAVIATE_ACCESS_TOKEN).toBe("eyJhbGciOi.eyJzdWIi.sig-_");
+    expect(new Weaviate().connectionConfig().options.authCredentials).toEqual(
+      expect.objectContaining({ clientSecret: "s3cr3t`#value" })
+    );
+    expect(new Weaviate().headers()).toEqual(
+      expect.objectContaining({
+        "X-Gateway": "abc",
+        Authorization: "Bearer x#y'z",
+        "X-Json": '{"a": 1}',
+      })
+    );
   });
 
   it("saves the hybrid search settings, including alpha 0 and 1", async () => {

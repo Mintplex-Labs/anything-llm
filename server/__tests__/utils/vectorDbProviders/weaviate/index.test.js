@@ -29,6 +29,7 @@ function cosineDistance(a, b) {
 
 function createFakeClient({ version = "1.39.0" } = {}) {
   const store = new Map(); // collection name -> Map(uuid -> {vector, properties})
+  const meta = new Map(); // collection name -> { description }
   // multi-tenant collection name -> { config, tenants: Map(tenant -> Map(uuid -> obj)) }
   const mtStore = new Map();
   const insertErrors = new Map(); // uuid -> error message to simulate
@@ -59,6 +60,20 @@ function createFakeClient({ version = "1.39.0" } = {}) {
         overAll: jest.fn(async () => ({ totalCount: objects().size })),
       },
       query: {
+        fetchObjects: jest.fn(async ({ limit, after, includeVector }) => {
+          const ids = [...objects().keys()].sort();
+          const start = after ? ids.findIndex((id) => id > after) : 0;
+          const page = start === -1 ? [] : ids.slice(start, start + limit);
+          return {
+            objects: page.map((uuid) => ({
+              uuid,
+              properties: objects().get(uuid).properties,
+              ...(includeVector
+                ? { vectors: { default: objects().get(uuid).vector } }
+                : {}),
+            })),
+          };
+        }),
         // Fake fusion: ranks by vector similarity, boosted when the chunk text
         // contains the query (keyword match); score = relative to the best.
         hybrid: jest.fn(async (query, { vector, limit }) => {
@@ -123,21 +138,15 @@ function createFakeClient({ version = "1.39.0" } = {}) {
       config: {
         get: jest.fn(async () => ({
           name,
+          description: meta.get(name)?.description,
           vectorizers: {},
           properties: [],
           multiTenancy: { enabled: mtStore.has(name) },
         })),
       },
-      iterator: jest.fn(() => ({
-        [Symbol.asyncIterator]: async function* () {
-          for (const [uuid, obj] of [...objects().entries()])
-            yield {
-              uuid,
-              properties: obj.properties,
-              vectors: { default: obj.vector },
-            };
-        },
-      })),
+      iterator: jest.fn(() => {
+        throw new Error("use query.fetchObjects paging, not the iterator");
+      }),
       tenants: {
         get: jest.fn(async () =>
           Object.fromEntries(
@@ -147,11 +156,16 @@ function createFakeClient({ version = "1.39.0" } = {}) {
             ])
           )
         ),
-        getByName: jest.fn(async (t) =>
-          mtStore.get(name)?.tenants.has(t)
+        getByName: jest.fn(async (t) => {
+          // Like the real client: 404 -> null, a non multi-tenant class -> 422.
+          if (store.has(name))
+            throw new Error(
+              `Unexpected status code 422: class ${name} has multi-tenancy disabled`
+            );
+          return mtStore.get(name)?.tenants.has(t)
             ? { name: t, activityStatus: "ACTIVE" }
-            : null
-        ),
+            : null;
+        }),
         create: jest.fn(async (list) => {
           const { tenants } = mtStore.get(name);
           for (const { name: t } of list) {
@@ -160,7 +174,11 @@ function createFakeClient({ version = "1.39.0" } = {}) {
           }
         }),
         remove: jest.fn(async (list) => {
-          for (const t of list) mtStore.get(name)?.tenants.delete(t);
+          if (!mtStore.has(name))
+            throw new Error(
+              `Unexpected status code 404: class ${name} not found`
+            );
+          for (const t of list) mtStore.get(name).tenants.delete(t);
         }),
       },
       withTenant: jest.fn((t) => handleFor(name, t)),
@@ -179,6 +197,7 @@ function createFakeClient({ version = "1.39.0" } = {}) {
   const client = {
     store,
     mtStore,
+    meta,
     insertErrors,
     handleFor,
     closed: false,
@@ -212,10 +231,12 @@ function createFakeClient({ version = "1.39.0" } = {}) {
             tenants: new Map(),
           });
         else store.set(name, new Map());
+        meta.set(name, { description: schema.description });
       }),
       delete: jest.fn(async (name) => {
         store.delete(capitalize(name));
         mtStore.delete(capitalize(name));
+        meta.delete(capitalize(name));
       }),
       get: jest.fn((name) => handleFor(name)),
     },
@@ -269,8 +290,19 @@ jest.mock("../../../../models/vectors", () => ({
 }));
 
 const mockSettings = { chunkSize: 60, chunkOverlap: 0 };
+const mockSystemSettings = new Map();
 jest.mock("../../../../models/systemSettings", () => ({
   SystemSettings: {
+    get: jest.fn(async ({ label }) =>
+      mockSystemSettings.has(label)
+        ? { label, value: mockSystemSettings.get(label) }
+        : null
+    ),
+    _updateSettings: jest.fn(async (updates) => {
+      for (const [k, v] of Object.entries(updates))
+        mockSystemSettings.set(k, v);
+      return { success: true };
+    }),
     getValueOrFallback: jest.fn(async ({ label }, fallback = null) => {
       if (label === "text_splitter_chunk_size") return mockSettings.chunkSize;
       if (label === "text_splitter_chunk_overlap")
@@ -386,8 +418,13 @@ const doc = (overrides = {}) => ({
   ...overrides,
 });
 
+// These tests act as the server process, which moves data between layouts.
+Weaviate.enableLayoutMoves();
+Weaviate.clientCloseGraceMs = 0;
+
 beforeEach(async () => {
   await Weaviate.disconnect();
+  mockSystemSettings.clear();
   jest.clearAllMocks();
   mockDocumentVectors.rows = [];
   mockVectorCache.clear();
@@ -714,7 +751,8 @@ describe("Weaviate custom connection options", () => {
     );
   });
 
-  it("still uses WEAVIATE_GRPC_ENDPOINT when no gRPC host is set", () => {
+  it("ignores a leftover WEAVIATE_GRPC_ENDPOINT once explicit HTTP settings are used", () => {
+    // e.g. still set in a docker compose file, which wins over the saved .env
     expect(
       custom({
         WEAVIATE_HTTP_HOST: "rest",
@@ -722,9 +760,9 @@ describe("Weaviate custom connection options", () => {
       }).options
     ).toEqual(
       expect.objectContaining({
-        grpcHost: "grpc.example.com",
-        grpcPort: 444,
-        grpcSecure: true,
+        grpcHost: "rest",
+        grpcPort: 50051,
+        grpcSecure: false,
       })
     );
   });
@@ -1027,7 +1065,7 @@ describe("Weaviate.connect", () => {
       process.env[key] = value;
       const { client } = await new Weaviate().connect();
       expect(client).toBe(second);
-      await new Promise((r) => setImmediate(r));
+      await new Promise((r) => setTimeout(r, 10)); // closed after the grace delay
       expect(first.close).toHaveBeenCalled();
     }
   );
@@ -1383,6 +1421,9 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
 
   // A per-workspace collection as written before multi-tenancy was enabled.
   function seedLegacy(name, n, prefix = name) {
+    fakeClient.meta.set(name, {
+      description: `Class created by AnythingLLM named ${name}`,
+    });
     fakeClient.store.set(
       name,
       new Map(
@@ -1582,10 +1623,10 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
       expect(fakeClient.store.has("Beta")).toBe(false);
     });
 
-    it("moves more than one batch", async () => {
+    it("moves more than one batch, triggered by a count", async () => {
       seedLegacy("Big", 1234);
       enable();
-      expect(await new Weaviate().namespaceCount("big")).toBe(0); // counting never moves
+      expect(await new Weaviate().namespaceCount("big")).toBe(1234); // counting moves too
       expect(await new Weaviate().hasNamespace("big")).toBe(true);
       expect(tenantObjects("big").size).toBe(1234);
       const insertMany = fakeClient.collections
@@ -1664,7 +1705,7 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
         .withTenant("alpha")
         .aggregate.overAll.mockResolvedValueOnce({ totalCount: 1 });
       await expect(w.hasNamespace("alpha")).rejects.toThrow(
-        /copied 1 of 3 objects - the source was kept/
+        /copied 3 of 3 objects, the target has 1 - the source was kept/
       );
       expect(fakeClient.store.get("Alpha").size).toBe(3);
     });
@@ -1676,7 +1717,10 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
         [1, 2, 3, 4, 5].map(() => new Weaviate().hasNamespace("alpha"))
       );
       expect(results).toEqual([true, true, true, true, true]);
-      expect(fakeClient.handleFor("Alpha").iterator).toHaveBeenCalledTimes(1);
+      // One move: a page of 5 objects, then an empty page.
+      expect(
+        fakeClient.handleFor("Alpha").query.fetchObjects
+      ).toHaveBeenCalledTimes(2);
     });
 
     it("never moves a collection that is itself multi-tenant", async () => {
@@ -1695,10 +1739,11 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
 });
 
 describe("Weaviate hybrid search", () => {
-  const { Workspace } = require("../../../../models/workspace");
   let workspaceGet;
   const useWorkspace = (value) =>
-    (workspaceGet = jest.spyOn(Workspace, "get").mockResolvedValue(value));
+    (workspaceGet = jest
+      .spyOn(Weaviate.prototype, "workspaceSearchPreference")
+      .mockResolvedValue(value));
   afterEach(() => workspaceGet?.mockRestore());
 
   async function seed() {
@@ -1847,12 +1892,12 @@ describe("Weaviate hybrid search", () => {
     useWorkspace(null);
     const w = await seed();
     await search(w);
-    expect(Workspace.get).toHaveBeenCalledWith({ slug: "ws" });
+    expect(workspaceGet).toHaveBeenCalledWith("ws");
   });
 
   it("falls back to the app settings when the workspace lookup fails", async () => {
     workspaceGet = jest
-      .spyOn(Workspace, "get")
+      .spyOn(Weaviate.prototype, "workspaceSearchPreference")
       .mockRejectedValue(new Error("db locked"));
     setEnv({ WEAVIATE_SEARCH_MODE: "hybrid" });
     const w = await seed();
@@ -1890,23 +1935,592 @@ describe("Weaviate hybrid search", () => {
   });
 
   it.each([
-    ["WEAVIATE_SEARCH_MODE", "semantic", "Invalid WEAVIATE_SEARCH_MODE"],
+    ["WEAVIATE_SEARCH_MODE", "semantic"],
+    ["WEAVIATE_HYBRID_ALPHA", "1.5"],
+    ["WEAVIATE_HYBRID_ALPHA", "abc"],
+    ["WEAVIATE_HYBRID_FUSION", "rrf"],
+  ])(
+    "ignores an invalid %s=%p instead of breaking search",
+    async (key, value) => {
+      useWorkspace(null);
+      const w = await seed();
+      setEnv({ WEAVIATE_SEARCH_MODE: "hybrid", [key]: value });
+      const result = await search(w);
+      expect(result.contextTexts.length).toBeGreaterThan(0);
+      const settings = w.appSearchSettings();
+      if (key === "WEAVIATE_SEARCH_MODE") expect(settings.mode).toBe("vector");
+      if (key === "WEAVIATE_HYBRID_ALPHA") expect(settings.alpha).toBeNull();
+      if (key === "WEAVIATE_HYBRID_FUSION")
+        expect(settings.fusionType).toBeNull();
+    }
+  );
+});
+
+describe("Weaviate edge cases (QA)", () => {
+  const tenantObjects = (tenant, collection = "AnythingLLM") =>
+    fakeClient.mtStore.get(collection)?.tenants.get(tenant);
+
+  it("Weaviate Cloud needs a cluster URL", () => {
+    setEnv({
+      WEAVIATE_DEPLOYMENT: "cloud",
+      WEAVIATE_ENDPOINT: undefined,
+      WEAVIATE_API_KEY: "k",
+    });
+    expect(() => new Weaviate().connectionConfig()).toThrow(
+      "Weaviate::Weaviate Cloud requires a cluster URL."
+    );
+  });
+
+  it.each([
+    ["http://rest:8080", "grpc-host", "grpc-host", 50051, false],
+    ["https://rest", "https://grpc.example.com", "grpc.example.com", 443, true],
     [
-      "WEAVIATE_HYBRID_ALPHA",
-      "1.5",
-      "WEAVIATE_HYBRID_ALPHA must be between 0 and 1",
+      "http://rest:8080",
+      "http://grpc.example.com",
+      "grpc.example.com",
+      50051,
+      false,
     ],
-    [
-      "WEAVIATE_HYBRID_ALPHA",
-      "abc",
-      "WEAVIATE_HYBRID_ALPHA must be between 0 and 1",
-    ],
-    ["WEAVIATE_HYBRID_FUSION", "rrf", "Invalid WEAVIATE_HYBRID_FUSION"],
-  ])("rejects %s=%p", async (key, value, message) => {
-    useWorkspace(null);
-    const w = await seed();
-    setEnv({ [key]: value });
-    await expect(search(w)).rejects.toThrow(message);
+  ])(
+    "legacy gRPC endpoint %p + %p -> %p:%p secure=%p",
+    (endpoint, grpcEndpoint, host, port, secure) => {
+      setEnv({
+        WEAVIATE_DEPLOYMENT: "custom",
+        WEAVIATE_ENDPOINT: endpoint,
+        WEAVIATE_GRPC_ENDPOINT: grpcEndpoint,
+      });
+      expect(new Weaviate().connectionConfig().options).toEqual(
+        expect.objectContaining({
+          grpcHost: host,
+          grpcPort: port,
+          grpcSecure: secure,
+        })
+      );
+    }
+  );
+
+  it("a failed stale connection does not evict a newer one", async () => {
+    let rejectFirst;
+    weaviate.connectToCustom.mockImplementationOnce(
+      () => new Promise((_, reject) => (rejectFirst = reject))
+    );
+    const first = new Weaviate().connect().catch((e) => e);
+    await new Promise((r) => setImmediate(r));
+    process.env.WEAVIATE_API_KEY = "changed"; // settings change mid-connect
+    const newer = useFakeClient();
+    const { client } = await new Weaviate().connect();
+    expect(client).toBe(newer);
+    rejectFirst(new Error("old server unreachable"));
+    expect(await first).toBeInstanceOf(Error);
+    await new Promise((r) => setImmediate(r));
+    expect((await new Weaviate().connect()).client).toBe(newer);
+    expect(weaviate.connectToCustom).toHaveBeenCalledTimes(2);
+  });
+
+  it("rethrows when the shared collection cannot be created", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    fakeClient.collections.createFromSchema.mockRejectedValueOnce(
+      new Error("forbidden")
+    );
+    const result = await new Weaviate().addDocumentToNamespace("ws", doc());
+    expect(result).toEqual({ vectorized: false, error: "forbidden" });
+  });
+
+  it("rethrows when a tenant cannot be created", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await w.ensureMultiTenantCollection(client);
+    client.collections
+      .get("AnythingLLM")
+      .tenants.create.mockRejectedValueOnce(new Error("tenant limit reached"));
+    await expect(w.ensureTenant(client, "ws")).rejects.toThrow(
+      "tenant limit reached"
+    );
+  });
+
+  it("allNamespaces and reset are safe before the shared collection exists", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    expect(await w.allNamespaces(client)).toEqual([]);
+    expect(await w.totalVectors()).toBe(0);
+    expect(await w.reset()).toEqual({ reset: true });
+    expect(client.collections.delete).not.toHaveBeenCalled();
+  });
+
+  it("moves an empty legacy collection (and drops it)", async () => {
+    fakeClient.store.set("Empty", new Map());
+    fakeClient.meta.set("Empty", {
+      description: "Class created by AnythingLLM named Empty",
+    });
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    expect(await new Weaviate().hasNamespace("empty")).toBe(true);
+    expect(tenantObjects("empty").size).toBe(0);
+    expect(fakeClient.store.has("Empty")).toBe(false);
+  });
+
+  it("moves exactly one batch (500 objects) without an empty extra insert", async () => {
+    fakeClient.meta.set("Five", {
+      description: "Class created by AnythingLLM named Five",
+    });
+    fakeClient.store.set(
+      "Five",
+      new Map(
+        Array.from({ length: 500 }, (_, i) => [
+          `id-${i}`,
+          { vector: [1, i], properties: { text: `t${i}` } },
+        ])
+      )
+    );
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    await new Weaviate().hasNamespace("five");
+    const insertMany = fakeClient.collections
+      .get("AnythingLLM")
+      .withTenant("five").data.insertMany;
+    expect(insertMany).toHaveBeenCalledTimes(1);
+    expect(tenantObjects("five").size).toBe(500);
+  });
+
+  it("switching off merges into an existing per-workspace collection", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    const tenantIds = [...tenantObjects("alpha").keys()];
+    // A stale per-workspace collection already holds one other object.
+    fakeClient.meta.set("Alpha", {
+      description: "Class created by AnythingLLM named Alpha",
+    });
+    fakeClient.store.set(
+      "Alpha",
+      new Map([["stale", { vector: [1], properties: { text: "stale" } }]])
+    );
+    setEnv({ WEAVIATE_MULTI_TENANCY: "false" });
+    expect(await w.hasNamespace("alpha")).toBe(true);
+    expect([...fakeClient.store.get("Alpha").keys()].sort()).toEqual(
+      ["stale", ...tenantIds].sort()
+    );
+    expect(tenantObjects("alpha")).toBeUndefined();
+  });
+
+  it("a workspace named like the shared collection is never moved", async () => {
+    // camelCase("docs") === "Docs" === WEAVIATE_COLLECTION
+    fakeClient.store.set(
+      "Docs",
+      new Map([["x", { vector: [1], properties: { text: "x" } }]])
+    );
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true", WEAVIATE_COLLECTION: "Docs" });
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    expect(
+      await w.moveNamespace(client, "docs", {
+        from: "collection",
+        to: "mt:Docs",
+      })
+    ).toBeNull();
+    expect(fakeClient.store.get("Docs").size).toBe(1);
+  });
+
+  it("switching off with no tenant for the workspace moves nothing", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    setEnv({ WEAVIATE_MULTI_TENANCY: "false" });
+    const { client } = await w.connect();
+    expect(
+      await w.moveNamespace(client, "beta", {
+        from: "mt:AnythingLLM",
+        to: "collection",
+      })
+    ).toBeNull();
+    expect(fakeClient.store.has("Beta")).toBe(false);
+  });
+
+  it("reports workspaces that fail to move in the background", async () => {
+    const { Workspace } = require("../../../../models/workspace");
+    fakeClient.meta.set("Alpha", {
+      description: "Class created by AnythingLLM named Alpha",
+    });
+    fakeClient.store.set(
+      "Alpha",
+      new Map([["a", { vector: [1], properties: { text: "a" } }]])
+    );
+    fakeClient.insertErrors.set("a", "quota exceeded");
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const where = jest
+      .spyOn(Workspace, "where")
+      .mockResolvedValue([{ slug: "alpha" }, { slug: "beta" }]);
+    try {
+      expect(await new Weaviate().moveAllToCurrentLayout()).toEqual({
+        checked: 1,
+        moved: 0,
+        failed: ["alpha"],
+      });
+    } finally {
+      where.mockRestore();
+    }
+    expect(fakeClient.store.get("Alpha").size).toBe(1);
+  });
+
+  it("fails the cached-vector path cleanly when Weaviate rejects a batch", async () => {
+    mockVectorCache.set("c.json", [
+      [{ id: "o1", vector: [1, 0], properties: { text: "cached" } }],
+    ]);
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await w.ensureCollection(client, "ws");
+    client.collections.get("Ws").data.insertMany.mockResolvedValueOnce({
+      hasErrors: true,
+      errors: { 0: { message: "vector length mismatch" } },
+    });
+    expect(await w.addDocumentToNamespace("ws", doc(), "c.json")).toEqual({
+      vectorized: false,
+      error: "Error embedding into Weaviate",
+    });
+    expect(mockDocumentVectors.bulkInsert).not.toHaveBeenCalled();
+  });
+
+  it("namespace() requires a namespace", async () => {
+    const { client } = await new Weaviate().connect();
+    await expect(new Weaviate().namespace(client, null)).rejects.toThrow(
+      "No namespace value provided."
+    );
+  });
+});
+
+describe("Weaviate layout move safety (QA review)", () => {
+  const tenantObjects = (tenant, collection = "AnythingLLM") =>
+    fakeClient.mtStore.get(collection)?.tenants.get(tenant);
+  const ownCollection = (name, n, extra = {}) => {
+    fakeClient.meta.set(name, {
+      description: `Class created by AnythingLLM named ${name}`,
+      ...extra,
+    });
+    fakeClient.store.set(
+      name,
+      new Map(
+        Array.from({ length: n }, (_, i) => [
+          `${name}-${String(i).padStart(4, "0")}`,
+          { vector: [1, i], properties: { text: `${name} ${i}` } },
+        ])
+      )
+    );
+  };
+  const record = () =>
+    JSON.parse(mockSystemSettings.get("weaviate_storage_layouts") ?? "null");
+
+  it("never moves or deletes a same-named collection another app created", async () => {
+    fakeClient.store.set(
+      "Documents",
+      new Map([["x", { vector: [1], properties: { text: "not ours" } }]])
+    );
+    fakeClient.meta.set("Documents", { description: "Another app's data" });
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    expect(await new Weaviate().hasNamespace("documents")).toBe(false);
+    expect(fakeClient.store.get("Documents").size).toBe(1);
+    expect(tenantObjects("documents")).toBeUndefined();
+  });
+
+  it("never touches another instance's tenant when this one never used multi-tenancy", async () => {
+    // Instance A (multi-tenant) stores workspace "sales" as a tenant; this
+    // instance (per-collection, nothing recorded) has a workspace "sales" too.
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await client.collections.createFromSchema({
+      class: "AnythingLLM",
+      description:
+        "Collection created by AnythingLLM. Each tenant is a workspace.",
+      multiTenancyConfig: { enabled: true },
+    });
+    fakeClient.mtStore
+      .get("AnythingLLM")
+      .tenants.set("sales", new Map([["s1", { vector: [1], properties: {} }]]));
+    expect(await w.hasNamespace("sales")).toBe(false);
+    expect(tenantObjects("sales").size).toBe(1);
+    expect(fakeClient.store.has("Sales")).toBe(false);
+  });
+
+  it("never takes data out of a shared collection another app created", async () => {
+    // This instance used multi-tenancy before (recorded), but the collection
+    // now named like its shared collection belongs to someone else.
+    mockSystemSettings.set(
+      "weaviate_storage_layouts",
+      JSON.stringify(["collection", "mt:Shared"])
+    );
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await client.collections.createFromSchema({
+      class: "Shared",
+      description: "Another app's multi-tenant collection",
+      multiTenancyConfig: { enabled: true },
+    });
+    fakeClient.mtStore
+      .get("Shared")
+      .tenants.set("alpha", new Map([["t1", { vector: [1], properties: {} }]]));
+    expect(await w.hasNamespace("alpha")).toBe(false);
+    expect(tenantObjects("alpha", "Shared").size).toBe(1);
+    expect(fakeClient.store.has("Alpha")).toBe(false);
+  });
+
+  it("background workers never move data", async () => {
+    ownCollection("Alpha", 3);
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    Weaviate.enableLayoutMoves(false);
+    try {
+      expect(await new Weaviate().hasNamespace("alpha")).toBe(false);
+      expect(fakeClient.store.get("Alpha").size).toBe(3);
+      expect(record()).toBeNull();
+    } finally {
+      Weaviate.enableLayoutMoves(true);
+    }
+  });
+
+  it("keeps the source, and loses nothing, when the setting flips mid-move", async () => {
+    ownCollection("Alpha", 3);
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await w.ensureMultiTenantCollection(client);
+    await w.ensureTenant(client, "alpha");
+    const target = client.collections.get("AnythingLLM").withTenant("alpha");
+    let release;
+    const paused = new Promise((r) => (release = r));
+    const realInsert = target.data.insertMany.getMockImplementation();
+    target.data.insertMany.mockImplementationOnce(async (batch) => {
+      await paused;
+      return realInsert(batch);
+    });
+
+    const forward = w.hasNamespace("alpha").catch((e) => e);
+    await new Promise((r) => setTimeout(r, 5));
+    setEnv({ WEAVIATE_MULTI_TENANCY: "false" }); // switched back mid-move
+    const backward = w.hasNamespace("alpha");
+    release();
+
+    const forwardResult = await forward;
+    expect(forwardResult).toBeInstanceOf(Error);
+    expect(forwardResult.message).toMatch(/storage setting changed/);
+    expect(await backward).toBe(true);
+    expect(fakeClient.store.get("Alpha").size).toBe(3); // still in its collection
+    expect(tenantObjects("alpha")).toBeUndefined(); // copy moved back and removed
+  });
+
+  it("moves every tenant when the shared collection is renamed", async () => {
+    const { Workspace } = require("../../../../models/workspace");
+    setEnv({
+      WEAVIATE_MULTI_TENANCY: "true",
+      WEAVIATE_COLLECTION: "OldShared",
+    });
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    await w.addDocumentToNamespace("beta", doc({ docId: "b" }));
+    const counts = ["alpha", "beta"].map(
+      (t) => tenantObjects(t, "OldShared").size
+    );
+
+    setEnv({
+      WEAVIATE_MULTI_TENANCY: "true",
+      WEAVIATE_COLLECTION: "NewShared",
+    });
+    const where = jest
+      .spyOn(Workspace, "where")
+      .mockResolvedValue([{ slug: "alpha" }, { slug: "beta" }]);
+    try {
+      expect(await w.moveAllToCurrentLayout()).toEqual({
+        checked: 2,
+        moved: 2,
+        failed: [],
+      });
+    } finally {
+      where.mockRestore();
+    }
+    expect(
+      ["alpha", "beta"].map((t) => tenantObjects(t, "NewShared").size)
+    ).toEqual(counts);
+    expect(tenantObjects("alpha", "OldShared")).toBeUndefined();
+    expect(record()).toEqual(["mt:NewShared"]);
+  });
+
+  it("records the layout only after every workspace moved", async () => {
+    const { Workspace } = require("../../../../models/workspace");
+    ownCollection("Alpha", 2);
+    ownCollection("Beta", 2);
+    fakeClient.insertErrors.set("Beta-0000", "quota exceeded");
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const where = jest
+      .spyOn(Workspace, "where")
+      .mockResolvedValue([{ slug: "alpha" }, { slug: "beta" }]);
+    try {
+      const report = await new Weaviate().moveAllToCurrentLayout();
+      expect(report.failed).toEqual(["beta"]);
+      expect(record()).toEqual(["collection", "mt:AnythingLLM"]);
+
+      fakeClient.insertErrors.clear();
+      expect((await new Weaviate().moveAllToCurrentLayout()).failed).toEqual(
+        []
+      );
+      expect(record()).toEqual(["mt:AnythingLLM"]);
+    } finally {
+      where.mockRestore();
+    }
+  });
+
+  it("gives a clear error when the shared collection name is a normal collection", async () => {
+    ownCollection("Docs", 1);
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true", WEAVIATE_COLLECTION: "Docs" });
+    const result = await new Weaviate().addDocumentToNamespace("other", doc());
+    expect(result.vectorized).toBe(false);
+    expect(result.error).toMatch(
+      "Collection Docs already exists and is not multi-tenant"
+    );
+    expect(fakeClient.store.get("Docs").size).toBe(1);
+  });
+
+  it("keeps the source when an object is written behind the copy cursor", async () => {
+    ownCollection("Alpha", 3);
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const source = fakeClient.handleFor("Alpha");
+    const realFetch = source.query.fetchObjects.getMockImplementation();
+    source.query.fetchObjects.mockImplementationOnce(async (args) => {
+      const page = await realFetch(args);
+      // Another process writes to the old layout behind the copy cursor
+      // (ids are paged in order), so paging cannot pick it up.
+      fakeClient.store
+        .get("Alpha")
+        .set("A-early", { vector: [1], properties: {} });
+      return page;
+    });
+    await expect(new Weaviate().hasNamespace("alpha")).rejects.toThrow(
+      /copied 3 of 4 objects/
+    );
+    expect(fakeClient.store.get("Alpha").size).toBe(4);
+  });
+
+  it("never moves data back into a same-named collection another app created", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    const moved = tenantObjects("alpha").size;
+    fakeClient.store.set("Alpha", new Map());
+    fakeClient.meta.set("Alpha", { description: "Another app's data" });
+    setEnv({ WEAVIATE_MULTI_TENANCY: "false" });
+    await expect(w.hasNamespace("alpha")).rejects.toThrow(
+      "exists but was not created by AnythingLLM"
+    );
+    expect(tenantObjects("alpha").size).toBe(moved);
+    expect(fakeClient.store.get("Alpha").size).toBe(0);
+  });
+
+  it("deleting a workspace is fine before the shared collection exists", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    const { client } = await w.connect();
+    await expect(w.deleteVectorsInNamespace(client, "ws")).resolves.toBe(true);
+  });
+
+  it("reset records the configured layout as the only one", async () => {
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = new Weaviate();
+    await w.addDocumentToNamespace("alpha", doc());
+    expect(record()).toEqual(["collection", "mt:AnythingLLM"]);
+    await w.reset();
+    expect(record()).toEqual(["mt:AnythingLLM"]);
+  });
+});
+
+describe("Weaviate QA review fixes", () => {
+  it("removes the process-wide grpc_proxy once the proxy setting is cleared", async () => {
+    const before = process.env.grpc_proxy;
+    try {
+      setEnv({
+        WEAVIATE_DEPLOYMENT: "custom",
+        WEAVIATE_HTTP_HOST: "weaviate",
+        WEAVIATE_GRPC_PROXY: "http://proxy:3128",
+      });
+      weaviate.connectToCustom.mockImplementationOnce(async (options) => {
+        process.env.grpc_proxy = options.proxies.grpc; // what the real client does
+        return fakeClient;
+      });
+      await new Weaviate().connect();
+      expect(process.env.grpc_proxy).toBe("http://proxy:3128");
+
+      delete process.env.WEAVIATE_GRPC_PROXY;
+      useFakeClient();
+      await new Weaviate().connect();
+      expect(process.env.grpc_proxy).toBeUndefined();
+    } finally {
+      if (before === undefined) delete process.env.grpc_proxy;
+      else process.env.grpc_proxy = before;
+    }
+  });
+
+  it("leaves a grpc_proxy it did not set alone", async () => {
+    process.env.grpc_proxy = "http://corporate:8080";
+    try {
+      setEnv({ WEAVIATE_DEPLOYMENT: "custom", WEAVIATE_HTTP_HOST: "weaviate" });
+      await new Weaviate().connect();
+      expect(process.env.grpc_proxy).toBe("http://corporate:8080");
+    } finally {
+      delete process.env.grpc_proxy;
+    }
+  });
+
+  it.each([
+    ['{"Bad Header": "x"}', 'Invalid header name "Bad Header"'],
+    ['{"X-A": "line\\nbreak"}', 'Header "X-A" contains a line break'],
+  ])("rejects invalid headers %s", (headers, message) => {
+    setEnv({ WEAVIATE_HEADERS: headers });
+    expect(() => new Weaviate().headers()).toThrow(message);
+  });
+
+  it("the integration header cannot be overridden in another letter case", () => {
+    setEnv({
+      WEAVIATE_HEADERS:
+        '{"x-weaviate-client-integration": "spoofed", "X-B": "1"}',
+    });
+    const headers = new Weaviate().headers();
+    expect(
+      Object.keys(headers)
+        .map((k) => k.toLowerCase())
+        .sort()
+    ).toEqual(["x-b", "x-weaviate-client-integration"]);
+    expect(headers["X-Weaviate-Client-Integration"]).toMatch(/^anything-llm\//);
+  });
+
+  it("decodes secrets stored in the .env-safe form", () => {
+    const encode = (v) => `b64:${Buffer.from(v).toString("base64")}`;
+    setEnv({
+      WEAVIATE_DEPLOYMENT: "custom",
+      WEAVIATE_HTTP_HOST: "weaviate",
+      WEAVIATE_API_KEY: encode("key#with'quotes\""),
+    });
+    expect(
+      new Weaviate().connectionConfig().options.authCredentials.apiKey
+    ).toBe("key#with'quotes\"");
+  });
+
+  it("scales ranked-fusion scores so the best match is 1", async () => {
+    jest
+      .spyOn(Weaviate.prototype, "workspaceSearchPreference")
+      .mockResolvedValue({ vectorSearchMode: "hybrid" });
+    try {
+      const w = new Weaviate();
+      await w.addDocumentToNamespace("ws", doc());
+      fakeClient.collections.get("Ws").query.hybrid.mockResolvedValueOnce({
+        objects: [
+          { uuid: "a", properties: { text: "a" }, metadata: { score: 0.016 } },
+          { uuid: "b", properties: { text: "b" }, metadata: { score: 0.015 } },
+        ],
+      });
+      const result = await w.performSimilaritySearch({
+        namespace: "ws",
+        input: "q",
+        LLMConnector: mockEmbedder,
+      });
+      expect(result.sources.map((s) => s.score)).toEqual([1, 0.9375]);
+    } finally {
+      jest.restoreAllMocks();
+    }
   });
 });
 

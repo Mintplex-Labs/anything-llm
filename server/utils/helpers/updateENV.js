@@ -399,6 +399,11 @@ const KEY_MAPPING = {
           : 'Weaviate deployment must be "cloud" or "custom".',
     ],
   },
+  // Internal: the old URL settings the boot migration last converted from.
+  WeaviateMigratedFrom: {
+    envKey: "WEAVIATE_MIGRATED_FROM",
+    checks: [],
+  },
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
     // Weaviate Cloud cluster URL. Custom deployments clear it and use the
@@ -416,6 +421,7 @@ const KEY_MAPPING = {
   WeaviateApiKey: {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
+    postUpdate: [encodeForEnvFile("WEAVIATE_API_KEY")],
   },
   // Weaviate custom connection (connectToCustom options)
   WeaviateHttpHost: {
@@ -473,6 +479,7 @@ const KEY_MAPPING = {
   WeaviateOidcClientSecret: {
     envKey: "WEAVIATE_OIDC_CLIENT_SECRET",
     checks: [],
+    postUpdate: [encodeForEnvFile("WEAVIATE_OIDC_CLIENT_SECRET")],
   },
   WeaviateOidcUsername: {
     envKey: "WEAVIATE_OIDC_USERNAME",
@@ -481,6 +488,7 @@ const KEY_MAPPING = {
   WeaviateOidcPassword: {
     envKey: "WEAVIATE_OIDC_PASSWORD",
     checks: [],
+    postUpdate: [encodeForEnvFile("WEAVIATE_OIDC_PASSWORD")],
   },
   WeaviateOidcScopes: {
     envKey: "WEAVIATE_OIDC_SCOPES",
@@ -489,6 +497,7 @@ const KEY_MAPPING = {
   WeaviateAccessToken: {
     envKey: "WEAVIATE_ACCESS_TOKEN",
     checks: [],
+    postUpdate: [encodeForEnvFile("WEAVIATE_ACCESS_TOKEN")],
   },
   WeaviateAccessTokenExpiresIn: {
     envKey: "WEAVIATE_ACCESS_TOKEN_EXPIRES_IN",
@@ -497,10 +506,12 @@ const KEY_MAPPING = {
   WeaviateRefreshToken: {
     envKey: "WEAVIATE_REFRESH_TOKEN",
     checks: [],
+    postUpdate: [encodeForEnvFile("WEAVIATE_REFRESH_TOKEN")],
   },
   WeaviateHeaders: {
     envKey: "WEAVIATE_HEADERS",
     checks: [optional(jsonObjectOfStrings)],
+    postUpdate: [encodeForEnvFile("WEAVIATE_HEADERS", { always: true })],
   },
   WeaviateTimeoutQuery: {
     envKey: "WEAVIATE_TIMEOUT_QUERY",
@@ -526,10 +537,11 @@ const KEY_MAPPING = {
           ? null
           : 'Weaviate multi-tenancy must be "true" or "false".',
     ],
-    postUpdate: [moveWeaviateWorkspacesToCurrentLayout],
+    postSettled: [moveWeaviateWorkspacesToCurrentLayout],
   },
   WeaviateCollection: {
     envKey: "WEAVIATE_COLLECTION",
+    postSettled: [moveWeaviateWorkspacesToCurrentLayout],
     // Shared collection used when multi-tenancy is on. Empty means "AnythingLLM".
     checks: [
       (input = "") =>
@@ -1321,7 +1333,10 @@ function isBooleanString(input = "") {
 
 function jsonObjectOfStrings(input = "") {
   try {
-    const value = JSON.parse(input);
+    const raw = input.startsWith("b64:")
+      ? Buffer.from(input.slice(4), "base64").toString("utf8")
+      : input;
+    const value = JSON.parse(raw);
     if (
       value &&
       typeof value === "object" &&
@@ -1577,23 +1592,42 @@ function noRestrictedChars(input = "") {
 }
 
 /**
- * After Weaviate multi-tenancy is switched on or off, move existing workspaces
- * into the new layout in the background. Workspaces are also moved on first
- * use, so this only warms things up and never blocks the settings update.
+ * After the Weaviate storage settings change (multi-tenancy or the shared
+ * collection), move existing workspaces to the new layout in the background.
+ * Runs once all submitted settings are applied. Workspaces are also moved on
+ * first use, so this never blocks the settings update.
  */
-async function moveWeaviateWorkspacesToCurrentLayout(_, prevValue, nextValue) {
-  if (prevValue === nextValue || process.env.VECTOR_DB !== "weaviate") return;
+async function moveWeaviateWorkspacesToCurrentLayout() {
+  if (process.env.VECTOR_DB !== "weaviate") return;
   const { Weaviate } = require("../vectorDbProviders/weaviate");
   new Weaviate()
     .moveAllToCurrentLayout()
     .then((report) =>
       console.log(
-        `Weaviate multi-tenancy ${nextValue === "true" ? "enabled" : "disabled"}: checked ${report.checked} workspaces, moved ${report.moved}, ${report.failed.length} failed.`
+        `Weaviate storage layout: checked ${report.checked} workspaces, moved ${report.moved}, ${report.failed.length} failed.`
       )
     )
     .catch((e) =>
       console.error("Weaviate: moving workspaces failed:", e.message)
     );
+}
+
+/**
+ * The .env writer (dumpENV) cuts values at the first quote, backtick, "#" or
+ * some whitespace characters, which would silently truncate them on the next
+ * restart. Weaviate secrets and headers containing such characters are
+ * stored as "b64:<base64>" instead; the Weaviate provider decodes them.
+ * Headers are JSON, so they are always encoded.
+ */
+const ENV_FILE_UNSAFE_CHARS =
+  /[\n\r\t\v\f\u0085\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000"'`#]/;
+function encodeForEnvFile(envKey, { always = false } = {}) {
+  return async (_, __, nextValue) => {
+    if (!nextValue || nextValue.startsWith("b64:")) return;
+    if (!always && !ENV_FILE_UNSAFE_CHARS.test(nextValue)) return;
+    process.env[envKey] =
+      `b64:${Buffer.from(nextValue, "utf8").toString("base64")}`;
+  };
 }
 
 async function handleVectorStoreReset(key, prevValue, nextValue) {

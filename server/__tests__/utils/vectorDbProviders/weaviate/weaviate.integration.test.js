@@ -53,8 +53,18 @@ const mockDocumentVectors = {
 jest.mock("../../../../models/vectors", () => ({
   DocumentVectors: mockDocumentVectors,
 }));
+const mockSystemSettings = new Map();
 jest.mock("../../../../models/systemSettings", () => ({
   SystemSettings: {
+    get: jest.fn(async ({ label }) =>
+      mockSystemSettings.has(label)
+        ? { label, value: mockSystemSettings.get(label) }
+        : null
+    ),
+    _updateSettings: jest.fn(async (updates) => {
+      for (const [k, v] of Object.entries(updates))
+        mockSystemSettings.set(k, v);
+    }),
     getValueOrFallback: jest.fn(async ({ label }, fallback = null) =>
       label === "text_splitter_chunk_size"
         ? 80
@@ -96,6 +106,9 @@ const { Weaviate } = require("../../../../utils/vectorDbProviders/weaviate");
 const { version: APP_VERSION } = require("../../../../package.json");
 
 jest.setTimeout(120_000);
+// These tests act as the server process, which moves data between layouts.
+Weaviate.enableLayoutMoves();
+Weaviate.clientCloseGraceMs = 0;
 
 // ---- Recording reverse proxy for the REST port ----
 function startRecordingProxy(target) {
@@ -598,7 +611,6 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
     });
 
     describe("hybrid search", () => {
-      const { Workspace } = require("../../../../models/workspace");
       const saved = {};
       const KEYS = [
         "WEAVIATE_SEARCH_MODE",
@@ -686,10 +698,12 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       it("uses the workspace's own mode and alpha over the app setting", async () => {
         const w = await seed("hybrid workspace");
         process.env.WEAVIATE_SEARCH_MODE = "vector";
-        jest.spyOn(Workspace, "get").mockResolvedValue({
-          vectorSearchMode: "hybrid",
-          vectorSearchAlpha: 0,
-        });
+        jest
+          .spyOn(Weaviate.prototype, "workspaceSearchPreference")
+          .mockResolvedValue({
+            vectorSearchMode: "hybrid",
+            vectorSearchAlpha: 0,
+          });
         const result = await search(w, "hybrid workspace");
         expect(result.contextTexts[0]).toMatch(/XJ9000/);
         expect(result.sources[0].score).toBeCloseTo(1, 5);
@@ -706,10 +720,53 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
     });
 
     describe("multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
+      beforeEach(async () => {
+        mockSystemSettings.clear();
+        await Weaviate.disconnect();
+      });
       afterEach(async () => {
         delete process.env.WEAVIATE_MULTI_TENANCY;
         delete process.env.WEAVIATE_COLLECTION;
         await dropAllCollections(TEST_URL);
+      });
+
+      it("never moves a same-named collection another app created", async () => {
+        await rest(TEST_URL, "POST", "/v1/schema", {
+          class: "Documents",
+          description: "Another app's data",
+          vectorizer: "none",
+        });
+        await rest(TEST_URL, "POST", "/v1/objects", {
+          class: "Documents",
+          properties: { text: "not ours" },
+          vector: embed("not ours"),
+        });
+        process.env.WEAVIATE_MULTI_TENANCY = "true";
+        expect(await new Weaviate().hasNamespace("documents")).toBe(false);
+        const { objects } = await rest(
+          TEST_URL,
+          "GET",
+          "/v1/objects?class=Documents&limit=10"
+        );
+        expect(objects).toHaveLength(1);
+      });
+
+      it("explains when the shared collection name is a regular collection", async () => {
+        await rest(TEST_URL, "POST", "/v1/schema", {
+          class: "PlainShared",
+          description: "Class created by AnythingLLM named PlainShared",
+          vectorizer: "none",
+        });
+        process.env.WEAVIATE_MULTI_TENANCY = "true";
+        process.env.WEAVIATE_COLLECTION = "PlainShared";
+        const result = await new Weaviate().addDocumentToNamespace(
+          "someone",
+          fruitDoc()
+        );
+        expect(result.vectorized).toBe(false);
+        expect(result.error).toMatch(
+          "Collection PlainShared already exists and is not multi-tenant"
+        );
       });
 
       it("stores workspaces as isolated tenants of one collection", async () => {

@@ -10,6 +10,11 @@ on:
     paths:
       - "server/utils/vectorDbProviders/weaviate/**"
       - "server/__tests__/utils/vectorDbProviders/weaviate/**"
+      - "server/utils/helpers/updateENV.js"
+      - "server/utils/boot/**"
+      - "server/models/workspace.js"
+      - "server/models/systemSettings.js"
+      - "server/package.json"
       - ".github/workflows/weaviate-integration.yaml"
 
 jobs:
