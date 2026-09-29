@@ -261,8 +261,6 @@ class GmailBridge {
    * @returns {Promise<{success: boolean, error?: string}>}
    */
   async initialize() {
-    if (this.#isInitialized) return { success: true };
-
     try {
       const isMultiUser = await SystemSettings.isMultiUserMode();
       if (isMultiUser) {
@@ -272,6 +270,8 @@ class GmailBridge {
             "Gmail integration is not available in multi-user mode for security reasons.",
         };
       }
+
+      if (this.#isInitialized) return { success: true };
 
       const config = await GmailBridge.getConfig();
       if (!config.deploymentId || !config.apiKey) {
