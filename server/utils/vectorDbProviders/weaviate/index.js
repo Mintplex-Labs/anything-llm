@@ -35,6 +35,73 @@ const QUANTIZATION_OPTIONS = {
   pq: { config: { pq: { enabled: true } }, minVersion: [1, 29, 0] },
 };
 
+// Environment variables that define the connection. The shared client is
+// rebuilt whenever any of them changes.
+const CONNECTION_ENV_KEYS = [
+  "WEAVIATE_DEPLOYMENT",
+  "WEAVIATE_ENDPOINT",
+  "WEAVIATE_GRPC_ENDPOINT",
+  "WEAVIATE_HTTP_HOST",
+  "WEAVIATE_HTTP_PORT",
+  "WEAVIATE_HTTP_SECURE",
+  "WEAVIATE_HTTP_PATH",
+  "WEAVIATE_GRPC_HOST",
+  "WEAVIATE_GRPC_PORT",
+  "WEAVIATE_GRPC_SECURE",
+  "WEAVIATE_GRPC_PROXY",
+  "WEAVIATE_AUTH_METHOD",
+  "WEAVIATE_API_KEY",
+  "WEAVIATE_OIDC_CLIENT_SECRET",
+  "WEAVIATE_OIDC_USERNAME",
+  "WEAVIATE_OIDC_PASSWORD",
+  "WEAVIATE_OIDC_SCOPES",
+  "WEAVIATE_ACCESS_TOKEN",
+  "WEAVIATE_ACCESS_TOKEN_EXPIRES_IN",
+  "WEAVIATE_REFRESH_TOKEN",
+  "WEAVIATE_HEADERS",
+  "WEAVIATE_TIMEOUT_QUERY",
+  "WEAVIATE_TIMEOUT_INSERT",
+  "WEAVIATE_TIMEOUT_INIT",
+  "WEAVIATE_SKIP_INIT_CHECKS",
+];
+const AUTH_METHODS = [
+  "none",
+  "api-key",
+  "oidc-client-credentials",
+  "oidc-password",
+  "bearer-token",
+];
+
+/** A trimmed ENV value, or null when unset or blank. */
+function env(key) {
+  const value = process.env[key];
+  return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
+}
+
+/** A boolean ENV value, or null when unset. */
+function envBoolean(key) {
+  const value = env(key)?.toLowerCase();
+  if (value === undefined || value === null) return null;
+  if (["true", "1", "yes", "on"].includes(value)) return true;
+  if (["false", "0", "no", "off"].includes(value)) return false;
+  throw new Error(`Weaviate::${key} must be true or false.`);
+}
+
+/** A numeric ENV value, or null when unset. */
+function envNumber(key, { integer = false, min = 0, max = Infinity } = {}) {
+  const value = env(key);
+  if (value === null) return null;
+  const number = Number(value);
+  if (
+    !Number.isFinite(number) ||
+    (integer && !Number.isInteger(number)) ||
+    number <= min ||
+    number > max
+  )
+    throw new Error(`Weaviate::${key} has an invalid value "${value}".`);
+  return number;
+}
+
 // Multi-tenancy (WEAVIATE_MULTI_TENANCY): all workspaces share one collection
 // and each workspace is a tenant. Tenant names must match TENANT_NAME; other
 // namespaces get a stable hashed name.
@@ -62,87 +129,234 @@ class Weaviate extends VectorDatabase {
 
   /**
    * The deployment type: "cloud" (Weaviate Cloud) or "custom" (self-hosted or
-   * any other deployment). Set explicitly with WEAVIATE_DEPLOYMENT. Configs from
-   * before that setting existed are inferred from the endpoint: a Weaviate Cloud
-   * host with no explicit gRPC endpoint is "cloud".
+   * any other deployment). Set explicitly with WEAVIATE_DEPLOYMENT. Without it
+   * (configs from before the setting existed): custom if WEAVIATE_HTTP_HOST is
+   * set, otherwise cloud for a Weaviate Cloud WEAVIATE_ENDPOINT with no
+   * explicit gRPC endpoint.
    * @returns {"cloud"|"custom"}
    */
   deploymentMode() {
-    const explicit = process.env.WEAVIATE_DEPLOYMENT?.trim().toLowerCase();
+    const explicit = env("WEAVIATE_DEPLOYMENT")?.toLowerCase();
     if (explicit === "cloud" || explicit === "custom") return explicit;
     if (explicit)
       throw new Error(
         `Weaviate::Invalid WEAVIATE_DEPLOYMENT "${explicit}" - use "cloud" or "custom".`
       );
+    if (env("WEAVIATE_HTTP_HOST") || !env("WEAVIATE_ENDPOINT")) return "custom";
 
-    const { hostname } = new URL(process.env.WEAVIATE_ENDPOINT);
+    const { hostname } = new URL(env("WEAVIATE_ENDPOINT"));
     const isCloudHost = WEAVIATE_CLOUD_DOMAINS.some((domain) =>
       hostname.endsWith(domain)
     );
-    return isCloudHost && !process.env.WEAVIATE_GRPC_ENDPOINT?.trim()
-      ? "cloud"
-      : "custom";
+    return isCloudHost && !env("WEAVIATE_GRPC_ENDPOINT") ? "cloud" : "custom";
   }
 
   /**
    * Builds the weaviate-client connection options from the ENV settings.
-   * - "cloud" uses `connectToWeaviateCloud`, which derives the gRPC host from
-   *   the cluster URL and requires an API key.
-   * - "custom" uses `connectToCustom`. The gRPC endpoint is taken from
-   *   WEAVIATE_GRPC_ENDPOINT, or defaults to the REST host on port 50051.
+   * - "cloud" uses `connectToWeaviateCloud` with the cluster URL
+   *   (WEAVIATE_ENDPOINT) and an API key; the gRPC host is derived.
+   * - "custom" uses `connectToCustom` with every option it supports, see
+   *   customConnectionOptions().
+   * Both get the auth, headers, timeouts and skipInitChecks settings.
    * @returns {{method: "cloud"|"custom", url?: string, options: object}}
    */
   connectionConfig() {
-    const restUrl = new URL(process.env.WEAVIATE_ENDPOINT);
-    const grpcEndpoint = process.env.WEAVIATE_GRPC_ENDPOINT?.trim() || null;
-    const apiKey = process.env.WEAVIATE_API_KEY?.trim() || null;
+    const mode = this.deploymentMode();
+    const authCredentials = this.authCredentials();
+    const timeout = Object.fromEntries(
+      [
+        ["query", envNumber("WEAVIATE_TIMEOUT_QUERY")],
+        ["insert", envNumber("WEAVIATE_TIMEOUT_INSERT")],
+        ["init", envNumber("WEAVIATE_TIMEOUT_INIT")],
+      ].filter(([, value]) => value !== null)
+    );
+    const skipInitChecks = envBoolean("WEAVIATE_SKIP_INIT_CHECKS");
     const sharedOptions = {
-      headers: {
-        "X-Weaviate-Client-Integration": `anything-llm/${ANYTHINGLLM_VERSION}`,
-      },
-      ...(apiKey ? { authCredentials: new weaviate.ApiKey(apiKey) } : {}),
+      headers: this.headers(),
+      ...(authCredentials ? { authCredentials } : {}),
+      ...(Object.keys(timeout).length > 0 ? { timeout } : {}),
+      ...(skipInitChecks ? { skipInitChecks: true } : {}),
     };
 
-    if (this.deploymentMode() === "cloud") {
-      if (!apiKey)
+    if (mode === "cloud") {
+      if (!env("WEAVIATE_ENDPOINT"))
+        throw new Error("Weaviate::Weaviate Cloud requires a cluster URL.");
+      if (!(authCredentials instanceof weaviate.ApiKey))
         throw new Error("Weaviate::Weaviate Cloud requires an API key.");
       return {
         method: "cloud",
-        url: restUrl.origin,
+        url: new URL(env("WEAVIATE_ENDPOINT")).origin,
         options: sharedOptions,
       };
     }
 
-    const httpSecure = restUrl.protocol === "https:";
-    const grpcUrl = grpcEndpoint
-      ? new URL(
-          /^[a-z]+:\/\//i.test(grpcEndpoint)
-            ? grpcEndpoint
-            : `${httpSecure ? "https" : "http"}://${grpcEndpoint}`
-        )
-      : null;
-    const grpcSecure = grpcUrl ? grpcUrl.protocol === "https:" : httpSecure;
-    const httpPath = restUrl.pathname.replace(/\/+$/, "");
-
+    const grpcProxy = env("WEAVIATE_GRPC_PROXY");
     return {
       method: "custom",
       options: {
         ...sharedOptions,
-        httpHost: restUrl.hostname,
-        httpPort: Number(restUrl.port) || (httpSecure ? 443 : 80),
-        httpSecure,
-        ...(httpPath ? { httpPath } : {}),
-        grpcHost: grpcUrl?.hostname || restUrl.hostname,
-        grpcPort: grpcUrl
-          ? Number(grpcUrl.port) || (grpcSecure ? 443 : 80)
-          : DEFAULT_GRPC_PORT,
-        grpcSecure,
+        ...this.customConnectionOptions(),
+        ...(grpcProxy ? { proxies: { grpc: grpcProxy } } : {}),
       },
     };
   }
 
   /**
-   * Opens a client and rejects servers older than MIN_WEAVIATE_VERSION.
+   * HTTP and gRPC options for `connectToCustom`.
+   * - WEAVIATE_HTTP_HOST set: the WEAVIATE_HTTP_* settings are used as given
+   *   (port 8080, no TLS and no path by default).
+   * - Otherwise they are read from the WEAVIATE_ENDPOINT URL (older configs).
+   * - gRPC: WEAVIATE_GRPC_* when WEAVIATE_GRPC_HOST is set, else the
+   *   WEAVIATE_GRPC_ENDPOINT URL, else the HTTP host on port 50051 with the
+   *   same TLS setting as HTTP.
+   */
+  customConnectionOptions() {
+    let http;
+    if (env("WEAVIATE_HTTP_HOST")) {
+      http = {
+        httpHost: env("WEAVIATE_HTTP_HOST"),
+        httpPort:
+          envNumber("WEAVIATE_HTTP_PORT", { integer: true, max: 65535 }) ??
+          8080,
+        httpSecure: envBoolean("WEAVIATE_HTTP_SECURE") ?? false,
+        httpPath: env("WEAVIATE_HTTP_PATH")?.replace(/\/+$/, "") || null,
+      };
+    } else if (env("WEAVIATE_ENDPOINT")) {
+      const url = new URL(env("WEAVIATE_ENDPOINT"));
+      const httpSecure = url.protocol === "https:";
+      http = {
+        httpHost: url.hostname,
+        httpPort: Number(url.port) || (httpSecure ? 443 : 80),
+        httpSecure,
+        httpPath: url.pathname.replace(/\/+$/, "") || null,
+      };
+    } else {
+      throw new Error(
+        "Weaviate::Set the Weaviate HTTP host (WEAVIATE_HTTP_HOST)."
+      );
+    }
+
+    let grpc;
+    if (env("WEAVIATE_GRPC_HOST")) {
+      const grpcSecure = envBoolean("WEAVIATE_GRPC_SECURE") ?? http.httpSecure;
+      grpc = {
+        grpcHost: env("WEAVIATE_GRPC_HOST"),
+        grpcPort:
+          envNumber("WEAVIATE_GRPC_PORT", { integer: true, max: 65535 }) ??
+          DEFAULT_GRPC_PORT,
+        grpcSecure,
+      };
+    } else if (env("WEAVIATE_GRPC_ENDPOINT")) {
+      const endpoint = env("WEAVIATE_GRPC_ENDPOINT");
+      const url = new URL(
+        /^[a-z]+:\/\//i.test(endpoint)
+          ? endpoint
+          : `${http.httpSecure ? "https" : "http"}://${endpoint}`
+      );
+      const grpcSecure = url.protocol === "https:";
+      grpc = {
+        grpcHost: url.hostname,
+        grpcPort: Number(url.port) || (grpcSecure ? 443 : 80),
+        grpcSecure,
+      };
+    } else {
+      grpc = {
+        grpcHost: http.httpHost,
+        grpcPort:
+          envNumber("WEAVIATE_GRPC_PORT", { integer: true, max: 65535 }) ??
+          DEFAULT_GRPC_PORT,
+        grpcSecure: envBoolean("WEAVIATE_GRPC_SECURE") ?? http.httpSecure,
+      };
+    }
+
+    const { httpPath, ...rest } = http;
+    return { ...rest, ...(httpPath ? { httpPath } : {}), ...grpc };
+  }
+
+  /**
+   * Credentials for WEAVIATE_AUTH_METHOD. Without it: API key auth when
+   * WEAVIATE_API_KEY is set, otherwise none.
+   * @returns {object|null} a weaviate-client auth credentials instance
+   */
+  authCredentials() {
+    const method =
+      env("WEAVIATE_AUTH_METHOD")?.toLowerCase() ??
+      (env("WEAVIATE_API_KEY") ? "api-key" : "none");
+    const require = (key) => {
+      if (!env(key))
+        throw new Error(`Weaviate::${key} is required for ${method} auth.`);
+      return env(key);
+    };
+    const scopes = env("WEAVIATE_OIDC_SCOPES")
+      ?.split(/[\s,]+/)
+      .filter(Boolean);
+
+    switch (method) {
+      case "none":
+        return null;
+      case "api-key":
+        return new weaviate.ApiKey(require("WEAVIATE_API_KEY"));
+      case "oidc-client-credentials":
+        return new weaviate.AuthClientCredentials({
+          clientSecret: require("WEAVIATE_OIDC_CLIENT_SECRET"),
+          ...(scopes ? { scopes } : {}),
+        });
+      case "oidc-password":
+        return new weaviate.AuthUserPasswordCredentials({
+          username: require("WEAVIATE_OIDC_USERNAME"),
+          password: require("WEAVIATE_OIDC_PASSWORD"),
+          ...(scopes ? { scopes } : {}),
+        });
+      case "bearer-token":
+        return new weaviate.AuthAccessTokenCredentials({
+          accessToken: require("WEAVIATE_ACCESS_TOKEN"),
+          expiresIn:
+            envNumber("WEAVIATE_ACCESS_TOKEN_EXPIRES_IN", { integer: true }) ??
+            3600,
+          ...(env("WEAVIATE_REFRESH_TOKEN")
+            ? { refreshToken: env("WEAVIATE_REFRESH_TOKEN") }
+            : {}),
+        });
+      default:
+        throw new Error(
+          `Weaviate::Invalid WEAVIATE_AUTH_METHOD "${method}" - use one of ${AUTH_METHODS.join(", ")}.`
+        );
+    }
+  }
+
+  /**
+   * Extra request headers from WEAVIATE_HEADERS (a JSON object of strings),
+   * plus the integration header, which always wins.
+   */
+  headers() {
+    let extra = {};
+    const raw = env("WEAVIATE_HEADERS");
+    if (raw) {
+      try {
+        extra = JSON.parse(raw);
+      } catch {
+        throw new Error("Weaviate::WEAVIATE_HEADERS must be a JSON object.");
+      }
+      if (
+        !extra ||
+        typeof extra !== "object" ||
+        Array.isArray(extra) ||
+        Object.values(extra).some((value) => typeof value !== "string")
+      )
+        throw new Error(
+          "Weaviate::WEAVIATE_HEADERS must be a JSON object of string values."
+        );
+    }
+    return {
+      ...extra,
+      "X-Weaviate-Client-Integration": `anything-llm/${ANYTHINGLLM_VERSION}`,
+    };
+  }
+
+  /**
+   * Opens a client and rejects servers older than MIN_WEAVIATE_VERSION. With
+   * WEAVIATE_SKIP_INIT_CHECKS the client's startup checks and this version
+   * check are both skipped.
    * @returns {Promise<import("weaviate-client").WeaviateClient>}
    */
   async createClient() {
@@ -157,6 +371,12 @@ class Weaviate extends VectorDatabase {
       throw new Error(
         `Weaviate::Could not connect - is the service online and are the REST and gRPC endpoints reachable? ${e.message}`
       );
+    }
+    if (options.skipInitChecks) {
+      this.logger(
+        `Skipping startup checks: the Weaviate server version is not verified (AnythingLLM needs ${Object.values(MIN_WEAVIATE_VERSION).join(".")} or later).`
+      );
+      return client;
     }
 
     const version = await client.getWeaviateVersion();
@@ -174,12 +394,9 @@ class Weaviate extends VectorDatabase {
     if (process.env.VECTOR_DB !== "weaviate")
       throw new Error("Weaviate::Invalid ENV settings");
 
-    const key = [
-      process.env.WEAVIATE_DEPLOYMENT,
-      process.env.WEAVIATE_ENDPOINT,
-      process.env.WEAVIATE_GRPC_ENDPOINT,
-      process.env.WEAVIATE_API_KEY,
-    ].join("|");
+    const key = JSON.stringify(
+      CONNECTION_ENV_KEYS.map((name) => process.env[name] ?? null)
+    );
 
     if (cachedConnection?.key !== key) {
       // A different server may hold data in either layout.

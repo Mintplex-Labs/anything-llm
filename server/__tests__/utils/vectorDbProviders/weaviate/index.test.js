@@ -191,15 +191,25 @@ function createFakeClient({ version = "1.39.0" } = {}) {
 }
 
 // ---- Module mocks ----
-jest.mock("weaviate-client", () => ({
-  connectToCustom: jest.fn(),
-  connectToWeaviateCloud: jest.fn(),
-  ApiKey: class ApiKey {
-    constructor(apiKey) {
-      this.apiKey = apiKey;
+jest.mock("weaviate-client", () => {
+  class Credentials {
+    constructor(args) {
+      Object.assign(this, args);
     }
-  },
-}));
+  }
+  return {
+    connectToCustom: jest.fn(),
+    connectToWeaviateCloud: jest.fn(),
+    ApiKey: class ApiKey {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+      }
+    },
+    AuthClientCredentials: class AuthClientCredentials extends Credentials {},
+    AuthUserPasswordCredentials: class AuthUserPasswordCredentials extends Credentials {},
+    AuthAccessTokenCredentials: class AuthAccessTokenCredentials extends Credentials {},
+  };
+});
 
 const mockDocumentVectors = {
   rows: [],
@@ -272,6 +282,27 @@ const { version: APP_VERSION } = require("../../../../package.json");
 
 // ---- Helpers ----
 const ENV_KEYS = [
+  "WEAVIATE_HTTP_HOST",
+  "WEAVIATE_HTTP_PORT",
+  "WEAVIATE_HTTP_SECURE",
+  "WEAVIATE_HTTP_PATH",
+  "WEAVIATE_GRPC_HOST",
+  "WEAVIATE_GRPC_PORT",
+  "WEAVIATE_GRPC_SECURE",
+  "WEAVIATE_GRPC_PROXY",
+  "WEAVIATE_AUTH_METHOD",
+  "WEAVIATE_OIDC_CLIENT_SECRET",
+  "WEAVIATE_OIDC_USERNAME",
+  "WEAVIATE_OIDC_PASSWORD",
+  "WEAVIATE_OIDC_SCOPES",
+  "WEAVIATE_ACCESS_TOKEN",
+  "WEAVIATE_ACCESS_TOKEN_EXPIRES_IN",
+  "WEAVIATE_REFRESH_TOKEN",
+  "WEAVIATE_HEADERS",
+  "WEAVIATE_TIMEOUT_QUERY",
+  "WEAVIATE_TIMEOUT_INSERT",
+  "WEAVIATE_TIMEOUT_INIT",
+  "WEAVIATE_SKIP_INIT_CHECKS",
   "VECTOR_DB",
   "WEAVIATE_DEPLOYMENT",
   "WEAVIATE_QUANTIZATION",
@@ -548,6 +579,327 @@ describe("Weaviate.connectionConfig", () => {
   it("throws on an invalid endpoint URL", () => {
     setEnv({ WEAVIATE_ENDPOINT: "not a url" });
     expect(() => new Weaviate().connectionConfig()).toThrow();
+  });
+});
+
+describe("Weaviate custom connection options", () => {
+  const header = {
+    "X-Weaviate-Client-Integration": `anything-llm/${APP_VERSION}`,
+  };
+  const custom = (overrides) => {
+    setEnv({
+      WEAVIATE_DEPLOYMENT: "custom",
+      WEAVIATE_ENDPOINT: undefined,
+      ...overrides,
+    });
+    return new Weaviate().connectionConfig();
+  };
+
+  it("uses the explicit HTTP fields with the client defaults", () => {
+    expect(custom({ WEAVIATE_HTTP_HOST: "weaviate" })).toEqual({
+      method: "custom",
+      options: {
+        headers: header,
+        httpHost: "weaviate",
+        httpPort: 8080,
+        httpSecure: false,
+        grpcHost: "weaviate",
+        grpcPort: 50051,
+        grpcSecure: false,
+      },
+    });
+  });
+
+  it("passes every HTTP and gRPC option through", () => {
+    expect(
+      custom({
+        WEAVIATE_HTTP_HOST: "rest.example.com",
+        WEAVIATE_HTTP_PORT: "443",
+        WEAVIATE_HTTP_SECURE: "true",
+        WEAVIATE_HTTP_PATH: "/weaviate/",
+        WEAVIATE_GRPC_HOST: "grpc.example.com",
+        WEAVIATE_GRPC_PORT: "8443",
+        WEAVIATE_GRPC_SECURE: "false",
+        WEAVIATE_GRPC_PROXY: "http://proxy:3128",
+      }).options
+    ).toEqual({
+      headers: header,
+      httpHost: "rest.example.com",
+      httpPort: 443,
+      httpSecure: true,
+      httpPath: "/weaviate",
+      grpcHost: "grpc.example.com",
+      grpcPort: 8443,
+      grpcSecure: false,
+      proxies: { grpc: "http://proxy:3128" },
+    });
+  });
+
+  it("gRPC follows the HTTP host and TLS unless set", () => {
+    expect(
+      custom({
+        WEAVIATE_HTTP_HOST: "rest.example.com",
+        WEAVIATE_HTTP_SECURE: "true",
+        WEAVIATE_GRPC_PORT: "443",
+      }).options
+    ).toEqual(
+      expect.objectContaining({
+        grpcHost: "rest.example.com",
+        grpcPort: 443,
+        grpcSecure: true,
+      })
+    );
+    expect(
+      custom({
+        WEAVIATE_HTTP_HOST: "rest.example.com",
+        WEAVIATE_HTTP_SECURE: "true",
+        WEAVIATE_GRPC_HOST: "grpc.example.com",
+      }).options
+    ).toEqual(
+      expect.objectContaining({
+        grpcHost: "grpc.example.com",
+        grpcSecure: true,
+      })
+    );
+  });
+
+  it("explicit HTTP fields win over the older WEAVIATE_ENDPOINT URL", () => {
+    expect(
+      custom({
+        WEAVIATE_ENDPOINT: "https://old.example.com:9999/path",
+        WEAVIATE_HTTP_HOST: "new-host",
+      }).options
+    ).toEqual(
+      expect.objectContaining({
+        httpHost: "new-host",
+        httpPort: 8080,
+        httpSecure: false,
+      })
+    );
+  });
+
+  it("still uses WEAVIATE_GRPC_ENDPOINT when no gRPC host is set", () => {
+    expect(
+      custom({
+        WEAVIATE_HTTP_HOST: "rest",
+        WEAVIATE_GRPC_ENDPOINT: "https://grpc.example.com:444",
+      }).options
+    ).toEqual(
+      expect.objectContaining({
+        grpcHost: "grpc.example.com",
+        grpcPort: 444,
+        grpcSecure: true,
+      })
+    );
+  });
+
+  it("needs a host", () => {
+    expect(() => custom({})).toThrow(
+      "Weaviate::Set the Weaviate HTTP host (WEAVIATE_HTTP_HOST)."
+    );
+  });
+
+  it.each([
+    ["WEAVIATE_HTTP_PORT", "0"],
+    ["WEAVIATE_HTTP_PORT", "70000"],
+    ["WEAVIATE_HTTP_PORT", "80.5"],
+    ["WEAVIATE_GRPC_PORT", "abc"],
+    ["WEAVIATE_HTTP_SECURE", "maybe"],
+    ["WEAVIATE_TIMEOUT_QUERY", "-1"],
+    ["WEAVIATE_TIMEOUT_INIT", "soon"],
+  ])("rejects %s=%p", (key, value) => {
+    expect(() =>
+      custom({ WEAVIATE_HTTP_HOST: "weaviate", [key]: value })
+    ).toThrow(`Weaviate::${key}`);
+  });
+
+  it("an explicit HTTP host makes the inferred deployment custom", () => {
+    setEnv({
+      WEAVIATE_ENDPOINT: "https://abc.c0.europe-west3.gcp.weaviate.cloud",
+      WEAVIATE_HTTP_HOST: "weaviate",
+    });
+    expect(new Weaviate().deploymentMode()).toBe("custom");
+  });
+
+  describe("authentication", () => {
+    const auth = (overrides) =>
+      custom({ WEAVIATE_HTTP_HOST: "weaviate", ...overrides }).options
+        .authCredentials;
+
+    it("defaults to an API key when one is set, otherwise none", () => {
+      expect(auth({ WEAVIATE_API_KEY: "k" })).toEqual(
+        expect.objectContaining({ apiKey: "k" })
+      );
+      expect(auth({})).toBeUndefined();
+    });
+
+    it("none ignores a stored API key", () => {
+      expect(
+        auth({ WEAVIATE_AUTH_METHOD: "none", WEAVIATE_API_KEY: "k" })
+      ).toBeUndefined();
+    });
+
+    it("oidc-client-credentials with scopes", () => {
+      const creds = auth({
+        WEAVIATE_AUTH_METHOD: "oidc-client-credentials",
+        WEAVIATE_OIDC_CLIENT_SECRET: "secret",
+        WEAVIATE_OIDC_SCOPES: "openid, offline_access  profile",
+      });
+      expect(creds).toBeInstanceOf(weaviate.AuthClientCredentials);
+      expect(creds).toEqual(
+        expect.objectContaining({
+          clientSecret: "secret",
+          scopes: ["openid", "offline_access", "profile"],
+        })
+      );
+    });
+
+    it("oidc-password", () => {
+      const creds = auth({
+        WEAVIATE_AUTH_METHOD: "oidc-password",
+        WEAVIATE_OIDC_USERNAME: "me",
+        WEAVIATE_OIDC_PASSWORD: "pw",
+      });
+      expect(creds).toBeInstanceOf(weaviate.AuthUserPasswordCredentials);
+      expect(creds).toEqual(
+        expect.objectContaining({ username: "me", password: "pw" })
+      );
+      expect(creds).not.toHaveProperty("scopes");
+    });
+
+    it("bearer-token with defaults and a refresh token", () => {
+      const creds = auth({
+        WEAVIATE_AUTH_METHOD: "bearer-token",
+        WEAVIATE_ACCESS_TOKEN: "token",
+        WEAVIATE_REFRESH_TOKEN: "refresh",
+      });
+      expect(creds).toBeInstanceOf(weaviate.AuthAccessTokenCredentials);
+      expect(creds).toEqual(
+        expect.objectContaining({
+          accessToken: "token",
+          expiresIn: 3600,
+          refreshToken: "refresh",
+        })
+      );
+      expect(
+        auth({
+          WEAVIATE_AUTH_METHOD: "bearer-token",
+          WEAVIATE_ACCESS_TOKEN: "token",
+          WEAVIATE_ACCESS_TOKEN_EXPIRES_IN: "120",
+        }).expiresIn
+      ).toBe(120);
+    });
+
+    it.each([
+      ["api-key", "WEAVIATE_API_KEY"],
+      ["oidc-client-credentials", "WEAVIATE_OIDC_CLIENT_SECRET"],
+      ["oidc-password", "WEAVIATE_OIDC_USERNAME"],
+      ["bearer-token", "WEAVIATE_ACCESS_TOKEN"],
+    ])("%s requires %s", (method, key) => {
+      expect(() => auth({ WEAVIATE_AUTH_METHOD: method })).toThrow(
+        `Weaviate::${key} is required for ${method} auth.`
+      );
+    });
+
+    it("rejects an unknown method", () => {
+      expect(() => auth({ WEAVIATE_AUTH_METHOD: "kerberos" })).toThrow(
+        'Invalid WEAVIATE_AUTH_METHOD "kerberos"'
+      );
+    });
+
+    it("Weaviate Cloud only accepts an API key", () => {
+      setEnv({
+        WEAVIATE_DEPLOYMENT: "cloud",
+        WEAVIATE_ENDPOINT: "https://abc.c0.europe-west3.gcp.weaviate.cloud",
+        WEAVIATE_AUTH_METHOD: "oidc-password",
+        WEAVIATE_OIDC_USERNAME: "me",
+        WEAVIATE_OIDC_PASSWORD: "pw",
+      });
+      expect(() => new Weaviate().connectionConfig()).toThrow(
+        "Weaviate Cloud requires an API key"
+      );
+    });
+  });
+
+  describe("headers, timeouts and init checks", () => {
+    it("adds custom headers; the integration header cannot be overridden", () => {
+      expect(
+        custom({
+          WEAVIATE_HTTP_HOST: "weaviate",
+          WEAVIATE_HEADERS: JSON.stringify({
+            "X-Tenant-Gateway": "abc",
+            "X-Weaviate-Client-Integration": "spoofed",
+          }),
+        }).options.headers
+      ).toEqual({ "X-Tenant-Gateway": "abc", ...header });
+    });
+
+    it.each(["not json", "[]", '"text"', '{"a": 1}', "null"])(
+      "rejects WEAVIATE_HEADERS=%p",
+      (value) => {
+        expect(() =>
+          custom({ WEAVIATE_HTTP_HOST: "weaviate", WEAVIATE_HEADERS: value })
+        ).toThrow("Weaviate::WEAVIATE_HEADERS must be a JSON object");
+      }
+    );
+
+    it("passes only the timeouts that are set", () => {
+      expect(
+        custom({
+          WEAVIATE_HTTP_HOST: "weaviate",
+          WEAVIATE_TIMEOUT_QUERY: "60",
+          WEAVIATE_TIMEOUT_INIT: "0.5",
+        }).options.timeout
+      ).toEqual({ query: 60, init: 0.5 });
+      expect(
+        custom({ WEAVIATE_HTTP_HOST: "weaviate" }).options
+      ).not.toHaveProperty("timeout");
+    });
+
+    it("applies timeouts, headers and skipInitChecks to Weaviate Cloud too", () => {
+      setEnv({
+        WEAVIATE_DEPLOYMENT: "cloud",
+        WEAVIATE_ENDPOINT: "https://abc.c0.europe-west3.gcp.weaviate.cloud",
+        WEAVIATE_API_KEY: "k",
+        WEAVIATE_TIMEOUT_INSERT: "120",
+        WEAVIATE_SKIP_INIT_CHECKS: "true",
+        WEAVIATE_GRPC_PROXY: "http://ignored:3128",
+      });
+      const { options } = new Weaviate().connectionConfig();
+      expect(options).toEqual(
+        expect.objectContaining({
+          timeout: { insert: 120 },
+          skipInitChecks: true,
+        })
+      );
+      expect(options).not.toHaveProperty("proxies");
+    });
+
+    it("skipInitChecks skips the client checks and the version gate", async () => {
+      const client = useFakeClient({ version: "1.20.0" });
+      setEnv({
+        WEAVIATE_DEPLOYMENT: "custom",
+        WEAVIATE_HTTP_HOST: "weaviate",
+        WEAVIATE_SKIP_INIT_CHECKS: "true",
+      });
+      await expect(new Weaviate().connect()).resolves.toEqual({ client });
+      expect(weaviate.connectToCustom).toHaveBeenCalledWith(
+        expect.objectContaining({ skipInitChecks: true })
+      );
+      expect(client.getWeaviateVersion).not.toHaveBeenCalled();
+    });
+
+    it("rebuilds the client when a timeout changes", async () => {
+      setEnv({ WEAVIATE_DEPLOYMENT: "custom", WEAVIATE_HTTP_HOST: "weaviate" });
+      await new Weaviate().connect();
+      process.env.WEAVIATE_TIMEOUT_QUERY = "5";
+      useFakeClient();
+      await new Weaviate().connect();
+      expect(weaviate.connectToCustom).toHaveBeenCalledTimes(2);
+      expect(weaviate.connectToCustom).toHaveBeenLastCalledWith(
+        expect.objectContaining({ timeout: { query: 5 } })
+      );
+    });
   });
 });
 

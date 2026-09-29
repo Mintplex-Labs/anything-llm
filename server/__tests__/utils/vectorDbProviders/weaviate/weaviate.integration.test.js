@@ -551,6 +551,52 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       );
     });
 
+    it("connects with the explicit custom options, headers, timeouts and skipInitChecks", async () => {
+      const saved = { ...process.env };
+      const proxyUrl = new URL(proxy.url);
+      const grpcUrl = new URL(TEST_GRPC_URL);
+      try {
+        delete process.env.WEAVIATE_ENDPOINT;
+        delete process.env.WEAVIATE_GRPC_ENDPOINT;
+        Object.assign(process.env, {
+          WEAVIATE_DEPLOYMENT: "custom",
+          WEAVIATE_HTTP_HOST: proxyUrl.hostname,
+          WEAVIATE_HTTP_PORT: proxyUrl.port,
+          WEAVIATE_HTTP_SECURE: "false",
+          WEAVIATE_GRPC_HOST: grpcUrl.hostname,
+          WEAVIATE_GRPC_PORT: grpcUrl.port,
+          WEAVIATE_GRPC_SECURE: "false",
+          WEAVIATE_AUTH_METHOD: "none",
+          WEAVIATE_HEADERS: '{"X-AnythingLLM-Test": "explicit-options"}',
+          WEAVIATE_TIMEOUT_QUERY: "20",
+          WEAVIATE_TIMEOUT_INSERT: "60",
+          WEAVIATE_TIMEOUT_INIT: "5",
+        });
+        const w = new Weaviate();
+        expect(
+          await w.addDocumentToNamespace("explicit options", fruitDoc())
+        ).toEqual({ vectorized: true, error: null });
+        const search = await w.performSimilaritySearch({
+          namespace: "explicit options",
+          input: "bananas",
+          LLMConnector: mockEmbedder,
+          similarityThreshold: 0,
+          topN: 1,
+        });
+        expect(search.contextTexts[0]).toMatch(/Bananas/);
+        const tagged = proxy.requests.filter(
+          (r) => r.headers["x-anythingllm-test"] === "explicit-options"
+        );
+        expect(tagged.length).toBeGreaterThan(0);
+
+        process.env.WEAVIATE_SKIP_INIT_CHECKS = "true";
+        expect(await w.namespaceCount("explicit options")).toBeGreaterThan(0);
+        await w["delete-namespace"]({ namespace: "explicit options" });
+      } finally {
+        process.env = saved;
+      }
+    });
+
     describe("multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
       afterEach(async () => {
         delete process.env.WEAVIATE_MULTI_TENANCY;

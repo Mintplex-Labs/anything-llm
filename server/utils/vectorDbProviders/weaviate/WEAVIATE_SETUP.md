@@ -11,11 +11,28 @@ with the information from either of the above steps.
 AnythingLLM talks to Weaviate over REST and gRPC. Pick the **Deployment** that matches your Weaviate:
 
 - **Weaviate Cloud**: set the cluster's REST endpoint (e.g. `https://xyz.c0.europe-west3.gcp.weaviate.cloud`) and an API key. The gRPC endpoint is derived automatically.
-- **Custom (self-hosted)**: set the REST endpoint and, if needed, the API key. The gRPC endpoint defaults to the REST host on port `50051`, using TLS if the REST endpoint uses `https`. Set the gRPC endpoint only if gRPC is exposed on a different host or port. Both ports must be reachable from AnythingLLM.
+- **Custom (self-hosted)**: every option of a [custom connection](https://docs.weaviate.io/weaviate/connections/connect-custom). Both ports must be reachable from AnythingLLM.
+
+  | Setting | ENV | Default |
+  |---|---|---|
+  | HTTP host / port / secure / path | `WEAVIATE_HTTP_HOST`, `WEAVIATE_HTTP_PORT`, `WEAVIATE_HTTP_SECURE`, `WEAVIATE_HTTP_PATH` | host required, `8080`, `false`, none |
+  | gRPC host / port / secure | `WEAVIATE_GRPC_HOST`, `WEAVIATE_GRPC_PORT`, `WEAVIATE_GRPC_SECURE` | the HTTP host, `50051`, same as HTTP |
+  | gRPC proxy | `WEAVIATE_GRPC_PROXY` | none |
+  | Authentication | `WEAVIATE_AUTH_METHOD`: `none`, `api-key` (`WEAVIATE_API_KEY`), `oidc-client-credentials` (`WEAVIATE_OIDC_CLIENT_SECRET`), `oidc-password` (`WEAVIATE_OIDC_USERNAME`, `WEAVIATE_OIDC_PASSWORD`), `bearer-token` (`WEAVIATE_ACCESS_TOKEN`, `WEAVIATE_ACCESS_TOKEN_EXPIRES_IN`, `WEAVIATE_REFRESH_TOKEN`); OIDC scopes in `WEAVIATE_OIDC_SCOPES` | `api-key` if an API key is set, else `none` |
+
+Advanced settings, for both deployments:
+
+| Setting | ENV | Default |
+|---|---|---|
+| Query / insert / init timeouts (seconds) | `WEAVIATE_TIMEOUT_QUERY`, `WEAVIATE_TIMEOUT_INSERT`, `WEAVIATE_TIMEOUT_INIT` | `30`, `90`, `2` |
+| Skip init checks | `WEAVIATE_SKIP_INIT_CHECKS` | `false`. When `true`, the client's startup health checks and AnythingLLM's server version check are skipped. |
+| Additional headers | `WEAVIATE_HEADERS`, a JSON object of strings | none |
+
+**Upgrading:** configs that only have the older `WEAVIATE_ENDPOINT` URL (and optionally `WEAVIATE_GRPC_ENDPOINT` and `WEAVIATE_API_KEY`) are converted to these settings automatically on startup, with the same resulting connection. The old values are kept, so an older AnythingLLM version still works after a rollback.
 
 ### Vector compression
 
-**Vector compression** reduces the memory used by vectors, at a small cost in search accuracy. It applies to workspaces created after you change it.
+**Vector compression** ([docs](https://docs.weaviate.io/weaviate/concepts/vector-quantization)) reduces the memory used by vectors, at a small cost in search accuracy. It applies to workspaces created after you change it.
 
 | Option | Needs Weaviate |
 |---|---|
@@ -64,9 +81,10 @@ After setting up either the Weaviate cloud or local dockerized instance you just
 
 ```
 VECTOR_DB="weaviate"
-WEAVIATE_DEPLOYMENT="custom" # or "cloud"
-WEAVIATE_ENDPOINT='http://localhost:8080'
-WEAVIATE_GRPC_ENDPOINT='http://localhost:50051' # Optional
+WEAVIATE_DEPLOYMENT="custom" # or "cloud" with WEAVIATE_ENDPOINT='https://<cluster>.weaviate.cloud'
+WEAVIATE_HTTP_HOST='localhost'
+WEAVIATE_HTTP_PORT=8080
+WEAVIATE_GRPC_PORT=50051
 WEAVIATE_API_KEY= # Optional for custom, required for cloud
 WEAVIATE_QUANTIZATION= # Optional: rq-8, rq-1, bq, sq or pq
 WEAVIATE_MULTI_TENANCY="false" # Optional: "true" for one shared multi-tenant collection

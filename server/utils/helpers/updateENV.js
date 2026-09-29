@@ -401,7 +401,9 @@ const KEY_MAPPING = {
   },
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
-    checks: [isValidURL, validDockerizedUrl],
+    // Weaviate Cloud cluster URL. Custom deployments clear it and use the
+    // WEAVIATE_HTTP_* / WEAVIATE_GRPC_* settings instead.
+    checks: [optional(isValidURL), optional(validDockerizedUrl)],
   },
   WeaviateGrpcEndpoint: {
     envKey: "WEAVIATE_GRPC_ENDPOINT",
@@ -414,6 +416,107 @@ const KEY_MAPPING = {
   WeaviateApiKey: {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
+  },
+  // Weaviate custom connection (connectToCustom options)
+  WeaviateHttpHost: {
+    envKey: "WEAVIATE_HTTP_HOST",
+    checks: [optional(validHostname)],
+  },
+  WeaviateHttpPort: {
+    envKey: "WEAVIATE_HTTP_PORT",
+    checks: [optional(validPort)],
+  },
+  WeaviateHttpSecure: {
+    envKey: "WEAVIATE_HTTP_SECURE",
+    checks: [optional(isBooleanString)],
+  },
+  WeaviateHttpPath: {
+    envKey: "WEAVIATE_HTTP_PATH",
+    checks: [
+      optional((input) =>
+        input.startsWith("/") ? null : 'HTTP path must start with "/".'
+      ),
+    ],
+  },
+  WeaviateGrpcHost: {
+    envKey: "WEAVIATE_GRPC_HOST",
+    checks: [optional(validHostname)],
+  },
+  WeaviateGrpcPort: {
+    envKey: "WEAVIATE_GRPC_PORT",
+    checks: [optional(validPort)],
+  },
+  WeaviateGrpcSecure: {
+    envKey: "WEAVIATE_GRPC_SECURE",
+    checks: [optional(isBooleanString)],
+  },
+  WeaviateGrpcProxy: {
+    envKey: "WEAVIATE_GRPC_PROXY",
+    checks: [optional(isValidURL)],
+  },
+  WeaviateAuthMethod: {
+    envKey: "WEAVIATE_AUTH_METHOD",
+    checks: [
+      optional((input) =>
+        [
+          "none",
+          "api-key",
+          "oidc-client-credentials",
+          "oidc-password",
+          "bearer-token",
+        ].includes(input)
+          ? null
+          : "Invalid Weaviate authentication method."
+      ),
+    ],
+  },
+  WeaviateOidcClientSecret: {
+    envKey: "WEAVIATE_OIDC_CLIENT_SECRET",
+    checks: [],
+  },
+  WeaviateOidcUsername: {
+    envKey: "WEAVIATE_OIDC_USERNAME",
+    checks: [],
+  },
+  WeaviateOidcPassword: {
+    envKey: "WEAVIATE_OIDC_PASSWORD",
+    checks: [],
+  },
+  WeaviateOidcScopes: {
+    envKey: "WEAVIATE_OIDC_SCOPES",
+    checks: [],
+  },
+  WeaviateAccessToken: {
+    envKey: "WEAVIATE_ACCESS_TOKEN",
+    checks: [],
+  },
+  WeaviateAccessTokenExpiresIn: {
+    envKey: "WEAVIATE_ACCESS_TOKEN_EXPIRES_IN",
+    checks: [optional(positiveNumber)],
+  },
+  WeaviateRefreshToken: {
+    envKey: "WEAVIATE_REFRESH_TOKEN",
+    checks: [],
+  },
+  WeaviateHeaders: {
+    envKey: "WEAVIATE_HEADERS",
+    checks: [optional(jsonObjectOfStrings)],
+  },
+  WeaviateTimeoutQuery: {
+    envKey: "WEAVIATE_TIMEOUT_QUERY",
+    checks: [optional(positiveNumber)],
+  },
+  WeaviateTimeoutInsert: {
+    envKey: "WEAVIATE_TIMEOUT_INSERT",
+    checks: [optional(positiveNumber)],
+  },
+  WeaviateTimeoutInit: {
+    envKey: "WEAVIATE_TIMEOUT_INIT",
+    checks: [optional(positiveNumber)],
+  },
+  WeaviateSkipInitChecks: {
+    envKey: "WEAVIATE_SKIP_INIT_CHECKS",
+    checks: [optional(isBooleanString)],
   },
   WeaviateMultiTenancy: {
     envKey: "WEAVIATE_MULTI_TENANCY",
@@ -1148,6 +1251,54 @@ function nonNegative(input = "") {
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input);
+}
+
+/** Wraps a check so that an empty value (setting cleared) always passes. */
+function optional(check) {
+  return (input = "", ...rest) =>
+    input === "" || input === null || input === undefined
+      ? null
+      : check(input, ...rest);
+}
+
+function validHostname(input = "") {
+  return /^[A-Za-z0-9.\-_:[\]]+$/.test(input) && !input.includes("://")
+    ? null
+    : "Enter a host name or IP address only, without http:// or a port.";
+}
+
+function validPort(input = "") {
+  const port = Number(input);
+  return Number.isInteger(port) && port > 0 && port <= 65535
+    ? null
+    : "Port must be a whole number between 1 and 65535.";
+}
+
+function positiveNumber(input = "") {
+  const number = Number(input);
+  return Number.isFinite(number) && number > 0
+    ? null
+    : "Value must be a number greater than 0.";
+}
+
+function isBooleanString(input = "") {
+  return ["true", "false"].includes(input)
+    ? null
+    : 'Value must be "true" or "false".';
+}
+
+function jsonObjectOfStrings(input = "") {
+  try {
+    const value = JSON.parse(input);
+    if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      Object.values(value).every((v) => typeof v === "string")
+    )
+      return null;
+  } catch {}
+  return 'Enter a JSON object of string values, e.g. {"X-Header": "value"}.';
 }
 
 function isValidURL(input = "") {
