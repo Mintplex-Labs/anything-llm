@@ -153,4 +153,44 @@ describe("MCPHypervisor server definition parsing & validation", () => {
     expect(results["bad-args"].status).toBe("failed");
     expect(results["bad-args"].message).toMatch(/args must be an array/);
   });
+
+  it("leaves servers with anythingllm.autoStart set to false off", async () => {
+    const results = await bootWithConfig({
+      "manual-only": {
+        command: "node",
+        args: ["-e", ""],
+        anythingllm: { autoStart: false },
+      },
+    });
+    expect(results["manual-only"].status).toBe("failed");
+    expect(results["manual-only"].message).toMatch(/autoStart/);
+    expect(hypervisor.mcps["manual-only"]).toBeUndefined();
+  });
+
+  it("makes a caller that arrives mid-boot wait for every server", async () => {
+    const sseServer = await startSSETestServer();
+    const port = sseServer.address().port;
+
+    try {
+      const firstBoot = bootWithConfig({
+        alpha: { url: `http://localhost:${port}` },
+        beta: { url: `http://localhost:${port}` },
+      });
+
+      // Wait until the first server is registered but the boot is still running -
+      // the window an agent session can land in right after a restart.
+      while (Object.keys(hypervisor.mcps).length === 0)
+        await new Promise((resolve) => setImmediate(resolve));
+
+      const secondBoot = await hypervisor.bootMCPServers();
+      expect(secondBoot.alpha?.status).toBe("success");
+      expect(secondBoot.beta?.status).toBe("success");
+      expect(Object.keys(hypervisor.mcps).sort()).toEqual(["alpha", "beta"]);
+      await firstBoot;
+    } finally {
+      if (typeof sseServer.closeAllConnections === "function")
+        sseServer.closeAllConnections();
+      sseServer.close();
+    }
+  });
 });

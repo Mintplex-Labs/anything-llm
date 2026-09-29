@@ -6,6 +6,7 @@ const setupTelemetry = require("../telemetry");
 const eagerLoadContextWindows = require("./eagerLoadContextWindows");
 const markOnboarded = require("./markOnboarded");
 const migrateWebBrowsingToDefault = require("./migrateWebBrowsingToDefault");
+const bootMCPServers = require("./bootMCPServers");
 const { PushNotifications } = require("../PushNotifications");
 const { TelegramBotService } = require("../telegramBot");
 
@@ -38,6 +39,7 @@ function bootSSL(app, port = 3001) {
         new CommunicationKey(true);
         new EncryptionManager();
         new BackgroundService().boot();
+        bootMCPServers(); // not awaited - servers can take a while to connect
         await eagerLoadContextWindows();
         await PushNotifications.setupPushNotificationService();
         await TelegramBotService.bootIfActive();
@@ -72,6 +74,7 @@ function bootHTTP(app, port = 3001) {
       new CommunicationKey(true);
       new EncryptionManager();
       new BackgroundService().boot();
+      bootMCPServers(); // not awaited - servers can take a while to connect
       await eagerLoadContextWindows();
       await PushNotifications.setupPushNotificationService();
       await TelegramBotService.bootIfActive();

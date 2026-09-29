@@ -50,6 +50,11 @@ class MCPHypervisor {
    * @type { { [key: string]: {status: 'success' | 'failed', message: string} } }
    */
   mcpLoadingResults = {};
+  /**
+   * The in-flight boot, shared by every caller that asks to boot while it is running.
+   * @type {Promise<{ [key: string]: {status: string, message: string} }> | null}
+   */
+  #bootPromise = null;
 
   constructor() {
     if (MCPHypervisor._instance) return MCPHypervisor._instance;
@@ -195,6 +200,8 @@ class MCPHypervisor {
    * and will also apply changes to the config file if any where made.
    */
   async reloadMCPServers() {
+    // Let an in-flight boot settle first so it cannot repopulate state after the prune.
+    if (this.#bootPromise) await this.#bootPromise;
     this.pruneMCPServers();
     await this.bootMCPServers();
   }
@@ -488,14 +495,30 @@ class MCPHypervisor {
   /**
    * Boot the MCP servers according to the server definitions.
    * This function will skip booting MCP servers if they are already running.
+   * Callers that arrive while a boot is in progress wait for that same boot to finish -
+   * otherwise they would see the partially populated `mcps` object, skip booting, and
+   * get back only the servers that happened to be registered so far (eg: an agent
+   * session starting with none or only some of its MCP tools).
    * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
    */
   async bootMCPServers() {
+    if (this.#bootPromise) return this.#bootPromise;
     if (Object.keys(this.mcps).length > 0) {
       this.log("MCP Servers already running, skipping boot.");
       return this.mcpLoadingResults;
     }
 
+    this.#bootPromise = this.#bootAllMCPServers().finally(() => {
+      this.#bootPromise = null;
+    });
+    return this.#bootPromise;
+  }
+
+  /**
+   * @private Boot every MCP server in the config file that is not opted out of auto-start.
+   * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
+   */
+  async #bootAllMCPServers() {
     const serverDefinitions = this.mcpServerConfigs;
     for (const { name, server } of serverDefinitions) {
       if (
