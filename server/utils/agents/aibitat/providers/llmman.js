@@ -34,6 +34,9 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     this.model = model;
     this.verbose = true;
     this._supportsToolCalling = null;
+    this.keepAlive = process.env.LLMMAN_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.LLMMAN_KEEP_ALIVE_TIMEOUT)
+      : undefined; // Unset: the llmman server applies its own default.
   }
 
   get client() {
@@ -77,6 +80,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     await LlmmanLLM.cacheContextWindows();
     const response = await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       options: this.queryOptions,
     });
@@ -87,6 +91,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     await LlmmanLLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       stream: true,
       options: this.queryOptions,
@@ -309,6 +314,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const stream = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         stream: true,
@@ -504,6 +510,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const response = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         options: this.queryOptions,

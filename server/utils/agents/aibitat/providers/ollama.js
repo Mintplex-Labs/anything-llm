@@ -34,6 +34,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     this.model = model;
     this.verbose = true;
     this._supportsToolCalling = null;
+    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+      : undefined; // Unset: the Ollama server applies its own default.
   }
 
   get client() {
@@ -90,6 +93,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     await OllamaAILLM.cacheContextWindows();
     const response = await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       options: this.queryOptions,
     });
@@ -100,6 +104,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     await OllamaAILLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       stream: true,
       options: this.queryOptions,
@@ -322,6 +327,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const stream = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         stream: true,
@@ -517,6 +523,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const response = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         options: this.queryOptions,
