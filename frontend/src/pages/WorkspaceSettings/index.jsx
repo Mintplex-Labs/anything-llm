@@ -66,6 +66,8 @@ function ShowWorkspaceChat() {
       setWorkspace({
         ..._workspace,
         vectorDB: _settings?.VectorDB,
+        weaviateSearchMode: _settings?.WeaviateSearchMode,
+        weaviateHybridAlpha: _settings?.WeaviateHybridAlpha,
         suggestedMessages,
       });
       setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);

@@ -597,6 +597,114 @@ describeIf(TEST_URL && !EXPECT_UNSUPPORTED)(
       }
     });
 
+    describe("hybrid search", () => {
+      const { Workspace } = require("../../../../models/workspace");
+      const saved = {};
+      const KEYS = [
+        "WEAVIATE_SEARCH_MODE",
+        "WEAVIATE_HYBRID_ALPHA",
+        "WEAVIATE_HYBRID_FUSION",
+        "WEAVIATE_MULTI_TENANCY",
+      ];
+      beforeEach(() => KEYS.forEach((k) => (saved[k] = process.env[k])));
+      afterEach(async () => {
+        KEYS.forEach((k) =>
+          saved[k] === undefined
+            ? delete process.env[k]
+            : (process.env[k] = saved[k])
+        );
+        jest.restoreAllMocks();
+        await dropAllCollections(TEST_URL);
+      });
+
+      async function seed(namespace) {
+        const w = new Weaviate();
+        await w.addDocumentToNamespace(
+          namespace,
+          fruitDoc({
+            docId: "part",
+            pageContent: "Order part XJ9000 for the left bracket.",
+          })
+        );
+        for (let i = 0; i < 5; i++)
+          await w.addDocumentToNamespace(
+            namespace,
+            fruitDoc({
+              docId: `filler-${i}`,
+              pageContent: `Order notes number ${i} for the right bracket.`,
+            })
+          );
+        return w;
+      }
+      const search = (w, namespace, extra = {}) =>
+        w.performSimilaritySearch({
+          namespace,
+          input: "XJ9000",
+          LLMConnector: mockEmbedder,
+          similarityThreshold: 0,
+          topN: 3,
+          ...extra,
+        });
+
+      it("finds an exact term by keyword that vector search cannot rank", async () => {
+        const w = await seed("hybrid terms");
+        const vector = await search(w, "hybrid terms");
+        process.env.WEAVIATE_SEARCH_MODE = "hybrid";
+        process.env.WEAVIATE_HYBRID_ALPHA = "0";
+        const keyword = await search(w, "hybrid terms");
+        expect(keyword.contextTexts[0]).toMatch(/XJ9000/);
+        expect(keyword.sources[0].score).toBeCloseTo(1, 5);
+        // The toy embedder has never seen "xj9000", so pure vector search does
+        // not single it out.
+        expect(vector.sources[0].score).toBeLessThan(0.99);
+      });
+
+      it.each([["relativeScore"], ["ranked"]])(
+        "runs with %s fusion and a mid alpha",
+        async (fusion) => {
+          const w = await seed("hybrid fusion");
+          process.env.WEAVIATE_SEARCH_MODE = "hybrid";
+          process.env.WEAVIATE_HYBRID_ALPHA = "0.5";
+          process.env.WEAVIATE_HYBRID_FUSION = fusion;
+          const result = await search(w, "hybrid fusion");
+          expect(result.contextTexts[0]).toMatch(/XJ9000/);
+          expect(result.sources.length).toBeGreaterThan(1);
+        }
+      );
+
+      it("ignores the similarity threshold, so exact keyword matches survive", async () => {
+        const w = await seed("hybrid threshold");
+        process.env.WEAVIATE_SEARCH_MODE = "hybrid";
+        process.env.WEAVIATE_HYBRID_ALPHA = "0.5";
+        const result = await search(w, "hybrid threshold", {
+          similarityThreshold: 1,
+        });
+        expect(result.contextTexts[0]).toMatch(/XJ9000/);
+        expect(result.contextTexts).toHaveLength(3); // topN
+      });
+
+      it("uses the workspace's own mode and alpha over the app setting", async () => {
+        const w = await seed("hybrid workspace");
+        process.env.WEAVIATE_SEARCH_MODE = "vector";
+        jest.spyOn(Workspace, "get").mockResolvedValue({
+          vectorSearchMode: "hybrid",
+          vectorSearchAlpha: 0,
+        });
+        const result = await search(w, "hybrid workspace");
+        expect(result.contextTexts[0]).toMatch(/XJ9000/);
+        expect(result.sources[0].score).toBeCloseTo(1, 5);
+      });
+
+      it("works inside a tenant", async () => {
+        process.env.WEAVIATE_MULTI_TENANCY = "true";
+        process.env.WEAVIATE_SEARCH_MODE = "hybrid";
+        process.env.WEAVIATE_HYBRID_ALPHA = "0";
+        const w = await seed("hybrid-tenant");
+        const result = await search(w, "hybrid-tenant");
+        expect(result.contextTexts[0]).toMatch(/XJ9000/);
+      });
+    });
+
     describe("multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
       afterEach(async () => {
         delete process.env.WEAVIATE_MULTI_TENANCY;

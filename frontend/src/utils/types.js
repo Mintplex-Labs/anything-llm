@@ -15,6 +15,9 @@ export function castToType(key, value) {
     router_id: {
       cast: (value) => (value ? Number(value) : null),
     },
+    vectorSearchAlpha: {
+      cast: (value) => (value === "" || value === null ? null : Number(value)),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;

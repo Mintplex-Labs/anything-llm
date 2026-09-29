@@ -883,6 +883,9 @@ const SystemSettings = {
       WeaviateTimeoutInit: process.env.WEAVIATE_TIMEOUT_INIT,
       WeaviateSkipInitChecks: process.env.WEAVIATE_SKIP_INIT_CHECKS,
       WeaviateQuantization: process.env.WEAVIATE_QUANTIZATION,
+      WeaviateSearchMode: process.env.WEAVIATE_SEARCH_MODE,
+      WeaviateHybridAlpha: process.env.WEAVIATE_HYBRID_ALPHA,
+      WeaviateHybridFusion: process.env.WEAVIATE_HYBRID_FUSION,
       WeaviateMultiTenancy: process.env.WEAVIATE_MULTI_TENANCY,
       WeaviateCollection: process.env.WEAVIATE_COLLECTION,
 

@@ -49,6 +49,19 @@ describe("Weaviate settings validation", () => {
     expect(process.env.WEAVIATE_HEADERS).toBe('{"X-Gateway": "abc"}');
   });
 
+  it("saves the hybrid search settings, including alpha 0 and 1", async () => {
+    for (const alpha of ["0", "1", "0.35"]) {
+      const { error } = await updateENV({
+        WeaviateSearchMode: "hybrid",
+        WeaviateHybridAlpha: alpha,
+        WeaviateHybridFusion: "relativeScore",
+      });
+      expect(error).toBe(false);
+      expect(process.env.WEAVIATE_HYBRID_ALPHA).toBe(alpha);
+    }
+    expect(process.env.WEAVIATE_SEARCH_MODE).toBe("hybrid");
+  });
+
   it("keeps a stored secret when the masked placeholder is sent back", async () => {
     process.env.WEAVIATE_OIDC_PASSWORD = "stored";
     process.env.WEAVIATE_HEADERS = '{"Authorization": "Bearer x"}';
@@ -81,6 +94,11 @@ describe("Weaviate settings validation", () => {
     ["WeaviateQuantization", "fp8", "vector compression must be one of"],
     ["WeaviateMultiTenancy", "maybe", 'must be "true" or "false"'],
     ["WeaviateCollection", "bad-name", "must start with a letter"],
+    ["WeaviateSearchMode", "semantic", 'must be "vector" or "hybrid"'],
+    ["WeaviateHybridAlpha", "1.2", "between 0 and 1"],
+    ["WeaviateHybridAlpha", "-0.1", "between 0 and 1"],
+    ["WeaviateHybridAlpha", "high", "between 0 and 1"],
+    ["WeaviateHybridFusion", "rrf", 'must be "relativeScore" or "ranked"'],
   ])("rejects %s=%p", async (key, value, message) => {
     const { error } = await updateENV({ [key]: value });
     expect(error).toMatch(message);

@@ -24,6 +24,7 @@ const DOCS = {
   compression: "https://docs.weaviate.io/weaviate/concepts/vector-quantization",
   multiTenancy:
     "https://docs.weaviate.io/weaviate/manage-collections/multi-tenancy",
+  hybridSearch: "https://docs.weaviate.io/weaviate/search/hybrid",
 };
 const INPUT_CLASS =
   "border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5";
@@ -481,6 +482,54 @@ export default function WeaviateDBOptions({ settings }) {
           </p>
         </div>
       </div>
+
+      <SectionTitle>Search</SectionTitle>
+      <Row>
+        <Field label="Default search mode">
+          <select
+            name="WeaviateSearchMode"
+            defaultValue={
+              settings?.WeaviateSearchMode === "hybrid" ? "hybrid" : "vector"
+            }
+            className={SELECT_CLASS}
+          >
+            <option value="vector">Vector</option>
+            <option value="hybrid">Hybrid (keyword + vector)</option>
+          </select>
+        </Field>
+        <Field
+          label="Hybrid alpha (optional)"
+          hint="0 = keyword only, 1 = vector only. Empty uses the Weaviate default (0.75)."
+        >
+          <TextInput
+            type="number"
+            min={0}
+            max={1}
+            step="0.05"
+            name="WeaviateHybridAlpha"
+            placeholder="0.75"
+            defaultValue={settings?.WeaviateHybridAlpha}
+          />
+        </Field>
+        <Field label="Hybrid fusion">
+          <select
+            name="WeaviateHybridFusion"
+            defaultValue={settings?.WeaviateHybridFusion || ""}
+            className={SELECT_CLASS}
+          >
+            <option value="">Weaviate default</option>
+            <option value="relativeScore">Relative score</option>
+            <option value="ranked">Ranked</option>
+          </select>
+        </Field>
+      </Row>
+      <p className="text-theme-text-secondary text-xs -mt-4">
+        Hybrid search combines keyword (BM25) matching on the chunk text with
+        vector search, which helps with names, codes and exact terms. Each
+        workspace can override the mode and alpha in its Vector Database
+        settings.{" "}
+        <DocLink href={DOCS.hybridSearch}>Learn about hybrid search</DocLink>.
+      </p>
 
       <Row>
         <Field label="Vector compression">

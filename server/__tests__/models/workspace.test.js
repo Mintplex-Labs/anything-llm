@@ -213,6 +213,8 @@ describeValidation("vectorSearchMode", () => {
   it("passes valid modes through", () => {
     expect(Workspace.validations.vectorSearchMode("default")).toBe("default");
     expect(Workspace.validations.vectorSearchMode("rerank")).toBe("rerank");
+    expect(Workspace.validations.vectorSearchMode("vector")).toBe("vector");
+    expect(Workspace.validations.vectorSearchMode("hybrid")).toBe("hybrid");
   });
 
   it("falls back to default for invalid or missing values", () => {
@@ -220,6 +222,25 @@ describeValidation("vectorSearchMode", () => {
     expect(Workspace.validations.vectorSearchMode(null)).toBe("default");
     expect(Workspace.validations.vectorSearchMode("")).toBe("default");
     expect(Workspace.validations.vectorSearchMode(123)).toBe("default");
+  });
+});
+
+describeValidation("vectorSearchAlpha", () => {
+  it("returns null (use the app setting) for missing or invalid values", () => {
+    for (const value of [null, undefined, "", "abc"])
+      expect(Workspace.validations.vectorSearchAlpha(value)).toBeNull();
+  });
+
+  it("parses numbers and strings, keeping 0", () => {
+    expect(Workspace.validations.vectorSearchAlpha(0)).toBe(0);
+    expect(Workspace.validations.vectorSearchAlpha("0")).toBe(0);
+    expect(Workspace.validations.vectorSearchAlpha(0.35)).toBe(0.35);
+    expect(Workspace.validations.vectorSearchAlpha("1")).toBe(1);
+  });
+
+  it("clamps to [0, 1]", () => {
+    expect(Workspace.validations.vectorSearchAlpha(1.7)).toBe(1);
+    expect(Workspace.validations.vectorSearchAlpha(-0.2)).toBe(0);
   });
 });
 

@@ -538,6 +538,38 @@ const KEY_MAPPING = {
           : "Weaviate collection name must start with a letter and contain only letters, digits and underscores.",
     ],
   },
+  WeaviateSearchMode: {
+    envKey: "WEAVIATE_SEARCH_MODE",
+    // Default search for workspaces without their own Search Preference.
+    checks: [
+      optional((input) =>
+        ["vector", "hybrid"].includes(input)
+          ? null
+          : 'Weaviate search mode must be "vector" or "hybrid".'
+      ),
+    ],
+  },
+  WeaviateHybridAlpha: {
+    envKey: "WEAVIATE_HYBRID_ALPHA",
+    checks: [
+      optional((input) => {
+        const alpha = Number(input);
+        return Number.isFinite(alpha) && alpha >= 0 && alpha <= 1
+          ? null
+          : "Hybrid alpha must be a number between 0 and 1.";
+      }),
+    ],
+  },
+  WeaviateHybridFusion: {
+    envKey: "WEAVIATE_HYBRID_FUSION",
+    checks: [
+      optional((input) =>
+        ["relativeScore", "ranked"].includes(input)
+          ? null
+          : 'Hybrid fusion must be "relativeScore" or "ranked".'
+      ),
+    ],
+  },
   WeaviateQuantization: {
     envKey: "WEAVIATE_QUANTIZATION",
     // Empty means the server default. Applies to collections created afterwards.

@@ -59,6 +59,32 @@ function createFakeClient({ version = "1.39.0" } = {}) {
         overAll: jest.fn(async () => ({ totalCount: objects().size })),
       },
       query: {
+        // Fake fusion: ranks by vector similarity, boosted when the chunk text
+        // contains the query (keyword match); score = relative to the best.
+        hybrid: jest.fn(async (query, { vector, limit }) => {
+          const scored = [...objects().entries()].map(([uuid, obj]) => ({
+            uuid,
+            properties: obj.properties,
+            raw:
+              1 -
+              cosineDistance(vector, obj.vector) +
+              (String(obj.properties.text ?? "")
+                .toLowerCase()
+                .includes(query.toLowerCase())
+                ? 2
+                : 0),
+          }));
+          const best = Math.max(...scored.map((o) => o.raw), 1e-9);
+          return {
+            objects: scored
+              .sort((a, b) => b.raw - a.raw)
+              .slice(0, limit)
+              .map(({ raw, ...o }) => ({
+                ...o,
+                metadata: { score: raw / best },
+              })),
+          };
+        }),
         nearVector: jest.fn(async (vector, { limit }) => ({
           objects: [...objects().entries()]
             .map(([uuid, obj]) => ({
@@ -313,6 +339,9 @@ const ENV_KEYS = [
   "VECTOR_DB",
   "WEAVIATE_DEPLOYMENT",
   "WEAVIATE_QUANTIZATION",
+  "WEAVIATE_SEARCH_MODE",
+  "WEAVIATE_HYBRID_ALPHA",
+  "WEAVIATE_HYBRID_FUSION",
   "WEAVIATE_MULTI_TENANCY",
   "WEAVIATE_COLLECTION",
   "WEAVIATE_ENDPOINT",
@@ -1662,6 +1691,222 @@ describe("Weaviate multi-tenancy (WEAVIATE_MULTI_TENANCY)", () => {
       expect(await w.hasNamespace("other")).toBe(false);
       expect(fakeClient.mtStore.has("Other")).toBe(true);
     });
+  });
+});
+
+describe("Weaviate hybrid search", () => {
+  const { Workspace } = require("../../../../models/workspace");
+  let workspaceGet;
+  const useWorkspace = (value) =>
+    (workspaceGet = jest.spyOn(Workspace, "get").mockResolvedValue(value));
+  afterEach(() => workspaceGet?.mockRestore());
+
+  async function seed() {
+    const w = new Weaviate();
+    await w.addDocumentToNamespace(
+      "ws",
+      doc({ pageContent: "The part number XJ9000 fits the left bracket." })
+    );
+    await w.addDocumentToNamespace(
+      "ws",
+      doc({ docId: "d2", pageContent: "Bananas are yellow and soft." })
+    );
+    return w;
+  }
+  const search = (w, input = "XJ9000", extra = {}) =>
+    w.performSimilaritySearch({
+      namespace: "ws",
+      input,
+      LLMConnector: mockEmbedder,
+      similarityThreshold: 0.25,
+      topN: 3,
+      ...extra,
+    });
+  const hybridCall = () =>
+    fakeClient.collections.get("Ws").query.hybrid.mock.calls.at(-1);
+
+  it("uses vector search by default", async () => {
+    useWorkspace(null);
+    const w = await seed();
+    await search(w);
+    expect(
+      fakeClient.collections.get("Ws").query.hybrid
+    ).not.toHaveBeenCalled();
+    expect(
+      fakeClient.collections.get("Ws").query.nearVector
+    ).toHaveBeenCalled();
+  });
+
+  it("sends the query text, AnythingLLM's vector and the app settings", async () => {
+    useWorkspace(null);
+    setEnv({
+      WEAVIATE_SEARCH_MODE: "hybrid",
+      WEAVIATE_HYBRID_ALPHA: "0.4",
+      WEAVIATE_HYBRID_FUSION: "ranked",
+    });
+    const w = await seed();
+    const result = await search(w);
+    const [query, options] = hybridCall();
+    expect(query).toBe("XJ9000");
+    expect(options).toEqual({
+      vector: embed("XJ9000"),
+      queryProperties: ["text"],
+      limit: 3,
+      alpha: 0.4,
+      fusionType: "Ranked",
+      returnMetadata: ["score"],
+    });
+    expect(result.contextTexts[0]).toMatch(/XJ9000/);
+    expect(result.sources[0].score).toBe(1);
+  });
+
+  it("omits alpha and fusion when not set, and never limits vector distance", async () => {
+    useWorkspace(null);
+    setEnv({ WEAVIATE_SEARCH_MODE: "hybrid" });
+    const w = await seed();
+    await search(w, "XJ9000", { similarityThreshold: 0.9 });
+    const options = hybridCall()[1];
+    expect(options).not.toHaveProperty("alpha");
+    expect(options).not.toHaveProperty("fusionType");
+    expect(options).not.toHaveProperty("maxVectorDistance");
+  });
+
+  it("does not drop hybrid results by score (fused scores are relative)", async () => {
+    useWorkspace(null);
+    setEnv({ WEAVIATE_SEARCH_MODE: "hybrid" });
+    const w = await seed();
+    const result = await search(w, "XJ9000", { similarityThreshold: 0.99 });
+    expect(result.contextTexts.length).toBeGreaterThan(1);
+  });
+
+  it.each([
+    [
+      { vectorSearchMode: "hybrid", vectorSearchAlpha: 0.2 },
+      "vector",
+      "0.9",
+      "hybrid",
+      0.2,
+    ],
+    [
+      { vectorSearchMode: "hybrid", vectorSearchAlpha: null },
+      "vector",
+      "0.9",
+      "hybrid",
+      0.9,
+    ],
+    [
+      { vectorSearchMode: "hybrid", vectorSearchAlpha: 0 },
+      "vector",
+      "0.9",
+      "hybrid",
+      0,
+    ],
+    [
+      { vectorSearchMode: "vector", vectorSearchAlpha: 0.2 },
+      "hybrid",
+      "0.9",
+      "vector",
+      null,
+    ],
+    [
+      { vectorSearchMode: "default", vectorSearchAlpha: 0.2 },
+      "hybrid",
+      "0.9",
+      "hybrid",
+      0.2,
+    ],
+    [
+      { vectorSearchMode: "rerank", vectorSearchAlpha: null },
+      "hybrid",
+      "",
+      "hybrid",
+      undefined,
+    ],
+    [null, "hybrid", "0.9", "hybrid", 0.9],
+  ])(
+    "workspace %p with app mode %p alpha %p -> %p alpha %p",
+    async (workspace, appMode, appAlpha, mode, alpha) => {
+      useWorkspace(workspace);
+      setEnv({
+        WEAVIATE_SEARCH_MODE: appMode,
+        WEAVIATE_HYBRID_ALPHA: appAlpha,
+      });
+      const w = await seed();
+      await search(w);
+      const { hybrid, nearVector } = fakeClient.collections.get("Ws").query;
+      if (mode === "vector") {
+        expect(hybrid).not.toHaveBeenCalled();
+        expect(nearVector).toHaveBeenCalled();
+        return;
+      }
+      expect(hybridCall()[1].alpha).toBe(alpha);
+    }
+  );
+
+  it("looks the workspace up by slug", async () => {
+    useWorkspace(null);
+    const w = await seed();
+    await search(w);
+    expect(Workspace.get).toHaveBeenCalledWith({ slug: "ws" });
+  });
+
+  it("falls back to the app settings when the workspace lookup fails", async () => {
+    workspaceGet = jest
+      .spyOn(Workspace, "get")
+      .mockRejectedValue(new Error("db locked"));
+    setEnv({ WEAVIATE_SEARCH_MODE: "hybrid" });
+    const w = await seed();
+    const result = await search(w);
+    expect(hybridCall()[0]).toBe("XJ9000");
+    expect(result.contextTexts[0]).toMatch(/XJ9000/);
+  });
+
+  it("falls back to vector search without query text", async () => {
+    useWorkspace({ vectorSearchMode: "hybrid" });
+    const w = await seed();
+    const { client } = await w.connect();
+    await w.similarityResponse({
+      client,
+      namespace: "ws",
+      queryVector: embed("XJ9000"),
+    });
+    expect(
+      fakeClient.collections.get("Ws").query.hybrid
+    ).not.toHaveBeenCalled();
+  });
+
+  it("searches inside the workspace tenant in multi-tenant mode", async () => {
+    useWorkspace({ vectorSearchMode: "hybrid", vectorSearchAlpha: 0.5 });
+    setEnv({ WEAVIATE_MULTI_TENANCY: "true" });
+    const w = await seed();
+    await search(w);
+    const tenantQuery = fakeClient.collections
+      .get("AnythingLLM")
+      .withTenant("ws").query.hybrid;
+    expect(tenantQuery).toHaveBeenCalledWith(
+      "XJ9000",
+      expect.objectContaining({ alpha: 0.5 })
+    );
+  });
+
+  it.each([
+    ["WEAVIATE_SEARCH_MODE", "semantic", "Invalid WEAVIATE_SEARCH_MODE"],
+    [
+      "WEAVIATE_HYBRID_ALPHA",
+      "1.5",
+      "WEAVIATE_HYBRID_ALPHA must be between 0 and 1",
+    ],
+    [
+      "WEAVIATE_HYBRID_ALPHA",
+      "abc",
+      "WEAVIATE_HYBRID_ALPHA must be between 0 and 1",
+    ],
+    ["WEAVIATE_HYBRID_FUSION", "rrf", "Invalid WEAVIATE_HYBRID_FUSION"],
+  ])("rejects %s=%p", async (key, value, message) => {
+    useWorkspace(null);
+    const w = await seed();
+    setEnv({ [key]: value });
+    await expect(search(w)).rejects.toThrow(message);
   });
 });
 

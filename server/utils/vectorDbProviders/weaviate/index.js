@@ -102,6 +102,12 @@ function envNumber(key, { integer = false, min = 0, max = Infinity } = {}) {
   return number;
 }
 
+// Search modes (WEAVIATE_SEARCH_MODE, or a workspace's Search Preference).
+// Hybrid combines BM25 keyword search on the chunk text with vector search.
+const SEARCH_MODES = ["vector", "hybrid"];
+const HYBRID_QUERY_PROPERTIES = ["text"];
+const FUSION_TYPES = { relativescore: "RelativeScore", ranked: "Ranked" };
+
 // Multi-tenancy (WEAVIATE_MULTI_TENANCY): all workspaces share one collection
 // and each workspace is a tenant. Tenant names must match TENANT_NAME; other
 // namespaces get a stable hashed name.
@@ -488,6 +494,7 @@ class Weaviate extends VectorDatabase {
     client,
     namespace,
     queryVector,
+    query = null,
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
@@ -498,17 +505,35 @@ class Weaviate extends VectorDatabase {
       scores: [],
     };
 
-    const { objects = [] } = await this.collectionFor(
-      client,
-      namespace
-    ).query.nearVector(queryVector, {
-      limit: topN,
-      returnMetadata: ["distance"],
-    });
+    const { mode, alpha, fusionType } = await this.searchSettings(namespace);
+    const collection = this.collectionFor(client, namespace);
+    const hybrid =
+      mode === "hybrid" && typeof query === "string" && query.trim() !== "";
+    const { objects = [] } = hybrid
+      ? await collection.query.hybrid(query, {
+          vector: queryVector,
+          queryProperties: HYBRID_QUERY_PROPERTIES,
+          limit: topN,
+          ...(alpha !== null ? { alpha } : {}),
+          ...(fusionType ? { fusionType } : {}),
+          // No maxVectorDistance: Weaviate applies it to the whole hybrid
+          // result, which would drop exact keyword matches whose vectors are
+          // far from the question - the case hybrid search is for.
+          returnMetadata: ["score"],
+        })
+      : await collection.query.nearVector(queryVector, {
+          limit: topN,
+          returnMetadata: ["distance"],
+        });
 
     objects.forEach(({ uuid: id, properties = {}, metadata = {} }) => {
-      const score = this.distanceToSimilarity(metadata?.distance);
-      if (score < similarityThreshold) return;
+      // Hybrid scores are fused and relative to the result set, so they are
+      // reported as-is and the similarity threshold does not apply; topN
+      // limits the results.
+      const score = hybrid
+        ? Math.min(1, Math.max(0, metadata?.score ?? 0))
+        : this.distanceToSimilarity(metadata?.distance);
+      if (!hybrid && score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(properties))) {
         this.logger(
           "A source was filtered from context as it's parent document is pinned."
@@ -521,6 +546,50 @@ class Weaviate extends VectorDatabase {
     });
 
     return result;
+  }
+
+  /**
+   * How to search a namespace: the workspace's Search Preference ("vector" or
+   * "hybrid", and an optional alpha), falling back to the app settings
+   * WEAVIATE_SEARCH_MODE, WEAVIATE_HYBRID_ALPHA and WEAVIATE_HYBRID_FUSION.
+   * @returns {Promise<{mode: "vector"|"hybrid", alpha: number|null, fusionType: "RelativeScore"|"Ranked"|null}>}
+   */
+  async searchSettings(namespace) {
+    const appMode = env("WEAVIATE_SEARCH_MODE")?.toLowerCase() ?? "vector";
+    if (!SEARCH_MODES.includes(appMode))
+      throw new Error(
+        `Weaviate::Invalid WEAVIATE_SEARCH_MODE "${appMode}" - use vector or hybrid.`
+      );
+    const rawAlpha = env("WEAVIATE_HYBRID_ALPHA");
+    const appAlpha = rawAlpha === null ? null : Number(rawAlpha);
+    if (appAlpha !== null && !(appAlpha >= 0 && appAlpha <= 1))
+      throw new Error(
+        `Weaviate::WEAVIATE_HYBRID_ALPHA must be between 0 and 1, got "${rawAlpha}".`
+      );
+    const fusion = env("WEAVIATE_HYBRID_FUSION")?.toLowerCase() ?? null;
+    if (fusion !== null && !(fusion in FUSION_TYPES))
+      throw new Error(
+        `Weaviate::Invalid WEAVIATE_HYBRID_FUSION "${fusion}" - use relativeScore or ranked.`
+      );
+
+    let workspace = null;
+    try {
+      const { Workspace } = require("../../../models/workspace");
+      workspace = await Workspace.get({ slug: String(namespace) });
+    } catch (e) {
+      this.logger("searchSettings: using the app settings", e.message);
+    }
+
+    return {
+      mode: SEARCH_MODES.includes(workspace?.vectorSearchMode)
+        ? workspace.vectorSearchMode
+        : appMode,
+      alpha:
+        typeof workspace?.vectorSearchAlpha === "number"
+          ? workspace.vectorSearchAlpha
+          : appAlpha,
+      fusionType: fusion === null ? null : FUSION_TYPES[fusion],
+    };
   }
 
   /**
@@ -1080,6 +1149,7 @@ class Weaviate extends VectorDatabase {
       client,
       namespace,
       queryVector,
+      query: input,
       similarityThreshold,
       topN,
       filterIdentifiers,

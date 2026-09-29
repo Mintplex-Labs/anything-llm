@@ -139,6 +139,7 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  vectorSearchAlpha            Float? // Hybrid search alpha override (Weaviate); null uses the app setting
   router_id                    Int? // No relation to prevent whole table migration (SQLite limitation)
   workspace_users              workspace_users[]
   documents                    workspace_documents[]

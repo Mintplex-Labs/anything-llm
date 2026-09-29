@@ -30,6 +30,18 @@ Advanced settings, for both deployments:
 
 **Upgrading:** configs that only have the older `WEAVIATE_ENDPOINT` URL (and optionally `WEAVIATE_GRPC_ENDPOINT` and `WEAVIATE_API_KEY`) are converted to these settings automatically on startup, with the same resulting connection. The old values are kept, so an older AnythingLLM version still works after a rollback.
 
+### Search: vector or hybrid
+
+**Hybrid search** ([docs](https://docs.weaviate.io/weaviate/search/hybrid)) combines keyword (BM25) matching on the chunk text with vector search. It helps with names, part numbers and exact terms that embeddings miss. Existing collections support it without re-embedding.
+
+| Setting | App (Weaviate settings / ENV) | Workspace (Vector Database > Search Preference) |
+|---|---|---|
+| Mode | `WEAVIATE_SEARCH_MODE`: `vector` (default) or `hybrid` | App default, Vector or Hybrid |
+| Alpha: 0 = keyword only, 1 = vector only | `WEAVIATE_HYBRID_ALPHA`, empty = Weaviate default (0.75) | Optional override |
+| Fusion | `WEAVIATE_HYBRID_FUSION`: `relativeScore` or `ranked`, empty = Weaviate default | - |
+
+In hybrid mode the document similarity threshold is not applied: Weaviate would apply it to the whole result and drop exact keyword matches whose vectors are far from the question. The workspace's max context snippets limits the results instead. Hybrid scores are relative to each result set, so the best match always scores close to 1.
+
 ### Vector compression
 
 **Vector compression** ([docs](https://docs.weaviate.io/weaviate/concepts/vector-quantization)) reduces the memory used by vectors, at a small cost in search accuracy. It applies to workspaces created after you change it.

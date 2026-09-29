@@ -30,6 +30,7 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {number|null} vectorSearchAlpha - Hybrid search alpha override (null uses the app setting)
  */
 
 const Workspace = {
@@ -55,6 +56,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "vectorSearchAlpha",
     "router_id",
   ],
 
@@ -123,13 +125,22 @@ const Workspace = {
       return String(value);
     },
     vectorSearchMode: (value) => {
+      // "vector" and "hybrid" are used by vector databases that support hybrid
+      // search (Weaviate); "default" follows the app setting.
       if (
         !value ||
         typeof value !== "string" ||
-        !["default", "rerank"].includes(value)
+        !["default", "rerank", "vector", "hybrid"].includes(value)
       )
         return "default";
       return value;
+    },
+    vectorSearchAlpha: (value) => {
+      // Hybrid search weight (0 = keyword only, 1 = vector only); null uses the app setting.
+      if (value === null || value === undefined || value === "") return null;
+      const alpha = parseFloat(value);
+      if (isNullOrNaN(alpha)) return null;
+      return Math.min(1, Math.max(0, alpha));
     },
     router_id: (value) => {
       if ([null, undefined, "", "none"].includes(value)) return null;
