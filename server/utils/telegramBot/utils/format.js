@@ -1,3 +1,46 @@
+const FENCE_OPEN = /^[ \t]*(`{3,}|~{3,})(.*)$/;
+
+/**
+ * Replace each fenced code block that has a closing fence line with
+ * `replace(code)`. A block opens on a ``` or ~~~ line (a backtick fence's info
+ * string cannot contain a backtick) and closes on a line holding only a run of
+ * the same character that is at least as long, as in CommonMark. So ~~~ fences
+ * work, an info string such as `c++` stays out of the code, and a ```` fence
+ * can show a ``` example. Unclosed fences are left for the caller.
+ *
+ * @param {string} text
+ * @param {(code: string) => string} replace
+ * @returns {string}
+ */
+function replaceFencedCodeBlocks(text, replace) {
+  const lines = text.split("\n");
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    // A CRLF line keeps its \r after the split; `.` does not match it.
+    const open = lines[i].replace(/\r$/, "").match(FENCE_OPEN);
+    if (open && !(open[1][0] === "`" && open[2].includes("`"))) {
+      const fence = open[1];
+      let close = -1;
+      for (let j = i + 1; j < lines.length; j++) {
+        const run = lines[j].trim();
+        if (run.length >= fence.length && run === fence[0].repeat(run.length)) {
+          close = j;
+          break;
+        }
+      }
+      if (close !== -1) {
+        out.push(replace(lines.slice(i + 1, close).join("\n")));
+        i = close + 1;
+        continue;
+      }
+    }
+    out.push(lines[i]);
+    i++;
+  }
+  return out.join("\n");
+}
+
 /**
  * Convert standard markdown to Telegram HTML format.
  * Telegram HTML supports: <b>, <i>, <u>, <s>, <code>, <pre>, <a href="">, <tg-spoiler>
@@ -62,12 +105,17 @@ function markdownToTelegram(
     });
   }
 
-  // Extract fenced code blocks (```...```)
-  result = result.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+  // Extract fenced code blocks: first every ``` / ~~~ block that has a closing
+  // fence line, then one-line ```code``` and anything left unmatched.
+  const saveCodeBlock = (code) => {
     const placeholder = `\x00CODEBLOCK${codeBlocks.length}\x00`;
     codeBlocks.push(`<pre>${escapeHTML(code.trimEnd())}</pre>`);
     return placeholder;
-  });
+  };
+  result = replaceFencedCodeBlocks(result, saveCodeBlock);
+  result = result.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
+    saveCodeBlock(code)
+  );
 
   // Extract and convert markdown tables to preformatted text
   result = result.replace(
