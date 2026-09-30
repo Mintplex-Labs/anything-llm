@@ -153,6 +153,39 @@ describe("markdownToTelegram", () => {
     });
   });
 
+  describe("fenced code block shapes", () => {
+    test("keeps a language tag with symbols out of the code", () => {
+      expect(markdownToTelegram("```c++\nint main() { return 0; }\n```")).toBe(
+        "<pre>int main() { return 0; }</pre>"
+      );
+      expect(markdownToTelegram("```objective-c\n[obj run];\n```")).toBe(
+        "<pre>[obj run];</pre>"
+      );
+    });
+
+    test("treats a ~~~ fence as code", () => {
+      expect(
+        markdownToTelegram("~~~python\n# setup\ndef __init__(self): pass\n~~~")
+      ).toBe("<pre># setup\ndef __init__(self): pass</pre>");
+    });
+
+    test("keeps a ``` example inside a longer fence", () => {
+      expect(
+        markdownToTelegram("````markdown\n```python\nx = 1\n```\n````\nAfter **bold**")
+      ).toBe("<pre>```python\nx = 1\n```</pre>\nAfter <b>bold</b>");
+    });
+
+    test("does not start the code with the \\r of a CRLF fence line", () => {
+      expect(markdownToTelegram("```python\r\nx = 1\r\n```")).toBe(
+        "<pre>x = 1</pre>"
+      );
+    });
+
+    test("leaves an unclosed fence as text", () => {
+      expect(markdownToTelegram("```python\nx = 1")).toBe("```python\nx = 1");
+    });
+  });
+
   describe("code blocks containing $ sequences", () => {
     test("keeps $& from consuming the restored block", () => {
       const result = markdownToTelegram(
