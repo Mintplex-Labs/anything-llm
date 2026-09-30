@@ -660,8 +660,11 @@ function workspaceEndpoints(app) {
         const text = safeJsonParse(wsChat.response, null)?.text;
         if (!text) return response.sendStatus(204).end();
 
+        const spokenText = stripThinkingFromText(text);
+        if (!spokenText) return response.sendStatus(204).end();
+
         const TTSProvider = getTTSProvider();
-        const buffer = await TTSProvider.ttsBuffer(text);
+        const buffer = await TTSProvider.ttsBuffer(spokenText);
         if (buffer === null) return response.sendStatus(204).end();
 
         const { mime } = getAudioFileInfo(buffer);

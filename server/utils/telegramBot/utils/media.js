@@ -1,4 +1,5 @@
 const { getAudioFileInfo } = require("../../TextToSpeech/audioFormat");
+const { stripThinkingFromText } = require("../../helpers");
 
 /**
  * Download a file from Telegram by file ID.
@@ -131,9 +132,11 @@ async function photoToAttachment(bot, photos) {
  */
 async function sendVoiceResponse(bot, chatId, text) {
   try {
+    const spokenText = stripThinkingFromText(text);
+    if (!spokenText) return false;
     const { getTTSProvider } = require("../../TextToSpeech");
     const provider = getTTSProvider();
-    const buffer = await provider.ttsBuffer(text);
+    const buffer = await provider.ttsBuffer(spokenText);
     if (!buffer) return false;
     const { mime, extension } = getAudioFileInfo(buffer);
     await bot.sendAudio(
