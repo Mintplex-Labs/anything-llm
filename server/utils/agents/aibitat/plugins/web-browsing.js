@@ -1129,7 +1129,6 @@ const webBrowsing = {
                   : ddgLink;
                 const url = new URL(fullUrl);
                 const actualUrl = url.searchParams.get("uddg");
-                // searchParams.get() already percent-decodes the value once.
                 return actualUrl || ddgLink;
               } catch {
                 return ddgLink;
