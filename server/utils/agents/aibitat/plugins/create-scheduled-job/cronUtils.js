@@ -35,17 +35,22 @@ function tzOffsetMinutes(timeZone, at = new Date()) {
  * @param {number} localHour
  * @param {number} localMinute
  * @param {string} timeZone
- * @returns {{ hour: number, minute: number }}
+ * @returns {{ hour: number, minute: number, dayShift: number }}
  */
 function localToUtcHM(localHour, localMinute, timeZone) {
   const offset = tzOffsetMinutes(timeZone);
-  let total = localHour * 60 + localMinute - offset;
-  total = ((total % 1440) + 1440) % 1440;
-  return { hour: Math.floor(total / 60), minute: total % 60 };
+  const total = localHour * 60 + localMinute - offset;
+  const minutesOfDay = ((total % 1440) + 1440) % 1440;
+  return {
+    hour: Math.floor(minutesOfDay / 60),
+    minute: minutesOfDay % 60,
+    // Days the date moved (-1, 0 or 1) once converted to UTC.
+    dayShift: Math.floor(total / 1440),
+  };
 }
 
 /**
- * Convert the hour/minute fields of a 5-field cron expression from a user's
+ * Convert the time and day fields of a 5-field cron expression from a user's
  * local timezone to UTC. Returns the original string unchanged if the pattern
  * has no specific hour (e.g. every-minute or every-N-hours schedules).
  *
@@ -64,7 +69,30 @@ function convertCronLocalToUtc(cron, timeZone) {
   if (!/^\d+$/.test(minute) || !/^\d+$/.test(hour)) return cron;
 
   const utc = localToUtcHM(Number(hour), Number(minute), timeZone);
-  return `${utc.minute} ${utc.hour} ${dom} ${month} ${dow}`;
+  let utcDom = dom;
+  let utcDow = dow;
+  if (utc.dayShift !== 0) {
+    // Only move the day when both the old and the new day are within 1-28,
+    // which every month has. Other days stay as they are.
+    const shiftedDom = Number(dom) + utc.dayShift;
+    if (
+      /^\d+$/.test(dom) &&
+      Math.min(Number(dom), shiftedDom) >= 1 &&
+      Math.max(Number(dom), shiftedDom) <= 28
+    )
+      utcDom = shiftedDom;
+    // Weekday lists and ranges ("1-5", "0,6") become an explicit shifted list.
+    if (/^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(dow)) {
+      const days = new Set();
+      for (const part of dow.split(",")) {
+        const [from, to = from] = part.split("-").map(Number);
+        for (let d = from; d <= to; d++)
+          days.add((((d + utc.dayShift) % 7) + 7) % 7);
+      }
+      utcDow = [...days].sort((a, b) => a - b).join(",");
+    }
+  }
+  return `${utc.minute} ${utc.hour} ${utcDom} ${month} ${utcDow}`;
 }
 
 /**
