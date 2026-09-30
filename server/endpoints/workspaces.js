@@ -657,7 +657,9 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const text = safeJsonParse(wsChat.response, null)?.text;
+        const text = stripThinkingFromText(
+          safeJsonParse(wsChat.response, null)?.text
+        );
         if (!text) return response.sendStatus(204).end();
 
         const TTSProvider = getTTSProvider();
