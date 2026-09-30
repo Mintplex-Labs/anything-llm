@@ -26,6 +26,7 @@ const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
+const { messageToSpeech } = require("../utils/TextToSpeech/messageToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 
 const truncate = require("truncate");
@@ -657,7 +658,7 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const text = stripThinkingFromText(
+        const text = messageToSpeech(
           safeJsonParse(wsChat.response, null)?.text
         );
         if (!text) return response.sendStatus(204).end();
