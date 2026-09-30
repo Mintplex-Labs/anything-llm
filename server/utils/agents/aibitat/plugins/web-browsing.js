@@ -1129,10 +1129,22 @@ const webBrowsing = {
                   : ddgLink;
                 const url = new URL(fullUrl);
                 const actualUrl = url.searchParams.get("uddg");
-                return actualUrl ? decodeURIComponent(actualUrl) : ddgLink;
+                // searchParams.get() already percent-decodes the value once.
+                return actualUrl || ddgLink;
               } catch {
                 return ddgLink;
               }
+            }
+
+            /**
+             * DDG titles and snippets are HTML fragments (entities such as &#x27;
+             * and &amp;, <b> highlights, a <span> badge on PDF results).
+             * @param {string} fragment
+             * @returns {string} The plain text of the fragment.
+             */
+            function htmlToText(fragment = "") {
+              const Cheerio = require("cheerio");
+              return Cheerio.load(fragment, null, false).text().trim();
             }
 
             this.super.introspect(
@@ -1171,7 +1183,7 @@ const webBrowsing = {
               const titleMatch = result.match(
                 /<a[^>]*class="result__a"[^>]*>(.*?)<\/a>/
               );
-              const title = titleMatch ? titleMatch[1].trim() : "";
+              const title = titleMatch ? htmlToText(titleMatch[1]) : "";
 
               // Extract URL and clean DDG redirect
               const urlMatch = result.match(
@@ -1183,9 +1195,7 @@ const webBrowsing = {
               const snippetMatch = result.match(
                 /<a[^>]*class="result__snippet"[^>]*>(.*?)<\/a>/
               );
-              const snippet = snippetMatch
-                ? snippetMatch[1].replace(/<\/?b>/g, "").trim()
-                : "";
+              const snippet = snippetMatch ? htmlToText(snippetMatch[1]) : "";
 
               if (title && link && snippet) {
                 data.push({ title, link, snippet });
