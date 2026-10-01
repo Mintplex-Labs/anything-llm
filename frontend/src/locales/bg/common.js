@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -53,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Име на работното пространство",
     selection: "Избор на модел",
     saving: "Запазване...",
+    saved: "Запазено",
     save: "Запази промените",
     previous: "Предишна страница",
     next: "Следваща страница",
@@ -67,6 +69,7 @@ const TRANSLATIONS = {
       "Потребителското име трябва да е 2-64 символа, да започва с малка буква и да съдържа само малки букви, цифри, долни черти, тирета и точки.",
     loading: "Зареждане",
     refresh: "Опресни",
+    noResults: "Няма намерени резултати",
   },
   home: {
     welcome: "Добре дошли",
@@ -145,6 +148,35 @@ const TRANSLATIONS = {
       createAgent: "Създай агент",
       editWorkspace: "Редактирай пространството",
       uploadDocument: "Качи документ",
+    },
+    greetings: {
+      anytime: {
+        working_on: "По какво работим?",
+        on_your_mind: "Какво ви е на ум?",
+        where_to_start: "Откъде да започнем?",
+        ready: "Готов съм, когато сте готови.",
+        think_it_through: "Нека го обмислим добре.",
+      },
+      morning: {
+        good_morning: "Добро утро",
+        first_today: "Добро утро. С какво започваме днес?",
+        fresh_start: "Ново начало. Откъде да започнем?",
+      },
+      afternoon: {
+        good_afternoon: "Добър ден",
+        tackling: "Добър ден. С какво ще се захванем?",
+        next_on_list: "Какво следва в списъка?",
+        keep_moving: "Да продължаваме напред.",
+      },
+      evening: {
+        good_evening: "Добър вечер",
+        finish_strong: "Добър вечер. Да завършим силно.",
+      },
+      night: {
+        midnight_oil: "Работите до късно?",
+        late_one: "Дълга вечер? Нека го обмислим добре.",
+        still_up: "Още будни? Готов съм, когато сте готови.",
+      },
     },
   },
   "new-workspace": {
@@ -255,6 +287,22 @@ const TRANSLATIONS = {
       title: "LLM температура",
       "desc-end":
         "Колкото по-високо е числото, толкова по-креативни са отговорите. При някои модели твърде високата стойност води до несвързани отговори.",
+      placeholder: "По подразбиране от доставчика",
+    },
+    reasoning_effort: {
+      title: "Усилие за разсъждение",
+      default: "По подразбиране от доставчика",
+      cannot_disable: "Този модел не може да изключи разсъждението.",
+      levels: {
+        off: "Изключено",
+        on: "Включено",
+        minimal: "Минимално",
+        low: "Ниско",
+        medium: "Средно",
+        high: "Високо",
+        xhigh: "Много високо",
+        max: "Максимално",
+      },
     },
   },
   "vector-workspace": {

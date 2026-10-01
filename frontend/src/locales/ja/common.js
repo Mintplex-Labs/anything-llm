@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "ワークスペース名",
     selection: "モデル選択",
     saving: "保存中...",
+    saved: "保存済み",
     save: "変更を保存",
     previous: "前のページ",
     next: "次のページ",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "読み込み中",
     refresh: "リフレッシュ",
+    noResults: "検索結果はありません",
   },
   settings: {
     title: "インスタンス設定",
@@ -236,6 +238,22 @@ const TRANSLATIONS = {
       title: "LLM温度",
       "desc-end":
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
+      placeholder: "プロバイダーのデフォルト",
+    },
+    reasoning_effort: {
+      title: "推論の強度",
+      default: "プロバイダーのデフォルト",
+      cannot_disable: "このモデルは推論をオフにできません。",
+      levels: {
+        off: "オフ",
+        on: "オン",
+        minimal: "最小",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "最高",
+        max: "最大",
+      },
     },
   },
   "vector-workspace": {
@@ -1413,6 +1431,35 @@ const TRANSLATIONS = {
       uploadDocument: "ドキュメントをアップロードする",
     },
     greeting: "今日はどのようにお手伝いできますか？",
+    greetings: {
+      anytime: {
+        working_on: "何に取り組みましょうか？",
+        on_your_mind: "何を考えていますか？",
+        where_to_start: "どこから始めましょうか？",
+        ready: "準備ができたらどうぞ。",
+        think_it_through: "じっくり考えてみましょう。",
+      },
+      morning: {
+        good_morning: "おはようございます",
+        first_today: "おはようございます。今日はまず何から始めますか？",
+        fresh_start: "新しいスタートです。何から始めましょうか？",
+      },
+      afternoon: {
+        good_afternoon: "こんにちは",
+        tackling: "こんにちは。何に取りかかりましょうか？",
+        next_on_list: "リストの次は何ですか？",
+        keep_moving: "この調子で進めましょう。",
+      },
+      evening: {
+        good_evening: "こんばんは",
+        finish_strong: "こんばんは。最後までしっかり仕上げましょう。",
+      },
+      night: {
+        midnight_oil: "夜遅くまでお疲れさまです。",
+        late_one: "長い夜になりそうですか？じっくり考えてみましょう。",
+        still_up: "まだ起きていますか？準備ができたらどうぞ。",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "キーボードショートカット",

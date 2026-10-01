@@ -18,6 +18,7 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
+const { maxTokensParam, temperatureParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
@@ -137,6 +138,14 @@ class Provider {
    * @type {AbortSignal|null}
    */
   abortSignal = null;
+
+  /**
+   * Sampling temperature for chat requests, assigned by AIbitat when the
+   * provider is instantiated. Undefined when unset or when the model rejects
+   * the parameter, so it is omitted from requests entirely.
+   * @type {number|undefined}
+   */
+  temperature = undefined;
 
   constructor(client) {
     if (this.constructor == Provider) {
@@ -285,6 +294,10 @@ class Provider {
             baseURL: "https://api.together.xyz/v1",
           },
           apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...maxTokensParam(
+            toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null),
+            "maxTokens"
+          ),
           ...config,
         });
       case "generic-openai":
@@ -293,9 +306,9 @@ class Provider {
             baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
           },
           apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
-          maxTokens: toValidNumber(
-            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
-            1024
+          ...maxTokensParam(
+            toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+            "maxTokens"
           ),
           ...config,
         });
@@ -801,6 +814,7 @@ class Provider {
     const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0

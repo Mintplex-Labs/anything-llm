@@ -42,6 +42,8 @@ class EphemeralAgentHandler extends AgentHandler {
   #funcsToLoad = [];
   /** @type {Array<{name: string, mime: string, contentString: string}>} attachments for multimodal support */
   #attachments = [];
+  /** @type {Object[]} documents attached to this request, already parsed to text */
+  #parsedDocuments = [];
 
   /** @type {AIbitat|null} */
   aibitat = null;
@@ -60,7 +62,8 @@ class EphemeralAgentHandler extends AgentHandler {
    * userId: import("@prisma/client").users["id"]|null,
    * threadId: import("@prisma/client").workspace_threads["id"]|null,
    * sessionId: string|null,
-   * attachments: Array<{name: string, mime: string, contentString: string}>
+   * attachments: Array<{name: string, mime: string, contentString: string}>,
+   * parsedDocuments?: Object[]
    * }} parameters
    */
   constructor({
@@ -71,6 +74,7 @@ class EphemeralAgentHandler extends AgentHandler {
     threadId = null,
     sessionId = null,
     attachments = [],
+    parsedDocuments = [],
   }) {
     super({ uuid });
     this.#invocationUUID = uuid;
@@ -84,6 +88,7 @@ class EphemeralAgentHandler extends AgentHandler {
     this.#threadId = threadId;
     this.#sessionId = sessionId;
     this.#attachments = attachments;
+    this.#parsedDocuments = parsedDocuments;
   }
 
   log(text, ...args) {
@@ -112,13 +117,11 @@ class EphemeralAgentHandler extends AgentHandler {
         )
       ).reverse();
 
-      const { generatedImageAttachments } = require("../files");
+      const { chatHistoryAttachments } = require("../files");
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
-        // Re-read generated images off disk as attachments so they reach the
-        // agent as vision context, the same way they do in normal chat.
-        const attachments = generatedImageAttachments(response?.outputs);
+        const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
             from: USER_AGENT.name,
@@ -433,7 +436,8 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   /**
-   * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
+   * Fetch fresh parsed files and pinned documents, plus any documents attached to
+   * this request, and format them for injection into user messages.
    * Called on every chat turn to ensure context is always up-to-date.
    * @returns {Promise<string>} Formatted context string to append to user message
    */
@@ -462,6 +466,13 @@ class EphemeralAgentHandler extends AgentHandler {
             content: doc.pageContent,
             metadata: doc.metadata || doc,
           })),
+          ...this.#parsedDocuments
+            .filter((doc) => doc?.pageContent)
+            .map((doc) => ({
+              name: doc.title || "Attached Document",
+              content: doc.pageContent,
+              metadata: doc,
+            })),
         ];
 
         if (allDocuments.length === 0) return "";
@@ -473,6 +484,10 @@ class EphemeralAgentHandler extends AgentHandler {
         if (pinnedDocs?.length > 0)
           this.log(
             `Injecting ${pinnedDocs.length} pinned document(s) into user message`
+          );
+        if (this.#parsedDocuments.length > 0)
+          this.log(
+            `Injecting ${this.#parsedDocuments.length} attached document(s) into user message`
           );
 
         this.aibitat?.addDocumentCitations(allDocuments);
@@ -520,6 +535,7 @@ class EphemeralAgentHandler extends AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      temperature: this.#workspace?.openAiTemp,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {

@@ -9,8 +9,16 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass, stripThinkingFromText } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  stripThinkingFromText,
+} = require("../utils/helpers");
 const { handleFileUpload } = require("../utils/files/multer");
+const {
+  getReasoningCapabilities,
+  usesModelRouter,
+} = require("../utils/helpers/reasoningEffort");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
@@ -26,6 +34,7 @@ const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
+const { messageToSpeech } = require("../utils/TextToSpeech/messageToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 
 const truncate = require("truncate");
@@ -411,6 +420,32 @@ function workspaceEndpoints(app) {
   );
 
   app.get(
+    "/workspace/:slug/llm-capabilities",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        if (usesModelRouter(workspace))
+          return response.status(200).json({
+            capabilities: { reasoning: false, reasoningOptions: [] },
+          });
+        const capabilities = await getReasoningCapabilities(
+          getLLMProvider({
+            provider: workspace.chatProvider,
+            model: workspace.chatModel,
+          })
+        );
+        return response.status(200).json({ capabilities });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(200).json({
+          capabilities: { reasoning: "unknown", reasoningOptions: [] },
+        });
+      }
+    }
+  );
+
+  app.get(
     "/workspace/:slug/chats",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
@@ -657,7 +692,9 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const text = safeJsonParse(wsChat.response, null)?.text;
+        const text = messageToSpeech(
+          safeJsonParse(wsChat.response, null)?.text
+        );
         if (!text) return response.sendStatus(204).end();
 
         const TTSProvider = getTTSProvider();

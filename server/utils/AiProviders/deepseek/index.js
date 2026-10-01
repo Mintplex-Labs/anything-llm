@@ -6,6 +6,13 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -27,7 +34,6 @@ class DeepSeekLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
@@ -94,7 +100,18 @@ class DeepSeekLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("deepseek", this.model);
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `DeepSeek chat: ${this.model} is not valid for chat completion!`
@@ -105,7 +122,8 @@ class DeepSeekLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
+          ...reasoningParams("deepseek", reasoningEffort, this.model),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -135,7 +153,10 @@ class DeepSeekLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `DeepSeek chat: ${this.model} is not valid for chat completion!`
@@ -146,7 +167,8 @@ class DeepSeekLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
+        ...reasoningParams("deepseek", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

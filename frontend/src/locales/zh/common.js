@@ -51,6 +51,7 @@ const TRANSLATIONS = {
     selection: "模型选择",
     save: "保存更改",
     saving: "保存中...",
+    saved: "已保存",
     previous: "上一页",
     next: "下一页",
     optional: "可选",
@@ -64,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "正在加载…",
     refresh: "重新开始；更新",
+    noResults: "未找到任何结果",
   },
   settings: {
     title: "设置",
@@ -134,6 +136,35 @@ const TRANSLATIONS = {
       uploadDocument: "上传文件",
     },
     greeting: "今天我能帮您什么？",
+    greetings: {
+      anytime: {
+        working_on: "我们要做些什么？",
+        on_your_mind: "您在想什么？",
+        where_to_start: "我们从哪里开始？",
+        ready: "随时为您待命。",
+        think_it_through: "我们来好好想一想。",
+      },
+      morning: {
+        good_morning: "早上好",
+        first_today: "早上好。今天先做什么？",
+        fresh_start: "新的开始。从哪里着手？",
+      },
+      afternoon: {
+        good_afternoon: "下午好",
+        tackling: "下午好。我们要处理什么？",
+        next_on_list: "清单上的下一项是什么？",
+        keep_moving: "我们继续推进吧。",
+      },
+      evening: {
+        good_evening: "晚上好",
+        finish_strong: "晚上好。我们漂亮收尾吧。",
+      },
+      night: {
+        midnight_oil: "还在挑灯夜战？",
+        late_one: "忙到这么晚？我们来好好想一想。",
+        still_up: "还没睡？随时为您待命。",
+      },
+    },
   },
   "new-workspace": {
     title: "新工作区",
@@ -236,6 +267,22 @@ const TRANSLATIONS = {
       title: "LLM 温度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
+      placeholder: "提供商默认值",
+    },
+    reasoning_effort: {
+      title: "推理强度",
+      default: "提供商默认值",
+      cannot_disable: "此模型无法关闭推理。",
+      levels: {
+        off: "关闭",
+        on: "开启",
+        minimal: "最低",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "极高",
+        max: "最高",
+      },
     },
   },
   "vector-workspace": {

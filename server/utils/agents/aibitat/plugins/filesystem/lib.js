@@ -543,7 +543,10 @@ class FilesystemManager {
       const normalizedNew = this.#normalizeLineEndings(edit.newText);
 
       if (modifiedContent.includes(normalizedOld)) {
-        modifiedContent = modifiedContent.replace(normalizedOld, normalizedNew);
+        modifiedContent = modifiedContent.replace(
+          normalizedOld,
+          () => normalizedNew
+        );
         continue;
       }
 

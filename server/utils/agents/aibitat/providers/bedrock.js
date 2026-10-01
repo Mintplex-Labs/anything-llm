@@ -3,21 +3,31 @@ const Anthropic = require("@anthropic-ai/sdk");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const {
   anthropicTooledStream,
   anthropicTooledComplete,
 } = require("./helpers/anthropicTooled.js");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
 const { RetryError } = require("../error.js");
 const {
   openaiBaseURL,
   anthropicBaseURL,
+  isOpenAIModelId,
 } = require("../../../AiProviders/bedrock/endpoints.js");
 
 /**
  * The agent provider for the AWS Bedrock provider.
- * Uses the OpenAI-compatible Mantle API endpoint for non-Anthropic models,
- * and the Anthropic Messages API with native tool calling for Anthropic models.
+ * Uses the OpenAI-compatible Mantle API endpoint for most models, the OpenAI
+ * Responses API with native tool calling for OpenAI GPT models, and the
+ * Anthropic Messages API with native tool calling for Anthropic models.
  */
 class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -28,7 +38,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
     const client = new OpenAI({
-      baseURL: openaiBaseURL(region),
+      baseURL: openaiBaseURL(region, model),
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
     });
 
@@ -65,6 +75,15 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * OpenAI GPT models on Bedrock reject function tools on Chat Completions and
+   * only support them via the Responses API.
+   * @returns {boolean}
+   */
+  get #usesResponsesAPI() {
+    return isOpenAIModelId(this.model);
+  }
+
   get #maxTokens() {
     return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
   }
@@ -75,6 +94,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
         user: this.executingUserId,
       })
@@ -93,6 +113,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       user: this.executingUserId,
@@ -123,6 +144,20 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
         functions,
         this.#handleFunctionCallStream.bind(this),
         eventHandler
+      );
+    }
+
+    if (this.#usesResponsesAPI) {
+      this.providerLog(
+        "Provider.stream (responses) - will process this chat completion."
+      );
+      return await responsesTooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
       );
     }
 
@@ -173,6 +208,16 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    if (this.#usesResponsesAPI) {
+      return await responsesTooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        { provider: this }
       );
     }
 

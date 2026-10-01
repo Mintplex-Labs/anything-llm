@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
+import { SavedIndicator } from "@/components/AutosaveForm";
 
-export default function MaxContextSnippets({ workspace, setHasChanges }) {
+export default function MaxContextSnippets({ workspace }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("vector-workspace.snippets.title")}
+          <SavedIndicator name="topN" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("vector-workspace.snippets.description")}
@@ -26,7 +28,6 @@ export default function MaxContextSnippets({ workspace, setHasChanges }) {
         placeholder="4"
         required={true}
         autoComplete="off"
-        onChange={() => setHasChanges(true)}
       />
     </div>
   );

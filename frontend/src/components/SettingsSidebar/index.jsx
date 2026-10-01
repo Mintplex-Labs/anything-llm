@@ -70,19 +70,19 @@ export default function SettingsSidebar() {
           style={{
             transform: showSidebar ? `translateX(0vw)` : `translateX(-100vw)`,
           }}
-          className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
+          className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh] supports-[height:100dvh]:h-[100dvh]`}
         >
           <div
             className={`${
               showBgOverlay
                 ? "transition-all opacity-1"
                 : "transition-none opacity-0"
-            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-[100vh] supports-[height:100dvh]:h-[100dvh]`}
             onClick={() => setShowSidebar(false)}
           />
           <div
             ref={sidebarRef}
-            className="h-[100vh] fixed top-0 left-0 rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px]"
+            className="h-[100vh] supports-[height:100dvh]:h-[100dvh] fixed top-0 left-0 rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px]"
           >
             <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
               {/* Header Information */}

@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nom des espaces de travail",
     selection: "Sélection du modèle",
     saving: "Enregistrement...",
+    saved: "Enregistré",
     save: "Enregistrer les modifications",
     previous: "Page précédente",
     next: "Page suivante",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Arrêté",
     loading: "Chargement",
     refresh: "Rafraîchir",
+    noResults: "Aucun résultat trouvé",
   },
   settings: {
     title: "Paramètres de l'instance",
@@ -238,6 +240,22 @@ const TRANSLATIONS = {
       title: "Température LLM",
       "desc-end":
         "Plus le nombre est élevé, plus la réponse sera créative. Pour certains modèles, cela peut entraîner des réponses incohérentes si la valeur est trop élevée.",
+      placeholder: "Valeur par défaut du fournisseur",
+    },
+    reasoning_effort: {
+      title: "Effort de raisonnement",
+      default: "Valeur par défaut du fournisseur",
+      cannot_disable: "Ce modèle ne peut pas désactiver le raisonnement.",
+      levels: {
+        off: "Désactivé",
+        on: "Activé",
+        minimal: "Minimal",
+        low: "Faible",
+        medium: "Moyen",
+        high: "Élevé",
+        xhigh: "Très élevé",
+        max: "Maximal",
+      },
     },
   },
   "vector-workspace": {
@@ -1456,6 +1474,35 @@ const TRANSLATIONS = {
       uploadDocument: "Télécharger un document",
     },
     greeting: "Comment puis-je vous aider aujourd'hui ?",
+    greetings: {
+      anytime: {
+        working_on: "Sur quoi travaillons-nous ?",
+        on_your_mind: "Qu'avez-vous en tête ?",
+        where_to_start: "Par où commençons-nous ?",
+        ready: "Prêt quand vous l'êtes.",
+        think_it_through: "Prenons le temps d'y réfléchir.",
+      },
+      morning: {
+        good_morning: "Bonjour",
+        first_today: "Bonjour. Par quoi commence-t-on aujourd'hui ?",
+        fresh_start: "Nouveau départ. Par où commencer ?",
+      },
+      afternoon: {
+        good_afternoon: "Bon après-midi",
+        tackling: "Bon après-midi. À quoi s'attaque-t-on ?",
+        next_on_list: "Quelle est la suite de la liste ?",
+        keep_moving: "Gardons le rythme.",
+      },
+      evening: {
+        good_evening: "Bonsoir",
+        finish_strong: "Bonsoir. Finissons en beauté.",
+      },
+      night: {
+        midnight_oil: "Vous travaillez tard ?",
+        late_one: "Longue soirée ? Prenons le temps d'y réfléchir.",
+        still_up: "Encore debout ? Prêt quand vous l'êtes.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Raccourcis clavier",

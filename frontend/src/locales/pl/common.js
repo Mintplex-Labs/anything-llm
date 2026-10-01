@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nazwa obszaru roboczego",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
+    saved: "Zapisano",
     save: "Zapisz zmiany",
     previous: "Poprzednia strona",
     next: "Następna strona",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Zatrzymano",
     loading: "Ładowanie",
     refresh: "Odświeżyć",
+    noResults: "Nie znaleziono żadnych wyników",
   },
   settings: {
     title: "Ustawienia instancji",
@@ -138,6 +140,35 @@ const TRANSLATIONS = {
       uploadDocument: "Załaduj dokument",
     },
     greeting: "W czym mogę Ci dzisiaj pomóc?",
+    greetings: {
+      anytime: {
+        working_on: "Nad czym pracujemy?",
+        on_your_mind: "O czym myślisz?",
+        where_to_start: "Od czego zaczniemy?",
+        ready: "Jestem gotowy, gdy tylko zechcesz.",
+        think_it_through: "Przemyślmy to.",
+      },
+      morning: {
+        good_morning: "Dzień dobry",
+        first_today: "Dzień dobry. Od czego dziś zaczynamy?",
+        fresh_start: "Nowy początek. Od czego zaczniemy?",
+      },
+      afternoon: {
+        good_afternoon: "Dzień dobry",
+        tackling: "Dzień dobry. Czym się zajmiemy?",
+        next_on_list: "Co następne na liście?",
+        keep_moving: "Działajmy dalej.",
+      },
+      evening: {
+        good_evening: "Dobry wieczór",
+        finish_strong: "Dobry wieczór. Zakończmy dzień mocnym akcentem.",
+      },
+      night: {
+        midnight_oil: "Pracujesz do późna?",
+        late_one: "Długi wieczór? Przemyślmy to.",
+        still_up: "Jeszcze nie śpisz? Jestem gotowy, gdy tylko zechcesz.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nowy obszar roboczy",
@@ -245,6 +276,22 @@ const TRANSLATIONS = {
       title: "Temperatura modelu",
       "desc-end":
         "Im wyższa liczba, tym większa kreatywność. W przypadku niektórych modeli może to prowadzić do niespójnych odpowiedzi przy zbyt wysokich ustawieniach.",
+      placeholder: "Domyślna wartość dostawcy",
+    },
+    reasoning_effort: {
+      title: "Wysiłek rozumowania",
+      default: "Domyślna wartość dostawcy",
+      cannot_disable: "Ten model nie może wyłączyć rozumowania.",
+      levels: {
+        off: "Wyłączone",
+        on: "Włączone",
+        minimal: "Minimalny",
+        low: "Niski",
+        medium: "Średni",
+        high: "Wysoki",
+        xhigh: "Bardzo wysoki",
+        max: "Maksymalny",
+      },
     },
   },
   "vector-workspace": {

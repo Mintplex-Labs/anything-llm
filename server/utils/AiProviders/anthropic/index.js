@@ -10,19 +10,20 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { reasoningParams } = require("../../helpers/reasoningEffort");
 
+// Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
+// a 400, and every model accepts requests without it, so omitting it everywhere
+// avoids tracking per-model support as new models ship. The workspace temperature
+// setting therefore has no effect for Anthropic.
 class AnthropicLLM {
   /**
-   * List of Anthropic models that do not support the `temperature` inference parameter.
-   * These models reject `temperature`/`top_p`/`top_k` with a 400 error.
-   * @type {string[]}
+   * Whether the model supports the temperature parameter at all.
+   * @returns {boolean}
    */
-  noTemperatureModels = [
-    "claude-opus-4-7",
-    "claude-opus-4-8",
-    "claude-sonnet-5",
-    // Add other models here if identified
-  ];
+  static modelSupportsTemperature() {
+    return false;
+  }
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -50,7 +51,6 @@ class AnthropicLLM {
 
     this.maxTokens = null;
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized with ${this.model}. Cache ${this.cacheControl ? `enabled (${this.cacheControl.ttl})` : "disabled"}`
     );
@@ -85,18 +85,6 @@ class AnthropicLLM {
     if (this.maxTokens) return this.maxTokens;
     this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
     return this.maxTokens;
-  }
-
-  /**
-   * Gets the temperature configuration for the Anthropic LLM.
-   * @param {number} temperature - The temperature to use.
-   * @returns {number|undefined} The temperature value or undefined if not supported.
-   */
-  temperatureParam(temperature = this.defaultTemp) {
-    if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
-    return parseFloat(temperature);
   }
 
   /**
@@ -210,7 +198,28 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const model = await this.anthropic.models.retrieve(this.model);
+      const effortCapabilities = model.capabilities?.effort;
+      if (!effortCapabilities?.supported)
+        return { reasoning: false, reasoningOptions: [] };
+
+      const reasoningOptions = Object.entries(effortCapabilities)
+        .filter(([level, config]) => level !== "supported" && config?.supported)
+        .map(([level]) => level);
+      return { reasoning: true, reasoningOptions };
+    } catch (error) {
+      console.error("Anthropic:getModelCapabilities", error.message);
+      return { reasoning: "unknown", reasoningOptions: [] };
+    }
+  }
+
+  async getChatCompletion(messages = null, { reasoningEffort = null } = {}) {
     await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
@@ -229,7 +238,7 @@ class AnthropicLLM {
             max_tokens: this.maxTokens,
             system: this.#buildSystemPrompt(systemContent),
             messages: messages.slice(1), // Pop off the system message
-            temperature: this.temperatureParam(temperature),
+            ...reasoningParams("anthropic", reasoningEffort, this.model),
           })
           .finalMessage()
       );
@@ -238,7 +247,12 @@ class AnthropicLLM {
       const completionTokens = result.output.usage.output_tokens;
 
       return {
-        textResponse: result.output.content[0].text,
+        // Models that think by default put a thinking block before the answer,
+        // so the reply is read from the text blocks rather than the first block.
+        textResponse: result.output.content
+          .filter((block) => block.type === "text")
+          .map((block) => block.text)
+          .join(""),
         metrics: {
           prompt_tokens: promptTokens,
           completion_tokens: completionTokens,
@@ -258,7 +272,10 @@ class AnthropicLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { reasoningEffort = null } = {}
+  ) {
     await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -267,7 +284,7 @@ class AnthropicLLM {
         max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: this.temperatureParam(temperature),
+        ...reasoningParams("anthropic", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

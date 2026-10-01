@@ -4,13 +4,20 @@ const { prepareChatsForExport } = require("../../../utils/helpers/chat/convertTo
 // Mock the database models
 jest.mock("../../../models/workspaceChats");
 jest.mock("../../../models/embedChats");
+jest.mock("../../../models/workspace");
+jest.mock("../../../models/embedConfig");
 
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { EmbedChats } = require("../../../models/embedChats");
+const { Workspace } = require("../../../models/workspace");
+const { EmbedConfig } = require("../../../models/embedConfig");
+
+const mockWorkspace = { id: 1, openAiPrompt: "Test OpenAI Prompt" };
 
 const mockChat = (withImages = false) => {
   return {
     id: 1,
+    workspaceId: 1,
     prompt: "Test prompt",
     response: JSON.stringify({
       text: "Test response",
@@ -22,7 +29,7 @@ const mockChat = (withImages = false) => {
       metrics: {},
     }),
     createdAt: new Date(),
-    workspace: { name: "Test Workspace", openAiPrompt: "Test OpenAI Prompt" },
+    workspace: { name: "Test Workspace" },
     user: { username: "testuser" },
     feedbackScore: 1,
   }
@@ -33,6 +40,8 @@ describe("prepareChatsForExport", () => {
     jest.clearAllMocks();
     WorkspaceChats.whereWithData = jest.fn().mockResolvedValue([]);
     EmbedChats.whereWithEmbedAndWorkspace = jest.fn().mockResolvedValue([]);
+    Workspace.get = jest.fn().mockResolvedValue(mockWorkspace);
+    EmbedConfig.getWithWorkspace = jest.fn().mockResolvedValue(null);
   });
 
   test("should throw error for invalid chat type", async () => {
@@ -128,12 +137,12 @@ describe("prepareChatsForExport", () => {
     expect(result[0].attachments).not.toBeDefined();
     expect(result[1].attachments).not.toBeDefined();
     expect(result).toEqual([{
-      instruction: chatExample.workspace.openAiPrompt,
+      instruction: mockWorkspace.openAiPrompt,
       input: chatExample.prompt,
       output: responseJson1.text,
     },
     {
-      instruction: chatExample.workspace.openAiPrompt,
+      instruction: mockWorkspace.openAiPrompt,
       input: imageChatExample.prompt,
       output: responseJson2.text,
     }]);
@@ -147,13 +156,13 @@ describe("prepareChatsForExport", () => {
     expect(result).toBeDefined();
     expect(result).toEqual(
       {
-        [chatExample.workspace.id]: {
+        [chatExample.workspaceId]: {
           messages: [
             {
               role: "system",
               content: [{
                 type: "text",
-                text: chatExample.workspace.openAiPrompt,
+                text: mockWorkspace.openAiPrompt,
               }],
             },
             {
@@ -187,13 +196,13 @@ describe("prepareChatsForExport", () => {
     expect(result).toBeDefined();
     expect(result).toEqual(
       {
-        [chatExample.workspace.id]: {
+        [chatExample.workspaceId]: {
           messages: [
             {
               role: "system",
               content: [{
                 type: "text",
-                text: chatExample.workspace.openAiPrompt,
+                text: mockWorkspace.openAiPrompt,
               }],
             },
             {
@@ -234,5 +243,32 @@ describe("prepareChatsForExport", () => {
         },
       },
     );
+  });
+
+  test("should keep embed chats from different workspaces apart in jsonl format", async () => {
+    const workspaces = {
+      10: { id: 1, openAiPrompt: "Prompt A" },
+      20: { id: 2, openAiPrompt: "Prompt B" },
+    };
+    EmbedConfig.getWithWorkspace.mockImplementation(async ({ id }) => ({
+      id,
+      workspace: workspaces[id],
+    }));
+    const embedChat = (id, embed_id) => ({
+      id,
+      embed_id,
+      prompt: "Test prompt",
+      response: JSON.stringify({ text: "Test response", sources: [] }),
+      createdAt: new Date(),
+      embed_config: { workspace: { name: "Test Workspace" } },
+    });
+    EmbedChats.whereWithEmbedAndWorkspace.mockResolvedValue([
+      embedChat(1, 10),
+      embedChat(2, 20),
+    ]);
+    const result = await prepareChatsForExport("jsonl", "embed");
+    expect(Object.keys(result)).toEqual(["1", "2"]);
+    expect(result[1].messages[0].content[0].text).toBe("Prompt A");
+    expect(result[2].messages[0].content[0].text).toBe("Prompt B");
   });
 });
