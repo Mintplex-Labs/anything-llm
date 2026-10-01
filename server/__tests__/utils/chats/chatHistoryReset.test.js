@@ -116,6 +116,7 @@ jest.mock("../../../utils/files", () => ({
   isWithin: jest.fn(() => true),
   sanitizeFileName: jest.fn((filename) => filename),
   generatedImageAttachments: jest.fn(() => []),
+  chatHistoryAttachments: jest.fn(() => []),
 }));
 jest.mock("../../../utils/agents/ephemeral", () => ({
   EphemeralAgentHandler: Object.assign(jest.fn(), {

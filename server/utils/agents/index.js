@@ -95,13 +95,11 @@ class AgentHandler {
         )
       ).reverse();
 
-      const { generatedImageAttachments } = require("../files");
+      const { chatHistoryAttachments } = require("../files");
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
-        // Re-read `/img` generated images off disk as attachments so they reach
-        // the agent as vision context, the same way they do in normal chat.
-        const attachments = generatedImageAttachments(response?.outputs);
+        const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
             from: USER_AGENT.name,
