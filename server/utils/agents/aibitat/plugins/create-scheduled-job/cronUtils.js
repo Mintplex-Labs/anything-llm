@@ -30,6 +30,8 @@ function tzOffsetMinutes(timeZone, at = new Date()) {
   return Math.round((asUTC - at.getTime()) / 60000);
 }
 
+const WEEKDAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
 /**
  * Convert a local hour + minute to UTC hour + minute for a given IANA timezone.
  * @param {number} localHour
@@ -81,10 +83,16 @@ function convertCronLocalToUtc(cron, timeZone) {
       Math.max(Number(dom), shiftedDom) <= 28
     )
       utcDom = shiftedDom;
-    // Weekday lists and ranges ("1-5", "0,6") become an explicit shifted list.
-    if (/^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(dow)) {
+    // Weekday lists and ranges ("1-5", "0,6", "MON-FRI") become an explicit
+    // shifted list.
+    const numericDow = dow.replace(
+      /[a-z]+/gi,
+      // Unknown names become -1, which fails the pattern check below.
+      (name) => WEEKDAY_NAMES.indexOf(name.toUpperCase())
+    );
+    if (/^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(numericDow)) {
       const days = new Set();
-      for (const part of dow.split(",")) {
+      for (const part of numericDow.split(",")) {
         const [from, to = from] = part.split("-").map(Number);
         for (let d = from; d <= to; d++)
           days.add((((d + utc.dayShift) % 7) + 7) % 7);
