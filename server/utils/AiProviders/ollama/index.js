@@ -489,13 +489,13 @@ class OllamaAILLM {
    */
   async getModelCapabilities() {
     try {
-      const { capabilities = [] } = await this.client.show({
+      const { capabilities = [], thinking = null } = await this.client.show({
         model: this.model,
       });
 
       const supportsReasoning = capabilities.includes("thinking");
       const reasoningOptions = supportsReasoning
-        ? PROVIDER_REASONING_EFFORTS.ollama(this.model)
+        ? PROVIDER_REASONING_EFFORTS.ollama(this.model, thinking?.values)
         : [];
 
       return {

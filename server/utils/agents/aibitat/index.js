@@ -1423,13 +1423,6 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
   }
 
   /**
-   * Get provider based on configurations with the session abort signal bound to it,
-   * so aborting the session cancels whatever requests that provider has in flight.
-   *
-   * @param config The provider configuration.
-   * @returns {Providers.OpenAIProvider} The provider instance.
-   */
-  /**
    * Switches the default provider to a route the model router resolved. The
    * route's reasoning effort replaces the previous one, since an effort is
    * only validated for the model it was resolved against.
@@ -1445,6 +1438,13 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     };
   }
 
+  /**
+   * Get provider based on configurations with the session abort signal bound to it,
+   * so aborting the session cancels whatever requests that provider has in flight.
+   *
+   * @param config The provider configuration.
+   * @returns {Providers.OpenAIProvider} The provider instance.
+   */
   getProviderForConfig(config) {
     const provider = this.#buildProviderForConfig(config);
     // Record the slug the instance was built from so usage metrics can be

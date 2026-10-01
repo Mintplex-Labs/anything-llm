@@ -34,6 +34,7 @@ const MAX_EDIT_STACK_SIZE = 100;
  * @param {boolean} [props.centered] - renders in centered layout mode (for home page)
  * @param {string} [props.workspaceSlug] - workspace slug for home page context
  * @param {string} [props.threadSlug] - thread slug for home page context
+ * @param {string} [props.reasoningSessionSlug] - session the reasoning effort picker reads and writes, when it differs from threadSlug
  */
 export default function PromptInput({
   workspace = {},
@@ -44,6 +45,7 @@ export default function PromptInput({
   centered = false,
   workspaceSlug = null,
   threadSlug = null,
+  reasoningSessionSlug = null,
 }) {
   const { t } = useTranslation();
   const { showAgentCommand = true } = workspace ?? {};
@@ -390,7 +392,7 @@ export default function PromptInput({
                     />
                     <ReasoningEffortButton
                       workspaceSlug={workspaceSlug ?? workspace?.slug}
-                      threadSlug={threadSlug}
+                      threadSlug={reasoningSessionSlug ?? threadSlug}
                       centered={centered}
                     />
                   </div>

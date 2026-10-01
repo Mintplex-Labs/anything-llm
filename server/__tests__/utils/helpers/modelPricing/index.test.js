@@ -431,6 +431,34 @@ describe("ModelPricing", () => {
         pricing.getReasoningOptions("openai", "gpt-Reasoner")
       ).toHaveLength(1);
     });
+
+    it("keeps the pricing cache when the reasoning cache is missing and the refresh fails", async () => {
+      // An offline upgrade from a cache written before reasoning options
+      // were kept must not lose the pricing it already has.
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.rmSync(path.join(cacheDir, "model-reasoning.json"));
+
+      jest.resetModules();
+      global.fetch = jest.fn().mockRejectedValue(new Error("offline"));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
+      expect(fs.existsSync(path.join(cacheDir, ".etag"))).toBe(false);
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+      expect(pricing.getReasoningOptions("openai", "gpt-Reasoner")).toBeNull();
+    });
   });
 
   describe("getCostBreakdown", () => {

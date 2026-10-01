@@ -20,15 +20,29 @@ const REASONING_EFFORT_LEVELS = [
  * reports as reasoning capable. Local models are not listed on models.dev, so
  * the level style is picked from the model family. Cloud providers read their
  * levels from models.dev instead - see modelsDevReasoningCapabilities.
- * @type {Record<string, (model?: string) => string[]>}
+ * @type {Record<string, (model?: string, thinkingValues?: Array<boolean|string>|null) => string[]>}
  */
 const PROVIDER_REASONING_EFFORTS = {
-  // gpt-oss takes a reasoning level and ignores booleans, other thinking
-  // models only take the on/off toggle.
-  ollama: (model = "") =>
-    model.includes("gpt-oss") ? ["low", "medium", "high"] : ["on", "off"],
+  // `thinking.values` from /api/show lists the model's own `think` values -
+  // booleans for on/off models, strings for levels (eg: gpt-oss).
+  // Ollama versions without it fall back to the model family.
+  // https://docs.ollama.com/capabilities/thinking
+  ollama: (model = "", thinkingValues = null) => {
+    if (Array.isArray(thinkingValues) && thinkingValues.length > 0) {
+      const levels = new Set(
+        thinkingValues.map((value) =>
+          value === true ? "on" : value === false ? "off" : value
+        )
+      );
+      return REASONING_EFFORT_LEVELS.filter((level) => levels.has(level));
+    }
+    return model.includes("gpt-oss")
+      ? ["low", "medium", "high"]
+      : ["on", "off"];
+  },
   // Filtered per model by `reasoning.allowed_options` from the LM Studio
   // models API - on/off for toggle models, levels for eg: gpt-oss.
+  // https://lmstudio.ai/docs/developer/rest/list
   lmstudio: () => ["off", "on", "low", "medium", "high"],
   // llama.cpp chat template kwargs: gpt-oss takes a reasoning level, other
   // thinking models only a toggle.
@@ -37,6 +51,7 @@ const PROVIDER_REASONING_EFFORTS = {
 };
 
 // Google's documented thinking budgets for each OpenAI-compatible reasoning_effort.
+// https://ai.google.dev/gemini-api/docs/openai#thinking
 const GEMINI_THINKING_BUDGETS = { low: 1024, medium: 8192, high: 24576 };
 
 /** The models.dev reasoning options of a model, by option type. */
@@ -113,6 +128,7 @@ function reasoningParams(provider, effort = null, model = null) {
   const toggle = ["on", "off"].includes(effort);
   switch (provider) {
     case "openai":
+      // https://developers.openai.com/api/docs/guides/reasoning
       // Raw reasoning is never returned - a summary is the only way to show
       // the model's thinking, so it is requested whenever reasoning is on.
       return {
@@ -120,31 +136,38 @@ function reasoningParams(provider, effort = null, model = null) {
           effort === "off" ? { effort: "none" } : { effort, summary: "auto" },
       };
     case "anthropic":
+      // https://platform.claude.com/docs/en/build-with-claude/effort
       return { output_config: { effort } };
     case "gemini":
       // `reasoning_effort` cannot be combined with `include_thoughts`, so the
       // effort goes in the thinking config - a level for 3.x models, a budget
       // for 2.5 models - and the thoughts are returned in <thought> tags.
+      // https://ai.google.dev/gemini-api/docs/openai#thinking
       return {
         extra_body: {
           google: { thinking_config: geminiThinkingConfig(effort, model) },
         },
       };
     case "ollama":
+      // https://docs.ollama.com/capabilities/thinking
       return { think: toggle ? effort === "on" : effort };
     case "lmstudio":
       // Only levels are accepted on the wire - toggle models think at any
-      // level, so "on" is sent as the middle one.
+      // level, so "on" is sent as the middle one. LM Studio documents the
+      // per-model options but not this OpenAI-compatible field's values.
       return {
         reasoning_effort: { off: "none", on: "medium" }[effort] ?? effort,
       };
     case "lemonade":
+      // Read by the model's llama.cpp chat template - `enable_thinking` for
+      // toggle models (eg: Qwen3), `reasoning_effort` for gpt-oss.
       return {
         chat_template_kwargs: toggle
           ? { enable_thinking: effort === "on" }
           : { reasoning_effort: effort },
       };
     case "deepseek":
+      // https://api-docs.deepseek.com/guides/thinking_mode
       if (toggle)
         return { thinking: { type: effort === "on" ? "enabled" : "disabled" } };
       return { thinking: { type: "enabled" }, reasoning_effort: effort };
@@ -240,6 +263,20 @@ async function getReasoningCapabilities(llm) {
 }
 
 /**
+ * Whether a workspace's chats go through the model router. The router picks
+ * the model per message, so the chat session has no model to show reasoning
+ * controls for, and no effort is applied.
+ * @param {{chatProvider?: string|null}|null} workspace
+ * @returns {boolean}
+ */
+function usesModelRouter(workspace = null) {
+  return (
+    (workspace?.chatProvider || process.env.LLM_PROVIDER) ===
+    "anythingllm-router"
+  );
+}
+
+/**
  * The reasoning effort a request is sent with: the chat session's choice, but
  * only when the model's capabilities list it. A value left over from a model
  * switch, or one for a provider without reasoning controls, is never sent.
@@ -283,6 +320,7 @@ module.exports = {
   reasoningParams,
   getReasoningCapabilities,
   resolveReasoningEffort,
+  usesModelRouter,
   createWithReasoningSummaryFallback,
   resetReasoningSummaryFallback,
   capabilityCache,

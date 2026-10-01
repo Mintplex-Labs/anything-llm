@@ -17,6 +17,7 @@ const {
 const { handleFileUpload } = require("../utils/files/multer");
 const {
   getReasoningCapabilities,
+  usesModelRouter,
 } = require("../utils/helpers/reasoningEffort");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -424,6 +425,10 @@ function workspaceEndpoints(app) {
     async (_request, response) => {
       try {
         const workspace = response.locals.workspace;
+        if (usesModelRouter(workspace))
+          return response.status(200).json({
+            capabilities: { reasoning: false, reasoningOptions: [] },
+          });
         const capabilities = await getReasoningCapabilities(
           getLLMProvider({
             provider: workspace.chatProvider,

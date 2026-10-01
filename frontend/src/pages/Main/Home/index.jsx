@@ -30,6 +30,7 @@ import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatToolt
 import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
 import {
+  HOME_DRAFT_SESSION,
   getSessionReasoningEffort,
   setSessionReasoningEffort,
 } from "@/utils/chat/reasoningEffort";
@@ -232,7 +233,12 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           setSessionReasoningEffort(
             targetWorkspace.slug,
             thread.slug,
-            getSessionReasoningEffort(targetWorkspace.slug)
+            getSessionReasoningEffort(targetWorkspace.slug, HOME_DRAFT_SESSION)
+          );
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            HOME_DRAFT_SESSION,
+            null
           );
           setThreadSlug(thread.slug);
         }
@@ -328,6 +334,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
                   centered={true}
                   workspaceSlug={workspace?.slug}
                   threadSlug={threadSlug}
+                  reasoningSessionSlug={threadSlug ?? HOME_DRAFT_SESSION}
                 />
                 <QuickActions
                   hasAvailableWorkspace={!!workspace}

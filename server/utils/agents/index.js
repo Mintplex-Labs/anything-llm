@@ -20,7 +20,10 @@ const {
   getAndClearInvocationAttachments,
   getAndClearInvocationReasoningEffort,
 } = require("../chats/agents");
-const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
+const {
+  resolveReasoningEffort,
+  usesModelRouter,
+} = require("../helpers/reasoningEffort");
 const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
@@ -858,6 +861,7 @@ class AgentHandler {
    * @returns {Promise<string|null>}
    */
   async #reasoningEffortForRoute() {
+    if (usesModelRouter(this.invocation.workspace)) return null;
     const { getLLMProvider } = require("../helpers");
     return await resolveReasoningEffort(
       () => getLLMProvider({ provider: this.provider, model: this.model }),
@@ -868,7 +872,7 @@ class AgentHandler {
   /**
    * Switches the session's reasoning effort mid-session. The new effort is
    * validated against the current route's model and used from the next turn.
-   * @param {string|null} sessionEffort - null falls back to the system default
+   * @param {string|null} sessionEffort - null uses the provider default
    */
   async #updateReasoningEffort(sessionEffort = null) {
     const effort = typeof sessionEffort === "string" ? sessionEffort : null;

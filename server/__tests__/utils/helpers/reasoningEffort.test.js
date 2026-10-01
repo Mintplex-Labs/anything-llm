@@ -5,6 +5,7 @@ const {
   reasoningParams,
   getReasoningCapabilities,
   resolveReasoningEffort,
+  usesModelRouter,
   createWithReasoningSummaryFallback,
   resetReasoningSummaryFallback,
   capabilityCache,
@@ -81,7 +82,7 @@ function mockModelsDev(table = MODELS_DEV) {
   jest
     .spyOn(MODEL_PRICING, "getReasoningOptions")
     .mockImplementation((provider, model) =>
-      table === null ? null : (table[provider]?.[model] ?? [])
+      table === null ? null : table[provider]?.[model] ?? []
     );
 }
 
@@ -182,6 +183,75 @@ describe("PROVIDER_REASONING_EFFORTS local providers", () => {
       expect(PROVIDER_REASONING_EFFORTS[provider]()).toEqual(["on", "off"]);
     }
   );
+
+  it("uses the levels Ollama reports for the model when it lists them", () => {
+    expect(
+      PROVIDER_REASONING_EFFORTS.ollama("gpt-oss:20b", [
+        "low",
+        "medium",
+        "high",
+      ])
+    ).toEqual(["low", "medium", "high"]);
+    // Booleans are the on/off toggle, in REASONING_EFFORT_LEVELS order.
+    expect(
+      PROVIDER_REASONING_EFFORTS.ollama("qwen3:8b", [true, false])
+    ).toEqual(["off", "on"]);
+    // A model that cannot turn thinking off only lists `true`.
+    expect(PROVIDER_REASONING_EFFORTS.ollama("my-model", [true])).toEqual([
+      "on",
+    ]);
+    // Model-defined levels this app has no option for are dropped.
+    expect(
+      PROVIDER_REASONING_EFFORTS.ollama("my-model", ["deep", "high", 3])
+    ).toEqual(["high"]);
+  });
+
+  it.each([[null], [undefined], [[]], ["low"]])(
+    "falls back to the model family when Ollama lists no values (%p)",
+    (values) => {
+      expect(PROVIDER_REASONING_EFFORTS.ollama("gpt-oss:20b", values)).toEqual([
+        "low",
+        "medium",
+        "high",
+      ]);
+      expect(PROVIDER_REASONING_EFFORTS.ollama("qwen3:8b", values)).toEqual([
+        "on",
+        "off",
+      ]);
+    }
+  );
+});
+
+describe("usesModelRouter", () => {
+  const originalProvider = process.env.LLM_PROVIDER;
+  afterEach(() => {
+    if (originalProvider === undefined) delete process.env.LLM_PROVIDER;
+    else process.env.LLM_PROVIDER = originalProvider;
+  });
+
+  it("is true when the workspace chat provider is the router", () => {
+    process.env.LLM_PROVIDER = "openai";
+    expect(usesModelRouter({ chatProvider: "anythingllm-router" })).toBe(true);
+  });
+
+  it("is true when a workspace without its own provider uses a system router", () => {
+    process.env.LLM_PROVIDER = "anythingllm-router";
+    expect(usesModelRouter({ chatProvider: null })).toBe(true);
+    expect(usesModelRouter({})).toBe(true);
+    expect(usesModelRouter(null)).toBe(true);
+  });
+
+  it("is false when the workspace overrides a system router", () => {
+    process.env.LLM_PROVIDER = "anythingllm-router";
+    expect(usesModelRouter({ chatProvider: "openai" })).toBe(false);
+  });
+
+  it("is false without a router anywhere", () => {
+    process.env.LLM_PROVIDER = "openai";
+    expect(usesModelRouter({ chatProvider: "anthropic" })).toBe(false);
+    delete process.env.LLM_PROVIDER;
+    expect(usesModelRouter(null)).toBe(false);
+  });
 });
 
 describe("reasoningParams", () => {

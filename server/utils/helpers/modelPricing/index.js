@@ -205,17 +205,24 @@ class ModelPricing {
       this.#pricing = JSON.parse(
         fs.readFileSync(CACHE_FILES.data, { encoding: "utf8" })
       );
-      // A cache written before reasoning options were kept has no reasoning
-      // file - it is treated as unusable so the next refresh is a full GET.
-      this.#reasoning = JSON.parse(
-        fs.readFileSync(CACHE_FILES.reasoning, { encoding: "utf8" })
-      );
       this.#hasDiskCache = true;
     } catch (error) {
       log("Failed to read pricing cache from disk", error?.message);
       this.#pricing = null;
-      this.#reasoning = null;
       this.#hasDiskCache = false;
+      return;
+    }
+
+    // A cache written before reasoning options were kept has no reasoning
+    // file. The pricing stays usable, and the etag is dropped so the next
+    // refresh is a full GET that fills in the reasoning options.
+    try {
+      this.#reasoning = JSON.parse(
+        fs.readFileSync(CACHE_FILES.reasoning, { encoding: "utf8" })
+      );
+    } catch {
+      this.#reasoning = null;
+      fs.rmSync(CACHE_FILES.etag, { force: true });
     }
   }
 

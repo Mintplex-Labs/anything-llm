@@ -2,6 +2,13 @@ import { SESSION_REASONING_EFFORT_MAP } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
 
 /**
+ * Session the home page's prompt input keeps its choice under until the
+ * first message creates a thread, so it never changes the workspace's own
+ * default chat session.
+ */
+export const HOME_DRAFT_SESSION = "home-draft";
+
+/**
  * Reasoning effort is chosen per chat session - a thread, or a workspace's
  * default chat - and kept in this browser only, so one user's choice never
  * changes another user's chats. Sessions without a choice send no reasoning

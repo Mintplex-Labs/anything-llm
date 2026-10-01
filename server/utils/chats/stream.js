@@ -14,7 +14,10 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
-const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
+const {
+  resolveReasoningEffort,
+  usesModelRouter,
+} = require("../helpers/reasoningEffort");
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
@@ -29,6 +32,9 @@ async function streamChatWithWorkspace(
   sessionReasoningEffort = null
 ) {
   const uuid = uuidv4();
+  // Routed workspaces show no reasoning controls, so a stored effort is
+  // never applied to whichever model the router picks.
+  if (usesModelRouter(workspace)) sessionReasoningEffort = null;
   const updatedMessage = await grepCommand(message, user);
 
   if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
