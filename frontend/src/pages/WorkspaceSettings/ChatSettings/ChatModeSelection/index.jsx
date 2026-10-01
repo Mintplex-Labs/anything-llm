@@ -1,15 +1,23 @@
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
-export default function ChatModeSelection({ workspace, setHasChanges }) {
+export default function ChatModeSelection({ workspace }) {
   const { t } = useTranslation();
   const [chatMode, setChatMode] = useState(workspace?.chatMode || "chat");
+  const { markDirty, save } = useAutosaveForm();
+  const selectMode = (mode) => {
+    setChatMode(mode);
+    markDirty("chatMode");
+    save();
+  };
 
   return (
     <div className="flex flex-col gap-y-[8px]">
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="chatMode" className="block input-label">
           {t("chat.mode.title")}
+          <SavedIndicator name="chatMode" />
         </label>
       </div>
 
@@ -19,10 +27,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
           <button
             type="button"
             disabled={chatMode === "automatic"}
-            onClick={() => {
-              setChatMode("automatic");
-              setHasChanges(true);
-            }}
+            onClick={() => selectMode("automatic")}
             className="border-none transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10"
           >
             {t("chat.mode.automatic.title")}
@@ -30,10 +35,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
           <button
             type="button"
             disabled={chatMode === "chat"}
-            onClick={() => {
-              setChatMode("chat");
-              setHasChanges(true);
-            }}
+            onClick={() => selectMode("chat")}
             className="border-none transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10 light:hover:bg-black/10"
           >
             {t("chat.mode.chat.title")}
@@ -41,10 +43,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
           <button
             type="button"
             disabled={chatMode === "query"}
-            onClick={() => {
-              setChatMode("query");
-              setHasChanges(true);
-            }}
+            onClick={() => selectMode("query")}
             className="border-none transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md hover:bg-white/10 light:hover:bg-black/10"
           >
             {t("chat.mode.query.title")}

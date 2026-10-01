@@ -81,7 +81,7 @@ export default function GenericOpenAiOptions({ settings }) {
             name="GenericOpenAiMaxTokens"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Max tokens per request (eg: 1024)"
-            min={1}
+            min={0}
             defaultValue={settings?.GenericOpenAiMaxTokens || 1024}
             required={true}
             autoComplete="off"

@@ -175,6 +175,7 @@ const SystemSettings = {
             "you-search",
             "keenable-search",
             "anysearch-search",
+            "firecrawl-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -522,6 +523,9 @@ const SystemSettings = {
       ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
       ImageGenerationLocalAiBasePath: process.env.IMAGE_GEN_LOCALAI_BASE_PATH,
       ImageGenerationLocalAiApiKey: !!process.env.IMAGE_GEN_LOCALAI_API_KEY,
+      ImageGenerationLlmmanBasePath: process.env.IMAGE_GEN_LLMMAN_BASE_PATH,
+      ImageGenerationLlmmanAuthToken: !!process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN,
+      ImageGenerationGeminiApiKey: !!process.env.IMAGE_GEN_GEMINI_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -618,6 +622,7 @@ const SystemSettings = {
       AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
       AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
       AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
+      AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -937,6 +942,7 @@ const SystemSettings = {
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+      TogetherAiMaxTokens: process.env.TOGETHER_AI_MAX_TOKENS,
 
       // Fireworks AI API Keys
       FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,

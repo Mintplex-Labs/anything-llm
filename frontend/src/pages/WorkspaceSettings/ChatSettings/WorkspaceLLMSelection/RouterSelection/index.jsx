@@ -3,11 +3,13 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import ModelRouter from "@/models/modelRouter";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
-export default function RouterSelection({ workspace, setHasChanges }) {
+export default function RouterSelection({ workspace }) {
   const { t } = useTranslation();
   const [routers, setRouters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { save } = useAutosaveForm();
 
   useEffect(() => {
     async function fetchRouters() {
@@ -17,6 +19,11 @@ export default function RouterSelection({ workspace, setHasChanges }) {
     }
     fetchRouters();
   }, []);
+
+  // Save only after list is ready
+  useEffect(() => {
+    if (!loading) save();
+  }, [loading]);
 
   if (loading) {
     return (
@@ -49,6 +56,7 @@ export default function RouterSelection({ workspace, setHasChanges }) {
     <div className="flex flex-col gap-y-[8px]">
       <label className="block input-label">
         {t("model-router.router-selection.model-router-label")}
+        <SavedIndicator name="router_id" />
       </label>
       <p className="text-white text-opacity-60 text-xs font-medium">
         {t("model-router.router-selection.select-description")}
@@ -56,7 +64,6 @@ export default function RouterSelection({ workspace, setHasChanges }) {
       <select
         name="router_id"
         defaultValue={workspace?.router_id || ""}
-        onChange={() => setHasChanges(true)}
         className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[640px] p-2.5"
         required
       >

@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Numele spațiilor de lucru",
     selection: "Selecția modelului",
     saving: "Se salvează...",
+    saved: "Salvat",
     save: "Salvează modificările",
     previous: "Pagina anterioară",
     next: "Pagina următoare",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Oprit",
     loading: "Încărcare",
     refresh: "Reîmprospătează",
+    noResults: "Nu s-au găsit rezultate",
   },
   settings: {
     title: "Setările instanței",
@@ -139,6 +141,35 @@ const TRANSLATIONS = {
       uploadDocument: "Încărcați un document",
     },
     greeting: "Cu ce vă pot ajuta astăzi?",
+    greetings: {
+      anytime: {
+        working_on: "La ce lucrăm?",
+        on_your_mind: "La ce vă gândiți?",
+        where_to_start: "De unde începem?",
+        ready: "Sunt gata oricând doriți.",
+        think_it_through: "Haideți să ne gândim bine.",
+      },
+      morning: {
+        good_morning: "Bună dimineața",
+        first_today: "Bună dimineața. Cu ce începem azi?",
+        fresh_start: "Un nou început. De unde pornim?",
+      },
+      afternoon: {
+        good_afternoon: "Bună ziua",
+        tackling: "Bună ziua. Ce abordăm?",
+        next_on_list: "Ce urmează pe listă?",
+        keep_moving: "Să mergem mai departe.",
+      },
+      evening: {
+        good_evening: "Bună seara",
+        finish_strong: "Bună seara. Să încheiem în forță.",
+      },
+      night: {
+        midnight_oil: "Lucrați până târziu?",
+        late_one: "O seară lungă? Haideți să ne gândim bine.",
+        still_up: "Încă la lucru? Sunt gata oricând doriți.",
+      },
+    },
   },
   "new-workspace": {
     title: "Spațiu de lucru nou",
@@ -246,6 +277,22 @@ const TRANSLATIONS = {
       title: "Temperatura LLM",
       "desc-end":
         "Cu cât numărul e mai mare, cu atât mai creativ. Pentru unele modele poate duce la răspunsuri incoerente la valori mari.",
+      placeholder: "Valoarea implicită a furnizorului",
+    },
+    reasoning_effort: {
+      title: "Efort de raționament",
+      default: "Valoarea implicită a furnizorului",
+      cannot_disable: "Acest model nu poate dezactiva raționamentul.",
+      levels: {
+        off: "Dezactivat",
+        on: "Activat",
+        minimal: "Minim",
+        low: "Scăzut",
+        medium: "Mediu",
+        high: "Ridicat",
+        xhigh: "Foarte ridicat",
+        max: "Maxim",
+      },
     },
   },
   vector: {

@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "اسم مساحة العمل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
+    saved: "تم الحفظ",
     save: "حفظ التغييرات",
     previous: "الصفحة السابقة",
     next: "الصفحة التالية",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
     stopped: "توقف",
     loading: "تحميل",
     refresh: "استعيد/جدد",
+    noResults: "لم يتم العثور على أي نتائج",
   },
   settings: {
     title: "إعدادات المثيل",
@@ -238,6 +240,22 @@ const TRANSLATIONS = {
       title: "حرارة نموذج التعلم العميق",
       "desc-end":
         "كلما زاد العدد كلما كان الإبداع أكبر. بالنسبة لبعض النماذج، قد يؤدي هذا إلى استجابات غير منسجمة عند ضبطها على رقم مرتفع للغاية.",
+      placeholder: "الافتراضي للمزوّد",
+    },
+    reasoning_effort: {
+      title: "جهد الاستدلال",
+      default: "الافتراضي للمزوّد",
+      cannot_disable: "لا يمكن لهذا النموذج إيقاف الاستدلال.",
+      levels: {
+        off: "إيقاف",
+        on: "تشغيل",
+        minimal: "أدنى",
+        low: "منخفض",
+        medium: "متوسط",
+        high: "مرتفع",
+        xhigh: "مرتفع جدًا",
+        max: "أقصى",
+      },
     },
   },
   "vector-workspace": {
@@ -1409,6 +1427,35 @@ const TRANSLATIONS = {
       uploadDocument: "تحميل مستند",
     },
     greeting: "كيف يمكنني مساعدتك اليوم؟",
+    greetings: {
+      anytime: {
+        working_on: "على ماذا نعمل؟",
+        on_your_mind: "ما الذي يدور في ذهنك؟",
+        where_to_start: "من أين نبدأ؟",
+        ready: "جاهز متى كنت مستعدًا.",
+        think_it_through: "لنفكّر في الأمر جيدًا.",
+      },
+      morning: {
+        good_morning: "صباح الخير",
+        first_today: "صباح الخير. بماذا نبدأ اليوم؟",
+        fresh_start: "بداية جديدة. من أين نبدأ؟",
+      },
+      afternoon: {
+        good_afternoon: "طاب يومك",
+        tackling: "طاب يومك. ما الذي سننجزه؟",
+        next_on_list: "ما التالي في القائمة؟",
+        keep_moving: "لنواصل التقدّم.",
+      },
+      evening: {
+        good_evening: "مساء الخير",
+        finish_strong: "مساء الخير. لننهِ يومنا بقوة.",
+      },
+      night: {
+        midnight_oil: "تسهر على العمل؟",
+        late_one: "ليلة طويلة؟ لنفكّر في الأمر جيدًا.",
+        still_up: "ما زلت مستيقظًا؟ جاهز متى كنت مستعدًا.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "اختصارات لوحة المفاتيح",

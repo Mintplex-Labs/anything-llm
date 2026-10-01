@@ -2,16 +2,48 @@ import cronstrue from "cronstrue/i18n";
 import moment from "moment";
 
 /**
+ * Whole calendar days the date moved between two moments (-1, 0 or 1) when a
+ * wall-clock time is converted local -> UTC or UTC -> local.
+ */
+function dayShiftBetween(from, to) {
+  return moment
+    .utc(to.format("YYYY-MM-DD"))
+    .diff(moment.utc(from.format("YYYY-MM-DD")), "days");
+}
+
+/**
+ * Move a day of month by a number of days, but only when both the old and the
+ * new day are within 1-28, which every month has. Other days stay as they are.
+ */
+function shiftDayOfMonth(dom, shift) {
+  const shifted = dom + shift;
+  return Math.min(dom, shifted) >= 1 && Math.max(dom, shifted) <= 28
+    ? shifted
+    : dom;
+}
+
+/** Move weekdays (0-6) by a number of days, wrapping around the week. */
+function shiftWeekdays(days, shift) {
+  return [...new Set(days.map((d) => (((d + shift) % 7) + 7) % 7))].sort(
+    (a, b) => a - b
+  );
+}
+
+/**
  * Convert a local hour and minute to UTC using moment.js.
  * Handles DST and timezone edge cases properly.
  * @param {number} localHour - Hour in local time (0-23).
  * @param {number} localMinute - Minute (0-59).
- * @returns {{ hour: number, minute: number }} Hour and minute in UTC.
+ * @returns {{ hour: number, minute: number, dayShift: number }} UTC time and calendar-day shift.
  */
 export function localTimeToUTC(localHour, localMinute = 0) {
   const local = moment().hour(localHour).minute(localMinute).second(0);
   const utc = local.clone().utc();
-  return { hour: utc.hour(), minute: utc.minute() };
+  return {
+    hour: utc.hour(),
+    minute: utc.minute(),
+    dayShift: dayShiftBetween(local, utc),
+  };
 }
 
 /**
@@ -19,12 +51,16 @@ export function localTimeToUTC(localHour, localMinute = 0) {
  * Handles DST and timezone edge cases properly.
  * @param {number} utcHour - Hour in UTC (0-23).
  * @param {number} utcMinute - Minute (0-59).
- * @returns {{ hour: number, minute: number }} Hour and minute in local time.
+ * @returns {{ hour: number, minute: number, dayShift: number }} Local time and calendar-day shift.
  */
 export function utcTimeToLocal(utcHour, utcMinute = 0) {
   const utc = moment.utc().hour(utcHour).minute(utcMinute).second(0);
   const local = utc.clone().local();
-  return { hour: local.hour(), minute: local.minute() };
+  return {
+    hour: local.hour(),
+    minute: local.minute(),
+    dayShift: dayShiftBetween(utc, local),
+  };
 }
 
 /**
@@ -67,7 +103,7 @@ export function humanizeCron(cron, locale) {
 
 /**
  * Convert a UTC cron expression to local time for display purposes.
- * Only converts the hour field for patterns that have a specific hour.
+ * Converts time and day fields for patterns that have a specific time.
  * @param {string} cron - The cron expression in UTC.
  * @returns {string} The cron expression adjusted to local time.
  */
@@ -81,7 +117,21 @@ function convertCronToLocalTime(cron) {
   // Only convert if hour is a specific number (not * or */n)
   if (/^\d+$/.test(hour) && /^\d+$/.test(minute)) {
     const local = utcTimeToLocal(parseInt(hour, 10), parseInt(minute, 10));
-    return `${local.minute} ${local.hour} ${dom} ${mon} ${dow}`;
+    const localDom =
+      local.dayShift !== 0 && /^\d+$/.test(dom)
+        ? shiftDayOfMonth(parseInt(dom, 10), local.dayShift)
+        : dom;
+    const localDow =
+      local.dayShift !== 0 && /^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(dow)
+        ? shiftWeekdays(
+            dow.split(",").flatMap((part) => {
+              const [from, to = from] = part.split("-").map(Number);
+              return Array.from({ length: to - from + 1 }, (_, i) => from + i);
+            }),
+            local.dayShift
+          ).join(",")
+        : dow;
+    return `${local.minute} ${local.hour} ${localDom} ${mon} ${localDow}`;
   }
 
   return cron;
@@ -211,7 +261,7 @@ export function parseCronToBuilderState(cron) {
         frequency: "week",
         hour: local.hour,
         minute: local.minute,
-        weekdays: days.length ? days : [1],
+        weekdays: days.length ? shiftWeekdays(days, local.dayShift) : [1],
       },
       wasFallback: false,
     };
@@ -226,7 +276,7 @@ export function parseCronToBuilderState(cron) {
         frequency: "month",
         hour: local.hour,
         minute: local.minute,
-        dayOfMonth: parseInt(dom, 10),
+        dayOfMonth: shiftDayOfMonth(parseInt(dom, 10), local.dayShift),
       },
       wasFallback: false,
     };
@@ -259,15 +309,16 @@ export function buildCronFromBuilderState(state) {
     }
     case "week": {
       const utc = localTimeToUTC(state.hour, state.minute);
-      const days = (state.weekdays?.length ? state.weekdays : [1])
-        .slice()
-        .sort((a, b) => a - b)
-        .join(",");
+      const days = shiftWeekdays(
+        state.weekdays?.length ? state.weekdays : [1],
+        utc.dayShift
+      ).join(",");
       return `${utc.minute} ${utc.hour} * * ${days}`;
     }
     case "month": {
       const utc = localTimeToUTC(state.hour, state.minute);
-      return `${utc.minute} ${utc.hour} ${state.dayOfMonth} * *`;
+      const dom = shiftDayOfMonth(state.dayOfMonth, utc.dayShift);
+      return `${utc.minute} ${utc.hour} ${dom} * *`;
     }
     default: {
       const utc = localTimeToUTC(9, 0);

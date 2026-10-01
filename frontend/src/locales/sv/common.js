@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Arbetsytans namn",
     selection: "Välj modell",
     saving: "Sparar …",
+    saved: "Sparat",
     save: "Spara ändringar",
     previous: "Föregående sida",
     next: "Nästa sida",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "Användarnamnet måste bestå av 2–64 tecken, börja med en liten bokstav och endast innehålla små bokstäver, siffror, understreck, bindestreck och punkter.",
     loading: "Läser in",
     refresh: "Uppdatera",
+    noResults: "Inga resultat hittades",
   },
   home: {
     welcome: "Välkommen",
@@ -145,6 +147,35 @@ const TRANSLATIONS = {
       createAgent: "Skapa en agent",
       editWorkspace: "Redigera arbetsyta",
       uploadDocument: "Ladda upp ett dokument",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Vad arbetar vi med?",
+        on_your_mind: "Vad tänker du på?",
+        where_to_start: "Var ska vi börja?",
+        ready: "Redo när du är.",
+        think_it_through: "Låt oss tänka igenom det.",
+      },
+      morning: {
+        good_morning: "God morgon",
+        first_today: "God morgon. Vad tar vi först i dag?",
+        fresh_start: "En nystart. Var börjar vi?",
+      },
+      afternoon: {
+        good_afternoon: "God eftermiddag",
+        tackling: "God eftermiddag. Vad ska vi ta itu med?",
+        next_on_list: "Vad står näst på listan?",
+        keep_moving: "Vi håller tempot uppe.",
+      },
+      evening: {
+        good_evening: "God kväll",
+        finish_strong: "God kväll. Nu avslutar vi starkt.",
+      },
+      night: {
+        midnight_oil: "Jobbar du sent?",
+        late_one: "Lång kväll? Låt oss tänka igenom det.",
+        still_up: "Fortfarande vaken? Redo när du är.",
+      },
     },
   },
   "new-workspace": {
@@ -254,6 +285,22 @@ const TRANSLATIONS = {
       title: "LLM-temperatur",
       "desc-end":
         "Ju högre värde, desto mer kreativa blir svaren. För vissa modeller kan ett alltför högt värde ge osammanhängande svar.",
+      placeholder: "Leverantörens standard",
+    },
+    reasoning_effort: {
+      title: "Resonemangsinsats",
+      default: "Leverantörens standard",
+      cannot_disable: "Den här modellen kan inte stänga av resonemang.",
+      levels: {
+        off: "Av",
+        on: "På",
+        minimal: "Minimal",
+        low: "Låg",
+        medium: "Medel",
+        high: "Hög",
+        xhigh: "Extra hög",
+        max: "Max",
+      },
     },
   },
   "vector-workspace": {

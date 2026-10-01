@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tööruumide nimi",
     selection: "Mudeli valik",
     saving: "Salvestan…",
+    saved: "Salvestatud",
     save: "Salvesta muudatused",
     previous: "Eelmine leht",
     next: "Järgmine leht",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Peatas",
     loading: "Laadimine",
     refresh: "Värskendada",
+    noResults: "Tulemusi ei leitud",
   },
   settings: {
     title: "Instantsi seaded",
@@ -137,6 +139,35 @@ const TRANSLATIONS = {
       uploadDocument: "Lae fail üles",
     },
     greeting: "Kuidas saan teid täna aidata?",
+    greetings: {
+      anytime: {
+        working_on: "Millega tegeleme?",
+        on_your_mind: "Mis teil mõttes on?",
+        where_to_start: "Kust alustame?",
+        ready: "Valmis, kui teie olete.",
+        think_it_through: "Mõtleme selle läbi.",
+      },
+      morning: {
+        good_morning: "Tere hommikust",
+        first_today: "Tere hommikust. Millega täna alustame?",
+        fresh_start: "Uus algus. Kust alustame?",
+      },
+      afternoon: {
+        good_afternoon: "Tere päevast",
+        tackling: "Tere päevast. Mille kallale asume?",
+        next_on_list: "Mis on nimekirjas järgmine?",
+        keep_moving: "Liigume edasi.",
+      },
+      evening: {
+        good_evening: "Tere õhtust",
+        finish_strong: "Tere õhtust. Lõpetame hästi.",
+      },
+      night: {
+        midnight_oil: "Töötate hilisööni?",
+        late_one: "Pikk õhtu? Mõtleme selle läbi.",
+        still_up: "Ikka veel üleval? Valmis, kui teie olete.",
+      },
+    },
   },
   "new-workspace": {
     title: "Uus tööruum",
@@ -242,6 +273,22 @@ const TRANSLATIONS = {
       title: "LLM-i temperatuur",
       "desc-end":
         "Kõrgem väärtus = loovam, ent liiga kõrge võib tekitada ebaühtlasi vastuseid.",
+      placeholder: "Teenusepakkuja vaikeväärtus",
+    },
+    reasoning_effort: {
+      title: "Arutlemise pingutus",
+      default: "Teenusepakkuja vaikeväärtus",
+      cannot_disable: "See mudel ei saa arutlemist välja lülitada.",
+      levels: {
+        off: "Väljas",
+        on: "Sees",
+        minimal: "Minimaalne",
+        low: "Madal",
+        medium: "Keskmine",
+        high: "Kõrge",
+        xhigh: "Väga kõrge",
+        max: "Maksimaalne",
+      },
     },
   },
   "vector-workspace": {

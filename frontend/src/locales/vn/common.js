@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tên không gian làm việc",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
+    saved: "Đã lưu",
     save: "Lưu thay đổi",
     previous: "Trang trước",
     next: "Trang tiếp theo",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Dừng",
     loading: "Đang tải",
     refresh: "Tái tạo",
+    noResults: "Không tìm thấy kết quả",
   },
   settings: {
     title: "Cài đặt hệ thống",
@@ -238,6 +240,22 @@ const TRANSLATIONS = {
       title: "Nhiệt độ LLM",
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
+      placeholder: "Mặc định của nhà cung cấp",
+    },
+    reasoning_effort: {
+      title: "Mức độ suy luận",
+      default: "Mặc định của nhà cung cấp",
+      cannot_disable: "Mô hình này không thể tắt suy luận.",
+      levels: {
+        off: "Tắt",
+        on: "Bật",
+        minimal: "Tối thiểu",
+        low: "Thấp",
+        medium: "Trung bình",
+        high: "Cao",
+        xhigh: "Rất cao",
+        max: "Tối đa",
+      },
     },
   },
   "vector-workspace": {
@@ -1426,6 +1444,35 @@ const TRANSLATIONS = {
       uploadDocument: "Tải lên một tài liệu",
     },
     greeting: "Hôm nay tôi có thể giúp gì cho bạn?",
+    greetings: {
+      anytime: {
+        working_on: "Chúng ta đang làm gì nhỉ?",
+        on_your_mind: "Bạn đang nghĩ gì?",
+        where_to_start: "Chúng ta nên bắt đầu từ đâu?",
+        ready: "Sẵn sàng khi bạn cần.",
+        think_it_through: "Hãy cùng suy nghĩ kỹ nhé.",
+      },
+      morning: {
+        good_morning: "Chào buổi sáng",
+        first_today: "Chào buổi sáng. Hôm nay làm gì trước?",
+        fresh_start: "Khởi đầu mới. Bắt đầu từ đâu đây?",
+      },
+      afternoon: {
+        good_afternoon: "Chào buổi chiều",
+        tackling: "Chào buổi chiều. Chúng ta xử lý việc gì?",
+        next_on_list: "Việc tiếp theo trong danh sách là gì?",
+        keep_moving: "Tiếp tục nào.",
+      },
+      evening: {
+        good_evening: "Chào buổi tối",
+        finish_strong: "Chào buổi tối. Cùng kết thúc thật tốt nhé.",
+      },
+      night: {
+        midnight_oil: "Làm việc đến khuya à?",
+        late_one: "Một đêm dài? Hãy cùng suy nghĩ kỹ nhé.",
+        still_up: "Vẫn còn thức à? Sẵn sàng khi bạn cần.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Phím tắt",

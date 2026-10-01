@@ -12,6 +12,7 @@ import DnDFileUploaderWrapper, {
   PASTE_ATTACHMENT_EVENT,
 } from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
 import { useTranslation } from "react-i18next";
+import useGreeting from "@/hooks/useGreeting";
 import {
   LAST_VISITED_WORKSPACE,
   PENDING_HOME_MESSAGE,
@@ -28,6 +29,11 @@ import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/Works
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import {
+  HOME_DRAFT_SESSION,
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 import MemoriesSidebar from "@/components/WorkspaceChat/ChatContainer/MemoriesSidebar";
 
 async function getTargetWorkspace() {
@@ -185,6 +191,7 @@ export default function Home() {
 
 function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
+  const greeting = useGreeting();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
@@ -220,7 +227,21 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       if (!targetThread) {
         const { thread } = await Workspace.threads.new(targetWorkspace.slug);
         targetThread = thread?.slug;
-        if (thread) setThreadSlug(thread.slug);
+        if (thread) {
+          // Carry the reasoning effort picked before the thread existed over
+          // to the thread the message is sent in.
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            thread.slug,
+            getSessionReasoningEffort(targetWorkspace.slug, HOME_DRAFT_SESSION)
+          );
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            HOME_DRAFT_SESSION,
+            null
+          );
+          setThreadSlug(thread.slug);
+        }
       }
 
       sessionStorage.setItem(
@@ -301,8 +322,8 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           <DnDFileUploaderWrapper>
             <div className="flex flex-col h-full w-full items-center justify-center">
               <div className="flex flex-col items-center w-full max-w-[750px]">
-                <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-                  {t("main-page.greeting")}
+                <h1 className="text-white text-2xl md:text-[32px] md:leading-10 mb-11 text-center">
+                  {greeting}
                 </h1>
                 <PromptInput
                   workspace={workspace}
@@ -313,6 +334,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
                   centered={true}
                   workspaceSlug={workspace?.slug}
                   threadSlug={threadSlug}
+                  reasoningSessionSlug={threadSlug ?? HOME_DRAFT_SESSION}
                 />
                 <QuickActions
                   hasAvailableWorkspace={!!workspace}

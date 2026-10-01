@@ -1,15 +1,14 @@
 import { useTranslation } from "react-i18next";
+import { SavedIndicator } from "@/components/AutosaveForm";
 
-export default function DocumentSimilarityThreshold({
-  workspace,
-  setHasChanges,
-}) {
+export default function DocumentSimilarityThreshold({ workspace }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("vector-workspace.doc.title")}
+          <SavedIndicator name="similarityThreshold" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("vector-workspace.doc.description")}
@@ -19,7 +18,6 @@ export default function DocumentSimilarityThreshold({
         name="similarityThreshold"
         defaultValue={workspace?.similarityThreshold ?? 0.25}
         className="border-none bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-        onChange={() => setHasChanges(true)}
         required={true}
       >
         <option value={0.0}>{t("vector-workspace.doc.zero")}</option>

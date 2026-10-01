@@ -59,7 +59,6 @@ describe('OpenAICompatibleChat', () => {
         metrics: {},
       }),
       handleStream: jest.fn().mockResolvedValue('Mock streamed response'),
-      defaultTemp: 0.7,
     };
     getLLMProvider.mockReturnValue(mockLLMConnector);
     resolveProviderConnector.mockResolvedValue({
