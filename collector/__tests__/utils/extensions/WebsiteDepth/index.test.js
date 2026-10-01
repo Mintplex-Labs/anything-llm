@@ -323,6 +323,24 @@ describe("WebsiteDepth websiteScraper", () => {
     ]);
   });
 
+  it("stores pages whose path cannot be percent-decoded", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="/docs/50%-off">d</a><a href="/docs/caf%E9">c</a>',
+      "https://example.com/docs/50%-off": "deal content",
+      "https://example.com/docs/caf%E9": "menu content",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/50%-off",
+      "link://https://example.com/docs/caf%E9",
+    ]);
+    expect(writeToServerDocuments).toHaveBeenCalledTimes(3);
+  });
+
   it("skips pages whose scraped content is empty", async () => {
     mockSite({
       "https://example.com/docs/page": '<a href="/docs/empty">e</a>',
