@@ -1460,33 +1460,31 @@ const TRANSLATIONS = {
     greeting: "Comment puis-je vous aider aujourd'hui ?",
     greetings: {
       anytime: {
-        working_on: "Sur quoi travaillons-nous actuellement ?",
-        on_your_mind:
-          "De quoi vous inquiétez-vous ? / Qu'est-ce qui vous préoccupe ?",
-        where_to_start: "Où devrions-nous commencer ?",
-        ready: "Prêt dès que vous le serez.",
-        think_it_through: "Essayons de réfléchir à la question.",
+        working_on: "Sur quoi travaillons-nous ?",
+        on_your_mind: "Qu'avez-vous en tête ?",
+        where_to_start: "Par où commençons-nous ?",
+        ready: "Prêt quand vous l'êtes.",
+        think_it_through: "Prenons le temps d'y réfléchir.",
       },
       morning: {
         good_morning: "Bonjour",
-        first_today:
-          "Bonjour. Quelle est la première chose à faire aujourd'hui ?",
-        fresh_start: "Un nouveau départ. Par où devrions-nous commencer ?",
+        first_today: "Bonjour. Par quoi commence-t-on aujourd'hui ?",
+        fresh_start: "Nouveau départ. Par où commencer ?",
       },
       afternoon: {
-        good_afternoon: "Bonjour",
-        tackling: "Après-midi. Quel est notre sujet de discussion ?",
-        next_on_list: "Quelle est la prochaine étape de la liste ?",
-        keep_moving: "Continuons.",
+        good_afternoon: "Bon après-midi",
+        tackling: "Bon après-midi. À quoi s'attaque-t-on ?",
+        next_on_list: "Quelle est la suite de la liste ?",
+        keep_moving: "Gardons le rythme.",
       },
       evening: {
         good_evening: "Bonsoir",
-        finish_strong: "Soir. Terminons sur une bonne note.",
+        finish_strong: "Bonsoir. Finissons en beauté.",
       },
       night: {
-        midnight_oil: "Travaillez tard dans la nuit ?",
-        late_one: "Est-ce que cela arrivera tard ? Allons-y, réfléchissons.",
-        still_up: "Toujours prêt ? À votre signal.",
+        midnight_oil: "Vous travaillez tard ?",
+        late_one: "Longue soirée ? Prenons le temps d'y réfléchir.",
+        still_up: "Encore debout ? Prêt quand vous l'êtes.",
       },
     },
   },

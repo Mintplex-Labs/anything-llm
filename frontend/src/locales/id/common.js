@@ -152,33 +152,31 @@ const TRANSLATIONS = {
     },
     greetings: {
       anytime: {
-        working_on: "Apa yang sedang kami kerjakan?",
+        working_on: "Apa yang sedang kita kerjakan?",
         on_your_mind: "Apa yang sedang Anda pikirkan?",
-        where_to_start: "Dari mana kita sebaiknya memulai?",
-        ready: "Siap ketika Anda siap.",
-        think_it_through: "Mari kita pikirkan secara mendalam.",
+        where_to_start: "Kita mulai dari mana?",
+        ready: "Siap kapan pun Anda siap.",
+        think_it_through: "Mari kita pikirkan baik-baik.",
       },
       morning: {
         good_morning: "Selamat pagi",
-        first_today:
-          "Selamat pagi. Apa yang menjadi prioritas pertama hari ini?",
-        fresh_start: "Mulai dari awal. Dimana sebaiknya kita memulai?",
+        first_today: "Selamat pagi. Apa yang pertama hari ini?",
+        fresh_start: "Awal yang baru. Kita mulai dari mana?",
       },
       afternoon: {
         good_afternoon: "Selamat siang",
-        tackling: "Sore. Apa yang akan kita kerjakan?",
-        next_on_list: "Apa yang selanjutnya dalam daftar tersebut?",
-        keep_moving: "Mari terus bergerak maju.",
+        tackling: "Selamat siang. Apa yang akan kita kerjakan?",
+        next_on_list: "Apa berikutnya di daftar?",
+        keep_moving: "Ayo terus melaju.",
       },
       evening: {
         good_evening: "Selamat malam",
-        finish_strong: "Sore. Mari kita akhiri dengan hasil yang baik.",
+        finish_strong: "Selamat malam. Mari kita tuntaskan dengan baik.",
       },
       night: {
-        midnight_oil: "Bekerja hingga larut malam?",
-        late_one:
-          "Apakah Anda ingin melakukannya nanti? Mari kita pikirkan bersama.",
-        still_up: "Masih menunggu? Siap ketika Anda siap.",
+        midnight_oil: "Lembur sampai larut?",
+        late_one: "Malam yang panjang? Mari kita pikirkan baik-baik.",
+        still_up: "Masih terjaga? Siap kapan pun Anda siap.",
       },
     },
   },
