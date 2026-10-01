@@ -10,6 +10,10 @@ const { OpenAI: OpenAIApi } = require("openai");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -232,7 +236,7 @@ class LMStudioLLM {
 
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     if (!this.model)
       throw new Error(
@@ -244,6 +248,7 @@ class LMStudioLLM {
         model: this.model,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("lmstudio", reasoningEffort, this.model),
       })
     );
 
@@ -270,7 +275,7 @@ class LMStudioLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     if (!this.model)
       throw new Error(
@@ -283,6 +288,7 @@ class LMStudioLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("lmstudio", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -338,7 +344,7 @@ class LMStudioLLM {
   /**
    * Returns the capabilities of the model.
    * This uses the new /api/v1 endpoint, which returns the model info in a different format.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
@@ -351,9 +357,16 @@ class LMStudioLLM {
             vision: "unknown",
           };
 
+      // `reasoning.allowed_options` is per model (eg: on/off for Qwen3, or
+      // low/medium/high for gpt-oss).
+      const reasoningOptions = PROVIDER_REASONING_EFFORTS.lmstudio().filter(
+        (option) => capabilities.reasoning?.allowed_options?.includes(option)
+      );
+
       return {
         tools: capabilities.trained_for_tool_use,
-        reasoning: "unknown",
+        reasoning: capabilities.hasOwnProperty("reasoning"),
+        reasoningOptions,
         imageGeneration: "unknown", // LM Studio does not support image generation yet.
         vision: capabilities.vision,
       };
@@ -362,6 +375,7 @@ class LMStudioLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

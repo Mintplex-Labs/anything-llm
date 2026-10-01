@@ -254,6 +254,7 @@ async function tooledStream(
     ...maxTokensParam(maxTokens, maxTokensKey),
     ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
 
   const result = {
@@ -434,6 +435,7 @@ async function tooledComplete(
     ...maxTokensParam(maxTokens, maxTokensKey),
     ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
 
   const completion = response.choices[0].message;

@@ -17,6 +17,10 @@ const {
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
@@ -252,9 +256,29 @@ class OpenRouterLLM {
     ];
   }
 
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("openrouter", this.model);
+  }
+
+  /**
+   * The reasoning portion of the request body. Without an effort the legacy
+   * `include_reasoning` flag is sent, which OpenRouter treats as
+   * `reasoning: {}` - so the reasoning text is returned either way.
+   * @param {string|null} reasoningEffort - Validated reasoning effort
+   * @returns {object}
+   */
+  #reasoningBody(reasoningEffort = null) {
+    const params = reasoningParams("openrouter", reasoningEffort, this.model);
+    return params.reasoning ? params : { include_reasoning: true };
+  }
+
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature, user = null } = {}
+    { temperature = this.temperature, user = null, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -267,9 +291,7 @@ class OpenRouterLLM {
           model: this.model,
           messages,
           ...temperatureParam(temperature),
-          // This is an OpenRouter specific option that allows us to get the reasoning text
-          // before the token text.
-          include_reasoning: true,
+          ...this.#reasoningBody(reasoningEffort),
           ...serviceTierParam(this.serviceTier, this.log.bind(this)),
           user: user?.id ? `user_${user.id}` : "",
         })
@@ -303,7 +325,7 @@ class OpenRouterLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature, user = null } = {}
+    { temperature = this.temperature, user = null, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -316,9 +338,7 @@ class OpenRouterLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
-        // This is an OpenRouter specific option that allows us to get the reasoning text
-        // before the token text.
-        include_reasoning: true,
+        ...this.#reasoningBody(reasoningEffort),
         ...serviceTierParam(this.serviceTier, this.log.bind(this)),
         user: user?.id ? `user_${user.id}` : "",
       }),

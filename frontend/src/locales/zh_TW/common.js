@@ -232,6 +232,21 @@ const TRANSLATIONS = {
         "數值越高，創意度越高。對於某些模型，設定過高可能會導致不連貫的回應。",
       placeholder: "供應商預設值",
     },
+    reasoning_effort: {
+      title: "推理強度",
+      default: "供應商預設值",
+      cannot_disable: "此模型無法關閉推理。",
+      levels: {
+        off: "關閉",
+        on: "開啟",
+        minimal: "最低",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "極高",
+        max: "最高",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "向量資料庫識別碼",

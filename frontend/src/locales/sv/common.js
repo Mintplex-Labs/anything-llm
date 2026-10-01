@@ -287,6 +287,21 @@ const TRANSLATIONS = {
         "Ju högre värde, desto mer kreativa blir svaren. För vissa modeller kan ett alltför högt värde ge osammanhängande svar.",
       placeholder: "Leverantörens standard",
     },
+    reasoning_effort: {
+      title: "Resonemangsinsats",
+      default: "Leverantörens standard",
+      cannot_disable: "Den här modellen kan inte stänga av resonemang.",
+      levels: {
+        off: "Av",
+        on: "På",
+        minimal: "Minimal",
+        low: "Låg",
+        medium: "Medel",
+        high: "Hög",
+        xhigh: "Extra hög",
+        max: "Max",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identifierare för vektordatabas",

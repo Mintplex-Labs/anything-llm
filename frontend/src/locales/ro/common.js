@@ -279,6 +279,21 @@ const TRANSLATIONS = {
         "Cu cât numărul e mai mare, cu atât mai creativ. Pentru unele modele poate duce la răspunsuri incoerente la valori mari.",
       placeholder: "Valoarea implicită a furnizorului",
     },
+    reasoning_effort: {
+      title: "Efort de raționament",
+      default: "Valoarea implicită a furnizorului",
+      cannot_disable: "Acest model nu poate dezactiva raționamentul.",
+      levels: {
+        off: "Dezactivat",
+        on: "Activat",
+        minimal: "Minim",
+        low: "Scăzut",
+        medium: "Mediu",
+        high: "Ridicat",
+        xhigh: "Foarte ridicat",
+        max: "Maxim",
+      },
+    },
   },
   vector: {
     title: "Baza de date vectorială",

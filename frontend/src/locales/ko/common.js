@@ -273,6 +273,21 @@ const TRANSLATIONS = {
         "숫자가 높을수록 창의적입니다. 일부 모델에서는 너무 높게 설정하면 일관성 없는 응답이 나올 수 있습니다.",
       placeholder: "제공자 기본값",
     },
+    reasoning_effort: {
+      title: "추론 강도",
+      default: "제공자 기본값",
+      cannot_disable: "이 모델은 추론을 끌 수 없습니다.",
+      levels: {
+        off: "끄기",
+        on: "켜기",
+        minimal: "최소",
+        low: "낮음",
+        medium: "중간",
+        high: "높음",
+        xhigh: "매우 높음",
+        max: "최대",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",

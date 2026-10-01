@@ -240,6 +240,21 @@ const TRANSLATIONS = {
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
       placeholder: "プロバイダーのデフォルト",
     },
+    reasoning_effort: {
+      title: "推論の強度",
+      default: "プロバイダーのデフォルト",
+      cannot_disable: "このモデルは推論をオフにできません。",
+      levels: {
+        off: "オフ",
+        on: "オン",
+        minimal: "最小",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "最高",
+        max: "最大",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "ベクターデータベース識別子",

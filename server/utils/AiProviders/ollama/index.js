@@ -12,6 +12,10 @@ const { v4: uuidv4 } = require("uuid");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -271,7 +275,7 @@ class OllamaAILLM {
 
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
@@ -280,6 +284,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
+          ...reasoningParams("ollama", reasoningEffort, this.model),
           options: {
             ...temperatureParam(temperature),
             num_ctx: this.promptWindowLimit(),
@@ -327,7 +332,7 @@ class OllamaAILLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
@@ -335,6 +340,7 @@ class OllamaAILLM {
         stream: true,
         messages,
         keep_alive: this.keepAlive,
+        ...reasoningParams("ollama", reasoningEffort, this.model),
         options: {
           ...temperatureParam(temperature),
           num_ctx: this.promptWindowLimit(),
@@ -479,16 +485,23 @@ class OllamaAILLM {
 
   /**
    * Returns the capabilities of the model.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
-      const { capabilities = [] } = await this.client.show({
+      const { capabilities = [], thinking = null } = await this.client.show({
         model: this.model,
       });
+
+      const supportsReasoning = capabilities.includes("thinking");
+      const reasoningOptions = supportsReasoning
+        ? PROVIDER_REASONING_EFFORTS.ollama(this.model, thinking?.values)
+        : [];
+
       return {
         tools: capabilities.includes("tools") ? true : false,
-        reasoning: capabilities.includes("thinking") ? true : false,
+        reasoning: supportsReasoning,
+        reasoningOptions,
         imageGeneration: false, // we dont have any image generation capabilities for Ollama or anywhere right now.
         vision: capabilities.includes("vision") ? true : false,
       };
@@ -497,6 +510,7 @@ class OllamaAILLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

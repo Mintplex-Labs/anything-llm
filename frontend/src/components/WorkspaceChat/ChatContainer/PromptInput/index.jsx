@@ -6,6 +6,7 @@ import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
+import ReasoningEffortButton from "./ReasoningEffortButton";
 import {
   ATTACHMENTS_PROCESSED_EVENT,
   ATTACHMENTS_PROCESSING_EVENT,
@@ -33,6 +34,7 @@ const MAX_EDIT_STACK_SIZE = 100;
  * @param {boolean} [props.centered] - renders in centered layout mode (for home page)
  * @param {string} [props.workspaceSlug] - workspace slug for home page context
  * @param {string} [props.threadSlug] - thread slug for home page context
+ * @param {string} [props.reasoningSessionSlug] - session the reasoning effort picker reads and writes, when it differs from threadSlug
  */
 export default function PromptInput({
   workspace = {},
@@ -43,6 +45,7 @@ export default function PromptInput({
   centered = false,
   workspaceSlug = null,
   threadSlug = null,
+  reasoningSessionSlug = null,
 }) {
   const { t } = useTranslation();
   const { showAgentCommand = true } = workspace ?? {};
@@ -386,6 +389,11 @@ export default function PromptInput({
                       promptInput={promptInput}
                       textareaRef={textareaRef}
                       visible={!agentSessionActive & showAgentCommand}
+                    />
+                    <ReasoningEffortButton
+                      workspaceSlug={workspaceSlug ?? workspace?.slug}
+                      threadSlug={reasoningSessionSlug ?? threadSlug}
+                      centered={centered}
                     />
                   </div>
                   <ToolsButton

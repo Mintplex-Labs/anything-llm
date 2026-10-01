@@ -242,6 +242,21 @@ const TRANSLATIONS = {
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
       placeholder: "Sağlayıcı varsayılanı",
     },
+    reasoning_effort: {
+      title: "Akıl Yürütme Düzeyi",
+      default: "Sağlayıcı varsayılanı",
+      cannot_disable: "Bu model akıl yürütmeyi kapatamaz.",
+      levels: {
+        off: "Kapalı",
+        on: "Açık",
+        minimal: "Minimum",
+        low: "Düşük",
+        medium: "Orta",
+        high: "Yüksek",
+        xhigh: "Çok yüksek",
+        max: "Maksimum",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",

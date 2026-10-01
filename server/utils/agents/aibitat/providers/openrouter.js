@@ -9,6 +9,7 @@ const {
   serviceTierParam,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 
 /**
  * The agent provider for the OpenRouter provider.
@@ -21,7 +22,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
-    const { model = "openrouter/auto" } = config;
+    const { model = "openrouter/auto", reasoningEffort = null } = config;
     super();
     this.providerTag = "openrouter";
     const client = new OpenAI({
@@ -35,6 +36,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
     this.verbose = true;
     this._supportsToolCalling = null;
@@ -42,6 +44,15 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("openrouter", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {
@@ -55,6 +66,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         ...temperatureParam(this.temperature),
         messages,
         ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
+        ...this.reasoningConfig,
         user: this.executingUserId,
       })
       .then((result) => {
@@ -76,6 +88,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
       stream: true,
       messages,
       ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
+      ...this.reasoningConfig,
       user: this.executingUserId,
     });
   }

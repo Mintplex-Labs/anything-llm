@@ -281,6 +281,21 @@ const TRANSLATIONS = {
         "Cuanto mayor sea el número, más creativo. Para algunos modelos, esto puede llevar a respuestas incoherentes si se establece un valor demasiado alto.",
       placeholder: "Predeterminado del proveedor",
     },
+    reasoning_effort: {
+      title: "Esfuerzo de razonamiento",
+      default: "Predeterminado del proveedor",
+      cannot_disable: "Este modelo no puede desactivar el razonamiento.",
+      levels: {
+        off: "Desactivado",
+        on: "Activado",
+        minimal: "Mínimo",
+        low: "Bajo",
+        medium: "Medio",
+        high: "Alto",
+        xhigh: "Muy alto",
+        max: "Máximo",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identificador de la base de datos vectorial",

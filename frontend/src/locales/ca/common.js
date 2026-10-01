@@ -289,6 +289,21 @@ const TRANSLATIONS = {
         "Com més alt sigui el número, més creatiu serà. Per a alguns models, això pot provocar respostes incoherents si és massa alt.",
       placeholder: "Valor per defecte del proveïdor",
     },
+    reasoning_effort: {
+      title: "Esforç de raonament",
+      default: "Valor per defecte del proveïdor",
+      cannot_disable: "Aquest model no pot desactivar el raonament.",
+      levels: {
+        off: "Desactivat",
+        on: "Activat",
+        minimal: "Mínim",
+        low: "Baix",
+        medium: "Mitjà",
+        high: "Alt",
+        xhigh: "Molt alt",
+        max: "Màxim",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identificador de la base de dades vectorial",
