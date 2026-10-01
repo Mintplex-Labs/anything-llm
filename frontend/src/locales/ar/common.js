@@ -1412,6 +1412,35 @@ const TRANSLATIONS = {
       uploadDocument: "تحميل مستند",
     },
     greeting: "كيف يمكنني مساعدتك اليوم؟",
+    greetings: {
+      anytime: {
+        working_on: "على ماذا نعمل؟",
+        on_your_mind: "ما الذي يدور في ذهنك؟",
+        where_to_start: "من أين نبدأ؟",
+        ready: "جاهز متى كنت مستعدًا.",
+        think_it_through: "لنفكّر في الأمر جيدًا.",
+      },
+      morning: {
+        good_morning: "صباح الخير",
+        first_today: "صباح الخير. بماذا نبدأ اليوم؟",
+        fresh_start: "بداية جديدة. من أين نبدأ؟",
+      },
+      afternoon: {
+        good_afternoon: "طاب يومك",
+        tackling: "طاب يومك. ما الذي سننجزه؟",
+        next_on_list: "ما التالي في القائمة؟",
+        keep_moving: "لنواصل التقدّم.",
+      },
+      evening: {
+        good_evening: "مساء الخير",
+        finish_strong: "مساء الخير. لننهِ يومنا بقوة.",
+      },
+      night: {
+        midnight_oil: "تسهر على العمل؟",
+        late_one: "ليلة طويلة؟ لنفكّر في الأمر جيدًا.",
+        still_up: "ما زلت مستيقظًا؟ جاهز متى كنت مستعدًا.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "اختصارات لوحة المفاتيح",

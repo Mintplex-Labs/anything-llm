@@ -141,6 +141,35 @@ const TRANSLATIONS = {
       uploadDocument: "Ein Dokument hochladen",
     },
     greeting: "Wie kann ich Ihnen heute helfen?",
+    greetings: {
+      anytime: {
+        working_on: "Woran arbeiten wir?",
+        on_your_mind: "Was beschäftigt Sie?",
+        where_to_start: "Wo fangen wir an?",
+        ready: "Bereit, wenn Sie es sind.",
+        think_it_through: "Lassen Sie uns das durchdenken.",
+      },
+      morning: {
+        good_morning: "Guten Morgen",
+        first_today: "Guten Morgen. Was steht heute als Erstes an?",
+        fresh_start: "Neuer Tag, neuer Anfang. Wo fangen wir an?",
+      },
+      afternoon: {
+        good_afternoon: "Guten Tag",
+        tackling: "Guten Tag. Was nehmen wir uns vor?",
+        next_on_list: "Was steht als Nächstes auf der Liste?",
+        keep_moving: "Machen wir weiter.",
+      },
+      evening: {
+        good_evening: "Guten Abend",
+        finish_strong: "Guten Abend. Bringen wir es gut zu Ende.",
+      },
+      night: {
+        midnight_oil: "Noch spät bei der Arbeit?",
+        late_one: "Langer Abend? Lassen Sie uns das durchdenken.",
+        still_up: "Noch wach? Bereit, wenn Sie es sind.",
+      },
+    },
   },
   "new-workspace": {
     title: "Neuer Workspace",

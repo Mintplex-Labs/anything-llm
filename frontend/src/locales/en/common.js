@@ -142,6 +142,37 @@ const TRANSLATIONS = {
   },
   "main-page": {
     greeting: "How can I help you today?",
+    // Empty chat headline. Each visit picks one line from the current time of day
+    // bucket plus `anytime`. Keys only identify a line - add or remove freely.
+    greetings: {
+      anytime: {
+        working_on: "What are we working on?",
+        on_your_mind: "What's on your mind?",
+        where_to_start: "Where should we start?",
+        ready: "Ready when you are.",
+        think_it_through: "Let's think it through.",
+      },
+      morning: {
+        good_morning: "Good morning",
+        first_today: "Morning. What's first today?",
+        fresh_start: "Fresh start. Where should we begin?",
+      },
+      afternoon: {
+        good_afternoon: "Good afternoon",
+        tackling: "Afternoon. What are we tackling?",
+        next_on_list: "What's next on the list?",
+        keep_moving: "Let's keep it moving.",
+      },
+      evening: {
+        good_evening: "Good evening",
+        finish_strong: "Evening. Let's finish strong.",
+      },
+      night: {
+        midnight_oil: "Burning the midnight oil?",
+        late_one: "Late one? Let's think it through.",
+        still_up: "Still up? Ready when you are.",
+      },
+    },
     quickActions: {
       createAgent: "Create an Agent",
       editWorkspace: "Edit Workspace",

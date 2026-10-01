@@ -138,6 +138,35 @@ const TRANSLATIONS = {
       uploadDocument: "문서 업로드",
     },
     greeting: "오늘 어떻게 도와드릴까요?",
+    greetings: {
+      anytime: {
+        working_on: "어떤 작업을 해볼까요?",
+        on_your_mind: "무슨 생각을 하고 계신가요?",
+        where_to_start: "어디서부터 시작할까요?",
+        ready: "준비되시면 말씀하세요.",
+        think_it_through: "차근차근 생각해 봐요.",
+      },
+      morning: {
+        good_morning: "좋은 아침이에요",
+        first_today: "좋은 아침이에요. 오늘은 무엇부터 할까요?",
+        fresh_start: "새로운 시작이에요. 무엇부터 해볼까요?",
+      },
+      afternoon: {
+        good_afternoon: "좋은 오후예요",
+        tackling: "좋은 오후예요. 어떤 일을 처리해 볼까요?",
+        next_on_list: "다음 할 일은 무엇인가요?",
+        keep_moving: "계속 이어가 봐요.",
+      },
+      evening: {
+        good_evening: "좋은 저녁이에요",
+        finish_strong: "좋은 저녁이에요. 마무리를 잘해 봐요.",
+      },
+      night: {
+        midnight_oil: "늦게까지 일하고 계신가요?",
+        late_one: "긴 밤이 될까요? 차근차근 생각해 봐요.",
+        still_up: "아직 안 주무셨어요? 준비되시면 말씀하세요.",
+      },
+    },
   },
   "new-workspace": {
     title: "새 워크스페이스",

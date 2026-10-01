@@ -267,6 +267,29 @@ describe("WebsiteDepth websiteScraper", () => {
     );
   });
 
+  it("resolves child-page relative links while keeping the start page's scope", async () => {
+    mockSite({
+      "https://example.com/docs/index.html":
+        '<a href="guide/intro.html">Guide</a>',
+      "https://example.com/docs/guide/intro.html":
+        '<a href="install.html">Install</a><a href="../api/index.html">API</a>',
+      "https://example.com/docs/guide/install.html": "install content",
+      "https://example.com/docs/api/index.html": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/index.html",
+      2
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/index.html",
+      "link://https://example.com/docs/guide/intro.html",
+      "link://https://example.com/docs/guide/install.html",
+      "link://https://example.com/docs/api/index.html",
+    ]);
+  });
+
   it("stops discovering once maxLinks is reached", async () => {
     mockSite({
       "https://example.com/docs/page":
@@ -298,6 +321,24 @@ describe("WebsiteDepth websiteScraper", () => {
       "link://https://example.com/docs/page",
       "link://https://example.com/docs/ok",
     ]);
+  });
+
+  it("stores pages whose path cannot be percent-decoded", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="/docs/50%-off">d</a><a href="/docs/caf%E9">c</a>',
+      "https://example.com/docs/50%-off": "deal content",
+      "https://example.com/docs/caf%E9": "menu content",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/50%-off",
+      "link://https://example.com/docs/caf%E9",
+    ]);
+    expect(writeToServerDocuments).toHaveBeenCalledTimes(3);
   });
 
   it("skips pages whose scraped content is empty", async () => {

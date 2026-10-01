@@ -1456,6 +1456,35 @@ const TRANSLATIONS = {
       uploadDocument: "Загрузить документ",
     },
     greeting: "Чем я могу вам помочь сегодня?",
+    greetings: {
+      anytime: {
+        working_on: "Над чем работаем?",
+        on_your_mind: "О чём думаете?",
+        where_to_start: "С чего начнём?",
+        ready: "Готов, когда будете готовы.",
+        think_it_through: "Давайте всё обдумаем.",
+      },
+      morning: {
+        good_morning: "Доброе утро",
+        first_today: "Доброе утро. С чего начнём сегодня?",
+        fresh_start: "Новый старт. С чего начнём?",
+      },
+      afternoon: {
+        good_afternoon: "Добрый день",
+        tackling: "Добрый день. За что возьмёмся?",
+        next_on_list: "Что дальше по списку?",
+        keep_moving: "Продолжаем в том же темпе.",
+      },
+      evening: {
+        good_evening: "Добрый вечер",
+        finish_strong: "Добрый вечер. Давайте завершим день на высоте.",
+      },
+      night: {
+        midnight_oil: "Работаете допоздна?",
+        late_one: "Засиделись? Давайте всё обдумаем.",
+        still_up: "Ещё не спите? Готов, когда будете готовы.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Сочетания клавиш",

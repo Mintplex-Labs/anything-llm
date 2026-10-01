@@ -108,7 +108,7 @@ class ConfluencePagesLoader {
     // Function to extract code blocks
     const extractCodeBlocks = (content) => {
       const codeBlockRegex =
-        /<ac:structured-macro ac:name="code"[^>]*>[\s\S]*?<ac:plain-text-body><!\[CDATA\[([\s\S]*?)\]\]><\/ac:plain-text-body>[\s\S]*?<\/ac:structured-macro>/g;
+        /<ac:structured-macro[^>]*\sac:name="code"[^>]*>[\s\S]*?<ac:plain-text-body><!\[CDATA\[([\s\S]*?)\]\]><\/ac:plain-text-body>[\s\S]*?<\/ac:structured-macro>/g;
       const languageRegex =
         /<ac:parameter ac:name="language">(.*?)<\/ac:parameter>/;
 

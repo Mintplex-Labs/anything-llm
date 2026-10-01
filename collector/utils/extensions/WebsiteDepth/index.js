@@ -9,6 +9,7 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 const RuntimeSettings = require("../../runtimeSettings");
+const { decodePathname } = require("../../url");
 
 async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   const baseUrl = new URL(startUrl);
@@ -78,7 +79,7 @@ async function getPageLinks(url, baseUrl) {
     });
     const docs = await loader.load();
     const html = docs[0].pageContent;
-    const links = extractLinks(html, baseUrl);
+    const links = extractLinks(html, baseUrl, new URL(url));
     return links;
   } catch (error) {
     console.error(`Failed to get page links from ${url}.`, error);
@@ -86,7 +87,7 @@ async function getPageLinks(url, baseUrl) {
   }
 }
 
-function extractLinks(html, baseUrl) {
+function extractLinks(html, baseUrl, pageUrl = baseUrl) {
   const root = parse(html);
   const links = root.querySelectorAll("a");
   const extractedLinks = new Set();
@@ -107,7 +108,7 @@ function extractLinks(html, baseUrl) {
     // extraction of the page's remaining links.
     let absoluteUrl;
     try {
-      absoluteUrl = new URL(href, baseUrl.href);
+      absoluteUrl = new URL(href, pageUrl.href);
     } catch {
       continue;
     }
@@ -173,7 +174,7 @@ async function bulkScrapePages(links, outFolderPath) {
       }
 
       const url = new URL(link);
-      const decodedPathname = decodeURIComponent(url.pathname);
+      const decodedPathname = decodePathname(url.pathname);
       const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
 
       const data = {

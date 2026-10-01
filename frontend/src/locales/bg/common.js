@@ -149,6 +149,35 @@ const TRANSLATIONS = {
       editWorkspace: "Редактирай пространството",
       uploadDocument: "Качи документ",
     },
+    greetings: {
+      anytime: {
+        working_on: "По какво работим?",
+        on_your_mind: "Какво ви е на ум?",
+        where_to_start: "Откъде да започнем?",
+        ready: "Готов съм, когато сте готови.",
+        think_it_through: "Нека го обмислим добре.",
+      },
+      morning: {
+        good_morning: "Добро утро",
+        first_today: "Добро утро. С какво започваме днес?",
+        fresh_start: "Ново начало. Откъде да започнем?",
+      },
+      afternoon: {
+        good_afternoon: "Добър ден",
+        tackling: "Добър ден. С какво ще се захванем?",
+        next_on_list: "Какво следва в списъка?",
+        keep_moving: "Да продължаваме напред.",
+      },
+      evening: {
+        good_evening: "Добър вечер",
+        finish_strong: "Добър вечер. Да завършим силно.",
+      },
+      night: {
+        midnight_oil: "Работите до късно?",
+        late_one: "Дълга вечер? Нека го обмислим добре.",
+        still_up: "Още будни? Готов съм, когато сте готови.",
+      },
+    },
   },
   "new-workspace": {
     title: "Ново работно пространство",

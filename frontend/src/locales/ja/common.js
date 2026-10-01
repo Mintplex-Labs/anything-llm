@@ -1416,6 +1416,35 @@ const TRANSLATIONS = {
       uploadDocument: "ドキュメントをアップロードする",
     },
     greeting: "今日はどのようにお手伝いできますか？",
+    greetings: {
+      anytime: {
+        working_on: "何に取り組みましょうか？",
+        on_your_mind: "何を考えていますか？",
+        where_to_start: "どこから始めましょうか？",
+        ready: "準備ができたらどうぞ。",
+        think_it_through: "じっくり考えてみましょう。",
+      },
+      morning: {
+        good_morning: "おはようございます",
+        first_today: "おはようございます。今日はまず何から始めますか？",
+        fresh_start: "新しいスタートです。何から始めましょうか？",
+      },
+      afternoon: {
+        good_afternoon: "こんにちは",
+        tackling: "こんにちは。何に取りかかりましょうか？",
+        next_on_list: "リストの次は何ですか？",
+        keep_moving: "この調子で進めましょう。",
+      },
+      evening: {
+        good_evening: "こんばんは",
+        finish_strong: "こんばんは。最後までしっかり仕上げましょう。",
+      },
+      night: {
+        midnight_oil: "夜遅くまでお疲れさまです。",
+        late_one: "長い夜になりそうですか？じっくり考えてみましょう。",
+        still_up: "まだ起きていますか？準備ができたらどうぞ。",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "キーボードショートカット",

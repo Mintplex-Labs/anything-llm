@@ -1421,6 +1421,35 @@ const TRANSLATIONS = {
       uploadDocument: "بارگذاری یک سند",
     },
     greeting: "امروز چگونه می‌توانم به شما کمک کنم؟",
+    greetings: {
+      anytime: {
+        working_on: "روی چه کاری کار می‌کنیم؟",
+        on_your_mind: "به چه فکر می‌کنید؟",
+        where_to_start: "از کجا شروع کنیم؟",
+        ready: "هر وقت آماده بودید، من آماده‌ام.",
+        think_it_through: "بیایید با دقت فکر کنیم.",
+      },
+      morning: {
+        good_morning: "صبح بخیر",
+        first_today: "صبح بخیر. امروز از چه کاری شروع کنیم؟",
+        fresh_start: "شروعی تازه. از کجا شروع کنیم؟",
+      },
+      afternoon: {
+        good_afternoon: "روز بخیر",
+        tackling: "روز بخیر. سراغ چه کاری برویم؟",
+        next_on_list: "مورد بعدی در فهرست چیست؟",
+        keep_moving: "بیایید ادامه دهیم.",
+      },
+      evening: {
+        good_evening: "عصر بخیر",
+        finish_strong: "عصر بخیر. بیایید کار را خوب تمام کنیم.",
+      },
+      night: {
+        midnight_oil: "تا دیروقت کار می‌کنید؟",
+        late_one: "شب طولانی است؟ بیایید با دقت فکر کنیم.",
+        still_up: "هنوز بیدارید؟ هر وقت آماده بودید، من آماده‌ام.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "کلیدهای میانبر",

@@ -147,6 +147,35 @@ const TRANSLATIONS = {
       uploadDocument: "Nahrajte dokument",
     },
     greeting: "Jak vám mohu dnes pomoci?",
+    greetings: {
+      anytime: {
+        working_on: "Na čem pracujeme?",
+        on_your_mind: "Co máte na mysli?",
+        where_to_start: "Kde začneme?",
+        ready: "Připraven, až budete vy.",
+        think_it_through: "Pojďme to promyslet.",
+      },
+      morning: {
+        good_morning: "Dobré ráno",
+        first_today: "Dobré ráno. Čím dnes začneme?",
+        fresh_start: "Nový začátek. Kde začneme?",
+      },
+      afternoon: {
+        good_afternoon: "Dobré odpoledne",
+        tackling: "Dobré odpoledne. Do čeho se pustíme?",
+        next_on_list: "Co je další na seznamu?",
+        keep_moving: "Pokračujme dál.",
+      },
+      evening: {
+        good_evening: "Dobrý večer",
+        finish_strong: "Dobrý večer. Pojďme to pořádně dotáhnout.",
+      },
+      night: {
+        midnight_oil: "Pracujete dlouho do noci?",
+        late_one: "Dlouhý večer? Pojďme to promyslet.",
+        still_up: "Ještě vzhůru? Připraven, až budete vy.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nový pracovní prostor",

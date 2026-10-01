@@ -1468,6 +1468,35 @@ const TRANSLATIONS = {
       uploadDocument: "Caricare un documento",
     },
     greeting: "Come posso aiutarti oggi?",
+    greetings: {
+      anytime: {
+        working_on: "Su cosa stiamo lavorando?",
+        on_your_mind: "A cosa stai pensando?",
+        where_to_start: "Da dove iniziamo?",
+        ready: "Pronto quando lo sei tu.",
+        think_it_through: "Ragioniamoci su.",
+      },
+      morning: {
+        good_morning: "Buongiorno",
+        first_today: "Buongiorno. Da cosa iniziamo oggi?",
+        fresh_start: "Un nuovo inizio. Da dove partiamo?",
+      },
+      afternoon: {
+        good_afternoon: "Buon pomeriggio",
+        tackling: "Buon pomeriggio. Di cosa ci occupiamo?",
+        next_on_list: "Qual è il prossimo punto della lista?",
+        keep_moving: "Andiamo avanti.",
+      },
+      evening: {
+        good_evening: "Buonasera",
+        finish_strong: "Buonasera. Chiudiamo in bellezza.",
+      },
+      night: {
+        midnight_oil: "Lavori fino a tardi?",
+        late_one: "Serata lunga? Ragioniamoci su.",
+        still_up: "Ancora al lavoro? Pronto quando lo sei tu.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Combinazioni di tasti",

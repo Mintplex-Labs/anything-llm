@@ -31,6 +31,25 @@ describe("ConfluencePagesLoader", () => {
     jest.restoreAllMocks();
   });
 
+  test("preserves code blocks when the macro id precedes the name", () => {
+    const loader = new ConfluencePagesLoader({
+      baseUrl: "https://example.com",
+      spaceKey: "SP",
+      cloud: false,
+    });
+    const document = loader.createDocumentFromPage({
+      id: "123",
+      body: {
+        storage: {
+          value:
+            '<ac:structured-macro ac:macro-id="example" ac:name="code" ac:schema-version="1"><ac:parameter ac:name="language">js</ac:parameter><ac:plain-text-body><![CDATA[let x = 1;]]></ac:plain-text-body></ac:structured-macro>',
+        },
+      },
+    });
+
+    expect(document.pageContent).toBe("\n```js\nlet x = 1;\n```\n");
+  });
+
   describe("cloud mode", () => {
     test("API requests include /wiki prefix", async () => {
       const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({

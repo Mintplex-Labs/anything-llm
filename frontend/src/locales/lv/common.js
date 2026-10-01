@@ -140,6 +140,35 @@ const TRANSLATIONS = {
       uploadDocument: "August failu",
     },
     greeting: "Kā es varu jums šodien palīdzēt?",
+    greetings: {
+      anytime: {
+        working_on: "Pie kā mēs strādājam?",
+        on_your_mind: "Kas jums prātā?",
+        where_to_start: "Ar ko sāksim?",
+        ready: "Gatavs, kad būsiet gatavi.",
+        think_it_through: "Pārdomāsim to rūpīgi.",
+      },
+      morning: {
+        good_morning: "Labrīt",
+        first_today: "Labrīt. Ar ko šodien sāksim?",
+        fresh_start: "Jauns sākums. Ar ko sāksim?",
+      },
+      afternoon: {
+        good_afternoon: "Labdien",
+        tackling: "Labdien. Kam ķersimies klāt?",
+        next_on_list: "Kas nākamais sarakstā?",
+        keep_moving: "Turpināsim.",
+      },
+      evening: {
+        good_evening: "Labvakar",
+        finish_strong: "Labvakar. Pabeigsim dienu ar uzviju.",
+      },
+      night: {
+        midnight_oil: "Strādājat līdz vēlai naktij?",
+        late_one: "Gara nakts? Pārdomāsim to rūpīgi.",
+        still_up: "Vēl nomodā? Gatavs, kad būsiet gatavi.",
+      },
+    },
   },
   "new-workspace": {
     title: "Jauna darba telpa",

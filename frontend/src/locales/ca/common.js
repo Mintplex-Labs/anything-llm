@@ -149,6 +149,35 @@ const TRANSLATIONS = {
       editWorkspace: "Edita l'espai de treball",
       uploadDocument: "Puja un document",
     },
+    greetings: {
+      anytime: {
+        working_on: "En què estem treballant?",
+        on_your_mind: "Què tens al cap?",
+        where_to_start: "Per on comencem?",
+        ready: "A punt quan tu ho estiguis.",
+        think_it_through: "Pensem-hi bé.",
+      },
+      morning: {
+        good_morning: "Bon dia",
+        first_today: "Bon dia. Què fem primer avui?",
+        fresh_start: "Un nou començament. Per on comencem?",
+      },
+      afternoon: {
+        good_afternoon: "Bona tarda",
+        tackling: "Bona tarda. Què abordem?",
+        next_on_list: "Què toca ara de la llista?",
+        keep_moving: "Seguim endavant.",
+      },
+      evening: {
+        good_evening: "Bon vespre",
+        finish_strong: "Bon vespre. Acabem amb força.",
+      },
+      night: {
+        midnight_oil: "Treballant fins tard?",
+        late_one: "Nit llarga? Pensem-hi bé.",
+        still_up: "Encara per aquí? A punt quan tu ho estiguis.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nou espai de treball",

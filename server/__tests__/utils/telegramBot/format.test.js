@@ -47,6 +47,26 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("keeps parentheses inside a link URL", () => {
+      expect(
+        markdownToTelegram(
+          "see [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) here"
+        )
+      ).toBe(
+        'see <a href="https://en.wikipedia.org/wiki/Python_(programming_language)">Python</a> here'
+      );
+    });
+
+    test("does not apply emphasis to markdown characters inside a link URL", () => {
+      expect(
+        markdownToTelegram(
+          "see [**init**](https://docs.python.org/3/reference/datamodel.html#object.__init__) and [glob](https://example.com/a*b*c)"
+        )
+      ).toBe(
+        'see <a href="https://docs.python.org/3/reference/datamodel.html#object.__init__"><b>init</b></a> and <a href="https://example.com/a*b*c">glob</a>'
+      );
+    });
+
     test("converts headings to <b>", () => {
       expect(markdownToTelegram("# Title\nbody")).toBe("<b>Title</b>\nbody");
       expect(markdownToTelegram("### Subsection")).toBe("<b>Subsection</b>");
@@ -130,6 +150,39 @@ describe("markdownToTelegram", () => {
       expect(markdownToTelegram("`a` and `b`")).toBe(
         "<code>a</code> and <code>b</code>"
       );
+    });
+  });
+
+  describe("fenced code block shapes", () => {
+    test("keeps a language tag with symbols out of the code", () => {
+      expect(markdownToTelegram("```c++\nint main() { return 0; }\n```")).toBe(
+        "<pre>int main() { return 0; }</pre>"
+      );
+      expect(markdownToTelegram("```objective-c\n[obj run];\n```")).toBe(
+        "<pre>[obj run];</pre>"
+      );
+    });
+
+    test("treats a ~~~ fence as code", () => {
+      expect(
+        markdownToTelegram("~~~python\n# setup\ndef __init__(self): pass\n~~~")
+      ).toBe("<pre># setup\ndef __init__(self): pass</pre>");
+    });
+
+    test("keeps a ``` example inside a longer fence", () => {
+      expect(
+        markdownToTelegram("````markdown\n```python\nx = 1\n```\n````\nAfter **bold**")
+      ).toBe("<pre>```python\nx = 1\n```</pre>\nAfter <b>bold</b>");
+    });
+
+    test("does not start the code with the \\r of a CRLF fence line", () => {
+      expect(markdownToTelegram("```python\r\nx = 1\r\n```")).toBe(
+        "<pre>x = 1</pre>"
+      );
+    });
+
+    test("leaves an unclosed fence as text", () => {
+      expect(markdownToTelegram("```python\nx = 1")).toBe("```python\nx = 1");
     });
   });
 

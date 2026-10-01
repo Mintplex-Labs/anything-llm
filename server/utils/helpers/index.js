@@ -380,11 +380,17 @@ function getImageGeneratorProvider() {
     case "localai":
       const { LocalAiImageGenerator } = require("../ImageGenerators/localAi");
       return new LocalAiImageGenerator();
+    case "llmman":
+      const { LlmmanImageGenerator } = require("../ImageGenerators/llmman");
+      return new LlmmanImageGenerator();
     case "openrouter":
       const {
         OpenRouterImageGenerator,
       } = require("../ImageGenerators/openRouter");
       return new OpenRouterImageGenerator();
+    case "gemini":
+      const { GeminiImageGenerator } = require("../ImageGenerators/gemini");
+      return new GeminiImageGenerator();
     default:
       throw new Error(
         `No valid image generation provider was set. Got: ${provider}`

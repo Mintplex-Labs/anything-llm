@@ -1446,6 +1446,35 @@ const TRANSLATIONS = {
       uploadDocument: "Bir belge yükleyin",
     },
     greeting: "Bugün size nasıl yardımcı olabilirim?",
+    greetings: {
+      anytime: {
+        working_on: "Ne üzerinde çalışıyoruz?",
+        on_your_mind: "Aklınızda ne var?",
+        where_to_start: "Nereden başlayalım?",
+        ready: "Hazır olduğunuzda buradayım.",
+        think_it_through: "Gelin, birlikte düşünelim.",
+      },
+      morning: {
+        good_morning: "Günaydın",
+        first_today: "Günaydın. Bugün ilk iş ne?",
+        fresh_start: "Yeni bir başlangıç. Nereden başlayalım?",
+      },
+      afternoon: {
+        good_afternoon: "İyi günler",
+        tackling: "İyi günler. Neyi halledelim?",
+        next_on_list: "Listede sırada ne var?",
+        keep_moving: "Devam edelim.",
+      },
+      evening: {
+        good_evening: "İyi akşamlar",
+        finish_strong: "İyi akşamlar. Günü güçlü bitirelim.",
+      },
+      night: {
+        midnight_oil: "Geç saatlere kadar mı çalışıyorsunuz?",
+        late_one: "Uzun bir gece mi? Gelin, birlikte düşünelim.",
+        still_up: "Hâlâ uyanık mısınız? Hazır olduğunuzda buradayım.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",

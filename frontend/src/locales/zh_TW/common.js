@@ -1338,6 +1338,35 @@ const TRANSLATIONS = {
       uploadDocument: "上傳文件",
     },
     greeting: "今天想做什麼？",
+    greetings: {
+      anytime: {
+        working_on: "我們要做些什麼？",
+        on_your_mind: "你在想什麼？",
+        where_to_start: "我們從哪裡開始？",
+        ready: "隨時準備就緒。",
+        think_it_through: "我們來好好想一想。",
+      },
+      morning: {
+        good_morning: "早安",
+        first_today: "早安。今天先做什麼？",
+        fresh_start: "新的開始。從哪裡著手？",
+      },
+      afternoon: {
+        good_afternoon: "午安",
+        tackling: "午安。我們要處理什麼？",
+        next_on_list: "清單上的下一項是什麼？",
+        keep_moving: "我們繼續推進吧。",
+      },
+      evening: {
+        good_evening: "晚上好",
+        finish_strong: "晚上好。我們漂亮收尾吧。",
+      },
+      night: {
+        midnight_oil: "還在挑燈夜戰？",
+        late_one: "忙到這麼晚？我們來好好想一想。",
+        still_up: "還沒睡？隨時準備就緒。",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "鍵盤快速鍵",

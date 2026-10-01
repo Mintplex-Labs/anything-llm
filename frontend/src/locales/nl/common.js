@@ -1445,6 +1445,35 @@ const TRANSLATIONS = {
       uploadDocument: "Upload een document",
     },
     greeting: "Hoe kan ik u vandaag helpen?",
+    greetings: {
+      anytime: {
+        working_on: "Waar werken we aan?",
+        on_your_mind: "Waar denkt u aan?",
+        where_to_start: "Waar beginnen we?",
+        ready: "Klaar wanneer u dat bent.",
+        think_it_through: "Laten we het goed doordenken.",
+      },
+      morning: {
+        good_morning: "Goedemorgen",
+        first_today: "Goedemorgen. Waar beginnen we vandaag mee?",
+        fresh_start: "Een frisse start. Waar beginnen we?",
+      },
+      afternoon: {
+        good_afternoon: "Goedemiddag",
+        tackling: "Goedemiddag. Wat pakken we aan?",
+        next_on_list: "Wat staat er nu op de lijst?",
+        keep_moving: "Laten we doorpakken.",
+      },
+      evening: {
+        good_evening: "Goedenavond",
+        finish_strong: "Goedenavond. Laten we sterk afsluiten.",
+      },
+      night: {
+        midnight_oil: "Tot laat aan het werk?",
+        late_one: "Lange avond? Laten we het goed doordenken.",
+        still_up: "Nog wakker? Klaar wanneer u dat bent.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Sneltoetsen",
