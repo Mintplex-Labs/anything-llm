@@ -5,6 +5,7 @@ const UnTooled = require("./helpers/untooled.js");
 const {
   tooledStream,
   tooledComplete,
+  temperatureParam,
   serviceTierParam,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
@@ -51,6 +52,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
         ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
         user: this.executingUserId,
@@ -70,6 +72,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),

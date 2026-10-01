@@ -15,6 +15,7 @@ const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 const { attachmentToContentBlock } = require("../../helpers/attachments");
 const {
   maxTokensParam,
+  temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled.js");
 
 class GenericOpenAiLLM {
@@ -49,7 +50,6 @@ class GenericOpenAiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
   }
 
@@ -234,13 +234,16 @@ class GenericOpenAiLLM {
     };
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
           ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
         })
         .catch((e) => {
@@ -274,13 +277,16 @@ class GenericOpenAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
         ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
         ...this.#includeStreamOptionsUsage(),
       }),

@@ -242,6 +242,7 @@ const TRANSLATIONS = {
       title: "Temperatura LLM",
       "desc-end":
         "Più alto è il numero, più è creativo. Per alcuni modelli questo può portare a risposte incoerenti se troppo elevato.",
+      placeholder: "Predefinito del provider",
     },
   },
   "vector-workspace": {

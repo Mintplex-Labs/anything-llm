@@ -853,6 +853,7 @@ class AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      temperature: this.invocation.workspace?.openAiTemp,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

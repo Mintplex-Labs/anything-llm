@@ -5,6 +5,7 @@ const UnTooled = require("./helpers/untooled.js");
 const {
   tooledStream,
   tooledComplete,
+  temperatureParam,
   maxTokensParam,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
@@ -43,6 +44,7 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
         ...maxTokensParam(this.maxTokens),
       })
@@ -61,6 +63,7 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
       ...maxTokensParam(this.maxTokens),

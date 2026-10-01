@@ -51,7 +51,7 @@ export default function ChatSettings({ workspace }) {
         <ChatHistorySettings workspace={workspace} />
         <ChatPromptSettings workspace={workspace} />
         <ChatQueryRefusalResponse workspace={workspace} />
-        <ChatTemperatureSettings settings={settings} workspace={workspace} />
+        <ChatTemperatureSettings workspace={workspace} />
       </AutosaveForm>
     </div>
   );

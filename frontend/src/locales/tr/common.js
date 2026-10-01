@@ -240,6 +240,7 @@ const TRANSLATIONS = {
       title: "LLM Sıcaklığı",
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
+      placeholder: "Sağlayıcı varsayılanı",
     },
   },
   "vector-workspace": {

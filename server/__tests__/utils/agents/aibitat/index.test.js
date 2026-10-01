@@ -1,7 +1,5 @@
 const AIbitat = require("../../../../utils/agents/aibitat");
-const {
-  MODEL_PRICING,
-} = require("../../../../utils/helpers/modelPricing");
+const { MODEL_PRICING } = require("../../../../utils/helpers/modelPricing");
 
 describe("AIbitat.getProviderForConfig providerSlug wiring", () => {
   const originalOpenAiKey = process.env.OPEN_AI_KEY;
@@ -134,5 +132,50 @@ describe("AIbitat model loading status", () => {
 
     expect(provider.isModelLoaded).not.toHaveBeenCalled();
     expect(aibitat.introspect).not.toHaveBeenCalled();
+  });
+});
+
+describe("AIbitat.getProviderForConfig temperature wiring", () => {
+  const ORIGINAL_ENV = process.env;
+
+  beforeEach(() => {
+    process.env = {
+      ...ORIGINAL_ENV,
+      OPEN_AI_KEY: "test-key",
+      ANTHROPIC_API_KEY: "test-key",
+      GENERIC_OPEN_AI_BASE_PATH: "http://localhost:8080/v1",
+    };
+  });
+
+  afterEach(() => {
+    process.env = ORIGINAL_ENV;
+  });
+
+  function providerTemperature(provider, model, temperature) {
+    const aibitat = new AIbitat({ provider, model, temperature });
+    return aibitat.getProviderForConfig({ ...aibitat.defaultProvider })
+      .temperature;
+  }
+
+  test("applies the workspace temperature to the agent provider", () => {
+    expect(providerTemperature("generic-openai", "gemma4", 0.3)).toBe(0.3);
+    expect(providerTemperature("openai", "gpt-4o", "0.3")).toBe(0.3);
+    expect(providerTemperature("openai", "gpt-4o", 0)).toBe(0);
+  });
+
+  test.each([null, undefined, "", "abc", -1])(
+    "leaves temperature unset for %p",
+    (value) => {
+      expect(
+        providerTemperature("generic-openai", "gemma4", value)
+      ).toBeUndefined();
+    }
+  );
+
+  test("leaves temperature unset for models that reject it", () => {
+    expect(providerTemperature("openai", "gpt-5", 0.3)).toBeUndefined();
+    expect(
+      providerTemperature("anthropic", "claude-3-5-haiku-latest", 0.3)
+    ).toBeUndefined();
   });
 });

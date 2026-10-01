@@ -451,7 +451,6 @@ async function chatSync({
   // Send the text completion.
   const { textResponse, metrics: completionMetrics } =
     await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
   const performanceMetrics = addChatCostToMetrics(completionMetrics, {
@@ -849,7 +848,6 @@ async function streamChat({
     );
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
-        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
       });
     completeText = textResponse;
@@ -869,7 +867,6 @@ async function streamChat({
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
     completeText = await LLMConnector.handleStream(response, stream, { uuid });

@@ -283,6 +283,7 @@ const TRANSLATIONS = {
       title: "LLM temperatūra",
       "desc-end":
         "Kuo didesnis skaičius, tuo atsakymai kūrybiškesni. Kai kuriems modeliams nustačius per didelę reikšmę atsakymai gali tapti nerišlūs.",
+      placeholder: "Teikėjo numatytoji reikšmė",
     },
   },
   "vector-workspace": {

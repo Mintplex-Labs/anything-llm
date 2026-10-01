@@ -2,6 +2,7 @@ const {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  temperatureParam,
   serviceTierParam,
 } = require("../../../../../../utils/agents/aibitat/providers/helpers/tooled.js");
 
@@ -156,6 +157,70 @@ describe("max_tokens forwarding from the tooled maxTokens option", () => {
   });
 });
 
+describe("temperatureParam", () => {
+  it("omits the field when temperature is unset or not a finite number", () => {
+    expect(temperatureParam(undefined)).toEqual({});
+    expect(temperatureParam(null)).toEqual({});
+    expect(temperatureParam("0.5")).toEqual({});
+    expect(temperatureParam(NaN)).toEqual({});
+  });
+
+  it("sends the field for finite numbers, including 0", () => {
+    expect(temperatureParam(0)).toEqual({ temperature: 0 });
+    expect(temperatureParam(0.7)).toEqual({ temperature: 0.7 });
+  });
+});
+
+describe("temperature forwarding from the provider", () => {
+  const messages = [{ role: "user", content: "hi" }];
+
+  function fakeClient({ stream = false } = {}) {
+    const create = jest.fn(async () => {
+      if (!stream) {
+        return {
+          choices: [{ message: { role: "assistant", content: "ok" } }],
+          usage: null,
+        };
+      }
+      return (async function* () {
+        yield { choices: [{ delta: { content: "ok" } }] };
+      })();
+    });
+    return { client: { chat: { completions: { create } } }, create };
+  }
+
+  it.each([0, 0.3])(
+    "sends temperature %p on complete and stream",
+    async (temperature) => {
+      const complete = fakeClient();
+      await tooledComplete(complete.client, "m", messages, [], () => 0, {
+        provider: { temperature },
+      });
+      expect(complete.create.mock.calls[0][0].temperature).toBe(temperature);
+
+      const streamed = fakeClient({ stream: true });
+      await tooledStream(streamed.client, "m", messages, [], null, {
+        provider: { temperature },
+      });
+      expect(streamed.create.mock.calls[0][0].temperature).toBe(temperature);
+    }
+  );
+
+  it("omits temperature entirely when the provider has none", async () => {
+    const complete = fakeClient();
+    await tooledComplete(complete.client, "m", messages, [], () => 0, {
+      provider: {},
+    });
+    expect(complete.create.mock.calls[0][0]).not.toHaveProperty("temperature");
+
+    const streamed = fakeClient({ stream: true });
+    await tooledStream(streamed.client, "m", messages, [], null, {
+      provider: { temperature: undefined },
+    });
+    expect(streamed.create.mock.calls[0][0]).not.toHaveProperty("temperature");
+  });
+});
+
 describe("serviceTierParam", () => {
   it("passes a tier straight through", () => {
     expect(serviceTierParam("flex")).toEqual({ service_tier: "flex" });
@@ -188,21 +253,24 @@ describe("service_tier forwarding from the tooled serviceTier option", () => {
     return { client: { chat: { completions: { create } } }, create };
   }
 
-  it.each(["flex", "priority"])("forwards %s on complete and stream", async (serviceTier) => {
-    const complete = fakeClient();
-    await tooledComplete(complete.client, "m", messages, [], () => 0, {
-      provider: {},
-      serviceTier,
-    });
-    expect(complete.create.mock.calls[0][0].service_tier).toBe(serviceTier);
+  it.each(["flex", "priority"])(
+    "forwards %s on complete and stream",
+    async (serviceTier) => {
+      const complete = fakeClient();
+      await tooledComplete(complete.client, "m", messages, [], () => 0, {
+        provider: {},
+        serviceTier,
+      });
+      expect(complete.create.mock.calls[0][0].service_tier).toBe(serviceTier);
 
-    const streamed = fakeClient({ stream: true });
-    await tooledStream(streamed.client, "m", messages, [], null, {
-      provider: {},
-      serviceTier,
-    });
-    expect(streamed.create.mock.calls[0][0].service_tier).toBe(serviceTier);
-  });
+      const streamed = fakeClient({ stream: true });
+      await tooledStream(streamed.client, "m", messages, [], null, {
+        provider: {},
+        serviceTier,
+      });
+      expect(streamed.create.mock.calls[0][0].service_tier).toBe(serviceTier);
+    }
+  );
 
   it("omits service_tier entirely when the option is not passed", async () => {
     const complete = fakeClient();

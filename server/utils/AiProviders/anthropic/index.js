@@ -16,6 +16,14 @@ const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 // avoids tracking per-model support as new models ship. The workspace temperature
 // setting therefore has no effect for Anthropic.
 class AnthropicLLM {
+  /**
+   * Whether the model supports the temperature parameter at all.
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature() {
+    return false;
+  }
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
@@ -42,7 +50,6 @@ class AnthropicLLM {
 
     this.maxTokens = null;
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized with ${this.model}. Cache ${this.cacheControl ? `enabled (${this.cacheControl.ttl})` : "disabled"}`
     );

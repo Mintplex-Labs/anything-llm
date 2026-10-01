@@ -240,6 +240,7 @@ const TRANSLATIONS = {
       title: "Nhiệt độ LLM",
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
+      placeholder: "Mặc định của nhà cung cấp",
     },
   },
   "vector-workspace": {
