@@ -1,7 +1,11 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { formatFunctionsToTools } = require("./helpers/tooled.js");
+const {
+  formatFunctionsToTools,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
@@ -19,6 +23,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     const {
       // options = {},
       model = null,
+      reasoningEffort = null,
     } = config;
 
     super();
@@ -32,12 +37,25 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       fetch: OllamaAILLM.applyOllamaFetch(),
     });
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
     this._supportsToolCalling = null;
+    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+      : undefined; // Unset: the Ollama server applies its own default.
   }
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("ollama", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {
@@ -77,6 +95,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     );
     return {
       num_ctx: OllamaAILLM.promptWindowLimit(this.model),
+      ...temperatureParam(this.temperature),
     };
   }
 
@@ -90,7 +109,9 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     await OllamaAILLM.cacheContextWindows();
     const response = await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
+      ...this.reasoningConfig,
       options: this.queryOptions,
     });
     return response?.message?.content || null;
@@ -100,8 +121,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     await OllamaAILLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       stream: true,
+      ...this.reasoningConfig,
       options: this.queryOptions,
     });
   }
@@ -322,9 +345,11 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const stream = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         stream: true,
+        ...this.reasoningConfig,
         options: this.queryOptions,
       });
 
@@ -517,8 +542,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const response = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
+        ...this.reasoningConfig,
         options: this.queryOptions,
       });
 

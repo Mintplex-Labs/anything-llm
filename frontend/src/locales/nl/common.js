@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Werkruimten Naam",
     selection: "Model Selectie",
     saving: "Opslaan...",
+    saved: "Opgeslagen",
     save: "Wijzigingen opslaan",
     previous: "Vorige pagina",
     next: "Volgende pagina",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Gestopt",
     loading: "Laad",
     refresh: "Verfrissen",
+    noResults: "Geen resultaten gevonden",
   },
   settings: {
     title: "Instelling Instanties",
@@ -239,6 +241,22 @@ const TRANSLATIONS = {
       title: "LLM Temperatuur",
       "desc-end":
         "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
+      placeholder: "Standaard van de provider",
+    },
+    reasoning_effort: {
+      title: "Redeneerinspanning",
+      default: "Standaard van de provider",
+      cannot_disable: "Dit model kan redeneren niet uitschakelen.",
+      levels: {
+        off: "Uit",
+        on: "Aan",
+        minimal: "Minimaal",
+        low: "Laag",
+        medium: "Gemiddeld",
+        high: "Hoog",
+        xhigh: "Extra hoog",
+        max: "Maximaal",
+      },
     },
   },
   "vector-workspace": {
@@ -1442,6 +1460,35 @@ const TRANSLATIONS = {
       uploadDocument: "Upload een document",
     },
     greeting: "Hoe kan ik u vandaag helpen?",
+    greetings: {
+      anytime: {
+        working_on: "Waar werken we aan?",
+        on_your_mind: "Waar denkt u aan?",
+        where_to_start: "Waar beginnen we?",
+        ready: "Klaar wanneer u dat bent.",
+        think_it_through: "Laten we het goed doordenken.",
+      },
+      morning: {
+        good_morning: "Goedemorgen",
+        first_today: "Goedemorgen. Waar beginnen we vandaag mee?",
+        fresh_start: "Een frisse start. Waar beginnen we?",
+      },
+      afternoon: {
+        good_afternoon: "Goedemiddag",
+        tackling: "Goedemiddag. Wat pakken we aan?",
+        next_on_list: "Wat staat er nu op de lijst?",
+        keep_moving: "Laten we doorpakken.",
+      },
+      evening: {
+        good_evening: "Goedenavond",
+        finish_strong: "Goedenavond. Laten we sterk afsluiten.",
+      },
+      night: {
+        midnight_oil: "Tot laat aan het werk?",
+        late_one: "Lange avond? Laten we het goed doordenken.",
+        still_up: "Nog wakker? Klaar wanneer u dat bent.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Sneltoetsen",

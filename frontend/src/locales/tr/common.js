@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Çalışma Alanları Adı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
+    saved: "Kaydedildi",
     save: "Değişiklikleri Kaydet",
     previous: "Önceki Sayfa",
     next: "Sonraki Sayfa",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Durdu",
     loading: "Yükleniyor",
     refresh: "Tazelemek",
+    noResults: "Hiçbir sonuç bulunamadı",
   },
   settings: {
     title: "Instance Ayarları",
@@ -238,6 +240,22 @@ const TRANSLATIONS = {
       title: "LLM Sıcaklığı",
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
+      placeholder: "Sağlayıcı varsayılanı",
+    },
+    reasoning_effort: {
+      title: "Akıl Yürütme Düzeyi",
+      default: "Sağlayıcı varsayılanı",
+      cannot_disable: "Bu model akıl yürütmeyi kapatamaz.",
+      levels: {
+        off: "Kapalı",
+        on: "Açık",
+        minimal: "Minimum",
+        low: "Düşük",
+        medium: "Orta",
+        high: "Yüksek",
+        xhigh: "Çok yüksek",
+        max: "Maksimum",
+      },
     },
   },
   "vector-workspace": {
@@ -1443,6 +1461,35 @@ const TRANSLATIONS = {
       uploadDocument: "Bir belge yükleyin",
     },
     greeting: "Bugün size nasıl yardımcı olabilirim?",
+    greetings: {
+      anytime: {
+        working_on: "Ne üzerinde çalışıyoruz?",
+        on_your_mind: "Aklınızda ne var?",
+        where_to_start: "Nereden başlayalım?",
+        ready: "Hazır olduğunuzda buradayım.",
+        think_it_through: "Gelin, birlikte düşünelim.",
+      },
+      morning: {
+        good_morning: "Günaydın",
+        first_today: "Günaydın. Bugün ilk iş ne?",
+        fresh_start: "Yeni bir başlangıç. Nereden başlayalım?",
+      },
+      afternoon: {
+        good_afternoon: "İyi günler",
+        tackling: "İyi günler. Neyi halledelim?",
+        next_on_list: "Listede sırada ne var?",
+        keep_moving: "Devam edelim.",
+      },
+      evening: {
+        good_evening: "İyi akşamlar",
+        finish_strong: "İyi akşamlar. Günü güçlü bitirelim.",
+      },
+      night: {
+        midnight_oil: "Geç saatlere kadar mı çalışıyorsunuz?",
+        late_one: "Uzun bir gece mi? Gelin, birlikte düşünelim.",
+        still_up: "Hâlâ uyanık mısınız? Hazır olduğunuzda buradayım.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",

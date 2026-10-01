@@ -24,12 +24,10 @@ class Milvus extends VectorDatabase {
   // Milvus/Zilliz only allows letters, numbers, and underscores in collection names
   // so we need to enforce that by re-normalizing the names when communicating with
   // the DB.
-  // If the first char of the collection is not an underscore or letter the collection name will be invalid.
+  // If the first char of the collection is not an underscore or letter the collection name will be invalid,
+  // so every name gets the anythingllm_ prefix (a slug can start with a digit, eg: a uuid slug).
   normalize(inputString) {
-    let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
-    if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
-      normalized = `anythingllm_${normalized}`;
-    return normalized;
+    return `anythingllm_${inputString.replace(/[^a-zA-Z0-9_]/g, "_")}`;
   }
 
   async connect() {

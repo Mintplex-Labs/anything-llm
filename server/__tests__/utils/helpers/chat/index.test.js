@@ -5,6 +5,7 @@ jest.mock("jsonwebtoken", () => ({}));
 // attachment lookups through it, which none of these fixtures use.
 jest.mock("../../../../utils/files", () => ({
   generatedImageAttachments: () => [],
+  chatHistoryAttachments: () => [],
 }));
 
 const {
@@ -458,6 +459,70 @@ describe("messageArrayCompressor", () => {
     expect(tm.countFromString(system.content)).toBeLessThan(
       tm.countFromString(messages[0]?.content || context)
     );
+  });
+
+  describe("a system prompt whose text contains another `Context:`", () => {
+    // The exact context block every provider's #appendContext builds.
+    const appendContext = (texts) => {
+      if (!texts.length) return "";
+      return (
+        "\nContext:\n" +
+        texts
+          .map((text, i) => `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`)
+          .join("")
+      );
+    };
+
+    async function compressSystem(systemPrompt, contextTexts) {
+      const messages = [
+        { role: "system", content: systemPrompt + appendContext(contextTexts) },
+        userMsg("USER TURN 1: short"),
+      ];
+      const llm = {
+        model: "gpt-4o",
+        promptWindowLimit: () => tm.statsFrom(messages),
+        limits: { history: 450, system: 300, user: 100_000 },
+      };
+      const [system] = await messageArrayCompressor(llm, messages, []);
+      return system.content;
+    }
+
+    it("keeps the chunks after a document chunk that says `Context:`", async () => {
+      const content = await compressSystem("You are helpful.", [
+        `Background Context: ${tokensOfText("FIRST_CHUNK", 60)}`,
+        tokensOfText("MIDDLE_CHUNK", 200),
+        tokensOfText("LAST_CHUNK", 200),
+      ]);
+
+      // The context is cannonballed through the middle, so its two ends survive.
+      expect(content).toContain(CANNONBALL_MARKER);
+      expect(content).toContain("[CONTEXT 0]");
+      expect(content).toContain("[END CONTEXT 2]");
+    });
+
+    it("keeps the documents when the workspace prompt says `Context:`", async () => {
+      const content = await compressSystem(
+        "Answer only from the Context: below.",
+        [tokensOfText("FIRST_CHUNK", 300), tokensOfText("LAST_CHUNK", 300)]
+      );
+
+      expect(content).toContain("Answer only from the Context: below.");
+      expect(content).toContain("FIRST_CHUNK");
+      expect(content).toContain("[END CONTEXT 1]");
+    });
+
+    it("treats the whole message as prompt when no context was retrieved", async () => {
+      const content = await compressSystem(
+        `Use the Context: ${tokensOfText("INSTRUCTIONS", 400)}`,
+        []
+      );
+
+      // Without a [CONTEXT 0] block there is nothing to split off, so the
+      // prompt's own "Context:" stays in place and is not relabelled as context.
+      expect(content.startsWith("Use the Context: INSTRUCTIONS")).toBe(true);
+      expect(content).not.toContain("\nContext:");
+      expect(content).toContain(CANNONBALL_MARKER);
+    });
   });
 });
 

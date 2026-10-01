@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Darbo srities pavadinimas",
     selection: "Modelio pasirinkimas",
     saving: "Saugoma...",
+    saved: "Išsaugota",
     save: "Išsaugoti pakeitimus",
     previous: "Ankstesnis puslapis",
     next: "Kitas puslapis",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
       "Vartotojo vardą turi sudaryti 2–64 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
     loading: "Kraunama",
     refresh: "Atnaujinti",
+    noResults: "Nėra rezultatų",
   },
   home: {
     welcome: "Sveiki",
@@ -144,6 +146,35 @@ const TRANSLATIONS = {
       createAgent: "Sukurti agentą",
       editWorkspace: "Redaguoti darbo sritį",
       uploadDocument: "Įkelti dokumentą",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Prie ko dirbame?",
+        on_your_mind: "Apie ką galvojate?",
+        where_to_start: "Nuo ko pradėsime?",
+        ready: "Esu pasiruošęs, kai tik norėsite.",
+        think_it_through: "Gerai tai apgalvokime.",
+      },
+      morning: {
+        good_morning: "Labas rytas",
+        first_today: "Labas rytas. Nuo ko šiandien pradedame?",
+        fresh_start: "Nauja pradžia. Nuo ko pradėsime?",
+      },
+      afternoon: {
+        good_afternoon: "Laba diena",
+        tackling: "Laba diena. Ko imsimės?",
+        next_on_list: "Kas toliau sąraše?",
+        keep_moving: "Judėkime toliau.",
+      },
+      evening: {
+        good_evening: "Labas vakaras",
+        finish_strong: "Labas vakaras. Užbaikime dieną stipriai.",
+      },
+      night: {
+        midnight_oil: "Dirbate iki vėlumos?",
+        late_one: "Ilgas vakaras? Gerai tai apgalvokime.",
+        still_up: "Dar nemiegate? Esu pasiruošęs, kai tik norėsite.",
+      },
     },
   },
   "new-workspace": {
@@ -252,6 +283,22 @@ const TRANSLATIONS = {
       title: "LLM temperatūra",
       "desc-end":
         "Kuo didesnis skaičius, tuo atsakymai kūrybiškesni. Kai kuriems modeliams nustačius per didelę reikšmę atsakymai gali tapti nerišlūs.",
+      placeholder: "Teikėjo numatytoji reikšmė",
+    },
+    reasoning_effort: {
+      title: "Samprotavimo pastangos",
+      default: "Teikėjo numatytoji reikšmė",
+      cannot_disable: "Šis modelis negali išjungti samprotavimo.",
+      levels: {
+        off: "Išjungta",
+        on: "Įjungta",
+        minimal: "Minimalios",
+        low: "Mažos",
+        medium: "Vidutinės",
+        high: "Didelės",
+        xhigh: "Labai didelės",
+        max: "Maksimalios",
+      },
     },
   },
   "vector-workspace": {
