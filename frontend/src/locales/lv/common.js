@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Darba telpas nosaukums",
     selection: "Modeļa izvēle",
     saving: "Saglabā...",
+    saved: "Saglabāts",
     save: "Saglabāt izmaiņas",
     previous: "Iepriekšējā lapa",
     next: "Nākamā lapa",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Apstājās",
     loading: "Ielāde",
     refresh: "Atjaunot",
+    noResults: "Netika atrasti rezultāti",
   },
   settings: {
     title: "Instances iestatījumi",
@@ -138,6 +140,35 @@ const TRANSLATIONS = {
       uploadDocument: "August failu",
     },
     greeting: "Kā es varu jums šodien palīdzēt?",
+    greetings: {
+      anytime: {
+        working_on: "Pie kā mēs strādājam?",
+        on_your_mind: "Kas jums prātā?",
+        where_to_start: "Ar ko sāksim?",
+        ready: "Gatavs, kad būsiet gatavi.",
+        think_it_through: "Pārdomāsim to rūpīgi.",
+      },
+      morning: {
+        good_morning: "Labrīt",
+        first_today: "Labrīt. Ar ko šodien sāksim?",
+        fresh_start: "Jauns sākums. Ar ko sāksim?",
+      },
+      afternoon: {
+        good_afternoon: "Labdien",
+        tackling: "Labdien. Kam ķersimies klāt?",
+        next_on_list: "Kas nākamais sarakstā?",
+        keep_moving: "Turpināsim.",
+      },
+      evening: {
+        good_evening: "Labvakar",
+        finish_strong: "Labvakar. Pabeigsim dienu ar uzviju.",
+      },
+      night: {
+        midnight_oil: "Strādājat līdz vēlai naktij?",
+        late_one: "Gara nakts? Pārdomāsim to rūpīgi.",
+        still_up: "Vēl nomodā? Gatavs, kad būsiet gatavi.",
+      },
+    },
   },
   "new-workspace": {
     title: "Jauna darba telpa",
@@ -245,6 +276,22 @@ const TRANSLATIONS = {
       title: "LLM Temperatūra",
       "desc-end":
         "Jo lielāks skaitlis, jo radošākas atbildes. Dažiem modeļiem tas var novest pie nesaprotamām atbildēm, ja iestatīts pārāk augsts.",
+      placeholder: "Nodrošinātāja noklusējums",
+    },
+    reasoning_effort: {
+      title: "Spriešanas piepūle",
+      default: "Nodrošinātāja noklusējums",
+      cannot_disable: "Šis modelis nevar izslēgt spriešanu.",
+      levels: {
+        off: "Izslēgts",
+        on: "Ieslēgts",
+        minimal: "Minimāla",
+        low: "Zema",
+        medium: "Vidēja",
+        high: "Augsta",
+        xhigh: "Ļoti augsta",
+        max: "Maksimāla",
+      },
     },
   },
   "vector-workspace": {

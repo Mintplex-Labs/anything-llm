@@ -55,6 +55,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nama Ruang Kerja",
     selection: "Pemilihan Model",
     saving: "Menyimpan...",
+    saved: "Tersimpan",
     save: "Simpan perubahan",
     previous: "Halaman Sebelumnya",
     next: "Halaman Berikutnya",
@@ -69,6 +70,7 @@ const TRANSLATIONS = {
       "Nama pengguna harus 2-64 karakter, dimulai dengan huruf kecil, dan hanya boleh berisi huruf kecil, angka, garis bawah, tanda hubung, dan titik.",
     loading: "Memuat...",
     refresh: "Segarkan",
+    noResults: "Tidak ditemukan hasil",
   },
   home: {
     welcome: "Selamat Datang",
@@ -147,6 +149,35 @@ const TRANSLATIONS = {
       createAgent: "Buat Agen",
       editWorkspace: "Edit Ruang Kerja",
       uploadDocument: "Unggah Dokumen",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Apa yang sedang kita kerjakan?",
+        on_your_mind: "Apa yang sedang Anda pikirkan?",
+        where_to_start: "Kita mulai dari mana?",
+        ready: "Siap kapan pun Anda siap.",
+        think_it_through: "Mari kita pikirkan baik-baik.",
+      },
+      morning: {
+        good_morning: "Selamat pagi",
+        first_today: "Selamat pagi. Apa yang pertama hari ini?",
+        fresh_start: "Awal yang baru. Kita mulai dari mana?",
+      },
+      afternoon: {
+        good_afternoon: "Selamat siang",
+        tackling: "Selamat siang. Apa yang akan kita kerjakan?",
+        next_on_list: "Apa berikutnya di daftar?",
+        keep_moving: "Ayo terus melaju.",
+      },
+      evening: {
+        good_evening: "Selamat malam",
+        finish_strong: "Selamat malam. Mari kita tuntaskan dengan baik.",
+      },
+      night: {
+        midnight_oil: "Lembur sampai larut?",
+        late_one: "Malam yang panjang? Mari kita pikirkan baik-baik.",
+        still_up: "Masih terjaga? Siap kapan pun Anda siap.",
+      },
     },
   },
   "new-workspace": {
@@ -255,6 +286,22 @@ const TRANSLATIONS = {
       title: "Temperature LLM",
       "desc-end":
         "Semakin tinggi angkanya, semakin kreatif. Untuk beberapa model, ini dapat menyebabkan respons yang tidak koheren jika diatur terlalu tinggi.",
+      placeholder: "Default penyedia",
+    },
+    reasoning_effort: {
+      title: "Upaya Penalaran",
+      default: "Default penyedia",
+      cannot_disable: "Model ini tidak dapat menonaktifkan penalaran.",
+      levels: {
+        off: "Mati",
+        on: "Nyala",
+        minimal: "Minimal",
+        low: "Rendah",
+        medium: "Sedang",
+        high: "Tinggi",
+        xhigh: "Sangat tinggi",
+        max: "Maksimal",
+      },
     },
   },
   "vector-workspace": {

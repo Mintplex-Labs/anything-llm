@@ -263,7 +263,7 @@ Mintplex Labs Inc による AnythingLLM には、匿名の使用情報を収集�
 
 ## 🔗 その他の製品
 
-- **[AnythingLLM Mobile（MIT ライセンス）][anythingllm-mobile]：** モバイル端末で AnythingLLM を利用できるモバイルアプリケーション。
+- **[AnythingLLM Mobile（オープンソースライセンス）][anythingllm-mobile]：** デバイス上で動く AnythingLLM と同じ体験を、スマートフォンで。
 - **[AnythingLLM ブラウザ拡張機能][anythingllm-extension]：** ブラウザ内で AnythingLLM を利用できるブラウザ拡張機能。
 - **[AnythingLLM Embed][anythingllm-embed]：** 自分のウェブサイトに AnythingLLM を埋め込めるウィジェット。
 

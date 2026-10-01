@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "워크스페이스 이름",
     selection: "모델 선택",
     saving: "저장 중...",
+    saved: "저장됨",
     save: "저장",
     previous: "이전",
     next: "다음",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
     stopped: "멈춤",
     loading: "로딩 중",
     refresh: "새롭게",
+    noResults: "결과가 없습니다",
   },
   settings: {
     title: "인스턴스 설정",
@@ -136,6 +138,35 @@ const TRANSLATIONS = {
       uploadDocument: "문서 업로드",
     },
     greeting: "오늘 어떻게 도와드릴까요?",
+    greetings: {
+      anytime: {
+        working_on: "어떤 작업을 해볼까요?",
+        on_your_mind: "무슨 생각을 하고 계신가요?",
+        where_to_start: "어디서부터 시작할까요?",
+        ready: "준비되시면 말씀하세요.",
+        think_it_through: "차근차근 생각해 봐요.",
+      },
+      morning: {
+        good_morning: "좋은 아침이에요",
+        first_today: "좋은 아침이에요. 오늘은 무엇부터 할까요?",
+        fresh_start: "새로운 시작이에요. 무엇부터 해볼까요?",
+      },
+      afternoon: {
+        good_afternoon: "좋은 오후예요",
+        tackling: "좋은 오후예요. 어떤 일을 처리해 볼까요?",
+        next_on_list: "다음 할 일은 무엇인가요?",
+        keep_moving: "계속 이어가 봐요.",
+      },
+      evening: {
+        good_evening: "좋은 저녁이에요",
+        finish_strong: "좋은 저녁이에요. 마무리를 잘해 봐요.",
+      },
+      night: {
+        midnight_oil: "늦게까지 일하고 계신가요?",
+        late_one: "긴 밤이 될까요? 차근차근 생각해 봐요.",
+        still_up: "아직 안 주무셨어요? 준비되시면 말씀하세요.",
+      },
+    },
   },
   "new-workspace": {
     title: "새 워크스페이스",
@@ -240,6 +271,22 @@ const TRANSLATIONS = {
       title: "LLM 온도",
       "desc-end":
         "숫자가 높을수록 창의적입니다. 일부 모델에서는 너무 높게 설정하면 일관성 없는 응답이 나올 수 있습니다.",
+      placeholder: "제공자 기본값",
+    },
+    reasoning_effort: {
+      title: "추론 강도",
+      default: "제공자 기본값",
+      cannot_disable: "이 모델은 추론을 끌 수 없습니다.",
+      levels: {
+        off: "끄기",
+        on: "켜기",
+        minimal: "최소",
+        low: "낮음",
+        medium: "중간",
+        high: "높음",
+        xhigh: "매우 높음",
+        max: "최대",
+      },
     },
   },
   "vector-workspace": {

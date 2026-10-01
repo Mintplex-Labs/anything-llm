@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Navn på arbejdsområder",
     selection: "Modelvalg",
     saving: "Gemmer...",
+    saved: "Gemt",
     save: "Gem ændringer",
     previous: "Forrige side",
     next: "Næste side",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Stoppet",
     loading: "Indlæsning",
     refresh: "Opfrisk",
+    noResults: "Ingen resultater fundet",
   },
   settings: {
     title: "Instansindstillinger",
@@ -241,6 +243,22 @@ const TRANSLATIONS = {
       title: "LLM-temperatur",
       "desc-end":
         "Jo højere tallet er, desto mere kreative bliver svarene. For nogle modeller kan for høje værdier føre til usammenhængende svar.",
+      placeholder: "Udbyderens standard",
+    },
+    reasoning_effort: {
+      title: "Ræsonneringsindsats",
+      default: "Udbyderens standard",
+      cannot_disable: "Denne model kan ikke slå ræsonnering fra.",
+      levels: {
+        off: "Fra",
+        on: "Til",
+        minimal: "Minimal",
+        low: "Lav",
+        medium: "Middel",
+        high: "Høj",
+        xhigh: "Ekstra høj",
+        max: "Maks",
+      },
     },
   },
   "vector-workspace": {
@@ -1430,6 +1448,35 @@ const TRANSLATIONS = {
       uploadDocument: "Upload en fil",
     },
     greeting: "Hvordan kan jeg hjælpe dig i dag?",
+    greetings: {
+      anytime: {
+        working_on: "Hvad arbejder vi på?",
+        on_your_mind: "Hvad tænker du på?",
+        where_to_start: "Hvor skal vi starte?",
+        ready: "Klar, når du er.",
+        think_it_through: "Lad os tænke det igennem.",
+      },
+      morning: {
+        good_morning: "Godmorgen",
+        first_today: "Godmorgen. Hvad står først på programmet i dag?",
+        fresh_start: "En frisk start. Hvor begynder vi?",
+      },
+      afternoon: {
+        good_afternoon: "God eftermiddag",
+        tackling: "God eftermiddag. Hvad tager vi fat på?",
+        next_on_list: "Hvad er det næste på listen?",
+        keep_moving: "Lad os holde tempoet.",
+      },
+      evening: {
+        good_evening: "God aften",
+        finish_strong: "God aften. Lad os slutte stærkt af.",
+      },
+      night: {
+        midnight_oil: "Arbejder du sent?",
+        late_one: "Lang aften? Lad os tænke det igennem.",
+        still_up: "Stadig vågen? Klar, når du er.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Tastaturgenveje",

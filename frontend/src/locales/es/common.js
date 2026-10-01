@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nombre de los espacios de trabajo",
     selection: "Selección de modelo",
     saving: "Guardando...",
+    saved: "Guardado",
     save: "Guardar cambios",
     previous: "Página anterior",
     next: "Página siguiente",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Parado",
     loading: "Cargando",
     refresh: "Renovar; revitalizar",
+    noResults: "No se encontraron resultados",
   },
   settings: {
     title: "Ajustes de la instancia",
@@ -139,6 +141,35 @@ const TRANSLATIONS = {
       uploadDocument: "Cargar un documento",
     },
     greeting: "¿Cómo puedo ayudarte hoy?",
+    greetings: {
+      anytime: {
+        working_on: "¿En qué estamos trabajando?",
+        on_your_mind: "¿Qué tienes en mente?",
+        where_to_start: "¿Por dónde empezamos?",
+        ready: "Listo cuando tú lo estés.",
+        think_it_through: "Pensémoslo bien.",
+      },
+      morning: {
+        good_morning: "Buenos días",
+        first_today: "Buenos días. ¿Qué hacemos primero hoy?",
+        fresh_start: "Un nuevo comienzo. ¿Por dónde arrancamos?",
+      },
+      afternoon: {
+        good_afternoon: "Buenas tardes",
+        tackling: "Buenas tardes. ¿Qué abordamos?",
+        next_on_list: "¿Qué sigue en la lista?",
+        keep_moving: "Sigamos avanzando.",
+      },
+      evening: {
+        good_evening: "Buenas noches",
+        finish_strong: "Buenas noches. Terminemos con fuerza.",
+      },
+      night: {
+        midnight_oil: "¿Trabajando hasta tarde?",
+        late_one: "¿Noche larga? Pensémoslo bien.",
+        still_up: "¿Todavía por aquí? Listo cuando tú lo estés.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nuevo espacio de trabajo",
@@ -248,6 +279,22 @@ const TRANSLATIONS = {
       title: "Temperatura del LLM",
       "desc-end":
         "Cuanto mayor sea el número, más creativo. Para algunos modelos, esto puede llevar a respuestas incoherentes si se establece un valor demasiado alto.",
+      placeholder: "Predeterminado del proveedor",
+    },
+    reasoning_effort: {
+      title: "Esfuerzo de razonamiento",
+      default: "Predeterminado del proveedor",
+      cannot_disable: "Este modelo no puede desactivar el razonamiento.",
+      levels: {
+        off: "Desactivado",
+        on: "Activado",
+        minimal: "Mínimo",
+        low: "Bajo",
+        medium: "Medio",
+        high: "Alto",
+        xhigh: "Muy alto",
+        max: "Máximo",
+      },
     },
   },
   "vector-workspace": {

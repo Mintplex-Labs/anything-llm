@@ -18,7 +18,7 @@ const {
   denyUser,
   revokeUser,
 } = require("./utils/verification");
-const { BOT_COMMANDS } = require("./utils/commands");
+const { BOT_COMMANDS, commandPattern } = require("./utils/commands");
 const { handleKeyboardQueryCallback } = require("./utils/navigation");
 const {
   downloadTelegramFile,
@@ -456,14 +456,14 @@ class TelegramBotService {
     for (const command of BOT_COMMANDS) {
       if (command.skipAutoSetup) continue;
       const handler = command.initHandler();
-      this.#bot.onText(new RegExp(`\\/${command.command}`), (msg) =>
+      this.#bot.onText(commandPattern(command.command), (msg) =>
         guard(msg, () => handler(ctx, msg.chat.id, msg.text))
       );
     }
 
     // Register /history separately so we can pass the message text for argument parsing
     // Ex: /history 25 shows last 25 messages
-    this.#bot.onText(/\/history(.*)/, (msg) => {
+    this.#bot.onText(commandPattern("history"), (msg) => {
       const handler = BOT_COMMANDS.find(
         (c) => c.command === "history"
       ).initHandler();

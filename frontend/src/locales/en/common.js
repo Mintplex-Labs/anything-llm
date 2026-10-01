@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",
     saving: "Saving...",
+    saved: "Saved",
     save: "Save changes",
     previous: "Previous Page",
     next: "Next Page",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
       "Username must be 2-64 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     loading: "Loading",
     refresh: "Refresh",
+    noResults: "No results found",
   },
   home: {
     welcome: "Welcome",
@@ -140,6 +142,37 @@ const TRANSLATIONS = {
   },
   "main-page": {
     greeting: "How can I help you today?",
+    // Empty chat headline. Each visit picks one line from the current time of day
+    // bucket plus `anytime`. Keys only identify a line - add or remove freely.
+    greetings: {
+      anytime: {
+        working_on: "What are we working on?",
+        on_your_mind: "What's on your mind?",
+        where_to_start: "Where should we start?",
+        ready: "Ready when you are.",
+        think_it_through: "Let's think it through.",
+      },
+      morning: {
+        good_morning: "Good morning",
+        first_today: "Morning. What's first today?",
+        fresh_start: "Fresh start. Where should we begin?",
+      },
+      afternoon: {
+        good_afternoon: "Good afternoon",
+        tackling: "Afternoon. What are we tackling?",
+        next_on_list: "What's next on the list?",
+        keep_moving: "Let's keep it moving.",
+      },
+      evening: {
+        good_evening: "Good evening",
+        finish_strong: "Evening. Let's finish strong.",
+      },
+      night: {
+        midnight_oil: "Burning the midnight oil?",
+        late_one: "Late one? Let's think it through.",
+        still_up: "Still up? Ready when you are.",
+      },
+    },
     quickActions: {
       createAgent: "Create an Agent",
       editWorkspace: "Edit Workspace",
@@ -251,7 +284,23 @@ const TRANSLATIONS = {
     temperature: {
       title: "LLM Temperature",
       "desc-end":
-        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
+        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high. Leave blank to use your model provider's default.",
+      placeholder: "Provider default",
+    },
+    reasoning_effort: {
+      title: "Reasoning Effort",
+      default: "Provider default",
+      cannot_disable: "This model cannot turn reasoning off.",
+      levels: {
+        off: "Off",
+        on: "On",
+        minimal: "Minimal",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        xhigh: "Extra high",
+        max: "Max",
+      },
     },
   },
   "vector-workspace": {

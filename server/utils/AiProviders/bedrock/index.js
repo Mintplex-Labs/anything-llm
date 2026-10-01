@@ -10,7 +10,18 @@ const {
   buildAnthropicParams,
   handleAnthropicChatStream,
 } = require("./anthropicChat");
-const { openaiBaseURL, anthropicBaseURL } = require("./endpoints");
+const {
+  buildResponsesParams,
+  handleResponsesChatStream,
+} = require("./openaiResponses");
+const {
+  openaiBaseURL,
+  anthropicBaseURL,
+  isOpenAIModelId,
+} = require("./endpoints");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 /**
  * Bedrock's OpenAI-compatible stream reports usage in a final chunk that
@@ -52,11 +63,18 @@ class AWSBedrockLLM {
     "us.deepseek.r1-v1:0",
   ];
 
-  noTemperatureModels = [
-    "anthropic.claude-opus-4-7",
-    "anthropic.claude-opus-4-8",
-    "anthropic.claude-sonnet-5",
-  ];
+  /**
+   * Whether the model supports the temperature parameter at all. Anthropic
+   * models reject it (Opus 4.7 onward return a 400) and OpenAI GPT models use
+   * the Responses API, which never sends it.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName = "") {
+    if (modelName?.includes("anthropic")) return false;
+    if (isOpenAIModelId(modelName)) return false;
+    return true;
+  }
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.AWS_BEDROCK_LLM_API_KEY)
@@ -78,7 +96,7 @@ class AWSBedrockLLM {
 
     this.openai = new OpenAIApi({
       apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
-      baseURL: openaiBaseURL(this.region),
+      baseURL: openaiBaseURL(this.region, this.model),
     });
 
     if (this.model?.includes("anthropic")) {
@@ -91,7 +109,6 @@ class AWSBedrockLLM {
     }
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.#log(
       `Initialized with model: ${this.model}. Region: ${this.region}. Context Window: ${contextWindowLimit}.`
     );
@@ -101,15 +118,21 @@ class AWSBedrockLLM {
     return !!this.anthropic;
   }
 
+  /**
+   * OpenAI GPT models on Bedrock are served via the Responses API, which is
+   * the only OpenAI API that supports their native tool calling.
+   */
+  get #usesResponsesAPI() {
+    return isOpenAIModelId(this.model);
+  }
+
   get #maxTokens() {
     return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
   }
 
-  temperatureParam(temperature = this.defaultTemp) {
-    if (typeof temperature !== "number") return undefined;
-    if (this.noTemperatureModels.some((model) => this.model.includes(model)))
-      return undefined;
-    return parseFloat(temperature);
+  temperatureParam(temperature = this.temperature) {
+    if (!AWSBedrockLLM.modelSupportsTemperature(this.model)) return {};
+    return temperatureParam(temperature);
   }
 
   #appendContext(contextTexts = []) {
@@ -211,7 +234,10 @@ class AWSBedrockLLM {
 
   // --- Chat completions ---
 
-  async getChatCompletion(messages = null, { temperature }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!messages?.length)
       throw new Error(
         "AWSBedrock::getChatCompletion requires a non-empty messages array."
@@ -221,12 +247,16 @@ class AWSBedrockLLM {
       return this.#anthropicChatCompletion(messages, temperature);
     }
 
+    if (this.#usesResponsesAPI) {
+      return this.#responsesChatCompletion(messages);
+    }
+
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
-          temperature: this.temperatureParam(temperature),
+          ...this.temperatureParam(temperature),
         })
         .catch((e) => {
           this.#log(`Bedrock API Error (getChatCompletion): ${e.message}`, e);
@@ -246,7 +276,10 @@ class AWSBedrockLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!Array.isArray(messages) || messages.length === 0) {
       throw new Error(
         "AWSBedrock::streamGetChatCompletion requires a non-empty messages array."
@@ -258,9 +291,23 @@ class AWSBedrockLLM {
         model: this.model,
         maxTokens: this.#maxTokens,
         messages,
-        temperature: this.temperatureParam(temperature),
+        ...this.temperatureParam(temperature),
       });
       const stream = this.anthropic.messages.stream(params);
+      return await LLMPerformanceMonitor.measureStream({
+        func: stream,
+        messages,
+        runPromptTokenCalculation: false,
+        modelTag: this.model,
+        provider: this.className,
+      });
+    }
+
+    if (this.#usesResponsesAPI) {
+      const stream = await this.openai.responses.create({
+        ...buildResponsesParams({ model: this.model, messages }),
+        stream: true,
+      });
       return await LLMPerformanceMonitor.measureStream({
         func: stream,
         messages,
@@ -273,7 +320,7 @@ class AWSBedrockLLM {
     const stream = await this.openai.chat.completions.create({
       model: this.model,
       messages,
-      temperature: this.temperatureParam(temperature),
+      ...this.temperatureParam(temperature),
       stream: true,
       stream_options: { include_usage: true },
     });
@@ -289,6 +336,8 @@ class AWSBedrockLLM {
   handleStream(response, stream, responseProps) {
     if (this.#isAnthropic)
       return handleAnthropicChatStream(response, stream, responseProps);
+    if (this.#usesResponsesAPI)
+      return handleResponsesChatStream(response, stream, responseProps);
     return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
@@ -299,7 +348,7 @@ class AWSBedrockLLM {
       model: this.model,
       maxTokens: this.#maxTokens,
       messages,
-      temperature: this.temperatureParam(temperature),
+      ...this.temperatureParam(temperature),
     });
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.anthropic.messages
@@ -325,6 +374,36 @@ class AWSBedrockLLM {
         },
         result.duration,
         completionTokens
+      ),
+    };
+  }
+
+  // --- OpenAI Responses API non-streaming completion ---
+
+  async #responsesChatCompletion(messages) {
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.responses
+        .create(buildResponsesParams({ model: this.model, messages }))
+        .catch((e) => {
+          this.#log(`Bedrock API Error (getChatCompletion): ${e.message}`, e);
+          throw new Error(`AWSBedrock::getChatCompletion failed. ${e.message}`);
+        })
+    );
+
+    const response = result.output;
+    const promptTokens = response.usage?.input_tokens ?? 0;
+    const completionTokens = response.usage?.output_tokens ?? 0;
+
+    return {
+      textResponse: response.output_text ?? null,
+      metrics: this.#buildMetrics(
+        {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens:
+            response.usage?.total_tokens ?? promptTokens + completionTokens,
+        },
+        result.duration
       ),
     };
   }

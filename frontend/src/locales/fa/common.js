@@ -55,6 +55,7 @@ const TRANSLATIONS = {
     "workspaces-name": "نام فضای کار",
     selection: "انتخاب مدل",
     saving: "در حال ذخیره...",
+    saved: "ذخیره شد",
     save: "ذخیره تغییرات",
     previous: "صفحه قبلی",
     next: "صفحه بعدی",
@@ -69,6 +70,7 @@ const TRANSLATIONS = {
     stopped: "متوقف شده",
     loading: "بارگذاری",
     refresh: "تازه‌سازی کردن",
+    noResults: "هیچ نتیجه‌ای یافت نشد",
   },
   settings: {
     title: "تنظیمات سامانه",
@@ -239,6 +241,22 @@ const TRANSLATIONS = {
       title: "دمای LLM",
       "desc-end":
         "هر چه عدد بالاتر باشد، خلاقیت بیشتر است. برای برخی مدل‌ها، تنظیم بسیار بالا می‌تواند منجر به پاسخ‌های نامفهوم شود.",
+      placeholder: "پیش‌فرض ارائه‌دهنده",
+    },
+    reasoning_effort: {
+      title: "میزان استدلال",
+      default: "پیش‌فرض ارائه‌دهنده",
+      cannot_disable: "این مدل نمی‌تواند استدلال را خاموش کند.",
+      levels: {
+        off: "خاموش",
+        on: "روشن",
+        minimal: "حداقل",
+        low: "کم",
+        medium: "متوسط",
+        high: "زیاد",
+        xhigh: "خیلی زیاد",
+        max: "حداکثر",
+      },
     },
   },
   "vector-workspace": {
@@ -1418,6 +1436,35 @@ const TRANSLATIONS = {
       uploadDocument: "بارگذاری یک سند",
     },
     greeting: "امروز چگونه می‌توانم به شما کمک کنم؟",
+    greetings: {
+      anytime: {
+        working_on: "روی چه کاری کار می‌کنیم؟",
+        on_your_mind: "به چه فکر می‌کنید؟",
+        where_to_start: "از کجا شروع کنیم؟",
+        ready: "هر وقت آماده بودید، من آماده‌ام.",
+        think_it_through: "بیایید با دقت فکر کنیم.",
+      },
+      morning: {
+        good_morning: "صبح بخیر",
+        first_today: "صبح بخیر. امروز از چه کاری شروع کنیم؟",
+        fresh_start: "شروعی تازه. از کجا شروع کنیم؟",
+      },
+      afternoon: {
+        good_afternoon: "روز بخیر",
+        tackling: "روز بخیر. سراغ چه کاری برویم؟",
+        next_on_list: "مورد بعدی در فهرست چیست؟",
+        keep_moving: "بیایید ادامه دهیم.",
+      },
+      evening: {
+        good_evening: "عصر بخیر",
+        finish_strong: "عصر بخیر. بیایید کار را خوب تمام کنیم.",
+      },
+      night: {
+        midnight_oil: "تا دیروقت کار می‌کنید؟",
+        late_one: "شب طولانی است؟ بیایید با دقت فکر کنیم.",
+        still_up: "هنوز بیدارید؟ هر وقت آماده بودید، من آماده‌ام.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "کلیدهای میانبر",

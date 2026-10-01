@@ -799,8 +799,6 @@ class OutlookBridge {
    * @returns {Promise<{success: boolean, error?: string}>}
    */
   async initialize() {
-    if (this.#isInitialized) return { success: true };
-
     try {
       const isMultiUser = await SystemSettings.isMultiUserMode();
       if (isMultiUser) {
@@ -810,6 +808,8 @@ class OutlookBridge {
             "Outlook integration is not available in multi-user mode for security reasons.",
         };
       }
+
+      if (this.#isInitialized) return { success: true };
 
       const config = await OutlookBridge.getConfig();
 

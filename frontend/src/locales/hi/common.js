@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "वर्कस्पेस का नाम",
     selection: "मॉडल चयन",
     saving: "सहेजा जा रहा है...",
+    saved: "सहेजा गया",
     save: "बदलाव सहेजें",
     previous: "पिछला पेज",
     next: "अगला पेज",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
       "यूज़रनेम 2-64 अक्षरों का होना चाहिए, छोटे अक्षर से शुरू होना चाहिए, और इसमें केवल छोटे अक्षर, अंक, अंडरस्कोर, हाइफ़न और डॉट हो सकते हैं।",
     loading: "लोड हो रहा है",
     refresh: "रीफ़्रेश करें",
+    noResults: "कोई परिणाम नहीं मिला",
   },
   home: {
     welcome: "स्वागत है",
@@ -144,6 +146,35 @@ const TRANSLATIONS = {
       createAgent: "एजेंट बनाएँ",
       editWorkspace: "वर्कस्पेस संपादित करें",
       uploadDocument: "दस्तावेज़ अपलोड करें",
+    },
+    greetings: {
+      anytime: {
+        working_on: "हम किस पर काम कर रहे हैं?",
+        on_your_mind: "आपके मन में क्या है?",
+        where_to_start: "हम कहाँ से शुरू करें?",
+        ready: "जब आप तैयार हों, मैं तैयार हूँ।",
+        think_it_through: "आइए, इस पर अच्छे से सोचें।",
+      },
+      morning: {
+        good_morning: "सुप्रभात",
+        first_today: "सुप्रभात। आज सबसे पहले क्या करें?",
+        fresh_start: "नई शुरुआत। कहाँ से शुरू करें?",
+      },
+      afternoon: {
+        good_afternoon: "शुभ दोपहर",
+        tackling: "शुभ दोपहर। आज किस काम को निपटाएँ?",
+        next_on_list: "सूची में अगला क्या है?",
+        keep_moving: "चलिए, आगे बढ़ते रहें।",
+      },
+      evening: {
+        good_evening: "शुभ संध्या",
+        finish_strong: "शुभ संध्या। आइए, दिन को बढ़िया तरीके से पूरा करें।",
+      },
+      night: {
+        midnight_oil: "देर रात तक काम कर रहे हैं?",
+        late_one: "लंबी रात है? आइए, इस पर अच्छे से सोचें।",
+        still_up: "अभी तक जाग रहे हैं? जब आप तैयार हों, मैं तैयार हूँ।",
+      },
     },
   },
   "new-workspace": {
@@ -253,6 +284,22 @@ const TRANSLATIONS = {
       title: "LLM तापमान",
       "desc-end":
         "संख्या जितनी अधिक होगी, रचनात्मकता उतनी अधिक होगी। कुछ मॉडल में इसे बहुत अधिक सेट करने पर असंगत प्रतिक्रियाएँ आ सकती हैं।",
+      placeholder: "प्रदाता का डिफ़ॉल्ट",
+    },
+    reasoning_effort: {
+      title: "तर्क प्रयास",
+      default: "प्रदाता का डिफ़ॉल्ट",
+      cannot_disable: "यह मॉडल तर्क को बंद नहीं कर सकता।",
+      levels: {
+        off: "बंद",
+        on: "चालू",
+        minimal: "न्यूनतम",
+        low: "कम",
+        medium: "मध्यम",
+        high: "उच्च",
+        xhigh: "अत्यधिक उच्च",
+        max: "अधिकतम",
+      },
     },
   },
   "vector-workspace": {

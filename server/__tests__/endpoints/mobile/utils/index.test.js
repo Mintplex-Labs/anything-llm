@@ -7,7 +7,9 @@ jest.mock("../../../../models/workspaceChats", () => ({
 jest.mock("../../../../models/workspace", () => ({
   Workspace: { get: jest.fn(), getWithUser: jest.fn() },
 }));
-jest.mock("../../../../models/workspaceThread", () => ({ WorkspaceThread: {} }));
+jest.mock("../../../../models/workspaceThread", () => ({
+  WorkspaceThread: {},
+}));
 jest.mock("../../../../models/mobileDevice", () => ({ MobileDevice: {} }));
 jest.mock("../../../../utils/chats/apiChatHandler", () => ({
   ApiChatHandler: {},
@@ -55,7 +57,7 @@ describe("handleMobileCommand: reset-chat", () => {
     });
   });
 
-  it("falls through to the default thread on an unknown threadSlug", async () => {
+  it("rejects an unknown threadSlug instead of resetting the default thread", async () => {
     prisma.workspace_threads.findFirst.mockResolvedValue(null);
     const response = mockResponse();
 
@@ -67,15 +69,11 @@ describe("handleMobileCommand: reset-chat", () => {
       response
     );
 
-    // An unresolved slug must resolve to null (the default thread), never
-    // undefined - Prisma drops an undefined where field and the reset would
-    // hit every chat in the workspace.
-    expect(WorkspaceChats.markThreadHistoryInvalidV2).toHaveBeenCalledWith({
-      workspaceId: 7,
-      thread_id: null,
-    });
-    expect(response.status).toHaveBeenCalledWith(200);
-    expect(response.json).toHaveBeenCalledWith({ success: true });
+    // A stale slug must never fall through to the default thread - that
+    // silently wipes history the user never asked to clear.
+    expect(WorkspaceChats.markThreadHistoryInvalidV2).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith({ error: "Thread not found" });
   });
 
   it("resets the default thread when no threadSlug is given", async () => {
@@ -94,5 +92,37 @@ describe("handleMobileCommand: reset-chat", () => {
       workspaceId: 7,
       thread_id: null,
     });
+  });
+});
+
+describe("handleMobileCommand: stream-chat", () => {
+  const workspace = { id: 7, slug: "my-ws" };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Workspace.get.mockResolvedValue(workspace);
+  });
+
+  it("rejects an unknown threadSlug instead of chatting in the default thread", async () => {
+    prisma.workspace_threads.findFirst.mockResolvedValue(null);
+    const response = {
+      locals: { user: null },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      setHeader: jest.fn(),
+      flushHeaders: jest.fn(),
+    };
+
+    await handleMobileCommand(
+      {
+        params: { command: "stream-chat" },
+        body: { workspaceSlug: "my-ws", threadSlug: "gone", message: "hi" },
+      },
+      response
+    );
+
+    expect(response.flushHeaders).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(404);
+    expect(response.json).toHaveBeenCalledWith({ error: "Thread not found" });
   });
 });

@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nom de l'espai de treball",
     selection: "Selecció de model",
     saving: "Desant...",
+    saved: "Desat",
     save: "Desa els canvis",
     previous: "Pàgina anterior",
     next: "Pàgina següent",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "El nom d'usuari ha de tenir entre 2 i 64 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
     loading: "Carregant",
     refresh: "Actualitza",
+    noResults: "No s'han trobat resultats",
   },
   home: {
     welcome: "Benvingut",
@@ -146,6 +148,35 @@ const TRANSLATIONS = {
       createAgent: "Crea un agent",
       editWorkspace: "Edita l'espai de treball",
       uploadDocument: "Puja un document",
+    },
+    greetings: {
+      anytime: {
+        working_on: "En què estem treballant?",
+        on_your_mind: "Què tens al cap?",
+        where_to_start: "Per on comencem?",
+        ready: "A punt quan tu ho estiguis.",
+        think_it_through: "Pensem-hi bé.",
+      },
+      morning: {
+        good_morning: "Bon dia",
+        first_today: "Bon dia. Què fem primer avui?",
+        fresh_start: "Un nou començament. Per on comencem?",
+      },
+      afternoon: {
+        good_afternoon: "Bona tarda",
+        tackling: "Bona tarda. Què abordem?",
+        next_on_list: "Què toca ara de la llista?",
+        keep_moving: "Seguim endavant.",
+      },
+      evening: {
+        good_evening: "Bon vespre",
+        finish_strong: "Bon vespre. Acabem amb força.",
+      },
+      night: {
+        midnight_oil: "Treballant fins tard?",
+        late_one: "Nit llarga? Pensem-hi bé.",
+        still_up: "Encara per aquí? A punt quan tu ho estiguis.",
+      },
     },
   },
   "new-workspace": {
@@ -256,6 +287,22 @@ const TRANSLATIONS = {
       title: "Temperatura del LLM",
       "desc-end":
         "Com més alt sigui el número, més creatiu serà. Per a alguns models, això pot provocar respostes incoherents si és massa alt.",
+      placeholder: "Valor per defecte del proveïdor",
+    },
+    reasoning_effort: {
+      title: "Esforç de raonament",
+      default: "Valor per defecte del proveïdor",
+      cannot_disable: "Aquest model no pot desactivar el raonament.",
+      levels: {
+        off: "Desactivat",
+        on: "Activat",
+        minimal: "Mínim",
+        low: "Baix",
+        medium: "Mitjà",
+        high: "Alt",
+        xhigh: "Molt alt",
+        max: "Màxim",
+      },
     },
   },
   "vector-workspace": {

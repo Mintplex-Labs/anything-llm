@@ -288,7 +288,7 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 ## 🔗 محصولات بیشتر
 
-- **[AnythingLLM Mobile (با مجوز MIT)][anythingllm-mobile]:** اپلیکیشن موبایلی که به شما امکان استفاده از AnythingLLM روی دستگاه همراهتان را می‌دهد.
+- **[AnythingLLM Mobile (با مجوز متن‌باز)][anythingllm-mobile]:** همان تجربه‌ی AnythingLLM روی دستگاه، اما این بار روی گوشی شما.
 - **[افزونه مرورگر AnythingLLM][anythingllm-extension]:** افزونه مرورگری که امکان استفاده از AnythingLLM در مرورگر را فراهم می‌کند.
 - **[AnythingLLM Embed][anythingllm-embed]:** ویجتی که امکان جاسازی AnythingLLM در وب‌سایت شما را فراهم می‌کند.
 

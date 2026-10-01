@@ -120,6 +120,18 @@ const BOT_COMMANDS = [
   },
 ];
 
+/**
+ * Build the pattern that matches a command at the start of a message, with an
+ * optional @botname suffix, followed by whitespace or the end of the text.
+ * Slashes elsewhere in a message, such as in a pasted URL, do not match.
+ * @param {string} command - The command name, without the leading slash.
+ * @returns {RegExp}
+ */
+function commandPattern(command) {
+  return new RegExp(`^\\/${command}(?:@\\w+)?(?:\\s|$)`);
+}
+
 module.exports = {
   BOT_COMMANDS,
+  commandPattern,
 };
