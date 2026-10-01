@@ -1428,6 +1428,35 @@ const TRANSLATIONS = {
       uploadDocument: "Tải lên một tài liệu",
     },
     greeting: "Hôm nay tôi có thể giúp gì cho bạn?",
+    greetings: {
+      anytime: {
+        working_on: null,
+        on_your_mind: null,
+        where_to_start: null,
+        ready: null,
+        think_it_through: null,
+      },
+      morning: {
+        good_morning: null,
+        first_today: null,
+        fresh_start: null,
+      },
+      afternoon: {
+        good_afternoon: null,
+        tackling: null,
+        next_on_list: null,
+        keep_moving: null,
+      },
+      evening: {
+        good_evening: null,
+        finish_strong: null,
+      },
+      night: {
+        midnight_oil: null,
+        late_one: null,
+        still_up: null,
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Phím tắt",
