@@ -963,6 +963,24 @@ function generatedImageAttachments(outputs = []) {
   return attachments;
 }
 
+/**
+ * Collects the images tied to a stored chat so they can be replayed into chat
+ * history as vision context: the images the user uploaded plus any `/img`
+ * generated images re-read off disk. Only `image/*` attachments are kept, since
+ * the developer API can store `application/anythingllm-document` attachments
+ * that no LLM can accept as an image.
+ * @param {{attachments?: import("../helpers").Attachment[], outputs?: object[]}} response - a parsed chat response
+ * @returns {import("../helpers").Attachment[]}
+ */
+function chatHistoryAttachments(response = {}) {
+  return [
+    ...(response?.attachments || []).filter((attachment) =>
+      attachment?.mime?.toLowerCase().startsWith("image/")
+    ),
+    ...generatedImageAttachments(response?.outputs),
+  ];
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -982,6 +1000,7 @@ module.exports = {
   generatedImagesPath,
   saveGeneratedImage,
   generatedImageAttachments,
+  chatHistoryAttachments,
   GENERATED_IMAGE_FILENAME_PATTERN,
   moveProcessedDocsToFolder,
   viewLocalFiles,

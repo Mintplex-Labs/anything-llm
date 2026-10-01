@@ -5,6 +5,7 @@ jest.mock("jsonwebtoken", () => ({}));
 // attachment lookups through it, which none of these fixtures use.
 jest.mock("../../../../utils/files", () => ({
   generatedImageAttachments: () => [],
+  chatHistoryAttachments: () => [],
 }));
 
 const {
