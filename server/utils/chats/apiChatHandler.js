@@ -178,6 +178,12 @@ async function chatSync({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
+  // Document attachments are parsed to text up front so agent and normal chats
+  // both receive their contents as context, leaving only images as attachments.
+  const { parsedDocuments, imageAttachments } =
+    await processDocumentAttachments(attachments);
+  attachments = imageAttachments;
+
   if (
     await EphemeralAgentHandler.isAgentInvocation({
       message,
@@ -197,6 +203,7 @@ async function chatSync({
       threadId: thread?.id || null,
       sessionId,
       attachments,
+      parsedDocuments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -330,10 +337,7 @@ async function chatSync({
       });
     });
 
-  const processedAttachments = await processDocumentAttachments(attachments);
-  const parsedAttachments = processedAttachments.parsedDocuments;
-  attachments = processedAttachments.imageAttachments;
-  parsedAttachments.forEach((doc) => {
+  parsedDocuments.forEach((doc) => {
     if (doc.pageContent) {
       contextTexts.push(doc.pageContent);
       const { pageContent, ...metadata } = doc;
@@ -554,6 +558,12 @@ async function streamChat({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
+  // Document attachments are parsed to text up front so agent and normal chats
+  // both receive their contents as context, leaving only images as attachments.
+  const { parsedDocuments, imageAttachments } =
+    await processDocumentAttachments(attachments);
+  attachments = imageAttachments;
+
   if (
     await EphemeralAgentHandler.isAgentInvocation({
       message,
@@ -573,6 +583,7 @@ async function streamChat({
       threadId: thread?.id || null,
       sessionId,
       attachments,
+      parsedDocuments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -718,10 +729,7 @@ async function streamChat({
       });
     });
 
-  const processedAttachments = await processDocumentAttachments(attachments);
-  const parsedAttachments = processedAttachments.parsedDocuments;
-  attachments = processedAttachments.imageAttachments;
-  parsedAttachments.forEach((doc) => {
+  parsedDocuments.forEach((doc) => {
     if (doc.pageContent) {
       contextTexts.push(doc.pageContent);
       const { pageContent, ...metadata } = doc;
