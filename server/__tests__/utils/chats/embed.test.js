@@ -142,3 +142,33 @@ describe("streamChatWithForEmbed saving the chat", () => {
     expect(EmbedChats.new).not.toHaveBeenCalled();
   });
 });
+
+describe("streamChatWithForEmbed chat history", () => {
+  beforeEach(() => EmbedChats.forEmbedByUser.mockClear());
+
+  it("loads the embed's message history limit when the model router is used", async () => {
+    EmbedChats.forEmbedByUser.mockResolvedValueOnce([]);
+    getVectorDbClass.mockReturnValue({
+      hasNamespace: async () => false,
+      namespaceCount: async () => 0,
+    });
+    // A prefetched context is what the model router hands back.
+    resolveProviderConnector.mockResolvedValue({
+      connector: {
+        compressMessages: async () => [],
+        streamingEnabled: () => true,
+        streamGetChatCompletion: async () => ({ metrics: {} }),
+        handleStream: async () => "",
+      },
+      routingMetadata: null,
+      prefetchedContext: { pinnedDocs: [] },
+    });
+
+    const embed = embedConfig({ message_limit: 5 });
+    embed.workspace.openAiHistory = 30;
+    await streamChatWithForEmbed(fakeResponse(), embed, "hello", "session", {});
+
+    expect(EmbedChats.forEmbedByUser).toHaveBeenCalledTimes(1);
+    expect(EmbedChats.forEmbedByUser.mock.calls[0][2]).toBe(5);
+  });
+});

@@ -34,6 +34,7 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = temperatureValue;
 
   const uuid = uuidv4();
+  const messageLimit = embed.message_limit ?? 20;
   const {
     connector: LLMConnector,
     routingMetadata,
@@ -44,6 +45,7 @@ async function streamChatWithForEmbed(
     chatModel,
     message,
     sessionId,
+    messageLimit,
   });
 
   if (routerError) {
@@ -63,7 +65,6 @@ async function streamChatWithForEmbed(
 
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = embed.message_limit ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(embed.workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(embed.workspace.slug);
 
@@ -272,6 +273,7 @@ async function resolveLLMConnectorForEmbed({
   chatModel,
   message,
   sessionId,
+  messageLimit,
 }) {
   // If a chat model is provided, use it to override the workspace chat model
   // otherwise use the workspace chat model as we do everywhere else.
@@ -279,7 +281,6 @@ async function resolveLLMConnectorForEmbed({
     ? { ...embed?.workspace, chatModel }
     : embed?.workspace;
   try {
-    const messageLimit = workspace?.openAiHistory || 20;
     const embedHistory = await recentEmbedChatHistory(
       sessionId,
       embed,
