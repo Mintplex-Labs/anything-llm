@@ -578,7 +578,9 @@ async function getTogetherAiModels(apiKey = null) {
 }
 
 async function getFireworksAiModels(apiKey = null) {
-  const knownModels = await fireworksAiModels(apiKey);
+  const knownModels = await fireworksAiModels(
+    apiKey === true ? process.env.FIREWORKS_AI_LLM_API_KEY : apiKey
+  );
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
@@ -1345,7 +1347,7 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
   if (!endpoint.pathname.endsWith("/v1")) endpoint.pathname = "/v1";
   endpoint.pathname += "/audio/voices";
   const headers = { "Content-Type": "application/json" };
-  const key = typeof apiKey === "boolean" ? null : apiKey;
+  const key = apiKey === true ? process.env.TTS_KOKORO_KEY : apiKey || null;
   if (key) headers.Authorization = `Bearer ${key}`;
 
   const voices = await fetch(endpoint.toString(), { method: "GET", headers })
