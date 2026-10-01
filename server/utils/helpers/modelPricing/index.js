@@ -88,6 +88,9 @@ const CACHE_FILES = {
   get etag() {
     return path.resolve(cacheDir(), ".etag");
   },
+  get reasoning() {
+    return path.resolve(cacheDir(), "model-reasoning.json");
+  },
 };
 
 /**
@@ -106,6 +109,27 @@ function slim(apiJson = {}) {
       if (typeof model.cost.input !== "number") continue;
       slimmed[providerId] ??= {};
       slimmed[providerId][modelId] = model.cost;
+    }
+  }
+  return slimmed;
+}
+
+/**
+ * Extracts the reasoning options of every reasoning model from the full
+ * models.dev API response. Models without reasoning are dropped, so a lookup
+ * miss means the model has no reasoning controls.
+ * @param {Object} apiJson - full models.dev response: `{provider: {models: {model: {reasoning, reasoning_options}}}}`
+ * @returns {Record<string, Record<string, Array<object>>>} flattened to `{provider: {model: reasoning_options}}`
+ */
+function slimReasoning(apiJson = {}) {
+  const slimmed = {};
+  for (const [providerId, provider] of Object.entries(apiJson)) {
+    if (!provider?.models || typeof provider.models !== "object") continue;
+    for (const [modelId, model] of Object.entries(provider.models)) {
+      if (model?.reasoning !== true || !Array.isArray(model.reasoning_options))
+        continue;
+      slimmed[providerId] ??= {};
+      slimmed[providerId][modelId] = model.reasoning_options;
     }
   }
   return slimmed;
@@ -138,6 +162,8 @@ class ModelPricing {
   #pricing = null;
   /** @type {boolean} - true when data came from disk cache (safe to send etag) */
   #hasDiskCache = false;
+  /** @type {Record<string, Record<string, Array<object>>>|null} */
+  #reasoning = null;
   /** @type {Record<string, Record<string, string>>} - lazy case-insensitive index per provider */
   #lowercaseIndexes = {};
   /** @type {Record<string, Record<string, string>>} - lazy bedrock normalization index per provider */
@@ -151,7 +177,7 @@ class ModelPricing {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     this.#loadFromDisk();
-    if (this.#isCacheStale() || !this.#pricing) {
+    if (this.#isCacheStale() || !this.#pricing || !this.#reasoning) {
       this.bootRefresh = this.#refresh()
         .then(() => {
           if (this.#pricing)
@@ -179,10 +205,16 @@ class ModelPricing {
       this.#pricing = JSON.parse(
         fs.readFileSync(CACHE_FILES.data, { encoding: "utf8" })
       );
+      // A cache written before reasoning options were kept has no reasoning
+      // file - it is treated as unusable so the next refresh is a full GET.
+      this.#reasoning = JSON.parse(
+        fs.readFileSync(CACHE_FILES.reasoning, { encoding: "utf8" })
+      );
       this.#hasDiskCache = true;
     } catch (error) {
       log("Failed to read pricing cache from disk", error?.message);
       this.#pricing = null;
+      this.#reasoning = null;
       this.#hasDiskCache = false;
     }
   }
@@ -213,13 +245,16 @@ class ModelPricing {
       if (!Object.keys(pricing).length)
         throw new Error("Remote pricing data contained no usable cost data");
 
+      const reasoning = slimReasoning(data);
       this.#pricing = pricing;
+      this.#reasoning = reasoning;
       this.#hasDiskCache = true;
       this.#clearIndexes();
 
       const etag = response.headers.get("etag");
       await Promise.all([
         fs.promises.writeFile(CACHE_FILES.data, JSON.stringify(pricing)),
+        fs.promises.writeFile(CACHE_FILES.reasoning, JSON.stringify(reasoning)),
         fs.promises.writeFile(CACHE_FILES.expiry, Date.now().toString()),
         etag
           ? fs.promises.writeFile(CACHE_FILES.etag, etag)
@@ -236,31 +271,39 @@ class ModelPricing {
     this.#normalizedIndexes = {};
   }
 
-  #findModelCost(providerId, providerSlug, model) {
-    const models = this.#pricing?.[providerId];
+  /**
+   * Finds a model's entry in a slimmed models.dev table - exact id, then
+   * case-insensitive, then (for Bedrock) with region/version stripped.
+   * @param {"pricing"|"reasoning"} table
+   */
+  #findModelEntry(table, providerId, providerSlug, model) {
+    const models = (table === "reasoning" ? this.#reasoning : this.#pricing)?.[
+      providerId
+    ];
     if (!models) return null;
     if (models[model]) return models[model];
 
-    if (!this.#lowercaseIndexes[providerId]) {
+    const indexKey = `${table}:${providerId}`;
+    if (!this.#lowercaseIndexes[indexKey]) {
       const index = {};
       for (const key of Object.keys(models)) index[key.toLowerCase()] = key;
-      this.#lowercaseIndexes[providerId] = index;
+      this.#lowercaseIndexes[indexKey] = index;
     }
-    const caseMatch = this.#lowercaseIndexes[providerId][model.toLowerCase()];
+    const caseMatch = this.#lowercaseIndexes[indexKey][model.toLowerCase()];
     if (caseMatch) return models[caseMatch];
 
     if (providerSlug === "bedrock") {
-      if (!this.#normalizedIndexes[providerId]) {
+      if (!this.#normalizedIndexes[indexKey]) {
         const index = {};
         for (const key of Object.keys(models)) {
           const normalized = normalizeBedrockId(key);
           if (!index[normalized] || key.length < index[normalized].length)
             index[normalized] = key;
         }
-        this.#normalizedIndexes[providerId] = index;
+        this.#normalizedIndexes[indexKey] = index;
       }
       const normalizedMatch =
-        this.#normalizedIndexes[providerId][normalizeBedrockId(model)];
+        this.#normalizedIndexes[indexKey][normalizeBedrockId(model)];
       if (normalizedMatch) return models[normalizedMatch];
     }
 
@@ -306,7 +349,12 @@ class ModelPricing {
     if (!providerId || !model || typeof model !== "string" || !this.#pricing)
       return null;
 
-    const cost = this.#findModelCost(providerId, providerSlug, model);
+    const cost = this.#findModelEntry(
+      "pricing",
+      providerId,
+      providerSlug,
+      model
+    );
     if (!cost) return null;
 
     const promptTokens = toNonNegativeNumber(usage?.prompt_tokens);
@@ -322,6 +370,22 @@ class ModelPricing {
     );
     const totalCost = parseFloat((inputCost + outputCost).toFixed(10));
     return { inputCost, outputCost, totalCost };
+  }
+
+  /**
+   * The reasoning options models.dev lists for a model, eg:
+   * `[{type: "effort", values: ["low", "high"]}]` or `[{type: "toggle"}]`.
+   * @param {string|null} providerSlug - AnythingLLM provider slug
+   * @param {string|null} model - model id
+   * @returns {Array<object>|null} null when the models.dev data is not loaded yet, [] when the model has no reasoning options
+   */
+  getReasoningOptions(providerSlug = null, model = null) {
+    if (!this.#reasoning) return null;
+    const providerId = PROVIDER_ID_MAP[providerSlug];
+    if (!providerId || !model || typeof model !== "string") return [];
+    return (
+      this.#findModelEntry("reasoning", providerId, providerSlug, model) ?? []
+    );
   }
 
   get isCacheStale() {

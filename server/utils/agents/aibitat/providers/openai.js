@@ -1,5 +1,6 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const {
   responsesTooledStream,
   responsesTooledComplete,
@@ -17,6 +18,7 @@ class OpenAIProvider extends Provider {
         apiKey: process.env.OPEN_AI_KEY,
       },
       model = "gpt-4.1-nano",
+      reasoningEffort = null,
     } = config;
 
     const client = new OpenAI(options);
@@ -25,6 +27,16 @@ class OpenAIProvider extends Provider {
 
     this.providerTag = "openai";
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("openai", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {

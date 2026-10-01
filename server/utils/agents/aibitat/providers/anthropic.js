@@ -1,3 +1,4 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const Anthropic = require("@anthropic-ai/sdk");
 const { AnthropicLLM } = require("../../../AiProviders/anthropic");
 const { RetryError } = require("../error.js");
@@ -24,6 +25,7 @@ class AnthropicProvider extends Provider {
         },
       },
       model = "claude-sonnet-4-6",
+      reasoningEffort = null,
     } = config;
 
     const client = new Anthropic(options);
@@ -31,6 +33,16 @@ class AnthropicProvider extends Provider {
     super(client);
     this.providerTag = "anthropic";
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("anthropic", this.reasoningEffort, this.model);
   }
 
   /**
@@ -261,6 +273,7 @@ class AnthropicProvider extends Provider {
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
             : {}),
+          ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
@@ -408,6 +421,7 @@ class AnthropicProvider extends Provider {
           ...(Array.isArray(functions) && functions?.length > 0
             ? { tools: this.#formatFunctions(functions) }
             : {}),
+          ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );

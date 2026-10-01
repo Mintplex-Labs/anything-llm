@@ -6,6 +6,7 @@ import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
+import ReasoningEffortButton from "./ReasoningEffortButton";
 import {
   ATTACHMENTS_PROCESSED_EVENT,
   ATTACHMENTS_PROCESSING_EVENT,
@@ -386,6 +387,11 @@ export default function PromptInput({
                       promptInput={promptInput}
                       textareaRef={textareaRef}
                       visible={!agentSessionActive & showAgentCommand}
+                    />
+                    <ReasoningEffortButton
+                      workspaceSlug={workspaceSlug ?? workspace?.slug}
+                      threadSlug={threadSlug}
+                      centered={centered}
                     />
                   </div>
                   <ToolsButton

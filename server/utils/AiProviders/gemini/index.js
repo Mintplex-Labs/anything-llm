@@ -14,6 +14,10 @@ const { safeJsonParse } = require("../../http");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "gemini")
@@ -379,9 +383,17 @@ class GeminiLLM {
     ];
   }
 
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("gemini", this.model);
+  }
+
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
@@ -389,6 +401,7 @@ class GeminiLLM {
           model: this.model,
           messages,
           ...temperatureParam(temperature),
+          ...reasoningParams("gemini", reasoningEffort, this.model),
         })
         .catch((e) => {
           console.error(e);
@@ -419,7 +432,7 @@ class GeminiLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
@@ -427,6 +440,7 @@ class GeminiLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("gemini", reasoningEffort, this.model),
         stream_options: {
           include_usage: true,
         },

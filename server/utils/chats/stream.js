@@ -14,6 +14,7 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const { resolveReasoningEffort } = require("../helpers/reasoningEffort");
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
@@ -24,7 +25,8 @@ async function streamChatWithWorkspace(
   chatMode = "automatic",
   user = null,
   thread = null,
-  attachments = []
+  attachments = [],
+  sessionReasoningEffort = null
 ) {
   const uuid = uuidv4();
   const updatedMessage = await grepCommand(message, user);
@@ -52,6 +54,7 @@ async function streamChatWithWorkspace(
     workspace,
     thread,
     attachments,
+    reasoningEffort: sessionReasoningEffort,
   });
   if (isAgentChat) return;
 
@@ -281,6 +284,11 @@ async function streamChatWithWorkspace(
     rawHistory
   );
 
+  const reasoningEffort = await resolveReasoningEffort(
+    LLMConnector,
+    sessionReasoningEffort
+  );
+
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
@@ -290,6 +298,7 @@ async function streamChatWithWorkspace(
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
         user: user,
+        reasoningEffort,
       });
 
     completeText = textResponse;
@@ -310,6 +319,7 @@ async function streamChatWithWorkspace(
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       user: user,
+      reasoningEffort,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,

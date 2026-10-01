@@ -9,6 +9,10 @@ const {
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -96,9 +100,17 @@ class DeepSeekLLM {
     return textResponse;
   }
 
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("deepseek", this.model);
+  }
+
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -111,6 +123,7 @@ class DeepSeekLLM {
           model: this.model,
           messages,
           ...temperatureParam(temperature),
+          ...reasoningParams("deepseek", reasoningEffort, this.model),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -142,7 +155,7 @@ class DeepSeekLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -155,6 +168,7 @@ class DeepSeekLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("deepseek", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

@@ -167,3 +167,54 @@ describe("websocket plugin handleToolToggle", () => {
     });
   });
 });
+
+describe("websocket plugin session reasoning effort", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  /** Runs one interrupt round trip with the given feedback frame. */
+  async function replyWith(frame) {
+    const { socket, aibitat } = setupPlugin();
+    const order = [];
+    aibitat.updateReasoningEffort = jest.fn(async () =>
+      order.push("updateReasoningEffort")
+    );
+    aibitat.continue = jest.fn(async () => order.push("continue"));
+
+    const onInterrupt = aibitat.onInterrupt.mock.calls[0][0];
+    const done = onInterrupt({ from: "USER", to: "@agent" });
+    await flushPromises();
+    await socket.handleFeedback(
+      JSON.stringify({ type: "awaitingFeedback", feedback: "next", ...frame })
+    );
+    await done;
+    return { aibitat, order };
+  }
+
+  it("applies the session effort before the agent's next turn", async () => {
+    const { aibitat, order } = await replyWith({ reasoningEffort: "off" });
+    expect(aibitat.updateReasoningEffort).toHaveBeenCalledWith("off");
+    expect(order).toEqual(["updateReasoningEffort", "continue"]);
+    expect(aibitat.continue).toHaveBeenCalledWith("next", []);
+  });
+
+  it("passes null through so the session falls back to the default", async () => {
+    const { aibitat } = await replyWith({ reasoningEffort: null });
+    expect(aibitat.updateReasoningEffort).toHaveBeenCalledWith(null);
+  });
+
+  it("keeps the current effort when the client does not send one", async () => {
+    const { aibitat } = await replyWith({});
+    expect(aibitat.updateReasoningEffort).not.toHaveBeenCalled();
+    expect(aibitat.continue).toHaveBeenCalledWith("next", []);
+  });
+
+  it("does not touch the effort when the session is exited", async () => {
+    const { aibitat } = await replyWith({
+      feedback: "exit",
+      reasoningEffort: "on",
+    });
+    expect(aibitat.updateReasoningEffort).not.toHaveBeenCalled();
+    expect(aibitat.continue).not.toHaveBeenCalled();
+  });
+});

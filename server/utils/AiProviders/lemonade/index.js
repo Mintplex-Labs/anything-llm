@@ -11,6 +11,10 @@ const { humanFileSize } = require("../../helpers");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 class LemonadeLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -156,7 +160,7 @@ class LemonadeLLM {
 
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
@@ -164,6 +168,7 @@ class LemonadeLLM {
         model: this.model,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("lemonade", reasoningEffort, this.model),
       })
     );
 
@@ -190,7 +195,7 @@ class LemonadeLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     await LemonadeLLM.loadModel(this.model);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
@@ -199,6 +204,7 @@ class LemonadeLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("lemonade", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -217,7 +223,7 @@ class LemonadeLLM {
    * Note: This is a heuristic approach to get the capabilities of the model based on the model metadata.
    * It is not perfect, but works since every model metadata is different and may not have key values we rely on.
    * There is no "capabilities" key in the metadata via any API endpoint - so we do this.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
@@ -230,9 +236,13 @@ class LemonadeLLM {
       });
 
       const { labels = [] } = await client.models.retrieve(this.model);
+      const supportsReasoning = labels.includes("reasoning");
       return {
         tools: labels.includes("tool-calling"),
-        reasoning: labels.includes("reasoning"),
+        reasoning: supportsReasoning,
+        reasoningOptions: supportsReasoning
+          ? PROVIDER_REASONING_EFFORTS.lemonade(this.model)
+          : [],
         imageGeneration: "unknown",
         vision: labels.includes("vision"),
       };
@@ -241,6 +251,7 @@ class LemonadeLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

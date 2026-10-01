@@ -338,6 +338,101 @@ describe("ModelPricing", () => {
     });
   });
 
+  describe("getReasoningOptions", () => {
+    async function loaded() {
+      mockFetchWith(okResponse(FIXTURE));
+      const pricing = freshInstance();
+      await flushRefresh();
+      return pricing;
+    }
+
+    it("returns the models.dev reasoning options for a model", async () => {
+      const pricing = await loaded();
+      expect(pricing.getReasoningOptions("openai", "gpt-Reasoner")).toEqual([
+        { type: "effort", values: ["none", "low", "medium", "high"] },
+      ]);
+      expect(pricing.getReasoningOptions("gemini", "gemini-tiered")).toEqual([
+        { type: "budget_tokens", min: 128, max: 32768 },
+      ]);
+    });
+
+    it("matches model ids case-insensitively", async () => {
+      const pricing = await loaded();
+      expect(pricing.getReasoningOptions("openai", "GPT-REASONER")).toEqual([
+        { type: "effort", values: ["none", "low", "medium", "high"] },
+      ]);
+    });
+
+    it("keeps reasoning options for models without published pricing", async () => {
+      const pricing = await loaded();
+      expect(
+        pricing.getReasoningOptions("openai", "gpt-subscription-only")
+      ).toEqual([{ type: "effort", values: ["low", "high"] }]);
+    });
+
+    it.each([
+      ["a model without reasoning", "openai", "gpt-4o"],
+      [
+        "a reasoning model without options",
+        "openai",
+        "gpt-reasoning-flag-only",
+      ],
+      ["an unknown model", "openai", "gpt-unknown"],
+      ["an unmapped provider", "ollama", "gpt-Reasoner"],
+      ["a missing model", "openai", null],
+      ["a non-string model", "openai", 42],
+      ["a missing provider", null, "gpt-Reasoner"],
+    ])("returns [] for %s", async (_, provider, model) => {
+      const pricing = await loaded();
+      expect(pricing.getReasoningOptions(provider, model)).toEqual([]);
+    });
+
+    it("returns null when no models.dev data has been loaded", async () => {
+      mockFetchWith({ status: 500, headers: { get: () => null } });
+      const pricing = freshInstance();
+      await flushRefresh();
+      expect(pricing.getReasoningOptions("openai", "gpt-Reasoner")).toBeNull();
+    });
+
+    it("writes the reasoning cache alongside the pricing cache", async () => {
+      await loaded();
+      const cached = JSON.parse(
+        fs.readFileSync(
+          path.join(tempDir, "models", "pricing", "model-reasoning.json"),
+          "utf8"
+        )
+      );
+      expect(Object.keys(cached.openai).sort()).toEqual([
+        "gpt-Reasoner",
+        "gpt-subscription-only",
+      ]);
+    });
+
+    it("does a full GET when a fresh pricing cache has no reasoning cache", async () => {
+      // Caches written before reasoning options were kept have no reasoning
+      // file - they must refetch in full instead of revalidating with an etag.
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+      fs.rmSync(
+        path.join(tempDir, "models", "pricing", "model-reasoning.json")
+      );
+
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
+      expect(
+        pricing.getReasoningOptions("openai", "gpt-Reasoner")
+      ).toHaveLength(1);
+    });
+  });
+
   describe("getCostBreakdown", () => {
     let pricing;
 

@@ -1,3 +1,4 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const { temperatureParam } = require("./helpers/tooled.js");
@@ -13,7 +14,7 @@ class GeminiProvider extends Provider {
   model;
 
   constructor(config = {}) {
-    const { model = "gemini-2.0-flash-lite" } = config;
+    const { model = "gemini-2.0-flash-lite", reasoningEffort = null } = config;
     super();
     this.providerTag = "gemini";
     this.className = "GeminiProvider";
@@ -43,11 +44,21 @@ class GeminiProvider extends Provider {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
   }
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("gemini", this.reasoningEffort, this.model);
   }
 
   /**
@@ -259,6 +270,7 @@ class GeminiProvider extends Provider {
         messages: this.#formatMessages(messages),
         stream: true,
         stream_options: { include_usage: true },
+        ...this.reasoningConfig,
         ...(Array.isArray(functions) && functions?.length > 0
           ? {
               tools: this.#formatFunctions(functions),
@@ -387,6 +399,7 @@ class GeminiProvider extends Provider {
         ...temperatureParam(this.temperature),
         stream: false,
         messages: this.#formatMessages(messages),
+        ...this.reasoningConfig,
         ...(Array.isArray(functions) && functions?.length > 0
           ? {
               tools: this.#formatFunctions(functions),
