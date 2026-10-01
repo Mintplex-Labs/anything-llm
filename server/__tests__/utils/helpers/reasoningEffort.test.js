@@ -76,6 +76,25 @@ const MODELS_DEV = {
     ],
     "deepseek-toggle-only": [{ type: "toggle" }],
   },
+  openrouter: {
+    "openai/gpt-5.1": [
+      { type: "effort", values: ["none", "low", "medium", "high"] },
+    ],
+    "qwen/qwen3-30b-a3b": [{ type: "toggle" }],
+    "bytedance-seed/seed-2.0-lite": [
+      { type: "toggle" },
+      { type: "effort", values: ["minimal", "low", "medium", "high"] },
+    ],
+    "anthropic/claude-opus-4.6": [
+      { type: "toggle" },
+      { type: "effort", values: ["low", "medium", "high", "max"] },
+      { type: "budget_tokens" },
+    ],
+    "meituan/longcat-2.0": [{ type: "toggle" }, { type: "budget_tokens" }],
+    "google/gemini-2.5-pro": [{ type: "budget_tokens", min: 128, max: 32768 }],
+    // Thinking is mandatory and has no levels.
+    "qwen/qwen3-30b-a3b-thinking-2507": [],
+  },
 };
 
 function mockModelsDev(table = MODELS_DEV) {
@@ -101,12 +120,37 @@ describe("modelsDevReasoningCapabilities", () => {
     ["gemini", "gemini-2.5-flash", ["off", "low", "medium", "high"]],
     ["deepseek", "deepseek-flash", ["off", "on", "low", "high", "max"]],
     ["deepseek", "deepseek-toggle-only", ["off", "on"]],
+    ["openrouter", "openai/gpt-5.1", ["off", "low", "medium", "high"]],
+    ["openrouter", "qwen/qwen3-30b-a3b", ["off", "on"]],
+    [
+      "openrouter",
+      "bytedance-seed/seed-2.0-lite",
+      ["off", "on", "minimal", "low", "medium", "high"],
+    ],
+    [
+      "openrouter",
+      "anthropic/claude-opus-4.6",
+      ["off", "on", "low", "medium", "high", "max"],
+    ],
+    // A budget alone gives no levels - OpenRouter's effort-to-budget
+    // conversion is not something a model lists.
+    ["openrouter", "meituan/longcat-2.0", ["off", "on"]],
   ])("%s %s offers %j", (provider, model, expected) => {
     expect(modelsDevReasoningCapabilities(provider, model)).toEqual({
       reasoning: true,
       reasoningOptions: expected,
     });
   });
+
+  it.each(["qwen/qwen3-30b-a3b-thinking-2507", "google/gemini-2.5-pro"])(
+    "offers nothing for OpenRouter %s, which lists no levels or toggle",
+    (model) => {
+      expect(modelsDevReasoningCapabilities("openrouter", model)).toEqual({
+        reasoning: false,
+        reasoningOptions: [],
+      });
+    }
+  );
 
   it("drops levels it has no way to send", () => {
     expect(
@@ -121,7 +165,7 @@ describe("modelsDevReasoningCapabilities", () => {
     });
   });
 
-  it("only maps none to off for OpenAI", () => {
+  it("only maps none to off for OpenAI and OpenRouter", () => {
     mockModelsDev({
       deepseek: { x: [{ type: "effort", values: ["none", "low"] }] },
     });
@@ -271,6 +315,10 @@ describe("reasoningParams", () => {
     ],
     ["openai", "max", null, { reasoning: { effort: "max", summary: "auto" } }],
     ["anthropic", "max", null, { output_config: { effort: "max" } }],
+    ["openrouter", "high", null, { reasoning: { effort: "high" } }],
+    ["openrouter", "minimal", null, { reasoning: { effort: "minimal" } }],
+    ["openrouter", "on", null, { reasoning: { enabled: true } }],
+    ["openrouter", "off", null, { reasoning: { enabled: false } }],
     [
       "gemini",
       "minimal",

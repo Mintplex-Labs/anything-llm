@@ -1510,7 +1510,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       case "localai":
         return new Providers.LocalAIProvider({ model: config.model });
       case "openrouter":
-        return new Providers.OpenRouterProvider({ model: config.model });
+        return new Providers.OpenRouterProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "mistral":
         return new Providers.MistralProvider({ model: config.model });
       case "generic-openai":

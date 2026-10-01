@@ -227,6 +227,19 @@ describe("AIbitat reasoning effort per route", () => {
     expect(provider.reasoningConfig).toEqual({});
   });
 
+  test("passes the effort to the OpenRouter agent provider", () => {
+    process.env.OPENROUTER_API_KEY = "test-key";
+    const aibitat = new AIbitat({
+      provider: "openrouter",
+      model: "qwen/qwen3-30b-a3b",
+      reasoningEffort: "off",
+    });
+    const provider = aibitat.getProviderForConfig({
+      ...aibitat.defaultProvider,
+    });
+    expect(provider.reasoningConfig).toEqual({ reasoning: { enabled: false } });
+  });
+
   test("a route switch replaces the effort with the one resolved for the new route", () => {
     const aibitat = new AIbitat({
       provider: "anthropic",

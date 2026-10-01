@@ -70,7 +70,7 @@ function modelsDevOptions(provider, model) {
  * The reasoning capabilities models.dev lists for a cloud model, as levels
  * this provider's request format can send. A model models.dev does not list
  * gets no reasoning controls.
- * @param {"openai"|"gemini"|"deepseek"} provider
+ * @param {"openai"|"gemini"|"deepseek"|"openrouter"} provider
  * @param {string} model
  * @returns {{reasoning: 'unknown'|boolean, reasoningOptions: string[]}}
  */
@@ -79,9 +79,10 @@ function modelsDevReasoningCapabilities(provider, model) {
   if (!options) return { reasoning: "unknown", reasoningOptions: [] };
 
   const levels = new Set();
+  const noneIsOff = ["openai", "openrouter"].includes(provider);
   for (const value of options.effortValues)
-    levels.add(provider === "openai" && value === "none" ? "off" : value);
-  if (provider === "deepseek" && options.toggle) {
+    levels.add(noneIsOff && value === "none" ? "off" : value);
+  if (["deepseek", "openrouter"].includes(provider) && options.toggle) {
     levels.add("on");
     levels.add("off");
   }
@@ -165,6 +166,13 @@ function reasoningParams(provider, effort = null, model = null) {
         chat_template_kwargs: toggle
           ? { enable_thinking: effort === "on" }
           : { reasoning_effort: effort },
+      };
+    case "openrouter":
+      // https://openrouter.ai/docs/guides/best-practices/reasoning-tokens
+      // `enabled: false` turns reasoning off for toggle and effort models
+      // alike, and `effort` cannot be combined with `enabled`.
+      return {
+        reasoning: toggle ? { enabled: effort === "on" } : { effort },
       };
     case "deepseek":
       // https://api-docs.deepseek.com/guides/thinking_mode
