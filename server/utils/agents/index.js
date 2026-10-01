@@ -99,9 +99,20 @@ class AgentHandler {
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
-        // Re-read `/img` generated images off disk as attachments so they reach
-        // the agent as vision context, the same way they do in normal chat.
-        const attachments = generatedImageAttachments(response?.outputs);
+        // Restore uploaded images as well as `/img` outputs so a new agent
+        // session can use the same image context as normal chat.
+        const uploadedImages = Array.isArray(response?.attachments)
+          ? response.attachments.filter(
+              (attachment) =>
+                typeof attachment?.mime === "string" &&
+                attachment.mime.startsWith("image/") &&
+                typeof attachment.contentString === "string"
+            )
+          : [];
+        const attachments = [
+          ...uploadedImages,
+          ...generatedImageAttachments(response?.outputs),
+        ];
         agentHistory.push(
           {
             from: USER_AGENT.name,
