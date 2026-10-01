@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-document-collector",
-  "version": "1.16.2",
+  "version": "1.17.0",
   "description": "Document collector server endpoints",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",

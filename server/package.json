@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "1.16.2",
+  "version": "1.17.0",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
