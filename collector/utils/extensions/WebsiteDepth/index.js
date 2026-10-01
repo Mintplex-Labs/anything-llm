@@ -9,6 +9,7 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 const RuntimeSettings = require("../../runtimeSettings");
+const { decodePathname } = require("../../url");
 
 async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   const baseUrl = new URL(startUrl);
@@ -173,7 +174,7 @@ async function bulkScrapePages(links, outFolderPath) {
       }
 
       const url = new URL(link);
-      const decodedPathname = decodeURIComponent(url.pathname);
+      const decodedPathname = decodePathname(url.pathname);
       const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
 
       const data = {

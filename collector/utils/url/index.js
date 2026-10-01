@@ -96,6 +96,22 @@ function validateURL(url) {
 }
 
 /**
+ * Decodes a URL pathname so filenames built from it stay readable
+ * (eg: /docs/caf%C3%A9 -> /docs/café). A path with a % that is not part of a
+ * UTF-8 escape (eg: /50%-off, or the Latin-1 /caf%E9) cannot be decoded, so it
+ * is returned as-is instead of throwing.
+ * @param {string} pathname
+ * @returns {string}
+ */
+function decodePathname(pathname = "") {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return pathname;
+  }
+}
+
+/**
  * Validate if a link is a valid YouTube video URL
  * - Checks youtu.be, youtube.com, m.youtube.com, music.youtube.com
  * - Embed video URLs
@@ -134,4 +150,5 @@ module.exports = {
   validURL,
   validateURL,
   validYoutubeVideoUrl,
+  decodePathname,
 };
