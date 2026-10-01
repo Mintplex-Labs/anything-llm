@@ -275,6 +275,21 @@ const TRANSLATIONS = {
         "Kõrgem väärtus = loovam, ent liiga kõrge võib tekitada ebaühtlasi vastuseid.",
       placeholder: "Teenusepakkuja vaikeväärtus",
     },
+    reasoning_effort: {
+      title: "Arutlemise pingutus",
+      default: "Teenusepakkuja vaikeväärtus",
+      cannot_disable: "See mudel ei saa arutlemist välja lülitada.",
+      levels: {
+        off: "Väljas",
+        on: "Sees",
+        minimal: "Minimaalne",
+        low: "Madal",
+        medium: "Keskmine",
+        high: "Kõrge",
+        xhigh: "Väga kõrge",
+        max: "Maksimaalne",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Vektoriandmebaasi identifikaator",

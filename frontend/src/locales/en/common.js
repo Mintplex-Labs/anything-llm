@@ -291,6 +291,16 @@ const TRANSLATIONS = {
       title: "Reasoning Effort",
       default: "Provider default",
       cannot_disable: "This model cannot turn reasoning off.",
+      levels: {
+        off: "Off",
+        on: "On",
+        minimal: "Minimal",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        xhigh: "Extra high",
+        max: "Max",
+      },
     },
   },
   "vector-workspace": {

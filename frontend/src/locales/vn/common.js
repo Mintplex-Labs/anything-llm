@@ -242,6 +242,21 @@ const TRANSLATIONS = {
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
       placeholder: "Mặc định của nhà cung cấp",
     },
+    reasoning_effort: {
+      title: "Mức độ suy luận",
+      default: "Mặc định của nhà cung cấp",
+      cannot_disable: "Mô hình này không thể tắt suy luận.",
+      levels: {
+        off: "Tắt",
+        on: "Bật",
+        minimal: "Tối thiểu",
+        low: "Thấp",
+        medium: "Trung bình",
+        high: "Cao",
+        xhigh: "Rất cao",
+        max: "Tối đa",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Định danh cơ sở dữ liệu vector",

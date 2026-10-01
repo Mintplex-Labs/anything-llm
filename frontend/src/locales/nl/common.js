@@ -243,6 +243,21 @@ const TRANSLATIONS = {
         "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
       placeholder: "Standaard van de provider",
     },
+    reasoning_effort: {
+      title: "Redeneerinspanning",
+      default: "Standaard van de provider",
+      cannot_disable: "Dit model kan redeneren niet uitschakelen.",
+      levels: {
+        off: "Uit",
+        on: "Aan",
+        minimal: "Minimaal",
+        low: "Laag",
+        medium: "Gemiddeld",
+        high: "Hoog",
+        xhigh: "Extra hoog",
+        max: "Maximaal",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",

@@ -285,6 +285,21 @@ const TRANSLATIONS = {
         "Kuo didesnis skaičius, tuo atsakymai kūrybiškesni. Kai kuriems modeliams nustačius per didelę reikšmę atsakymai gali tapti nerišlūs.",
       placeholder: "Teikėjo numatytoji reikšmė",
     },
+    reasoning_effort: {
+      title: "Samprotavimo pastangos",
+      default: "Teikėjo numatytoji reikšmė",
+      cannot_disable: "Šis modelis negali išjungti samprotavimo.",
+      levels: {
+        off: "Išjungta",
+        on: "Įjungta",
+        minimal: "Minimalios",
+        low: "Mažos",
+        medium: "Vidutinės",
+        high: "Didelės",
+        xhigh: "Labai didelės",
+        max: "Maksimalios",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Vektorių duomenų bazės identifikatorius",

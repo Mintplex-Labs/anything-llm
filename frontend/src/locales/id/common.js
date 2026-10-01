@@ -288,6 +288,21 @@ const TRANSLATIONS = {
         "Semakin tinggi angkanya, semakin kreatif. Untuk beberapa model, ini dapat menyebabkan respons yang tidak koheren jika diatur terlalu tinggi.",
       placeholder: "Default penyedia",
     },
+    reasoning_effort: {
+      title: "Upaya Penalaran",
+      default: "Default penyedia",
+      cannot_disable: "Model ini tidak dapat menonaktifkan penalaran.",
+      levels: {
+        off: "Mati",
+        on: "Nyala",
+        minimal: "Minimal",
+        low: "Rendah",
+        medium: "Sedang",
+        high: "Tinggi",
+        xhigh: "Sangat tinggi",
+        max: "Maksimal",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Pengenal basis data vektor",

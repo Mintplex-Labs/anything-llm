@@ -242,6 +242,21 @@ const TRANSLATIONS = {
         "Plus le nombre est élevé, plus la réponse sera créative. Pour certains modèles, cela peut entraîner des réponses incohérentes si la valeur est trop élevée.",
       placeholder: "Valeur par défaut du fournisseur",
     },
+    reasoning_effort: {
+      title: "Effort de raisonnement",
+      default: "Valeur par défaut du fournisseur",
+      cannot_disable: "Ce modèle ne peut pas désactiver le raisonnement.",
+      levels: {
+        off: "Désactivé",
+        on: "Activé",
+        minimal: "Minimal",
+        low: "Faible",
+        medium: "Moyen",
+        high: "Élevé",
+        xhigh: "Très élevé",
+        max: "Maximal",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identifiant de la base de données vectorielle",

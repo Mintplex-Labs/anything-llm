@@ -289,6 +289,21 @@ const TRANSLATIONS = {
         "Što je broj veći, to je odgovor kreativniji. Kod nekih modela ovo može dovesti do nekoherentnih odgovora ako je postavljeno preveliko.",
       placeholder: "Zadano od pružatelja",
     },
+    reasoning_effort: {
+      title: "Napor zaključivanja",
+      default: "Zadano od pružatelja",
+      cannot_disable: "Ovaj model ne može isključiti zaključivanje.",
+      levels: {
+        off: "Isključeno",
+        on: "Uključeno",
+        minimal: "Minimalno",
+        low: "Nisko",
+        medium: "Srednje",
+        high: "Visoko",
+        xhigh: "Vrlo visoko",
+        max: "Maksimalno",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identifikator vektorske baze podataka",

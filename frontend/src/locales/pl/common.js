@@ -278,6 +278,21 @@ const TRANSLATIONS = {
         "Im wyższa liczba, tym większa kreatywność. W przypadku niektórych modeli może to prowadzić do niespójnych odpowiedzi przy zbyt wysokich ustawieniach.",
       placeholder: "Domyślna wartość dostawcy",
     },
+    reasoning_effort: {
+      title: "Wysiłek rozumowania",
+      default: "Domyślna wartość dostawcy",
+      cannot_disable: "Ten model nie może wyłączyć rozumowania.",
+      levels: {
+        off: "Wyłączone",
+        on: "Włączone",
+        minimal: "Minimalny",
+        low: "Niski",
+        medium: "Średni",
+        high: "Wysoki",
+        xhigh: "Bardzo wysoki",
+        max: "Maksymalny",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identyfikator wektorowej bazy danych",

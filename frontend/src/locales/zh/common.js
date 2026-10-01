@@ -269,6 +269,21 @@ const TRANSLATIONS = {
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
       placeholder: "提供商默认值",
     },
+    reasoning_effort: {
+      title: "推理强度",
+      default: "提供商默认值",
+      cannot_disable: "此模型无法关闭推理。",
+      levels: {
+        off: "关闭",
+        on: "开启",
+        minimal: "最低",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "极高",
+        max: "最高",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "向量数据库标识符",

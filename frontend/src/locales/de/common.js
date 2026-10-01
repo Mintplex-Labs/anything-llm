@@ -279,6 +279,21 @@ const TRANSLATIONS = {
         "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
       placeholder: "Standard des Anbieters",
     },
+    reasoning_effort: {
+      title: "Denkaufwand",
+      default: "Standard des Anbieters",
+      cannot_disable: "Dieses Modell kann das Denken nicht deaktivieren.",
+      levels: {
+        off: "Aus",
+        on: "An",
+        minimal: "Minimal",
+        low: "Niedrig",
+        medium: "Mittel",
+        high: "Hoch",
+        xhigh: "Sehr hoch",
+        max: "Maximal",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Vektordatenbank-Identifikator",

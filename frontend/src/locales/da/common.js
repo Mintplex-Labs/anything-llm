@@ -245,6 +245,21 @@ const TRANSLATIONS = {
         "Jo højere tallet er, desto mere kreative bliver svarene. For nogle modeller kan for høje værdier føre til usammenhængende svar.",
       placeholder: "Udbyderens standard",
     },
+    reasoning_effort: {
+      title: "Ræsonneringsindsats",
+      default: "Udbyderens standard",
+      cannot_disable: "Denne model kan ikke slå ræsonnering fra.",
+      levels: {
+        off: "Fra",
+        on: "Til",
+        minimal: "Minimal",
+        low: "Lav",
+        medium: "Middel",
+        high: "Høj",
+        xhigh: "Ekstra høj",
+        max: "Maks",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",

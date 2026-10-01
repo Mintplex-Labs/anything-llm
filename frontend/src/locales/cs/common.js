@@ -286,6 +286,21 @@ const TRANSLATIONS = {
         "Vyšší číslo znamená kreativnější. U některých modelů to může vést k nesourodým odpovědím při nastavení příliš vysoko.",
       placeholder: "Výchozí hodnota poskytovatele",
     },
+    reasoning_effort: {
+      title: "Úsilí uvažování",
+      default: "Výchozí hodnota poskytovatele",
+      cannot_disable: "Tento model nemůže vypnout uvažování.",
+      levels: {
+        off: "Vypnuto",
+        on: "Zapnuto",
+        minimal: "Minimální",
+        low: "Nízké",
+        medium: "Střední",
+        high: "Vysoké",
+        xhigh: "Velmi vysoké",
+        max: "Maximální",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identifikátor vektorové databáze",

@@ -278,6 +278,21 @@ const TRANSLATIONS = {
         "Valores mais altos geram respostas mais criativas, mas para alguns modelos podem se tornar incoerentes.",
       placeholder: "Padrão do provedor",
     },
+    reasoning_effort: {
+      title: "Esforço de raciocínio",
+      default: "Padrão do provedor",
+      cannot_disable: "Este modelo não pode desativar o raciocínio.",
+      levels: {
+        off: "Desativado",
+        on: "Ativado",
+        minimal: "Mínimo",
+        low: "Baixo",
+        medium: "Médio",
+        high: "Alto",
+        xhigh: "Muito alto",
+        max: "Máximo",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Identificador do banco de dados",

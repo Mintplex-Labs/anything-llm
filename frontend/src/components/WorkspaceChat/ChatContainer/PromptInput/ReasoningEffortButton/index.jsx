@@ -109,7 +109,9 @@ export default function ReasoningEffortButton({
           {options.map((option) => (
             <EffortOption
               key={option}
-              label={option}
+              label={t(`chat.reasoning_effort.levels.${option}`, {
+                defaultValue: option,
+              })}
               selected={!usingDefault && sessionEffort === option}
               onClick={() => select(option)}
             />
@@ -130,7 +132,7 @@ function EffortOption({ label, selected, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`border-none w-full text-left px-2 py-1.5 rounded-lg text-xs capitalize cursor-pointer ${
+      className={`border-none w-full text-left px-2 py-1.5 rounded-lg text-xs cursor-pointer ${
         selected
           ? "bg-zinc-700 light:bg-slate-200 text-white light:text-slate-800"
           : "text-zinc-300 light:text-slate-600 hover:bg-zinc-700 light:hover:bg-slate-200 hover:text-white light:hover:text-slate-800"

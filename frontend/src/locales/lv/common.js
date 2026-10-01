@@ -278,6 +278,21 @@ const TRANSLATIONS = {
         "Jo lielāks skaitlis, jo radošākas atbildes. Dažiem modeļiem tas var novest pie nesaprotamām atbildēm, ja iestatīts pārāk augsts.",
       placeholder: "Nodrošinātāja noklusējums",
     },
+    reasoning_effort: {
+      title: "Spriešanas piepūle",
+      default: "Nodrošinātāja noklusējums",
+      cannot_disable: "Šis modelis nevar izslēgt spriešanu.",
+      levels: {
+        off: "Izslēgts",
+        on: "Ieslēgts",
+        minimal: "Minimāla",
+        low: "Zema",
+        medium: "Vidēja",
+        high: "Augsta",
+        xhigh: "Ļoti augsta",
+        max: "Maksimāla",
+      },
+    },
   },
   "vector-workspace": {
     identifier: "Vektoru datubāzes identifikators",
