@@ -148,6 +148,35 @@ const TRANSLATIONS = {
       editWorkspace: "ແກ້ໄຂພື້ນທີ່ເຮັດວຽກ",
       uploadDocument: "ອັບໂຫຼດເອກະສານ",
     },
+    greetings: {
+      anytime: {
+        working_on: "ພວກເຮົາກຳລັງເຮັດຫຍັງຢູ່?",
+        on_your_mind: "ເຈົ້າກຳລັງຄິດຫຍັງຢູ່?",
+        where_to_start: "ພວກເຮົາຈະເລີ່ມຈາກໃສດີ?",
+        ready: "ພ້ອມເມື່ອເຈົ້າພ້ອມ.",
+        think_it_through: "ມາຄິດໃຫ້ຖີ່ຖ້ວນກັນ.",
+      },
+      morning: {
+        good_morning: "ສະບາຍດີຕອນເຊົ້າ",
+        first_today: "ສະບາຍດີຕອນເຊົ້າ. ມື້ນີ້ຈະເຮັດຫຍັງກ່ອນ?",
+        fresh_start: "ເລີ່ມຕົ້ນໃໝ່. ຈະເລີ່ມຈາກໃສດີ?",
+      },
+      afternoon: {
+        good_afternoon: "ສະບາຍດີຕອນບ່າຍ",
+        tackling: "ສະບາຍດີຕອນບ່າຍ. ພວກເຮົາຈະຈັດການຫຍັງ?",
+        next_on_list: "ລາຍການຕໍ່ໄປແມ່ນຫຍັງ?",
+        keep_moving: "ມາເດີນໜ້າຕໍ່ກັນ.",
+      },
+      evening: {
+        good_evening: "ສະບາຍດີຕອນແລງ",
+        finish_strong: "ສະບາຍດີຕອນແລງ. ມາປິດທ້າຍໃຫ້ດີກັນ.",
+      },
+      night: {
+        midnight_oil: "ເຮັດວຽກເດິກບໍ?",
+        late_one: "ຄືນນີ້ຍາວບໍ? ມາຄິດໃຫ້ຖີ່ຖ້ວນກັນ.",
+        still_up: "ຍັງບໍ່ທັນນອນບໍ? ພ້ອມເມື່ອເຈົ້າພ້ອມ.",
+      },
+    },
   },
   "new-workspace": {
     title: "ສ້າງພື້ນທີ່ເຮັດວຽກໃໝ່",

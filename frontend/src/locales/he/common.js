@@ -137,6 +137,35 @@ const TRANSLATIONS = {
       uploadDocument: "העלה מסמך",
     },
     greeting: "במה אוכל לעזור לך היום?",
+    greetings: {
+      anytime: {
+        working_on: "על מה אנחנו עובדים?",
+        on_your_mind: "מה עובר לך בראש?",
+        where_to_start: "מאיפה נתחיל?",
+        ready: "מוכן כשאתה מוכן.",
+        think_it_through: "בוא נחשוב על זה לעומק.",
+      },
+      morning: {
+        good_morning: "בוקר טוב",
+        first_today: "בוקר טוב. מה הדבר הראשון היום?",
+        fresh_start: "התחלה חדשה. מאיפה מתחילים?",
+      },
+      afternoon: {
+        good_afternoon: "צהריים טובים",
+        tackling: "צהריים טובים. במה נטפל?",
+        next_on_list: "מה הבא ברשימה?",
+        keep_moving: "בוא נמשיך להתקדם.",
+      },
+      evening: {
+        good_evening: "ערב טוב",
+        finish_strong: "ערב טוב. בוא נסיים חזק.",
+      },
+      night: {
+        midnight_oil: "עובדים עד מאוחר?",
+        late_one: "לילה ארוך? בוא נחשוב על זה לעומק.",
+        still_up: "עדיין ער? מוכן כשאתה מוכן.",
+      },
+    },
   },
   "new-workspace": {
     title: "סביבת עבודה חדשה",

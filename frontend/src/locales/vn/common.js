@@ -1428,6 +1428,35 @@ const TRANSLATIONS = {
       uploadDocument: "Tải lên một tài liệu",
     },
     greeting: "Hôm nay tôi có thể giúp gì cho bạn?",
+    greetings: {
+      anytime: {
+        working_on: "Chúng ta đang làm gì nhỉ?",
+        on_your_mind: "Bạn đang nghĩ gì?",
+        where_to_start: "Chúng ta nên bắt đầu từ đâu?",
+        ready: "Sẵn sàng khi bạn cần.",
+        think_it_through: "Hãy cùng suy nghĩ kỹ nhé.",
+      },
+      morning: {
+        good_morning: "Chào buổi sáng",
+        first_today: "Chào buổi sáng. Hôm nay làm gì trước?",
+        fresh_start: "Khởi đầu mới. Bắt đầu từ đâu đây?",
+      },
+      afternoon: {
+        good_afternoon: "Chào buổi chiều",
+        tackling: "Chào buổi chiều. Chúng ta xử lý việc gì?",
+        next_on_list: "Việc tiếp theo trong danh sách là gì?",
+        keep_moving: "Tiếp tục nào.",
+      },
+      evening: {
+        good_evening: "Chào buổi tối",
+        finish_strong: "Chào buổi tối. Cùng kết thúc thật tốt nhé.",
+      },
+      night: {
+        midnight_oil: "Làm việc đến khuya à?",
+        late_one: "Một đêm dài? Hãy cùng suy nghĩ kỹ nhé.",
+        still_up: "Vẫn còn thức à? Sẵn sàng khi bạn cần.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Phím tắt",

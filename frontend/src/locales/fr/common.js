@@ -1458,6 +1458,35 @@ const TRANSLATIONS = {
       uploadDocument: "Télécharger un document",
     },
     greeting: "Comment puis-je vous aider aujourd'hui ?",
+    greetings: {
+      anytime: {
+        working_on: "Sur quoi travaillons-nous ?",
+        on_your_mind: "Qu'avez-vous en tête ?",
+        where_to_start: "Par où commençons-nous ?",
+        ready: "Prêt quand vous l'êtes.",
+        think_it_through: "Prenons le temps d'y réfléchir.",
+      },
+      morning: {
+        good_morning: "Bonjour",
+        first_today: "Bonjour. Par quoi commence-t-on aujourd'hui ?",
+        fresh_start: "Nouveau départ. Par où commencer ?",
+      },
+      afternoon: {
+        good_afternoon: "Bon après-midi",
+        tackling: "Bon après-midi. À quoi s'attaque-t-on ?",
+        next_on_list: "Quelle est la suite de la liste ?",
+        keep_moving: "Gardons le rythme.",
+      },
+      evening: {
+        good_evening: "Bonsoir",
+        finish_strong: "Bonsoir. Finissons en beauté.",
+      },
+      night: {
+        midnight_oil: "Vous travaillez tard ?",
+        late_one: "Longue soirée ? Prenons le temps d'y réfléchir.",
+        still_up: "Encore debout ? Prêt quand vous l'êtes.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Raccourcis clavier",

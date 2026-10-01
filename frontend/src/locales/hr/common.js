@@ -149,6 +149,35 @@ const TRANSLATIONS = {
       editWorkspace: "Uredi radni prostor",
       uploadDocument: "Prenesi dokument",
     },
+    greetings: {
+      anytime: {
+        working_on: "Na čemu radimo?",
+        on_your_mind: "O čemu razmišljate?",
+        where_to_start: "Odakle ćemo početi?",
+        ready: "Spreman sam kad god poželite.",
+        think_it_through: "Dobro razmislimo o tome.",
+      },
+      morning: {
+        good_morning: "Dobro jutro",
+        first_today: "Dobro jutro. Što je danas prvo na redu?",
+        fresh_start: "Novi početak. Odakle krećemo?",
+      },
+      afternoon: {
+        good_afternoon: "Dobar dan",
+        tackling: "Dobar dan. Čime ćemo se pozabaviti?",
+        next_on_list: "Što je sljedeće na popisu?",
+        keep_moving: "Nastavimo dalje.",
+      },
+      evening: {
+        good_evening: "Dobra večer",
+        finish_strong: "Dobra večer. Završimo snažno.",
+      },
+      night: {
+        midnight_oil: "Radite do kasno?",
+        late_one: "Duga večer? Dobro razmislimo o tome.",
+        still_up: "Još ste budni? Spreman sam kad god poželite.",
+      },
+    },
   },
   "new-workspace": {
     title: "Novi radni prostor",

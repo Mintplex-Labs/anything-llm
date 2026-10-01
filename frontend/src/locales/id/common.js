@@ -150,6 +150,35 @@ const TRANSLATIONS = {
       editWorkspace: "Edit Ruang Kerja",
       uploadDocument: "Unggah Dokumen",
     },
+    greetings: {
+      anytime: {
+        working_on: "Apa yang sedang kita kerjakan?",
+        on_your_mind: "Apa yang sedang Anda pikirkan?",
+        where_to_start: "Kita mulai dari mana?",
+        ready: "Siap kapan pun Anda siap.",
+        think_it_through: "Mari kita pikirkan baik-baik.",
+      },
+      morning: {
+        good_morning: "Selamat pagi",
+        first_today: "Selamat pagi. Apa yang pertama hari ini?",
+        fresh_start: "Awal yang baru. Kita mulai dari mana?",
+      },
+      afternoon: {
+        good_afternoon: "Selamat siang",
+        tackling: "Selamat siang. Apa yang akan kita kerjakan?",
+        next_on_list: "Apa berikutnya di daftar?",
+        keep_moving: "Ayo terus melaju.",
+      },
+      evening: {
+        good_evening: "Selamat malam",
+        finish_strong: "Selamat malam. Mari kita tuntaskan dengan baik.",
+      },
+      night: {
+        midnight_oil: "Lembur sampai larut?",
+        late_one: "Malam yang panjang? Mari kita pikirkan baik-baik.",
+        still_up: "Masih terjaga? Siap kapan pun Anda siap.",
+      },
+    },
   },
   "new-workspace": {
     title: "Ruang Kerja Baru",

@@ -1432,6 +1432,35 @@ const TRANSLATIONS = {
       uploadDocument: "Upload en fil",
     },
     greeting: "Hvordan kan jeg hjælpe dig i dag?",
+    greetings: {
+      anytime: {
+        working_on: "Hvad arbejder vi på?",
+        on_your_mind: "Hvad tænker du på?",
+        where_to_start: "Hvor skal vi starte?",
+        ready: "Klar, når du er.",
+        think_it_through: "Lad os tænke det igennem.",
+      },
+      morning: {
+        good_morning: "Godmorgen",
+        first_today: "Godmorgen. Hvad står først på programmet i dag?",
+        fresh_start: "En frisk start. Hvor begynder vi?",
+      },
+      afternoon: {
+        good_afternoon: "God eftermiddag",
+        tackling: "God eftermiddag. Hvad tager vi fat på?",
+        next_on_list: "Hvad er det næste på listen?",
+        keep_moving: "Lad os holde tempoet.",
+      },
+      evening: {
+        good_evening: "God aften",
+        finish_strong: "God aften. Lad os slutte stærkt af.",
+      },
+      night: {
+        midnight_oil: "Arbejder du sent?",
+        late_one: "Lang aften? Lad os tænke det igennem.",
+        still_up: "Stadig vågen? Klar, når du er.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Tastaturgenveje",

@@ -136,6 +136,35 @@ const TRANSLATIONS = {
       uploadDocument: "上传文件",
     },
     greeting: "今天我能帮您什么？",
+    greetings: {
+      anytime: {
+        working_on: "我们要做些什么？",
+        on_your_mind: "您在想什么？",
+        where_to_start: "我们从哪里开始？",
+        ready: "随时为您待命。",
+        think_it_through: "我们来好好想一想。",
+      },
+      morning: {
+        good_morning: "早上好",
+        first_today: "早上好。今天先做什么？",
+        fresh_start: "新的开始。从哪里着手？",
+      },
+      afternoon: {
+        good_afternoon: "下午好",
+        tackling: "下午好。我们要处理什么？",
+        next_on_list: "清单上的下一项是什么？",
+        keep_moving: "我们继续推进吧。",
+      },
+      evening: {
+        good_evening: "晚上好",
+        finish_strong: "晚上好。我们漂亮收尾吧。",
+      },
+      night: {
+        midnight_oil: "还在挑灯夜战？",
+        late_one: "忙到这么晚？我们来好好想一想。",
+        still_up: "还没睡？随时为您待命。",
+      },
+    },
   },
   "new-workspace": {
     title: "新工作区",

@@ -147,6 +147,35 @@ const TRANSLATIONS = {
       editWorkspace: "Redaguoti darbo sritį",
       uploadDocument: "Įkelti dokumentą",
     },
+    greetings: {
+      anytime: {
+        working_on: "Prie ko dirbame?",
+        on_your_mind: "Apie ką galvojate?",
+        where_to_start: "Nuo ko pradėsime?",
+        ready: "Esu pasiruošęs, kai tik norėsite.",
+        think_it_through: "Gerai tai apgalvokime.",
+      },
+      morning: {
+        good_morning: "Labas rytas",
+        first_today: "Labas rytas. Nuo ko šiandien pradedame?",
+        fresh_start: "Nauja pradžia. Nuo ko pradėsime?",
+      },
+      afternoon: {
+        good_afternoon: "Laba diena",
+        tackling: "Laba diena. Ko imsimės?",
+        next_on_list: "Kas toliau sąraše?",
+        keep_moving: "Judėkime toliau.",
+      },
+      evening: {
+        good_evening: "Labas vakaras",
+        finish_strong: "Labas vakaras. Užbaikime dieną stipriai.",
+      },
+      night: {
+        midnight_oil: "Dirbate iki vėlumos?",
+        late_one: "Ilgas vakaras? Gerai tai apgalvokime.",
+        still_up: "Dar nemiegate? Esu pasiruošęs, kai tik norėsite.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nauja darbo sritis",
