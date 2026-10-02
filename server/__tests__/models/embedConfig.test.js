@@ -187,6 +187,71 @@ describe("EmbedConfig", () => {
       ).toEqual(["https://example.com"]);
     });
 
+    it("compares stored entries as browser origins", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "https://example.com/",
+            "https://Example.com:443/docs",
+            "http://other.com:8080/",
+          ]),
+        })
+      ).toEqual([
+        "https://example.com",
+        "https://example.com",
+        "http://other.com:8080",
+      ]);
+    });
+
+    it("never turns an entry into the opaque origin null", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "view-source:https://example.com",
+          ]),
+        })
+      ).toEqual([]);
+    });
+
+    it("allows a scheme typed in capitals without prefixing a second one", async () => {
+      await EmbedConfig.new({
+        workspace_id: 1,
+        allowlist_domains: ["HTTPS://good.example", "HTTP://good.example:8080"],
+      });
+      const { allowlist_domains } = stored(mockPrisma.embed_configs.create);
+      expect(allowlist_domains).toBe(
+        JSON.stringify(["HTTPS://good.example", "HTTP://good.example:8080"])
+      );
+      expect(EmbedConfig.parseAllowedHosts({ allowlist_domains })).toEqual([
+        "https://good.example",
+        "http://good.example:8080",
+      ]);
+    });
+
+    it("drops a stored entry with a second scheme after the first", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "https://HTTPS://good.example",
+            "https://http://good.example",
+          ]),
+        })
+      ).toEqual([]);
+    });
+
+    it("keeps only the valid string from a list with non-string and opaque members", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "https://example.com",
+            ["https://evil.example"],
+            5,
+            "view-source:https://example.com",
+          ]),
+        })
+      ).toEqual(["https://example.com"]);
+    });
+
     it("returns an empty (deny-all) list for corrupt JSON", () => {
       expect(
         EmbedConfig.parseAllowedHosts({ id: 1, allowlist_domains: "{not json" })
