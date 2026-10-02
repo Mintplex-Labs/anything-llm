@@ -202,10 +202,9 @@ const EmbedConfig = {
       return JSON.parse(embed.allowlist_domains)
         .map((entry) => {
           if (typeof entry !== "string") return null;
-          // The save check prefixes https:// unless a lowercase http:// or
-          // https:// is present, so a scheme typed in capitals is stored behind
-          // a second scheme (https://HTTPS://...) and would parse to a host
-          // named after that scheme. Drop these rather than allow that host.
+          // An entry with a second scheme after the first (https://HTTPS://...)
+          // parses to a host named after the inner scheme. Drop it rather than
+          // allow that host.
           if (/^https?:\/\/[a-z][a-z\d+.-]*:\/\//i.test(entry)) return null;
           try {
             return new URL(entry).origin;
@@ -253,8 +252,7 @@ function validatedCreationData(value, field) {
           .filter((input) => typeof input === "string")
           .map((input) => {
             let url = input;
-            if (!url.includes("http://") && !url.includes("https://"))
-              url = `https://${url}`;
+            if (!/https?:\/\//i.test(url)) url = `https://${url}`;
             try {
               new URL(url);
               return url;

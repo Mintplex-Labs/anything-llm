@@ -213,13 +213,30 @@ describe("EmbedConfig", () => {
       ).toEqual([]);
     });
 
-    it("keeps a scheme typed in capitals denied after the save check double-prefixes it", async () => {
+    it("allows a scheme typed in capitals without prefixing a second one", async () => {
       await EmbedConfig.new({
         workspace_id: 1,
-        allowlist_domains: ["HTTPS://good.example", "HTTP://good.example"],
+        allowlist_domains: ["HTTPS://good.example", "HTTP://good.example:8080"],
       });
       const { allowlist_domains } = stored(mockPrisma.embed_configs.create);
-      expect(EmbedConfig.parseAllowedHosts({ allowlist_domains })).toEqual([]);
+      expect(allowlist_domains).toBe(
+        JSON.stringify(["HTTPS://good.example", "HTTP://good.example:8080"])
+      );
+      expect(EmbedConfig.parseAllowedHosts({ allowlist_domains })).toEqual([
+        "https://good.example",
+        "http://good.example:8080",
+      ]);
+    });
+
+    it("drops a stored entry with a second scheme after the first", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "https://HTTPS://good.example",
+            "https://http://good.example",
+          ]),
+        })
+      ).toEqual([]);
     });
 
     it("keeps only the valid string from a list with non-string and opaque members", () => {
