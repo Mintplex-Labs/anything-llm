@@ -328,6 +328,14 @@ const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
     ],
     logo: LanceDbLogo,
   },
+  lancedb_cloud: {
+    name: "LanceDB Cloud",
+    description: [
+      "Your vectors and document text leave this instance and are stored on the object storage bucket or LanceDB Cloud database you configured.",
+      "Access to that store is managed by you.",
+    ],
+    logo: LanceDbLogo,
+  },
 };
 
 const EMBEDDING_ENGINE_PROVIDER_PRIVACY_MAP = {
