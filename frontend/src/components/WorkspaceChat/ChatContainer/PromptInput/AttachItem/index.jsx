@@ -56,6 +56,7 @@ export default function AttachItem({
    */
   async function handleRemoveAttachment(e) {
     const { document } = e.detail;
+    if (!document?.id) return;
     await Workspace.deleteParsedFiles(slug, [document.id]);
     fetchFiles();
   }
