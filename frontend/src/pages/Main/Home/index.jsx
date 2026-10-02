@@ -115,7 +115,16 @@ export default function Home() {
         setWorkspace(ws);
       }
       const { thread } = await Workspace.threads.new(ws.slug);
-      if (thread) setThreadSlug(thread.slug);
+      if (thread) {
+        // Move the draft's reasoning effort over to the new thread.
+        setSessionReasoningEffort(
+          ws.slug,
+          thread.slug,
+          getSessionReasoningEffort(ws.slug, HOME_DRAFT_SESSION)
+        );
+        setSessionReasoningEffort(ws.slug, HOME_DRAFT_SESSION, null);
+        setThreadSlug(thread.slug);
+      }
     }
 
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
@@ -137,7 +146,16 @@ export default function Home() {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
     const { thread } = await Workspace.threads.new(workspace.slug);
-    if (thread) setThreadSlug(thread.slug);
+    if (thread) {
+      // Move the draft's reasoning effort over to the new thread.
+      setSessionReasoningEffort(
+        workspace.slug,
+        thread.slug,
+        getSessionReasoningEffort(workspace.slug, HOME_DRAFT_SESSION)
+      );
+      setSessionReasoningEffort(workspace.slug, HOME_DRAFT_SESSION, null);
+      setThreadSlug(thread.slug);
+    }
   }
 
   if (workspaceLoading) {

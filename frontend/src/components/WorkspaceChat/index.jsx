@@ -20,6 +20,10 @@ import {
   useWatchForAutoPlayAssistantTTSResponse,
 } from "../contexts/TTSProvider";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import {
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
@@ -47,7 +51,15 @@ export default function WorkspaceChat({ loading, workspace }) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
     const { thread } = await Workspace.threads.new(workspace.slug);
-    if (thread) navigate(paths.workspace.thread(workspace.slug, thread.slug));
+    if (thread) {
+      // Give the new thread the reasoning effort picked before it existed.
+      setSessionReasoningEffort(
+        workspace.slug,
+        thread.slug,
+        getSessionReasoningEffort(workspace.slug)
+      );
+      navigate(paths.workspace.thread(workspace.slug, thread.slug));
+    }
   }
 
   useEffect(() => {

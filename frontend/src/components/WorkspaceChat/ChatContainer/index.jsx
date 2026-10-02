@@ -28,7 +28,10 @@ import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderM
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
-import { getSessionReasoningEffort } from "@/utils/chat/reasoningEffort";
+import {
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 import { safeJsonParse } from "@/utils/request";
 import useGreeting from "@/hooks/useGreeting";
 import paths from "@/utils/paths";
@@ -113,6 +116,12 @@ export default function ChatContainer({
     if (!activeThreadSlug && chatHistory.length === 0) {
       const { thread } = await Workspace.threads.new(workspace.slug);
       if (thread) {
+        // Give the new thread the reasoning effort picked before it existed.
+        setSessionReasoningEffort(
+          workspace.slug,
+          thread.slug,
+          getSessionReasoningEffort(workspace.slug)
+        );
         sessionStorage.setItem(
           PENDING_HOME_MESSAGE,
           JSON.stringify({
@@ -200,6 +209,12 @@ export default function ChatContainer({
     if (!activeThreadSlug && chatHistory.length === 0 && history.length === 0) {
       const { thread } = await Workspace.threads.new(workspace.slug);
       if (thread) {
+        // Give the new thread the reasoning effort picked before it existed.
+        setSessionReasoningEffort(
+          workspace.slug,
+          thread.slug,
+          getSessionReasoningEffort(workspace.slug)
+        );
         sessionStorage.setItem(
           PENDING_HOME_MESSAGE,
           JSON.stringify({ message: text, attachments })
