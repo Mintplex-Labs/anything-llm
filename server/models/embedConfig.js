@@ -203,9 +203,9 @@ const EmbedConfig = {
         .map((entry) => {
           if (typeof entry !== "string") return null;
           // The save check prefixes https:// unless a lowercase http:// or
-          // https:// is present, so a scheme typed in capitals was stored behind
-          // a second scheme and parses to a host named after that scheme. Those
-          // entries never matched a request, so keep them that way.
+          // https:// is present, so a scheme typed in capitals is stored behind
+          // a second scheme (https://HTTPS://...) and would parse to a host
+          // named after that scheme. Drop these rather than allow that host.
           if (/^https?:\/\/[a-z][a-z\d+.-]*:\/\//i.test(entry)) return null;
           try {
             return new URL(entry).origin;
