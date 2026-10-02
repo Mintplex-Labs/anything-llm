@@ -195,7 +195,19 @@ const EmbedConfig = {
     if (!embed.allowlist_domains) return null;
 
     try {
-      return JSON.parse(embed.allowlist_domains);
+      // Compare origins, not the raw text typed: the browser's Origin header is
+      // `scheme://host[:port]` in lowercase with no path. "null" (the origin of
+      // view-source: or data: entries) is dropped so it cannot match requests
+      // that send `Origin: null`, such as sandboxed iframes.
+      return JSON.parse(embed.allowlist_domains)
+        .map((entry) => {
+          try {
+            return new URL(entry).origin;
+          } catch {
+            return null;
+          }
+        })
+        .filter((origin) => !!origin && origin !== "null");
     } catch {
       console.error(`Failed to parse allowlist_domains for Embed ${embed.id}!`);
       return [];

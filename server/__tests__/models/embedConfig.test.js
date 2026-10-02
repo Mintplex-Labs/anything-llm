@@ -187,6 +187,32 @@ describe("EmbedConfig", () => {
       ).toEqual(["https://example.com"]);
     });
 
+    it("compares stored entries as browser origins", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "https://example.com/",
+            "https://Example.com:443/docs",
+            "http://other.com:8080/",
+          ]),
+        })
+      ).toEqual([
+        "https://example.com",
+        "https://example.com",
+        "http://other.com:8080",
+      ]);
+    });
+
+    it("never turns an entry into the opaque origin null", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "view-source:https://example.com",
+          ]),
+        })
+      ).toEqual([]);
+    });
+
     it("returns an empty (deny-all) list for corrupt JSON", () => {
       expect(
         EmbedConfig.parseAllowedHosts({ id: 1, allowlist_domains: "{not json" })
