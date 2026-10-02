@@ -1,6 +1,6 @@
 const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
-const { safeJsonParse } = require("../http");
+const { AgentSkillConfig } = require("../../models/agentSkillConfig");
 const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
@@ -14,38 +14,46 @@ const DEFAULT_SKILLS = [
   AgentPlugins.webBrowsing.name,
 ];
 
+// Built-in skills that are off until enabled.
+const OPTIONAL_SKILLS = [
+  AgentPlugins.rechart.name,
+  AgentPlugins.generateImage.name,
+  AgentPlugins.sqlAgent.name,
+  AgentPlugins.filesystemAgent.name,
+  AgentPlugins.createFilesAgent.name,
+  AgentPlugins.gmailAgent.name,
+  AgentPlugins.outlookAgent.name,
+  AgentPlugins.googleCalendarAgent.name,
+  AgentPlugins.createScheduledJob.name,
+];
+
 // Skills that must never be injected when the instance is running in multi-user mode.
 const SINGLE_USER_ONLY_SKILLS = new Set(["create-scheduled-job"]);
 
 /**
- * Configuration for agent skills that require availability checks and disabled sub-skill lists.
- * Each entry maps a skill name to its availability checker and disabled skills list key.
+ * Configuration for agent skills that require availability checks.
+ * Each entry maps a skill name to its availability checker.
  */
 const SKILL_FILTER_CONFIG = {
   "filesystem-agent": {
     getAvailability: () =>
       require("./aibitat/plugins/filesystem/lib").isToolAvailable(),
-    disabledSettingKey: "disabled_filesystem_skills",
   },
   "create-files-agent": {
     getAvailability: () =>
       require("./aibitat/plugins/create-files/lib").isToolAvailable(),
-    disabledSettingKey: "disabled_create_files_skills",
   },
   "gmail-agent": {
     getAvailability: async () =>
       require("./aibitat/plugins/gmail/lib").GmailBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_gmail_skills",
   },
   "outlook-agent": {
     getAvailability: async () =>
       require("./aibitat/plugins/outlook/lib").OutlookBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_outlook_skills",
   },
   "google-calendar-agent": {
     getAvailability: async () =>
       require("./aibitat/plugins/google-calendar/lib").GoogleCalendarBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_google_calendar_skills",
   },
 };
 
@@ -92,7 +100,7 @@ const WORKSPACE_AGENT = {
     return {
       role,
       functions: [
-        ...(await agentSkillsFromSystemSettings()),
+        ...(await agentSkillsFromSystemSettings({ workspace })),
         ...clarifyingQuestionsSkills,
         ...ImportedPlugin.activeImportedPlugins(),
         ...AgentFlows.activeFlowPlugins(),
@@ -126,66 +134,37 @@ async function clarifyingQuestionsSkillIfEnabled() {
 /**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically
  * loaded later
+ * @param {Object} [scope]
+ * @param {import("@prisma/client").workspaces | null} [scope.workspace]
  * @returns {Promise<string[]>}
  */
-async function agentSkillsFromSystemSettings() {
+async function agentSkillsFromSystemSettings({ workspace = null } = {}) {
   const systemFunctions = [];
-  const isMultiUser = await SystemSettings.isMultiUserMode();
+  const [isMultiUser, skillConfigs] = await Promise.all([
+    SystemSettings.isMultiUserMode(),
+    AgentSkillConfig.resolveAll({ workspaceId: workspace?.id }),
+  ]);
+  const isEnabled = (skill, enabledByDefault) =>
+    skillConfigs[skill]?.enabled ?? enabledByDefault;
 
-  // Load non-imported built-in skills that are configurable, but are default enabled.
-  const _disabledDefaultSkills = safeJsonParse(
-    await SystemSettings.getValueOrFallback(
-      { label: "disabled_agent_skills" },
-      "[]"
-    ),
-    []
-  );
-  DEFAULT_SKILLS.forEach((skill) => {
-    if (!_disabledDefaultSkills.includes(skill))
-      systemFunctions.push(AgentPlugins[skill].name);
-  });
+  const enabledSkills = [
+    ...DEFAULT_SKILLS.filter((skill) => isEnabled(skill, true)),
+    ...OPTIONAL_SKILLS.filter((skill) => isEnabled(skill, false)),
+  ];
 
-  // Load non-imported built-in skills that are configurable.
-  const _setting = safeJsonParse(
-    await SystemSettings.getValueOrFallback(
-      { label: "default_agent_skills" },
-      "[]"
-    ),
-    []
-  );
-
-  // Pre-load disabled sub-skills and availability for configured skills
-  const skillFilterState = {};
-  for (const skillName of Object.keys(SKILL_FILTER_CONFIG)) {
-    if (!_setting.includes(skillName)) continue;
-    const config = SKILL_FILTER_CONFIG[skillName];
-    skillFilterState[skillName] = {
-      available: await config.getAvailability(),
-      disabledSubSkills: safeJsonParse(
-        await SystemSettings.getValueOrFallback(
-          { label: config.disabledSettingKey },
-          "[]"
-        ),
-        []
-      ),
-    };
-  }
-
-  for (const skillName of _setting) {
-    if (!AgentPlugins.hasOwnProperty(skillName)) continue;
+  for (const skillName of enabledSkills) {
     if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
+    if (
+      SKILL_FILTER_CONFIG[skillName] &&
+      !(await SKILL_FILTER_CONFIG[skillName].getAvailability())
+    )
+      continue;
 
     // This is a plugin module with many sub-children plugins who
     // need to be named via `${parent}#${child}` naming convention
     if (Array.isArray(AgentPlugins[skillName].plugin)) {
       for (const subPlugin of AgentPlugins[skillName].plugin) {
-        // Check if this skill has filter configuration
-        const filterState = skillFilterState[skillName];
-        if (filterState) {
-          if (!filterState.available) continue;
-          if (filterState.disabledSubSkills.includes(subPlugin.name)) continue;
-        }
-
+        if (!isEnabled(subPlugin.name, true)) continue;
         systemFunctions.push(
           `${AgentPlugins[skillName].name}#${subPlugin.name}`
         );
@@ -197,6 +176,20 @@ async function agentSkillsFromSystemSettings() {
     systemFunctions.push(AgentPlugins[skillName].name);
   }
   return systemFunctions;
+}
+
+/**
+ * Whether a name is a built-in skill or sub-skill that agent skill configs can toggle.
+ * @param {string} skill
+ * @returns {boolean}
+ */
+function isConfigurableSkill(skill = "") {
+  return [...DEFAULT_SKILLS, ...OPTIONAL_SKILLS].some(
+    (name) =>
+      name === skill ||
+      (Array.isArray(AgentPlugins[name].plugin) &&
+        AgentPlugins[name].plugin.some((child) => child.name === skill))
+  );
 }
 
 /**
@@ -267,5 +260,6 @@ module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  isConfigurableSkill,
   resolveAgentSkill,
 };

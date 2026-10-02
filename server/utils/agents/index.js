@@ -11,6 +11,8 @@ const { safeJsonParse } = require("../http");
 const {
   USER_AGENT,
   WORKSPACE_AGENT,
+  agentSkillsFromSystemSettings,
+  isConfigurableSkill,
   resolveAgentSkill,
 } = require("./defaults");
 const ImportedPlugin = require("./imported");
@@ -726,6 +728,8 @@ class AgentHandler {
    * them; disabling pops the registered function(s) off the aibitat functions
    * Map. Changes apply on the agent's next turn. Registered on the aibitat
    * instance as `toggleAgentTool` so the websocket plugin can call it.
+   * Built-in skills ignore `enabled` and follow their saved agent skill config
+   * for this workspace, so a stale or forged toggle cannot load a disabled skill.
    * @param {object} params
    * @param {string} params.skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
    * @param {boolean} [params.enabled=true] - Whether the tool should be enabled.
@@ -735,21 +739,26 @@ class AgentHandler {
     if (!skill || !this.aibitat?.agents.has(WORKSPACE_AGENT.name)) return;
     const { loadable, registered } = resolveAgentSkill(skill, { serverName });
     const agent = () => this.aibitat.agents.get(WORKSPACE_AGENT.name);
+    const allowed = isConfigurableSkill(skill)
+      ? await agentSkillsFromSystemSettings({
+          workspace: this.invocation.workspace,
+        })
+      : null;
 
-    if (enabled) {
-      for (const entry of loadable) {
-        if (!agent().functions.includes(entry)) agent().functions.push(entry);
-        await this.#attachPluginByName(entry, this.#args);
+    for (const [i, entry] of loadable.entries()) {
+      if (allowed ? !allowed.includes(entry) : !enabled) {
+        this.aibitat.removeFunction(registered[i]);
+        this.log(`Disabled tool ${registered[i]} mid-session.`);
+        continue;
       }
-      // Dedupe in case re-enabling a flow/MCP tool re-pushed a name already
-      // resolved into the agent's function list at session start.
-      agent().functions = [...new Set(agent().functions)];
-      this.log(`Enabled tool(s) [${registered.join(", ")}] mid-session.`);
-      return;
-    }
 
-    for (const name of registered) this.aibitat.removeFunction(name);
-    this.log(`Disabled tool(s) [${registered.join(", ")}] mid-session.`);
+      if (!agent().functions.includes(entry)) agent().functions.push(entry);
+      await this.#attachPluginByName(entry, this.#args);
+      this.log(`Enabled tool ${registered[i]} mid-session.`);
+    }
+    // Dedupe in case re-enabling a flow/MCP tool re-pushed a name already
+    // resolved into the agent's function list at session start.
+    agent().functions = [...new Set(agent().functions)];
   }
 
   async #loadAgents() {
