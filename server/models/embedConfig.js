@@ -195,12 +195,18 @@ const EmbedConfig = {
     if (!embed.allowlist_domains) return null;
 
     try {
-      // Compare origins, not the raw text typed: the browser's Origin header is
-      // `scheme://host[:port]` in lowercase with no path. "null" (the origin of
-      // view-source: or data: entries) is dropped so it cannot match requests
-      // that send `Origin: null`, such as sandboxed iframes.
+      // Compare origins, not the raw text typed: for an ordinary HTTP or HTTPS
+      // page the browser's Origin header is `scheme://host[:port]` in lowercase
+      // with no path. "null" (the origin of view-source: or data: entries) is
+      // dropped so it cannot match requests that send `Origin: null`.
       return JSON.parse(embed.allowlist_domains)
         .map((entry) => {
+          if (typeof entry !== "string") return null;
+          // The save check prefixes https:// unless a lowercase http:// or
+          // https:// is present, so a scheme typed in capitals was stored behind
+          // a second scheme and parses to a host named after that scheme. Those
+          // entries never matched a request, so keep them that way.
+          if (/^https?:\/\/[a-z][a-z\d+.-]*:\/\//i.test(entry)) return null;
           try {
             return new URL(entry).origin;
           } catch {

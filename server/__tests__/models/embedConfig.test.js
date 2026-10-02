@@ -213,6 +213,28 @@ describe("EmbedConfig", () => {
       ).toEqual([]);
     });
 
+    it("keeps a scheme typed in capitals denied after the save check double-prefixes it", async () => {
+      await EmbedConfig.new({
+        workspace_id: 1,
+        allowlist_domains: ["HTTPS://good.example", "HTTP://good.example"],
+      });
+      const { allowlist_domains } = stored(mockPrisma.embed_configs.create);
+      expect(EmbedConfig.parseAllowedHosts({ allowlist_domains })).toEqual([]);
+    });
+
+    it("keeps only the valid string from a list with non-string and opaque members", () => {
+      expect(
+        EmbedConfig.parseAllowedHosts({
+          allowlist_domains: JSON.stringify([
+            "https://example.com",
+            ["https://evil.example"],
+            5,
+            "view-source:https://example.com",
+          ]),
+        })
+      ).toEqual(["https://example.com"]);
+    });
+
     it("returns an empty (deny-all) list for corrupt JSON", () => {
       expect(
         EmbedConfig.parseAllowedHosts({ id: 1, allowlist_domains: "{not json" })
