@@ -6,7 +6,7 @@ function isSupportedRepoProvider(request, response, next) {
   if (!repo_platform || !REPO_PLATFORMS.includes(repo_platform))
     return response
       .status(500)
-      .text(`Unsupported repo platform ${repo_platform}`);
+      .send(`Unsupported repo platform ${repo_platform}`);
   next();
 }
 module.exports = { isSupportedRepoProvider };
