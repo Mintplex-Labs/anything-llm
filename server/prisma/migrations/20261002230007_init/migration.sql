@@ -5,6 +5,7 @@ CREATE TABLE "agent_skill_configs" (
     "workspace_id" INTEGER,
     "user_id" INTEGER,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "personal" BOOLEAN NOT NULL DEFAULT false,
     "config" TEXT,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

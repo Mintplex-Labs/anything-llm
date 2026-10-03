@@ -453,6 +453,7 @@ model agent_skill_configs {
   workspaceId Int?     @map("workspace_id")
   userId      Int?     @map("user_id")
   enabled     Boolean  @default(true)
+  personal    Boolean  @default(false)
   config      String?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @map("updated_at")

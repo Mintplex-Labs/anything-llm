@@ -100,7 +100,7 @@ const WORKSPACE_AGENT = {
     return {
       role,
       functions: [
-        ...(await agentSkillsFromSystemSettings({ workspace })),
+        ...(await agentSkillsFromSystemSettings({ workspace, user })),
         ...clarifyingQuestionsSkills,
         ...ImportedPlugin.activeImportedPlugins(),
         ...AgentFlows.activeFlowPlugins(),
@@ -132,27 +132,79 @@ async function clarifyingQuestionsSkillIfEnabled() {
 }
 
 /**
+ * @typedef {Object} AgentSkillState
+ * @property {string} skill
+ * @property {string|null} parent - parent skill name for sub-skills
+ * @property {boolean} available - allowed by the admin levels
+ * @property {boolean} enabled - available and not opted out of by the user
+ * @property {Object|null} sharedConfig - unmasked config set by an admin level
+ * @property {Object|null} personalConfig - unmasked config the user set for themselves
+ */
+
+/**
+ * Resolve every built-in skill and sub-skill for a workspace and user.
+ * @param {Object} [scope]
+ * @param {import("@prisma/client").workspaces | null} [scope.workspace]
+ * @param {import("@prisma/client").users | null} [scope.user]
+ * @returns {Promise<AgentSkillState[]>}
+ */
+async function agentSkillStates({ workspace = null, user = null } = {}) {
+  const resolved = await AgentSkillConfig.resolveAll({
+    workspaceId: workspace?.id,
+    userId: user?.id,
+  });
+  const state = (skill, enabledByDefault, parent = null) => {
+    const available =
+      (parent?.available ?? true) &&
+      (resolved[skill]?.enabled ?? enabledByDefault);
+    return {
+      skill,
+      parent: parent?.skill ?? null,
+      available,
+      enabled:
+        available && (parent?.enabled ?? true) && !resolved[skill]?.optedOut,
+      sharedConfig: resolved[skill]?.sharedConfig ?? null,
+      personalConfig: resolved[skill]?.personalConfig ?? null,
+    };
+  };
+
+  return [
+    ...DEFAULT_SKILLS.map((skill) => [skill, true]),
+    ...OPTIONAL_SKILLS.map((skill) => [skill, false]),
+  ].flatMap(([skill, enabledByDefault]) => {
+    const parent = state(skill, enabledByDefault);
+    const children = Array.isArray(AgentPlugins[skill].plugin)
+      ? AgentPlugins[skill].plugin.map((child) =>
+          state(child.name, true, parent)
+        )
+      : [];
+    return [parent, ...children];
+  });
+}
+
+/**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically
  * loaded later
  * @param {Object} [scope]
  * @param {import("@prisma/client").workspaces | null} [scope.workspace]
+ * @param {import("@prisma/client").users | null} [scope.user]
  * @returns {Promise<string[]>}
  */
-async function agentSkillsFromSystemSettings({ workspace = null } = {}) {
+async function agentSkillsFromSystemSettings({
+  workspace = null,
+  user = null,
+} = {}) {
   const systemFunctions = [];
-  const [isMultiUser, skillConfigs] = await Promise.all([
+  const [isMultiUser, states] = await Promise.all([
     SystemSettings.isMultiUserMode(),
-    AgentSkillConfig.resolveAll({ workspaceId: workspace?.id }),
+    agentSkillStates({ workspace, user }),
   ]);
-  const isEnabled = (skill, enabledByDefault) =>
-    skillConfigs[skill]?.enabled ?? enabledByDefault;
+  const enabledSkills = new Set(
+    states.filter((state) => state.enabled).map((state) => state.skill)
+  );
 
-  const enabledSkills = [
-    ...DEFAULT_SKILLS.filter((skill) => isEnabled(skill, true)),
-    ...OPTIONAL_SKILLS.filter((skill) => isEnabled(skill, false)),
-  ];
-
-  for (const skillName of enabledSkills) {
+  for (const skillName of [...DEFAULT_SKILLS, ...OPTIONAL_SKILLS]) {
+    if (!enabledSkills.has(skillName)) continue;
     if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
     if (
       SKILL_FILTER_CONFIG[skillName] &&
@@ -164,7 +216,7 @@ async function agentSkillsFromSystemSettings({ workspace = null } = {}) {
     // need to be named via `${parent}#${child}` naming convention
     if (Array.isArray(AgentPlugins[skillName].plugin)) {
       for (const subPlugin of AgentPlugins[skillName].plugin) {
-        if (!isEnabled(subPlugin.name, true)) continue;
+        if (!enabledSkills.has(subPlugin.name)) continue;
         systemFunctions.push(
           `${AgentPlugins[skillName].name}#${subPlugin.name}`
         );
@@ -176,6 +228,25 @@ async function agentSkillsFromSystemSettings({ workspace = null } = {}) {
     systemFunctions.push(AgentPlugins[skillName].name);
   }
   return systemFunctions;
+}
+
+/**
+ * Mask a skill config before it is sent to the UI. Skills list their secret config
+ * keys in `secretConfigFields` on their plugin export. Masked values sent back on
+ * save are ignored, so the stored secret is kept.
+ * @param {string} skill
+ * @param {Object|null} config
+ * @returns {Object|null}
+ */
+function maskSkillConfig(skill, config = null) {
+  if (!config) return null;
+  const secretFields = AgentPlugins[skill]?.secretConfigFields ?? [];
+  return Object.fromEntries(
+    Object.entries(config).map(([key, value]) => [
+      key,
+      secretFields.includes(key) && value ? "********" : value,
+    ])
+  );
 }
 
 /**
@@ -259,7 +330,9 @@ function resolveAgentSkill(skill = "", { serverName = null } = {}) {
 module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
+  agentSkillStates,
   agentSkillsFromSystemSettings,
   isConfigurableSkill,
+  maskSkillConfig,
   resolveAgentSkill,
 };

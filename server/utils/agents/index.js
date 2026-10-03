@@ -742,6 +742,9 @@ class AgentHandler {
     const allowed = isConfigurableSkill(skill)
       ? await agentSkillsFromSystemSettings({
           workspace: this.invocation.workspace,
+          user: this.invocation.user_id
+            ? { id: this.invocation.user_id }
+            : null,
         })
       : null;
 

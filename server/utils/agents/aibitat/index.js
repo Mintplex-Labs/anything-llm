@@ -134,7 +134,7 @@ class AIbitat {
   }
 
   /**
-   * Get a skill's config resolved for the workspace of the current invocation.
+   * Get a skill's config resolved for the workspace and user of the current invocation.
    * @param {string} skill - Skill name as registered in aibitat
    * @returns {Promise<Object|null>}
    */
@@ -142,6 +142,7 @@ class AIbitat {
     return AgentSkillConfig.configFor({
       skill,
       workspaceId: this.handlerProps?.invocation?.workspace_id,
+      userId: this.handlerProps?.invocation?.user_id,
     });
   }
 

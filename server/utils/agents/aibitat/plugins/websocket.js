@@ -186,13 +186,15 @@ const websocket = {
         // change applies on the agent's next turn. Returns true once handled so
         // the socket message router stops further dispatch. Toggling is an
         // admin-only action, so the message is claimed but only applied once
-        // the requesting user is authorized.
+        // the requesting user is authorized. Built-in skills are open to every
+        // user since they are re-synced from that user's saved skill configs.
         socket.handleToolToggle = (message) => {
           const data = safeJsonParse(message, {});
           if (data?.type !== "agentToolToggle") return false;
 
+          const { isConfigurableSkill } = require("../../defaults");
           userCanToggleTools(userId).then((authorized) => {
-            if (!authorized)
+            if (!authorized && !isConfigurableSkill(data.skill))
               return console.log(
                 chalk.yellow("Ignoring agentToolToggle from a non-admin user.")
               );
