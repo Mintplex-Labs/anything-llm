@@ -142,6 +142,17 @@ describe("convertCronLocalToUtc", () => {
     });
   });
 
+  describe("hourly schedules", () => {
+    it.each([
+      ["15 * * * *", "Asia/Kolkata", "45 * * * *"],
+      ["0 * * * *", "Asia/Kolkata", "30 * * * *"],
+      ["0 * * * *", "Asia/Kathmandu", "15 * * * *"],
+      ["15 * * * *", "America/New_York", "15 * * * *"],
+    ])("%s in %s -> %s", (cron, tz, expected) => {
+      expect(convertCronLocalToUtc(cron, tz)).toBe(expected);
+    });
+  });
+
   describe("schedules without a specific time", () => {
     it.each(["*/5 * * * *", "0 */2 * * 1", "* 9 * * 1", "0 9-17 * * 1"])(
       "returns %s unchanged",

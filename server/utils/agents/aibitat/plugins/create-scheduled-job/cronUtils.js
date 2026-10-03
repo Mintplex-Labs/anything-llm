@@ -53,8 +53,9 @@ function localToUtcHM(localHour, localMinute, timeZone) {
 
 /**
  * Convert the time and day fields of a 5-field cron expression from a user's
- * local timezone to UTC. Returns the original string unchanged if the pattern
- * has no specific hour (e.g. every-minute or every-N-hours schedules).
+ * local timezone to UTC. Hourly schedules convert only the minute. Other
+ * patterns without a specific hour (e.g. every-minute or every-N-hours
+ * schedules) are returned unchanged.
  *
  * @param {string} cron  - 5-field cron expression in local time.
  * @param {string} timeZone - IANA timezone (e.g. "America/New_York").
@@ -66,6 +67,11 @@ function convertCronLocalToUtc(cron, timeZone) {
   if (parts.length !== 5) return cron;
 
   const [minute, hour, dom, month, dow] = parts;
+
+  if (/^\d+$/.test(minute) && hour === "*") {
+    const utc = localToUtcHM(0, Number(minute), timeZone);
+    return `${utc.minute} ${hour} ${dom} ${month} ${dow}`;
+  }
 
   // Only shift when both fields are plain integers (specific time, not a wildcard/step).
   if (!/^\d+$/.test(minute) || !/^\d+$/.test(hour)) return cron;

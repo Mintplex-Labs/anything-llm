@@ -114,6 +114,12 @@ function convertCronToLocalTime(cron) {
 
   const [minute, hour, dom, mon, dow] = parts;
 
+  // Hourly schedules run every hour, so only the minute needs converting.
+  if (/^\d+$/.test(minute) && hour === "*") {
+    const local = utcTimeToLocal(0, parseInt(minute, 10));
+    return `${local.minute} ${hour} ${dom} ${mon} ${dow}`;
+  }
+
   // Only convert if hour is a specific number (not * or */n)
   if (/^\d+$/.test(hour) && /^\d+$/.test(minute)) {
     const local = utcTimeToLocal(parseInt(hour, 10), parseInt(minute, 10));
@@ -219,7 +225,7 @@ export function parseCronToBuilderState(cron) {
       state: {
         ...DEFAULT_BUILDER_STATE,
         frequency: "hour",
-        hourMinuteOffset: parseInt(m, 10),
+        hourMinuteOffset: utcTimeToLocal(0, parseInt(m, 10)).minute,
       },
       wasFallback: false,
     };
@@ -302,7 +308,7 @@ export function buildCronFromBuilderState(state) {
       return n === 1 ? "* * * * *" : `*/${n} * * * *`;
     }
     case "hour":
-      return `${state.hourMinuteOffset} * * * *`;
+      return `${localTimeToUTC(0, state.hourMinuteOffset).minute} * * * *`;
     case "day": {
       const utc = localTimeToUTC(state.hour, state.minute);
       return `${utc.minute} ${utc.hour} * * *`;
