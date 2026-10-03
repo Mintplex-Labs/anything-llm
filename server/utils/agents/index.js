@@ -8,13 +8,7 @@ const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
-const {
-  USER_AGENT,
-  WORKSPACE_AGENT,
-  agentSkillsFromSystemSettings,
-  isConfigurableSkill,
-  resolveAgentSkill,
-} = require("./defaults");
+const { USER_AGENT, WORKSPACE_AGENT, agentSkillStates } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
@@ -728,36 +722,42 @@ class AgentHandler {
    * them; disabling pops the registered function(s) off the aibitat functions
    * Map. Changes apply on the agent's next turn. Registered on the aibitat
    * instance as `toggleAgentTool` so the websocket plugin can call it.
-   * Built-in skills ignore `enabled` and follow their saved agent skill config
-   * for this workspace, so a stale or forged toggle cannot load a disabled skill.
+   * The requested state is not trusted. The skill and its children follow their
+   * saved agent skill config for this workspace and user, so a stale or forged
+   * toggle cannot load a disabled skill.
    * @param {object} params
-   * @param {string} params.skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
-   * @param {boolean} [params.enabled=true] - Whether the tool should be enabled.
-   * @param {string|null} [params.serverName=null] - MCP server name; required to enable an MCP tool.
+   * @param {string} params.skill - Skill key, `@@flow_<uuid>`, `@@mcp_<server>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
    */
-  async #toggleAgentTool({ skill, enabled = true, serverName = null }) {
+  async #toggleAgentTool({ skill }) {
     if (!skill || !this.aibitat?.agents.has(WORKSPACE_AGENT.name)) return;
-    const { loadable, registered } = resolveAgentSkill(skill, { serverName });
     const agent = () => this.aibitat.agents.get(WORKSPACE_AGENT.name);
-    const allowed = isConfigurableSkill(skill)
-      ? await agentSkillsFromSystemSettings({
-          workspace: this.invocation.workspace,
-          user: this.invocation.user_id
-            ? { id: this.invocation.user_id }
-            : null,
-        })
-      : null;
+    const states = await agentSkillStates({
+      workspace: this.invocation.workspace,
+      user: this.invocation.user_id ? { id: this.invocation.user_id } : null,
+    });
+    const targets = states.filter(
+      (state) => state.skill === skill || state.parent === skill
+    );
 
-    for (const [i, entry] of loadable.entries()) {
-      if (allowed ? !allowed.includes(entry) : !enabled) {
-        this.aibitat.removeFunction(registered[i]);
-        this.log(`Disabled tool ${registered[i]} mid-session.`);
+    // Remove everything turned off first, then attach what is on. MCP tools share
+    // their server's load, and the server only registers its enabled tools.
+    const toAttach = new Set();
+    for (const state of targets) {
+      if (!state.load) continue;
+      if (state.enabled && state.usable) {
+        toAttach.add(state.load);
         continue;
       }
+      for (const name of state.registered) this.aibitat.removeFunction(name);
+      this.log(
+        `Disabled tool(s) [${state.registered.join(", ")}] mid-session.`
+      );
+    }
 
-      if (!agent().functions.includes(entry)) agent().functions.push(entry);
-      await this.#attachPluginByName(entry, this.#args);
-      this.log(`Enabled tool ${registered[i]} mid-session.`);
+    for (const load of toAttach) {
+      if (!agent().functions.includes(load)) agent().functions.push(load);
+      await this.#attachPluginByName(load, this.#args);
+      this.log(`Enabled tool ${load} mid-session.`);
     }
     // Dedupe in case re-enabling a flow/MCP tool re-pushed a name already
     // resolved into the agent's function list at session start.

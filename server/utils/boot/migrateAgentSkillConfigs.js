@@ -1,6 +1,6 @@
 const { SystemSettings } = require("../../models/systemSettings");
 const { AgentSkillConfig } = require("../../models/agentSkillConfig");
-const { isConfigurableSkill } = require("../agents/defaults");
+const { isBuiltInSkill } = require("../agents/defaults");
 const { safeJsonParse } = require("../http");
 
 const MIGRATION_LABEL = "__migration_agent_skill_configs";
@@ -47,7 +47,7 @@ async function migrateAgentSkillConfigs() {
         skill,
         enabled: false,
       })),
-    ].filter(({ skill }) => isConfigurableSkill(skill));
+    ].filter(({ skill }) => isBuiltInSkill(skill));
 
     for (const row of rows) {
       const { error } = await AgentSkillConfig.upsert(row);

@@ -2,8 +2,8 @@ const { AgentSkillConfig } = require("../models/agentSkillConfig");
 const { Workspace } = require("../models/workspace");
 const { User } = require("../models/user");
 const {
+  agentSkillCatalog,
   agentSkillStates,
-  isConfigurableSkill,
   maskSkillConfig,
 } = require("../utils/agents/defaults");
 const {
@@ -99,7 +99,8 @@ async function personalTarget(request, response) {
 
 async function updateConfig(request, response, target) {
   const { skill, enabled, config } = reqBody(request);
-  if (!isConfigurableSkill(skill))
+  const catalog = await agentSkillCatalog();
+  if (!catalog.some((entry) => entry.skill === skill))
     return response.status(400).json({ error: "Unknown agent skill." });
 
   const { config: row, error } = await AgentSkillConfig.upsert({
@@ -114,9 +115,6 @@ async function updateConfig(request, response, target) {
 
 async function deleteConfig(request, response, target) {
   const { skill } = request.params;
-  if (!isConfigurableSkill(skill))
-    return response.status(400).json({ error: "Unknown agent skill." });
-
   const success = await AgentSkillConfig.delete({ skill, target });
   return response.status(success ? 200 : 500).json({ success });
 }
@@ -240,10 +238,18 @@ function agentSkillConfigEndpoints(app) {
         return response.status(200).json({
           skills: states
             .filter((state) => canManage || state.available)
-            .map(({ sharedConfig, personalConfig, ...state }) => ({
-              ...state,
-              hasSharedConfig: !!sharedConfig,
-              personalConfig: maskSkillConfig(state.skill, personalConfig),
+            .map((state) => ({
+              skill: state.skill,
+              type: state.type,
+              parent: state.parent,
+              usable: state.usable,
+              available: state.available,
+              enabled: state.enabled,
+              hasSharedConfig: !!state.sharedConfig,
+              personalConfig: maskSkillConfig(
+                state.skill,
+                state.personalConfig
+              ),
             })),
         });
       } catch (e) {
