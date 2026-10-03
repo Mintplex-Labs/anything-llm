@@ -155,7 +155,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     );
 
     try {
-      return await tooledStream(
+      const result = await tooledStream(
         this.client,
         this.model,
         cleanedMessages,
@@ -163,6 +163,16 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
         eventHandler,
         this.#tooledOptions
       );
+
+      if (result.retryWithError) {
+        return this.stream(
+          [...messages, result.retryWithError],
+          functions,
+          eventHandler
+        );
+      }
+
+      return result;
     } catch (error) {
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;

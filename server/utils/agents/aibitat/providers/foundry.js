@@ -177,7 +177,7 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
 
     try {
       await this.#assertContextLimits();
-      return await tooledStream(
+      const result = await tooledStream(
         this.client,
         this.model,
         messages,
@@ -185,6 +185,16 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
         this.#filterToolCallMarkup(eventHandler),
         { provider: this }
       );
+
+      if (result.retryWithError) {
+        return this.stream(
+          [...messages, result.retryWithError],
+          functions,
+          eventHandler
+        );
+      }
+
+      return result;
     } catch (error) {
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;

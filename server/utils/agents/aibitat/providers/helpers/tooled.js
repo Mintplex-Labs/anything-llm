@@ -369,10 +369,34 @@ async function tooledStream(
   const toolCallIndices = Object.keys(toolCallsByIndex).map(Number);
   if (toolCallIndices.length > 0) {
     const firstToolCall = toolCallsByIndex[Math.min(...toolCallIndices)];
+    const functionArgs = safeJsonParse(firstToolCall.arguments, null);
+
+    if (functionArgs === null) {
+      return {
+        textResponse: null,
+        functionCall: null,
+        retryWithError: {
+          role: "function",
+          name: firstToolCall.name,
+          content: `Failed to parse tool call arguments as JSON. Raw arguments: ${firstToolCall.arguments}`,
+          originalFunctionCall: {
+            id: firstToolCall.id,
+            name: firstToolCall.name,
+            arguments: firstToolCall.arguments,
+            ...(firstToolCall.extra_content
+              ? { extra_content: firstToolCall.extra_content }
+              : {}),
+          },
+        },
+        uuid: msgUUID,
+        usage,
+      };
+    }
+
     result.functionCall = {
       id: firstToolCall.id,
       name: firstToolCall.name,
-      arguments: safeJsonParse(firstToolCall.arguments, {}),
+      arguments: functionArgs,
       ...(firstToolCall.extra_content
         ? { extra_content: firstToolCall.extra_content }
         : {}),
