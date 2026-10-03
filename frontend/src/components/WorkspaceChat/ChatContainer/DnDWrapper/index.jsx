@@ -90,7 +90,7 @@ export function DnDFileUploaderProvider({
   async function handleRemoveParsedFile(event) {
     const { document } = event.detail;
     setFiles((prev) =>
-      prev.filter((prevFile) => prevFile.document.id !== document.id)
+      prev.filter((prevFile) => prevFile.document?.id !== document.id)
     );
   }
 
