@@ -1,6 +1,7 @@
 /* eslint-env jest */
 const later = require("@breejs/later");
 const {
+  shiftCron,
   convertCronLocalToUtc,
   catalogIdSet,
   readyToolsCatalog,
@@ -147,19 +148,104 @@ describe("convertCronLocalToUtc", () => {
       ["15 * * * *", "Asia/Kolkata", "45 * * * *"],
       ["0 * * * *", "Asia/Kolkata", "30 * * * *"],
       ["0 * * * *", "Asia/Kathmandu", "15 * * * *"],
+      ["0 * * * *", "America/St_Johns", "30 * * * *"],
       ["15 * * * *", "America/New_York", "15 * * * *"],
     ])("%s in %s -> %s", (cron, tz, expected) => {
       expect(convertCronLocalToUtc(cron, tz)).toBe(expected);
     });
   });
 
-  describe("schedules without a specific time", () => {
-    it.each(["*/5 * * * *", "0 */2 * * 1", "* 9 * * 1", "0 9-17 * * 1"])(
-      "returns %s unchanged",
-      (cron) => {
-        expect(convertCronLocalToUtc(cron, "America/New_York")).toBe(cron);
-      }
-    );
+  describe("hour ranges, steps and lists", () => {
+    it.each([
+      ["0 9-17 * * 1-5", "Asia/Kolkata", "30 3-11 * * 1-5"],
+      ["0 9-17 * * 1-5", "America/New_York", "0 13-21 * * 1-5"],
+      ["0 9-17 * * 1-5", "Asia/Tokyo", "0 0-8 * * 1-5"],
+      ["0 */2 * * *", "Asia/Kolkata", "30 */2 * * *"],
+      ["0 */2 * * *", "Asia/Kathmandu", "15 */2 * * *"],
+      ["0 */3 * * *", "America/New_York", "0 1-22/3 * * *"],
+      ["0 9,13,17 * * *", "Asia/Kolkata", "30 3-11/4 * * *"],
+      ["0 9,12,17 * * *", "Asia/Kolkata", "30 3,6,11 * * *"],
+      ["30 8-18/2 * * *", "Asia/Kolkata", "0 3-13/2 * * *"],
+      ["* 9 * * 1", "America/New_York", "* 13 * * 1"],
+      ["0 21-23 * * 1", "America/New_York", "0 1-3 * * 2"],
+    ])("%s in %s -> %s", (cron, tz, expected) => {
+      expect(convertCronLocalToUtc(cron, tz)).toBe(expected);
+    });
+  });
+
+  describe("minute lists and steps", () => {
+    it.each([
+      ["0,30 * * * *", "Asia/Kathmandu", "15,45 * * * *"],
+      ["0,30 * * * *", "Asia/Kolkata", "0,30 * * * *"],
+      ["*/20 * * * *", "Asia/Kolkata", "10-50/20 * * * *"],
+      ["*/15 * * * *", "Asia/Kathmandu", "*/15 * * * *"],
+      ["*/5 * * * *", "America/New_York", "*/5 * * * *"],
+      ["0,30 9 * * *", "America/New_York", "0,30 13 * * *"],
+    ])("%s in %s -> %s", (cron, tz, expected) => {
+      expect(convertCronLocalToUtc(cron, tz)).toBe(expected);
+    });
+  });
+
+  describe("schedules with no single UTC expression", () => {
+    it.each([
+      // The :00 and :30 runs land in different UTC hours.
+      ["0,30 9-17 * * *", "Asia/Kolkata"],
+      ["* 9 * * *", "Asia/Kolkata"],
+      ["*/20 9 * * *", "Asia/Kolkata"],
+      // Some runs cross into the next or previous UTC day, others do not.
+      ["0 * * * 1", "America/New_York"],
+      ["15 * * * 1-5", "Asia/Kolkata"],
+      ["0 */2 * * 1", "America/New_York"],
+      ["0 9-17 * * 1-5", "Australia/Sydney"],
+      ["0 * 15 * *", "Asia/Tokyo"],
+      ["0 19-23 * * MON", "America/New_York"],
+    ])("%s in %s -> null", (cron, tz) => {
+      expect(convertCronLocalToUtc(cron, tz)).toBeNull();
+    });
+
+    it("converts the same pattern when every run stays on one day", () => {
+      expect(convertCronLocalToUtc("0 * * * 1", "UTC")).toBe("0 * * * 1");
+      expect(convertCronLocalToUtc("0 9-17 * * 1-5", "Asia/Tokyo")).toBe(
+        "0 0-8 * * 1-5"
+      );
+    });
+  });
+
+  describe("unsupported minute and hour fields", () => {
+    it.each([
+      "60 9 * * *",
+      "0 24 * * *",
+      "-1 9 * * *",
+      "*/0 * * * *",
+      "0 17-9 * * *",
+      "0,,30 9 * * *",
+      "0, 9 * * *",
+      "L 9 * * *",
+      "? 9 * * *",
+      "0 9/ * * *",
+      "0 9-* * * *",
+      "0x10 9 * * *",
+      "1e1 9 * * *",
+      "٣ 9 * * *",
+      "0 9.5 * * *",
+    ])("returns null for %s", (cron) => {
+      expect(convertCronLocalToUtc(cron, "Asia/Kolkata")).toBeNull();
+    });
+
+    it("reads leading zeros, duplicates and oversized steps", () => {
+      expect(convertCronLocalToUtc("00 09 * * *", "Asia/Kolkata")).toBe(
+        "30 3 * * *"
+      );
+      expect(convertCronLocalToUtc("0 9,9,9 * * *", "Asia/Kolkata")).toBe(
+        "30 3 * * *"
+      );
+      expect(convertCronLocalToUtc("0 */24 * * *", "America/New_York")).toBe(
+        "0 4 * * *"
+      );
+      expect(convertCronLocalToUtc("*/100 9 * * *", "America/New_York")).toBe(
+        "*/100 13 * * *"
+      );
+    });
   });
 
   describe("invalid input", () => {
@@ -338,5 +424,149 @@ describe("rejectedToolsMessage", () => {
     expect(rejectedToolsMessage(["nope"], CATALOG, [])).toMatch(
       /ready-to-use tools:\n\nNo tools are available for scheduled jobs\.$/
     );
+  });
+});
+
+describe("shiftCron", () => {
+  it.each([
+    // Keeps the text of fields whose values did not change.
+    ["0 0-23 * * *", 60, "0 0-23 * * *"],
+    ["*/15 9 * * *", 60, "*/15 10 * * *"],
+    // Writes changed fields as "*", steps, ranges or lists.
+    ["0 1-23 * * *", -60, "0 0-22 * * *"],
+    ["0 0,2,4 * * *", 60, "0 1-5/2 * * *"],
+    ["0 0,1 * * *", 60, "0 1,2 * * *"],
+    ["0 0,1,5 * * *", 60, "0 1,2,6 * * *"],
+    ["0 0-2,10-12 * * *", 60, "0 1-3,11-13 * * *"],
+    ["5/15 * * * *", 5, "10-55/15 * * * *"],
+    ["0 9 * * *", 0, "0 9 * * *"],
+    ["0 9 * * *", 1440, "0 9 * * *"],
+  ])("%s moved by %d minutes -> %s", (cron, minutes, expected) => {
+    expect(shiftCron(cron, minutes)).toBe(expected);
+  });
+
+  it("moves day fields when every run crosses midnight", () => {
+    expect(shiftCron("0 22 15 * 1", 180)).toBe("0 1 16 * 2");
+    expect(shiftCron("0 22,23 * * 6", 180)).toBe("0 1,2 * * 0");
+  });
+
+  it("returns null when runs land on different days and days are restricted", () => {
+    expect(shiftCron("0 22,23 * * 6", 90)).toBeNull();
+  });
+
+  it("ignores the day split when no day field is restricted", () => {
+    expect(shiftCron("0 22,23 * * *", 90)).toBe("30 0,23 * * *");
+    expect(shiftCron("0 22,23 * * ?", 90)).toBe("30 0,23 * * ?");
+  });
+
+  it("never moves the month field", () => {
+    expect(shiftCron("0 23 * 1 *", 120)).toBe("0 1 * 1 *");
+  });
+});
+
+describe("converted schedules run at the same instants", () => {
+  // Offsets are stable from 2026-09-12 to 2026-09-23 in every zone below.
+  const WINDOW_START = new Date("2026-09-14T00:00:00Z");
+  const WINDOW_END = new Date("2026-09-21T00:00:00Z");
+  const DAY = 86400000;
+
+  beforeEach(() => jest.useFakeTimers({ now: WINDOW_START }));
+  afterEach(() => jest.useRealTimers());
+
+  /** Offset of `timeZone` from UTC in minutes at `at`. */
+  function offsetMinutes(timeZone, at) {
+    const p = Object.fromEntries(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone,
+        hourCycle: "h23",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      })
+        .formatToParts(at)
+        .map(({ type, value }) => [type, value])
+    );
+    const wall = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute);
+    return Math.round((wall - at.getTime()) / 60000);
+  }
+
+  /** Run times (ms) of `cron` between `start` and `end`, evaluated in UTC. */
+  function runs(cron, start, end) {
+    later.date.UTC();
+    const found = later
+      .schedule(later.parse.cron(cron))
+      .next(20000, start, end);
+    return (found || []).map((d) => d.getTime());
+  }
+
+  /** Instants at which a local-time cron fires in `timeZone` within the window. */
+  function localRuns(cron, timeZone) {
+    const offset = offsetMinutes(timeZone, WINDOW_START) * 60000;
+    // Evaluate on wall-clock time, then move each run back to its instant.
+    return runs(
+      cron,
+      new Date(WINDOW_START.getTime() - 2 * DAY),
+      new Date(WINDOW_END.getTime() + 2 * DAY)
+    )
+      .map((wall) => wall - offset)
+      .filter((t) => t >= WINDOW_START.getTime() && t < WINDOW_END.getTime());
+  }
+
+  const CRONS = [
+    "0 9 * * 1-5",
+    "0 9-17 * * 1-5",
+    "30 8-18/2 * * *",
+    "0 */2 * * *",
+    "15 * * * *",
+    "0,30 * * * *",
+    "*/20 * * * *",
+    "0 22 * * 0",
+    "45 23 * * SAT",
+    "0 0 16 * *",
+    "5 0-3 * * *",
+    "0 * * * 3",
+  ];
+  const ZONES = [
+    "UTC",
+    "America/New_York",
+    "America/St_Johns",
+    "Pacific/Marquesas",
+    "Asia/Kolkata",
+    "Asia/Kathmandu",
+    "Australia/Eucla",
+    "Australia/Lord_Howe",
+    "Australia/Sydney",
+    "Pacific/Chatham",
+    "Pacific/Kiritimati",
+  ];
+  const PAIRS = CRONS.flatMap((cron) => ZONES.map((tz) => [cron, tz]));
+
+  it.each(PAIRS)("%s in %s", (cron, tz) => {
+    const utcCron = convertCronLocalToUtc(cron, tz);
+    if (utcCron === null) return;
+    const expected = localRuns(cron, tz);
+    expect(expected.length).toBeGreaterThan(0);
+    expect(runs(utcCron, WINDOW_START, new Date(WINDOW_END - 1))).toEqual(
+      expected
+    );
+  });
+
+  it("converts most of these schedules", () => {
+    const converted = PAIRS.filter(
+      ([cron, tz]) => convertCronLocalToUtc(cron, tz) !== null
+    );
+    expect(converted.length).toBeGreaterThan(PAIRS.length * 0.7);
+  });
+
+  it("returns null only for schedules split across two UTC days or minute groups", () => {
+    const rejected = PAIRS.filter(
+      ([cron, tz]) => convertCronLocalToUtc(cron, tz) === null
+    ).map(([cron, tz]) => `${cron} @ ${tz}`);
+    expect(rejected).toEqual(
+      expect.not.arrayContaining(ZONES.map((tz) => `0 9 * * 1-5 @ ${tz}`))
+    );
+    expect(rejected.filter((r) => r.endsWith("@ UTC"))).toEqual([]);
   });
 });
