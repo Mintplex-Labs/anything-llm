@@ -28,7 +28,10 @@ export default function VariableRow({ variable, onRefresh }) {
       return false;
 
     try {
-      await System.promptVariables.delete(variable.id);
+      const { success, error } = await System.promptVariables.delete(
+        variable.id
+      );
+      if (!success) throw new Error(error);
       rowRef?.current?.remove();
       showToast("Variable deleted successfully", "success", { clear: true });
       if (onRefresh) onRefresh();
