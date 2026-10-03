@@ -128,7 +128,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     );
 
     try {
-      return await tooledStream(
+      const result = await tooledStream(
         this.client,
         this.model,
         messages,
@@ -140,6 +140,16 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
           maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
         }
       );
+
+      if (result.retryWithError) {
+        return this.stream(
+          [...messages, result.retryWithError],
+          functions,
+          eventHandler
+        );
+      }
+
+      return result;
     } catch (error) {
       console.error(error.message, error);
       if (error instanceof OpenAI.AuthenticationError) throw error;

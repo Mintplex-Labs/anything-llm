@@ -319,3 +319,91 @@ describe("required parameters of bundled plugins", () => {
     ]);
   });
 });
+
+describe("tooledStream malformed tool call arguments", () => {
+  const messages = [{ role: "user", content: "hi" }];
+
+  function streamClient(deltas) {
+    const create = jest.fn(async () =>
+      (async function* () {
+        for (const delta of deltas) {
+          yield { choices: [{ delta }] };
+        }
+      })()
+    );
+    return { client: { chat: { completions: { create } } }, create };
+  }
+
+  it("returns retryWithError when the streamed tool call arguments fail to parse as JSON", async () => {
+    const usage = { prompt_tokens: 5, completion_tokens: 3 };
+    const create = jest.fn(async () =>
+      (async function* () {
+        yield {
+          usage,
+          choices: [
+            {
+              delta: {
+                tool_calls: [
+                  {
+                    index: 0,
+                    id: "call_1",
+                    function: {
+                      name: "lookup",
+                      arguments: "I think I should call the tool",
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        };
+      })()
+    );
+    const client = { chat: { completions: { create } } };
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toBeNull();
+    expect(result.textResponse).toBeNull();
+    expect(result.usage).toEqual(usage);
+    expect(result.retryWithError).toMatchObject({
+      role: "function",
+      name: "lookup",
+    });
+    expect(result.retryWithError.content).toContain(
+      "Failed to parse tool call arguments as JSON"
+    );
+    expect(result.retryWithError.originalFunctionCall).toMatchObject({
+      id: "call_1",
+      name: "lookup",
+      arguments: "I think I should call the tool",
+    });
+  });
+
+  it("still returns functionCall when the streamed tool call arguments parse as JSON", async () => {
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            function: { name: "lookup", arguments: '{"query":"lat"}' },
+          },
+        ],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "lookup",
+      arguments: { query: "lat" },
+    });
+    expect(result.retryWithError).toBeUndefined();
+  });
+});
