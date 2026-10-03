@@ -79,10 +79,16 @@ function patchSdkTimeouts() {
         const origMakeRequest = proto.makeRequest;
         proto.makeRequest = function patchedMakeRequest(
           optionsInput,
-          // eslint-disable-next-line
-          retriesRemaining
+          retriesRemaining,
+          ...rest
         ) {
-          return origMakeRequest.call(this, optionsInput, maxRetries);
+          // Retries re-enter with the SDK's decremented count. Only the first call has none.
+          return origMakeRequest.call(
+            this,
+            optionsInput,
+            retriesRemaining ?? maxRetries,
+            ...rest
+          );
         };
       }
 
