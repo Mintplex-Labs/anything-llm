@@ -224,9 +224,16 @@ function reducer(state, action) {
       // selected (how a fresh upload arrives) renders as checked, and clicking
       // a checked box has to uncheck it. Anything short of fully checked
       // selects the whole folder, so a partial box fills in on one click.
+      // A folder with pages still on the server is never fully checked through
+      // individual selection - the loaded page says nothing about the rest -
+      // so one click there selects the whole folder rather than unchecking it.
+      // Search mode is exempt: its match lists are complete as shown.
+      const partiallyLoaded =
+        !state.searchResults && (state.contents[name] ?? UNLOADED).hasMore;
       const fullySelected = state.selectedFolders.has(name)
         ? !items.some((file) => state.deselectedFiles.has(file.id))
         : items.length > 0 &&
+          !partiallyLoaded &&
           items.every((file) => state.selectedFiles.has(file.id));
       const turningOn = !fullySelected;
       const selectedFiles = new Set(state.selectedFiles);
@@ -270,6 +277,24 @@ function reducer(state, action) {
         deselectedFiles.delete(id);
       }
       return { ...state, selectedFiles, deselectedFiles };
+    }
+
+    // Select folders wholesale so files that are not fetched yet are covered
+    // too (how a fresh upload into a new folder arrives).
+    case "select-folders": {
+      if (!action.names.length) return state;
+      const selectedFolders = new Set(state.selectedFolders);
+      const selectedFiles = new Set(state.selectedFiles);
+      const deselectedFiles = new Set(state.deselectedFiles);
+      for (const name of action.names) {
+        selectedFolders.add(name);
+        // Same canonicalisation as `toggle-folder`.
+        for (const file of (state.contents[name] ?? UNLOADED).items) {
+          selectedFiles.delete(file.id);
+          deselectedFiles.delete(file.id);
+        }
+      }
+      return { ...state, selectedFolders, selectedFiles, deselectedFiles };
     }
 
     // Optimistically drop files from the picker (moved into the workspace or
@@ -446,8 +471,13 @@ export default function useDocumentPicker({ slug }) {
    */
   const folderSelectionState = useCallback(
     (name, visibleFiles) => {
-      const { selectedFolders, deselectedFiles, selectedFiles, contents } =
-        state;
+      const {
+        selectedFolders,
+        deselectedFiles,
+        selectedFiles,
+        contents,
+        searchResults,
+      } = state;
       const items = visibleFiles ?? (contents[name] ?? UNLOADED).items;
       if (selectedFolders.has(name)) {
         const opted = items.some((f) => deselectedFiles.has(f.id));
@@ -456,7 +486,13 @@ export default function useDocumentPicker({ slug }) {
       if (items.length === 0) return "none";
       const hits = items.filter((f) => selectedFiles.has(f.id)).length;
       if (hits === 0) return "none";
-      return hits === items.length ? "all" : "some";
+      // Individually selected files only cover what has been fetched. While
+      // the folder still has pages on the server, showing "all" would promise
+      // files a bulk action will not touch. Search match lists are complete,
+      // so they are exempt.
+      const partiallyLoaded =
+        !searchResults && (contents[name] ?? UNLOADED).hasMore;
+      return hits === items.length && !partiallyLoaded ? "all" : "some";
     },
     [state]
   );
@@ -628,6 +664,8 @@ export default function useDocumentPicker({ slug }) {
    * Reconcile the picker after an upload finishes. Refreshes shells in place,
    * pulls the pages of any folder whose file count grew, and pre-selects the
    * files that are genuinely new so the user can embed them immediately.
+   * A folder that had no files before is selected wholesale instead, since
+   * only its first page is fetched here and every file in it is new.
    * Never touches `status`, so the tree stays on screen throughout.
    */
   const syncAfterUpload = useCallback(async () => {
@@ -655,6 +693,7 @@ export default function useDocumentPicker({ slug }) {
     );
 
     const freshIds = [];
+    const freshFolders = [];
     changed.forEach((folder, i) => {
       const result = pages[i];
       if (!result) return;
@@ -670,10 +709,14 @@ export default function useDocumentPicker({ slug }) {
         totalCount: result.totalCount ?? items.length,
       });
       dispatch({ type: "set-expanded", name: folder.name, value: true });
+      // Folders that already had files keep per-file selection - selecting
+      // those wholesale would also pick up their old files.
+      if (!before.get(folder.name)) return freshFolders.push(folder.name);
       for (const file of items)
         if (!knownIds.has(file.id)) freshIds.push(file.id);
     });
 
+    dispatch({ type: "select-folders", names: freshFolders });
     dispatch({ type: "select-files", ids: freshIds });
   }, [refresh]);
 
