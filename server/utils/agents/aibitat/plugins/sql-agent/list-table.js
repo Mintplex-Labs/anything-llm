@@ -51,9 +51,9 @@ module.exports.SqlAgentListTables = {
                   "The database identifier for which we will list all tables for. This is a required parameter",
               },
             },
+            required: ["database_id"],
             additionalProperties: false,
           },
-          required: ["database_id"],
           handler: async function ({ database_id = "" }) {
             try {
               this.super.handlerProps.log(`Using the sql-list-tables tool.`);

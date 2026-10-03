@@ -5,6 +5,9 @@ const {
   temperatureParam,
   serviceTierParam,
 } = require("../../../../../../utils/agents/aibitat/providers/helpers/tooled.js");
+const {
+  rechart,
+} = require("../../../../../../utils/agents/aibitat/plugins/rechart.js");
 
 describe("formatMessagesForTools attachment content (native tool path)", () => {
   it("sends audio attachments as input_audio and keeps images as image_url", () => {
@@ -284,5 +287,35 @@ describe("service_tier forwarding from the tooled serviceTier option", () => {
       provider: {},
     });
     expect(streamed.create.mock.calls[0][0]).not.toHaveProperty("service_tier");
+  });
+});
+
+describe("required parameters of bundled plugins", () => {
+  it("tooledComplete sends create-chart's required list in the tool schema", async () => {
+    const functions = [];
+    rechart.plugin.call(rechart).setup({
+      function: (definition) => functions.push(definition),
+    });
+
+    const create = jest.fn(async () => ({
+      choices: [{ message: { role: "assistant", content: "ok" } }],
+      usage: null,
+    }));
+    await tooledComplete(
+      { chat: { completions: { create } } },
+      "m",
+      [{ role: "user", content: "chart this" }],
+      functions,
+      () => 0,
+      { provider: {} }
+    );
+
+    const [tool] = create.mock.calls[0][0].tools;
+    expect(tool.function.name).toBe("create-chart");
+    expect(tool.function.parameters.required).toEqual([
+      "type",
+      "title",
+      "dataset",
+    ]);
   });
 });

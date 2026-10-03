@@ -125,8 +125,8 @@ function prepareAnthropicMessages(messages = []) {
  */
 function formatAnthropicTools(functions = []) {
   return functions.map((func) => {
-    const { name, description, parameters, required } = func;
-    const { type, properties } = dereferenceSchema(parameters);
+    const { name, description, parameters } = func;
+    const { type, properties, required } = dereferenceSchema(parameters);
     return {
       name,
       description,

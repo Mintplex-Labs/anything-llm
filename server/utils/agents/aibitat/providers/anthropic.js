@@ -229,12 +229,12 @@ class AnthropicProvider extends Provider {
   // so that the call can run correctly.
   #formatFunctions(functions = []) {
     return functions.map((func) => {
-      const { name, description, parameters, required } = func;
+      const { name, description, parameters } = func;
       // Some MCP tools (e.g. Pydantic v2 nested models) describe their parameters
       // with `$ref`/`$defs`. Anthropic's `input_schema` does not resolve local
       // references, so we inline them here - otherwise the dangling pointer crashes
       // the tool call. Flat schemas are left unchanged. See issue #3938.
-      const { type, properties } = dereferenceSchema(parameters);
+      const { type, properties, required } = dereferenceSchema(parameters);
       return {
         name,
         description,
