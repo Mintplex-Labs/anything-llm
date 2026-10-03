@@ -77,16 +77,21 @@ function patchSdkTimeouts() {
 
       if (typeof proto.makeRequest === "function") {
         const origMakeRequest = proto.makeRequest;
-        proto.makeRequest = function patchedMakeRequest(
+        proto.makeRequest = async function patchedMakeRequest(
           optionsInput,
           retriesRemaining,
           ...rest
         ) {
-          // Retries re-enter with the SDK's decremented count. Only the first call has none.
+          // The SDK reads options.maxRetries for the retry budget, backoff and
+          // retry-count header, then re-enters with a decremented count.
+          // Seed it once on the first call so retries keep the SDK's count.
+          if (retriesRemaining == null) {
+            optionsInput = { ...(await optionsInput), maxRetries };
+          }
           return origMakeRequest.call(
             this,
             optionsInput,
-            retriesRemaining ?? maxRetries,
+            retriesRemaining,
             ...rest
           );
         };
