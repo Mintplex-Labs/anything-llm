@@ -28,7 +28,11 @@ export default function EditVariableModal({ variable, closeModal, onRefresh }) {
     }
 
     try {
-      await System.promptVariables.update(variable.id, updatedVariable);
+      const { success, error } = await System.promptVariables.update(
+        variable.id,
+        updatedVariable
+      );
+      if (!success) throw new Error(error);
       showToast("Variable updated successfully", "success", { clear: true });
       if (onRefresh) onRefresh();
       closeModal();
