@@ -531,4 +531,5 @@ const websocket = {
 module.exports = {
   websocket,
   WEBSOCKET_BAIL_COMMANDS,
+  toolApprovalTimeoutMs,
 };

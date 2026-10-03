@@ -2,7 +2,8 @@ const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
 const { v4: uuidv4 } = require("uuid");
 const { skillIsAutoApproved } = require("../../../helpers/agents");
-const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000; // 2 mins for tool approval
+const { toolApprovalTimeoutMs } = require("./websocket.js");
+const TOOL_APPROVAL_TIMEOUT_MS = toolApprovalTimeoutMs();
 
 /**
  * Get the IPC channel for worker communication.
