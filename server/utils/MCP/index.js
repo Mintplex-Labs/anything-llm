@@ -22,10 +22,10 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   /**
    * Convert an MCP server name to an AnythingLLM Agent plugin
    * @param {string} name - The base name of the MCP server to convert - not the tool name. eg: `docker-mcp` not `docker-mcp:list-containers`
-   * @param {Object} aibitat - The aibitat object to pass to the plugin
+   * @param {Object} aibitat - The aibitat object to pass to the plugin. Its invocation's workspace and user decide which tools are enabled.
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
-  async convertServerToolsToPlugins(name, _aibitat = null) {
+  async convertServerToolsToPlugins(name, aibitat = null) {
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
@@ -39,9 +39,35 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     }
     if (!tools || !tools.length) return null;
 
+    const { AgentSkillConfig } = require("../../models/agentSkillConfig");
+    const { skillState } = require("../agents/defaults");
+    const invocation = aibitat?.handlerProps?.invocation ?? {};
+    const resolved = await AgentSkillConfig.resolveAll({
+      workspaceId: invocation.workspace_id,
+      userId: invocation.user_id,
+    });
+    const server = skillState(resolved, {
+      skill: `@@mcp_${name}`,
+      type: "mcp",
+      enabledByDefault: true,
+      parent: null,
+    });
+
     const suppressedTools = this.getSuppressedTools(name);
     const totalTools = tools.length;
-    tools = tools.filter((tool) => !suppressedTools.includes(tool.name));
+    tools = tools.filter(
+      (tool) =>
+        skillState(
+          resolved,
+          {
+            skill: `${name}-${tool.name}`,
+            type: "mcp",
+            enabledByDefault: !suppressedTools.includes(tool.name),
+            parent: server.skill,
+          },
+          server
+        ).enabled
+    );
     const suppressedCount = totalTools - tools.length;
 
     if (suppressedCount > 0) {

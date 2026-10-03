@@ -3,24 +3,6 @@ const { Telemetry } = require("../../../../models/telemetry");
 const { v4: uuidv4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 const { skillIsAutoApproved } = require("../../../helpers/agents");
-const { ROLES } = require("../../../middleware/multiUserProtected");
-
-/**
- * Toggling an agent's tools mid-session is an admin-only action, mirroring the
- * Agent Skills settings which only admins can manage. In multi-user mode the
- * requesting user must be an admin; single-user mode (no userId) is allowed.
- * @param {number|null} userId - User id from the agent invocation.
- * @returns {Promise<boolean>}
- */
-async function userCanToggleTools(userId = null) {
-  const { SystemSettings } = require("../../../../models/systemSettings");
-  if (!(await SystemSettings.isMultiUserMode())) return true;
-  if (!userId) return false;
-
-  const { User } = require("../../../../models/user");
-  const user = await User.get({ id: Number(userId) });
-  return user?.role === ROLES.admin;
-}
 
 /**
  * Returns the timeout in ms for agent tool-call approval prompts.
@@ -184,24 +166,13 @@ const websocket = {
 
         // Toggle a tool/skill on or off for the running agent mid-session. The
         // change applies on the agent's next turn. Returns true once handled so
-        // the socket message router stops further dispatch. Toggling is an
-        // admin-only action, so the message is claimed but only applied once
-        // the requesting user is authorized.
+        // the socket message router stops further dispatch. Any user can send
+        // it since the tool is re-synced from that user's saved skill configs.
         socket.handleToolToggle = (message) => {
           const data = safeJsonParse(message, {});
           if (data?.type !== "agentToolToggle") return false;
 
-          userCanToggleTools(userId).then((authorized) => {
-            if (!authorized)
-              return console.log(
-                chalk.yellow("Ignoring agentToolToggle from a non-admin user.")
-              );
-            aibitat.toggleAgentTool?.({
-              skill: data.skill,
-              enabled: data.enabled,
-              serverName: data.serverName || null,
-            });
-          });
+          aibitat.toggleAgentTool?.({ skill: data.skill });
           return true;
         };
 

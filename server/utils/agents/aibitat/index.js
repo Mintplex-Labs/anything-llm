@@ -6,6 +6,7 @@ const { resolveTemperature } = require("../../helpers");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
 const { ToolReranker } = require("./utils/toolReranker.js");
+const { AgentSkillConfig } = require("../../../models/agentSkillConfig.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -130,6 +131,19 @@ class AIbitat {
     // Providers can register an abort listener per LLM request on the session
     // signal - lift the EventTarget warning threshold (0 = unlimited).
     setMaxListeners(0, this.abortController.signal);
+  }
+
+  /**
+   * Get a skill's config resolved for the workspace and user of the current invocation.
+   * @param {string} skill - Skill name as registered in aibitat
+   * @returns {Promise<Object|null>}
+   */
+  async skillConfig(skill) {
+    return AgentSkillConfig.configFor({
+      skill,
+      workspaceId: this.handlerProps?.invocation?.workspace_id,
+      userId: this.handlerProps?.invocation?.user_id,
+    });
   }
 
   /**

@@ -9,16 +9,17 @@ const Provider = require("../../../utils/agents/aibitat/providers/ai-provider");
 jest.mock("../../../models/systemPromptVariables");
 jest.mock("../../../models/systemSettings");
 jest.mock("../../../utils/agents/imported", () => ({
-  activeImportedPlugins: jest.fn().mockReturnValue([]),
+  listImportedPlugins: jest.fn().mockReturnValue([]),
 }));
 jest.mock("../../../utils/agentFlows", () => ({
   AgentFlows: {
-    activeFlowPlugins: jest.fn().mockReturnValue([]),
+    listFlows: jest.fn().mockReturnValue([]),
   },
 }));
 jest.mock("../../../utils/MCP", () => {
   return jest.fn().mockImplementation(() => ({
     activeMCPServers: jest.fn().mockResolvedValue([]),
+    servers: jest.fn().mockResolvedValue([]),
   }));
 });
 

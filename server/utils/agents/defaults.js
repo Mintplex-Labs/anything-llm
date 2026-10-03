@@ -1,6 +1,6 @@
 const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
-const { safeJsonParse } = require("../http");
+const { AgentSkillConfig } = require("../../models/agentSkillConfig");
 const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
@@ -14,38 +14,46 @@ const DEFAULT_SKILLS = [
   AgentPlugins.webBrowsing.name,
 ];
 
+// Built-in skills that are off until enabled.
+const OPTIONAL_SKILLS = [
+  AgentPlugins.rechart.name,
+  AgentPlugins.generateImage.name,
+  AgentPlugins.sqlAgent.name,
+  AgentPlugins.filesystemAgent.name,
+  AgentPlugins.createFilesAgent.name,
+  AgentPlugins.gmailAgent.name,
+  AgentPlugins.outlookAgent.name,
+  AgentPlugins.googleCalendarAgent.name,
+  AgentPlugins.createScheduledJob.name,
+];
+
 // Skills that must never be injected when the instance is running in multi-user mode.
 const SINGLE_USER_ONLY_SKILLS = new Set(["create-scheduled-job"]);
 
 /**
- * Configuration for agent skills that require availability checks and disabled sub-skill lists.
- * Each entry maps a skill name to its availability checker and disabled skills list key.
+ * Configuration for agent skills that require availability checks.
+ * Each entry maps a skill name to its availability checker.
  */
 const SKILL_FILTER_CONFIG = {
   "filesystem-agent": {
     getAvailability: () =>
       require("./aibitat/plugins/filesystem/lib").isToolAvailable(),
-    disabledSettingKey: "disabled_filesystem_skills",
   },
   "create-files-agent": {
     getAvailability: () =>
       require("./aibitat/plugins/create-files/lib").isToolAvailable(),
-    disabledSettingKey: "disabled_create_files_skills",
   },
   "gmail-agent": {
     getAvailability: async () =>
       require("./aibitat/plugins/gmail/lib").GmailBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_gmail_skills",
   },
   "outlook-agent": {
     getAvailability: async () =>
       require("./aibitat/plugins/outlook/lib").OutlookBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_outlook_skills",
   },
   "google-calendar-agent": {
     getAvailability: async () =>
       require("./aibitat/plugins/google-calendar/lib").GoogleCalendarBridge.isToolAvailable(),
-    disabledSettingKey: "disabled_google_calendar_skills",
   },
 };
 
@@ -92,11 +100,8 @@ const WORKSPACE_AGENT = {
     return {
       role,
       functions: [
-        ...(await agentSkillsFromSystemSettings()),
+        ...(await agentSkillsFromSystemSettings({ workspace, user })),
         ...clarifyingQuestionsSkills,
-        ...ImportedPlugin.activeImportedPlugins(),
-        ...AgentFlows.activeFlowPlugins(),
-        ...(await new MCPCompatibilityLayer().activeMCPServers()),
       ],
     };
   },
@@ -124,148 +129,253 @@ async function clarifyingQuestionsSkillIfEnabled() {
 }
 
 /**
- * Fetches and preloads the names/identifiers for plugins that will be dynamically
- * loaded later
- * @returns {Promise<string[]>}
+ * @typedef {Object} AgentSkillCatalogEntry
+ * @property {string} skill - key used for agent skill config rows
+ * @property {"builtin"|"imported"|"flow"|"mcp"} type
+ * @property {string|null} parent - parent skill for sub-skills and MCP tools
+ * @property {boolean} enabledByDefault - state when no config row exists
+ * @property {boolean} usable - false when it can never load here (not set up, single-user only, server down)
+ * @property {string|null} load - identifier the agent plugin loader attaches, null when its children load instead
+ * @property {string[]} registered - aibitat function names to remove when it is turned off
  */
-async function agentSkillsFromSystemSettings() {
-  const systemFunctions = [];
+
+/**
+ * @typedef {AgentSkillCatalogEntry & {
+ *   available: boolean,
+ *   enabled: boolean,
+ *   sharedConfig: Object|null,
+ *   personalConfig: Object|null,
+ * }} AgentSkillState
+ * `available` is what the admin levels allow, `enabled` also respects the user opting out.
+ * Configs are unmasked.
+ */
+
+/**
+ * Every agent skill of every type in one list, so configs, loading and the UI
+ * can treat them all the same way.
+ * @param {Object} [options]
+ * @param {boolean} [options.mcpTools] - also list MCP tools, which pings each running MCP server
+ * @returns {Promise<AgentSkillCatalogEntry[]>}
+ */
+async function agentSkillCatalog({ mcpTools = true } = {}) {
+  const catalog = [];
   const isMultiUser = await SystemSettings.isMultiUserMode();
 
-  // Load non-imported built-in skills that are configurable, but are default enabled.
-  const _disabledDefaultSkills = safeJsonParse(
-    await SystemSettings.getValueOrFallback(
-      { label: "disabled_agent_skills" },
-      "[]"
-    ),
-    []
-  );
-  DEFAULT_SKILLS.forEach((skill) => {
-    if (!_disabledDefaultSkills.includes(skill))
-      systemFunctions.push(AgentPlugins[skill].name);
-  });
+  // Built-in skills, each followed by its sub-skills (eg: sql-agent -> sql-list-databases).
+  // A skill with sub-skills loads through them, so the parent itself has nothing to load.
+  for (const skill of [...DEFAULT_SKILLS, ...OPTIONAL_SKILLS]) {
+    const subSkills = AgentPlugins[skill].plugin;
+    const hasSubSkills = Array.isArray(subSkills);
+    const usable =
+      !(isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skill)) &&
+      (!SKILL_FILTER_CONFIG[skill] ||
+        !!(await SKILL_FILTER_CONFIG[skill].getAvailability()));
 
-  // Load non-imported built-in skills that are configurable.
-  const _setting = safeJsonParse(
-    await SystemSettings.getValueOrFallback(
-      { label: "default_agent_skills" },
-      "[]"
-    ),
-    []
-  );
+    catalog.push({
+      skill,
+      type: "builtin",
+      parent: null,
+      enabledByDefault: DEFAULT_SKILLS.includes(skill),
+      usable,
+      load: hasSubSkills ? null : skill,
+      registered: hasSubSkills ? [] : [skill],
+    });
 
-  // Pre-load disabled sub-skills and availability for configured skills
-  const skillFilterState = {};
-  for (const skillName of Object.keys(SKILL_FILTER_CONFIG)) {
-    if (!_setting.includes(skillName)) continue;
-    const config = SKILL_FILTER_CONFIG[skillName];
-    skillFilterState[skillName] = {
-      available: await config.getAvailability(),
-      disabledSubSkills: safeJsonParse(
-        await SystemSettings.getValueOrFallback(
-          { label: config.disabledSettingKey },
-          "[]"
-        ),
-        []
-      ),
-    };
+    if (!hasSubSkills) continue;
+    for (const subSkill of subSkills)
+      catalog.push({
+        skill: subSkill.name,
+        type: "builtin",
+        parent: skill,
+        enabledByDefault: true,
+        usable,
+        load: `${skill}#${subSkill.name}`,
+        registered: [subSkill.name],
+      });
   }
 
-  for (const skillName of _setting) {
-    if (!AgentPlugins.hasOwnProperty(skillName)) continue;
-    if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
+  // Imported skills are on by default when their plugin.json is active.
+  for (const plugin of ImportedPlugin.listImportedPlugins())
+    catalog.push({
+      skill: plugin.hubId,
+      type: "imported",
+      parent: null,
+      enabledByDefault: !!plugin.active,
+      usable: true,
+      load: `@@${plugin.hubId}`,
+      registered: [plugin.hubId],
+    });
 
-    // This is a plugin module with many sub-children plugins who
-    // need to be named via `${parent}#${child}` naming convention
-    if (Array.isArray(AgentPlugins[skillName].plugin)) {
-      for (const subPlugin of AgentPlugins[skillName].plugin) {
-        // Check if this skill has filter configuration
-        const filterState = skillFilterState[skillName];
-        if (filterState) {
-          if (!filterState.available) continue;
-          if (filterState.disabledSubSkills.includes(subPlugin.name)) continue;
-        }
+  // Flows are on by default when the flow is active. They register under their sanitized name.
+  for (const flow of AgentFlows.listFlows())
+    catalog.push({
+      skill: `@@flow_${flow.uuid}`,
+      type: "flow",
+      parent: null,
+      enabledByDefault: flow.active,
+      usable: true,
+      load: `@@flow_${flow.uuid}`,
+      registered: [
+        AgentFlows.sanitizeToolName(flow.name) || `flow_${flow.uuid}`,
+      ],
+    });
 
-        systemFunctions.push(
-          `${AgentPlugins[skillName].name}#${subPlugin.name}`
-        );
-      }
-      continue;
-    }
-
-    // This is normal single-stage plugin
-    systemFunctions.push(AgentPlugins[skillName].name);
+  // MCP servers. The agent loader only needs the running servers, so skip
+  // pinging each one for its tools.
+  const mcp = new MCPCompatibilityLayer();
+  if (!mcpTools) {
+    for (const serverSkill of await mcp.activeMCPServers())
+      catalog.push({
+        skill: serverSkill,
+        type: "mcp",
+        parent: null,
+        enabledByDefault: true,
+        usable: true,
+        load: serverSkill,
+        registered: [],
+      });
+    return catalog;
   }
-  return systemFunctions;
+
+  // MCP servers, each followed by its tools. A tool is on by default unless the
+  // MCP server config suppresses it. Tools load through their server, which only
+  // registers the tools enabled for the agent's workspace and user.
+  for (const server of await mcp.servers()) {
+    const serverSkill = `@@mcp_${server.name}`;
+    const suppressedTools = mcp.getSuppressedTools(server.name);
+    const toolSkills = server.tools.map(
+      (tool) => `${server.name}-${tool.name}`
+    );
+    catalog.push({
+      skill: serverSkill,
+      type: "mcp",
+      parent: null,
+      enabledByDefault: true,
+      usable: server.running,
+      load: serverSkill,
+      registered: toolSkills,
+    });
+
+    for (const tool of server.tools)
+      catalog.push({
+        skill: `${server.name}-${tool.name}`,
+        type: "mcp",
+        parent: serverSkill,
+        enabledByDefault: !suppressedTools.includes(tool.name),
+        usable: server.running,
+        load: serverSkill,
+        registered: [`${server.name}-${tool.name}`],
+      });
+  }
+  return catalog;
 }
 
 /**
- * Resolve a UI skill/tool identifier into the names needed to toggle it on a live
- * agent session. `loadable` are the funcsToLoad-style identifiers handed to the
- * plugin loader to (re)register the tool via `aibitat.use()`; `registered` are the
- * resulting `aibitat.functions` Map keys to delete when disabling.
- *
- * Handles flows (`@@flow_<uuid>`), multi-stage parents (e.g. sql-agent -> each
- * child), imported hubIds, MCP server tools, single built-ins, and sub-skill
- * child names.
- * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
- * @param {object} [opts]
- * @param {string|null} [opts.serverName] - MCP server name; required to enable an MCP tool.
- * @returns {{ loadable: string[], registered: string[] }}
+ * Resolve one catalog entry against the resolved config rows.
+ * @param {Object<string, import("../../models/agentSkillConfig").ResolvedSkillConfig>} resolved
+ * @param {AgentSkillCatalogEntry} entry
+ * @param {AgentSkillState|null} [parent]
+ * @returns {AgentSkillState}
  */
-function resolveAgentSkill(skill = "", { serverName = null } = {}) {
-  // Flow tool: loaded by `@@flow_<uuid>`, registered under its sanitized tool name.
-  if (skill.startsWith("@@flow_")) {
-    const uuid = skill.replace("@@flow_", "");
-    const flow = AgentFlows.loadFlow(uuid);
-    if (!flow) return { loadable: [], registered: [] };
-    return {
-      loadable: [skill],
-      registered: [AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`],
-    };
-  }
+function skillState(resolved, entry, parent = null) {
+  const row = resolved[entry.skill];
+  const available =
+    (parent?.available ?? true) && (row?.enabled ?? entry.enabledByDefault);
+  return {
+    ...entry,
+    available,
+    enabled: available && (parent?.enabled ?? true) && !row?.optedOut,
+    sharedConfig: row?.sharedConfig ?? null,
+    personalConfig: row?.personalConfig ?? null,
+  };
+}
 
-  // MCP server tool (`<server>-<tool>`): the Map key matches the UI id exactly.
-  // Enabling reloads the server so the current suppression state is respected.
-  if (serverName)
-    return { loadable: [`@@mcp_${serverName}`], registered: [skill] };
+/**
+ * Resolve every skill in the catalog for a workspace and user.
+ * @param {Object} [scope]
+ * @param {import("@prisma/client").workspaces | null} [scope.workspace]
+ * @param {import("@prisma/client").users | null} [scope.user]
+ * @param {boolean} [scope.mcpTools] - include MCP tools, see agentSkillCatalog
+ * @returns {Promise<AgentSkillState[]>}
+ */
+async function agentSkillStates({
+  workspace = null,
+  user = null,
+  mcpTools = true,
+} = {}) {
+  const [resolved, catalog] = await Promise.all([
+    AgentSkillConfig.resolveAll({
+      workspaceId: workspace?.id,
+      userId: user?.id,
+    }),
+    agentSkillCatalog({ mcpTools }),
+  ]);
 
-  // Top-level built-in skill.
-  const plugin = AgentPlugins[skill];
-  if (plugin) {
-    // Multi-stage plugin (e.g. sql-agent) registers one function per child.
-    if (Array.isArray(plugin.plugin))
-      return {
-        loadable: plugin.plugin.map((c) => `${plugin.name}#${c.name}`),
-        registered: plugin.plugin.map((c) => c.name),
-      };
-    return { loadable: [plugin.name], registered: [plugin.name] };
-  }
+  const states = {};
+  for (const entry of catalog)
+    states[entry.skill] = skillState(resolved, entry, states[entry.parent]);
+  return Object.values(states);
+}
 
-  // Imported plugin referenced by hubId (registered under the hubId itself).
-  if (ImportedPlugin.validateImportedPluginHandler(skill))
-    return { loadable: [`@@${skill}`], registered: [skill] };
+/**
+ * Fetches and preloads the names/identifiers for plugins that will be dynamically
+ * loaded later
+ * @param {Object} [scope]
+ * @param {import("@prisma/client").workspaces | null} [scope.workspace]
+ * @param {import("@prisma/client").users | null} [scope.user]
+ * @returns {Promise<string[]>}
+ */
+async function agentSkillsFromSystemSettings({
+  workspace = null,
+  user = null,
+} = {}) {
+  const states = await agentSkillStates({ workspace, user, mcpTools: false });
+  const loads = states
+    .filter((state) => state.enabled && state.usable && state.load)
+    .map((state) => state.load);
+  return [...new Set(loads)];
+}
 
-  // Sub-skill child name (e.g. a filesystem-agent child): find its parent so the
-  // loader can attach just that child via the `parent#child` convention.
-  for (const key of Object.keys(AgentPlugins)) {
-    const parent = AgentPlugins[key];
-    if (!Array.isArray(parent?.plugin)) continue;
-    const child = parent.plugin.find((c) => c.name === skill);
-    if (child)
-      return {
-        loadable: [`${parent.name}#${child.name}`],
-        registered: [child.name],
-      };
-  }
+/**
+ * Mask a skill config before it is sent to the UI. Skills list their secret config
+ * keys in `secretConfigFields` on their plugin export. Masked values sent back on
+ * save are ignored, so the stored secret is kept.
+ * @param {string} skill
+ * @param {Object|null} config
+ * @returns {Object|null}
+ */
+function maskSkillConfig(skill, config = null) {
+  if (!config) return null;
+  const secretFields = AgentPlugins[skill]?.secretConfigFields ?? [];
+  return Object.fromEntries(
+    Object.entries(config).map(([key, value]) => [
+      key,
+      secretFields.includes(key) && value ? "********" : value,
+    ])
+  );
+}
 
-  // Fallback: treat the id as both the loadable entry and the registered name.
-  return { loadable: [skill], registered: [skill] };
+/**
+ * Whether a name is a built-in skill or sub-skill.
+ * @param {string} skill
+ * @returns {boolean}
+ */
+function isBuiltInSkill(skill = "") {
+  return [...DEFAULT_SKILLS, ...OPTIONAL_SKILLS].some(
+    (name) =>
+      name === skill ||
+      (Array.isArray(AgentPlugins[name].plugin) &&
+        AgentPlugins[name].plugin.some((child) => child.name === skill))
+  );
 }
 
 module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
+  agentSkillCatalog,
+  agentSkillStates,
   agentSkillsFromSystemSettings,
-  resolveAgentSkill,
+  isBuiltInSkill,
+  maskSkillConfig,
+  skillState,
 };
