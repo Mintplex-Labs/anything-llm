@@ -4,6 +4,10 @@ import hljs from "highlight.js";
 import { CaretDown } from "@phosphor-icons/react";
 import "highlight.js/styles/github-dark.css";
 import DOMPurify from "@/utils/chat/purify";
+import {
+  THOUGHT_REGEX_COMPLETE,
+  stripThoughtTags,
+} from "@/utils/chat/thoughts";
 
 const md = new MarkdownIt({
   html: true,
@@ -23,7 +27,7 @@ const ThoughtBubble = ({ thought }) => {
 
   if (!thought) return null;
 
-  const cleanThought = thought.replace(/<\/?think>/g, "").trim();
+  const cleanThought = stripThoughtTags(thought).trim();
   if (!cleanThought) return null;
 
   return (
@@ -53,12 +57,13 @@ const ThoughtBubble = ({ thought }) => {
 function parseContent(content) {
   const parts = [];
   let lastIndex = 0;
-  content.replace(/<think>([^]*?)<\/think>/g, (match, thinkContent, offset) => {
+  content.replace(THOUGHT_REGEX_COMPLETE, (match, offset) => {
     if (offset > lastIndex) {
       parts.push({ type: "normal", text: content.slice(lastIndex, offset) });
     }
-    parts.push({ type: "think", text: thinkContent });
+    parts.push({ type: "think", text: match });
     lastIndex = offset + match.length;
+    return match;
   });
   if (lastIndex < content.length) {
     parts.push({ type: "normal", text: content.slice(lastIndex) });

@@ -23,9 +23,7 @@ import { openImageLightbox } from "@/components/ImageLightbox";
 
 function hasVisibleContent(message) {
   if (!message) return false;
-  const stripped = message
-    .replace(new RegExp(THOUGHT_REGEX_COMPLETE, "g"), "")
-    .trim();
+  const stripped = message.replace(THOUGHT_REGEX_COMPLETE, "").trim();
   if (!stripped) return false;
   if (
     stripped.match(THOUGHT_REGEX_OPEN) &&

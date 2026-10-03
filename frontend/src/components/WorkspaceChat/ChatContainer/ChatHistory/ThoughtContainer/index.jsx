@@ -1,6 +1,19 @@
 import { useState, createContext, useContext, useCallback } from "react";
 import { formatDuration } from "@/utils/numbers";
 
+// The thought-tag regexes and split/strip helpers live in
+// `@/utils/chat/thoughts` (single source of truth - shared with the chat
+// markdown renderer) and are re-exported here so the components that
+// imported them from ThoughtContainer historically keep working.
+export {
+  THOUGHT_REGEX_OPEN,
+  THOUGHT_REGEX_CLOSE,
+  THOUGHT_REGEX_COMPLETE,
+  splitThoughtContent,
+  stripThoughtSegments,
+  stripThoughtTags,
+} from "@/utils/chat/thoughts";
+
 /**
  * Context to persist activity-chain expansion state across component
  * transitions (e.g., from PromptReply to HistoricalMessage)
@@ -58,30 +71,4 @@ export function thoughtLabel(isThinking, duration) {
   if (isThinking) return "Thinking...";
   if (duration) return `Thought for ${formatDuration(duration)}`;
   return "Thoughts";
-}
-
-const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
-const CLOSING_TAGS = [...THOUGHT_KEYWORDS, "response", "answer"];
-export const THOUGHT_REGEX_OPEN = new RegExp(
-  THOUGHT_KEYWORDS.map((keyword) => `<${keyword}\\s*(?:[^>]*?)?\\s*>`).join("|")
-);
-export const THOUGHT_REGEX_CLOSE = new RegExp(
-  CLOSING_TAGS.map((keyword) => `</${keyword}\\s*(?:[^>]*?)?>`).join("|")
-);
-export const THOUGHT_REGEX_COMPLETE = new RegExp(
-  THOUGHT_KEYWORDS.map(
-    (keyword) =>
-      `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
-  ).join("|")
-);
-
-/**
- * Removes the wrapping think tags from a thought segment.
- * @param {string} content
- * @returns {string}
- */
-export function stripThoughtTags(content = "") {
-  return content
-    .replace(THOUGHT_REGEX_OPEN, "")
-    .replace(THOUGHT_REGEX_CLOSE, "");
 }

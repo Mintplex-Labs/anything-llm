@@ -19,13 +19,9 @@ import { THREAD_FORK_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadC
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useAutoScroll from "@/hooks/useAutoScroll";
-import {
-  ThoughtExpansionProvider,
-  THOUGHT_REGEX_OPEN,
-  THOUGHT_REGEX_CLOSE,
-  THOUGHT_REGEX_COMPLETE,
-} from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
+import { ThoughtExpansionProvider } from "./ThoughtContainer";
+import { splitThoughtContent } from "@/utils/chat/thoughts";
 
 export default forwardRef(function (
   {
@@ -378,9 +374,10 @@ function pushActivity(acc, node) {
 }
 
 /**
- * Splits an assistant message into its thought segment (if any) and reports
- * whether anything visible remains to render as a message. A message with an
- * open think tag and no close is mid-thought: the whole content is thought.
+ * Splits an assistant message into its thought segments (if any) and reports
+ * whether anything visible remains to render as a message. Every complete
+ * segment is captured - not just the first - and a trailing open tag with no
+ * close is a thought still streaming in, so everything from it on is thought.
  * `hasVisible` stays true for messages that carry other renderable payloads
  * (citations, attachments, outputs, errors, the pending placeholder) even
  * when the text itself is empty.
@@ -388,24 +385,11 @@ function pushActivity(acc, node) {
  * @returns {{thought: string|null, hasVisible: boolean}}
  */
 function splitAssistantThought(props) {
-  const content = props.content;
-  let thought = null;
-  const complete = content.match(THOUGHT_REGEX_COMPLETE);
-  if (complete) thought = complete[0];
-  else if (
-    content.match(THOUGHT_REGEX_OPEN) &&
-    !content.match(THOUGHT_REGEX_CLOSE)
-  )
-    thought = content;
+  const { thoughts, remainder } = splitThoughtContent(props.content);
+  const thought = thoughts.length > 0 ? thoughts.join("\n\n") : null;
 
-  const visibleText =
-    thought === null
-      ? content
-      : thought === content
-        ? ""
-        : content.replace(THOUGHT_REGEX_COMPLETE, "");
   const hasVisible =
-    visibleText.trim().length > 0 ||
+    remainder.trim().length > 0 ||
     !!props.pending ||
     !!props.error ||
     (props.sources?.length ?? 0) > 0 ||

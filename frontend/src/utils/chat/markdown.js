@@ -6,6 +6,7 @@ import hljs from "highlight.js";
 import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
+import { stripThoughtSegments } from "./thoughts";
 
 // Register custom lanaguages
 import hljsDefineSvelte from "./hljs-libraries/svelte";
@@ -79,7 +80,15 @@ markdown.renderer.rules.image = function (tokens, idx) {
 markdown.use(markdownItKatexPlugin);
 
 export default function renderMarkdown(text = "") {
-  return markdown.render(text);
+  // Thought segments are transport, not content - they are lifted into the
+  // stylized thought chain by whoever compiles the chat history. Strip them
+  // here as well so a caller that forgot the split (the AnythingLLM Desktop
+  // Assistant shipped exactly that bug - the thinking trace rendered both in
+  // the chain dropdown and as raw text in the message body) can never leak
+  // raw `<think>` markup into rendered output. `renderThoughtMarkdown`
+  // below renders the segment contents themselves and deliberately does
+  // not strip.
+  return markdown.render(stripThoughtSegments(text));
 }
 
 /**
