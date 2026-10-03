@@ -58,9 +58,9 @@ module.exports.SqlAgentGetTableSchema = {
                   "The database identifier for the table name we want the schema for. This is a required field.",
               },
             },
+            required: ["database_id", "table_name"],
             additionalProperties: false,
           },
-          required: ["database_id", "table_name"],
           handler: async function ({ database_id = "", table_name = "" }) {
             this.super.handlerProps.log(`Using the sql-get-table-schema tool.`);
             try {
