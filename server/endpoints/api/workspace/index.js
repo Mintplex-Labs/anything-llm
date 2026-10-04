@@ -570,7 +570,7 @@ function apiWorkspaceEndpoints(app) {
         }
       }
       #swagger.responses[404] = {
-        description: 'Document not found'
+        description: 'Workspace or document not found'
       }
       #swagger.responses[500] = {
         description: 'Internal Server Error'
@@ -580,6 +580,7 @@ function apiWorkspaceEndpoints(app) {
         const { slug = null } = request.params;
         const { docPath, pinStatus = false } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) return response.sendStatus(404).end();
 
         const document = await Document.get({
           workspaceId: workspace.id,
