@@ -1204,7 +1204,11 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/workspace-chats/:id",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      chatHistoryViewable,
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+    ],
     async (request, response) => {
       try {
         const { id } = request.params;

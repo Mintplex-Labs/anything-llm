@@ -114,7 +114,7 @@ function embedManagementEndpoints(app) {
 
   app.delete(
     "/embed/chats/:chatId",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [chatHistoryViewable, validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { chatId } = request.params;
