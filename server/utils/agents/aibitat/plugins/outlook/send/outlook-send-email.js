@@ -166,7 +166,8 @@ module.exports.OutlookSendEmail = {
                 result = await outlookLib.replyToMessage(
                   replyToMessageId,
                   body,
-                  replyAll
+                  replyAll,
+                  { attachments: preparedAttachments }
                 );
               } else {
                 this.super.introspect(
