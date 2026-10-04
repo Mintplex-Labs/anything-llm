@@ -131,7 +131,7 @@ function detectDelimiter(csvString) {
  * significant digits. A longer digit string (a card number, an account or
  * tracking ID) would be silently rounded if converted, so it stays as text.
  * @param {string} numericText - A numeric string, possibly signed or with a decimal point.
- * @returns {boolean} True if the digits survive a round-trip through a double.
+ * @returns {boolean} True if the value has at most 15 significant digits.
  */
 function fitsInDouble(numericText) {
   const digits = numericText.replace(/[^0-9]/g, "").replace(/^0+/, "");
