@@ -168,7 +168,10 @@ export default function Directory({
       if (toRemove.length > 0) await System.deleteDocuments(toRemove);
       for (const folderName of foldersToRemove)
         await System.deleteFolder(folderName);
-      removeFiles(selected.map((file) => file.id));
+      removeFiles(
+        selected.map((file) => file.id),
+        { deleted: true }
+      );
       clearSelection();
       await refresh();
     } catch (error) {
