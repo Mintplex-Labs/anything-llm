@@ -762,7 +762,7 @@ const TRANSLATIONS = {
       "start-server": "MCP sunucusunu başlatın",
       "delete-server": "MCP sunucusunu sil",
       "tool-count-warning":
-        "Bu MCP sunucusu, <b> özelliklerini etkinleştirmiş durumda ve bu özellikler her etkileşimde bağlamı tüketebilir. </b> Bağlamı korumak için istenmeyen özellikleri devre dışı bırakmayı düşünebilirsiniz.",
+        "Bu MCP sunucusunda <b>{{count}} araç etkin</b> ve bu araçlar her sohbette bağlam tüketir.<br />Bağlamı korumak için istenmeyen araçları devre dışı bırakmayı düşünebilirsiniz.",
       "startup-command": "Başlangıç Komutu",
       command: "Emir",
       arguments: "Tartışmalar",
