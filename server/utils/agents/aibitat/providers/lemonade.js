@@ -7,6 +7,7 @@ const {
   tooledStream,
   tooledComplete,
   temperatureParam,
+  MAX_PARSE_RETRIES,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const {
@@ -111,7 +112,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    * Stream a chat completion with tool calling support.
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
-  async stream(messages, functions = [], eventHandler = null) {
+  async stream(messages, functions = [], eventHandler = null, attempt = 0) {
     await this.preloadModel();
     const useNative = await this.supportsNativeToolCalling();
 
@@ -140,10 +141,17 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
       );
 
       if (result.retryWithError) {
+        if (attempt >= MAX_PARSE_RETRIES) {
+          return {
+            textResponse: result.retryWithError.content,
+            functionCall: null,
+          };
+        }
         return this.stream(
           [...messages, result.retryWithError],
           functions,
-          eventHandler
+          eventHandler,
+          attempt + 1
         );
       }
 
@@ -166,7 +174,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
    * Create a non-streaming completion with tool calling support.
    * Uses native tool calling when supported, otherwise falls back to UnTooled.
    */
-  async complete(messages, functions = []) {
+  async complete(messages, functions = [], attempt = 0) {
     await this.preloadModel();
     const useNative = await this.supportsNativeToolCalling();
 
@@ -190,7 +198,17 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
       );
 
       if (result.retryWithError) {
-        return this.complete([...messages, result.retryWithError], functions);
+        if (attempt >= MAX_PARSE_RETRIES) {
+          return {
+            textResponse: result.retryWithError.content,
+            functionCall: null,
+          };
+        }
+        return this.complete(
+          [...messages, result.retryWithError],
+          functions,
+          attempt + 1
+        );
       }
 
       return result;

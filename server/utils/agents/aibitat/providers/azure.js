@@ -1,7 +1,11 @@
 const { OpenAI } = require("openai");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  MAX_PARSE_RETRIES,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 
 /**
@@ -37,7 +41,7 @@ class AzureOpenAiProvider extends Provider {
    * @param {function} eventHandler
    * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
    */
-  async stream(messages, functions = [], eventHandler = null) {
+  async stream(messages, functions = [], eventHandler = null, attempt = 0) {
     this.providerLog("Provider.stream - will process this chat completion.");
 
     try {
@@ -51,10 +55,17 @@ class AzureOpenAiProvider extends Provider {
       );
 
       if (result.retryWithError) {
+        if (attempt >= MAX_PARSE_RETRIES) {
+          return {
+            textResponse: result.retryWithError.content,
+            functionCall: null,
+          };
+        }
         return this.stream(
           [...messages, result.retryWithError],
           functions,
-          eventHandler
+          eventHandler,
+          attempt + 1
         );
       }
 
@@ -80,7 +91,7 @@ class AzureOpenAiProvider extends Provider {
    * @param {any[]} functions
    * @returns The completion.
    */
-  async complete(messages, functions = []) {
+  async complete(messages, functions = [], attempt = 0) {
     try {
       const result = await tooledComplete(
         this.client,
@@ -92,7 +103,17 @@ class AzureOpenAiProvider extends Provider {
       );
 
       if (result.retryWithError) {
-        return this.complete([...messages, result.retryWithError], functions);
+        if (attempt >= MAX_PARSE_RETRIES) {
+          return {
+            textResponse: result.retryWithError.content,
+            functionCall: null,
+          };
+        }
+        return this.complete(
+          [...messages, result.retryWithError],
+          functions,
+          attempt + 1
+        );
       }
 
       return result;
