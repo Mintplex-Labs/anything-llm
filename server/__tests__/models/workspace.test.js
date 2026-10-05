@@ -278,6 +278,39 @@ describeValidation("lastUpdatedAt", () => {
   });
 });
 
+describeValidation("agentSkill", () => {
+  it("passes a valid skill key through trimmed", () => {
+    expect(Workspace.validations.agentSkill("web-scraping")).toBe(
+      "web-scraping"
+    );
+    expect(Workspace.validations.agentSkill("  @@flow_abc  ")).toBe(
+      "@@flow_abc"
+    );
+  });
+
+  it("throws on empty, non-string or overly long values", () => {
+    expect(() => Workspace.validations.agentSkill("")).toThrow();
+    expect(() => Workspace.validations.agentSkill("   ")).toThrow();
+    expect(() => Workspace.validations.agentSkill(null)).toThrow();
+    expect(() => Workspace.validations.agentSkill(123)).toThrow();
+    expect(() => Workspace.validations.agentSkill("a".repeat(256))).toThrow();
+  });
+});
+
+describeValidation("agentSkillEnabled", () => {
+  it("passes true, false and null through", () => {
+    expect(Workspace.validations.agentSkillEnabled(true)).toBe(true);
+    expect(Workspace.validations.agentSkillEnabled(false)).toBe(false);
+    expect(Workspace.validations.agentSkillEnabled(null)).toBeNull();
+  });
+
+  it("throws on anything else", () => {
+    expect(() => Workspace.validations.agentSkillEnabled("true")).toThrow();
+    expect(() => Workspace.validations.agentSkillEnabled(1)).toThrow();
+    expect(() => Workspace.validations.agentSkillEnabled(undefined)).toThrow();
+  });
+});
+
 describe("Workspace.validateFields", () => {
   // Regression test for #2541: an invalid `lastUpdatedAt` used to be passed
   // through verbatim because the writable field had no validation, which then
@@ -373,5 +406,47 @@ describe("Workspace.update", () => {
   it("keeps router_id when the update does not change the provider", async () => {
     await Workspace.update(1, { name: "Renamed" });
     expect(Workspace._update).toHaveBeenCalledWith(1, { name: "Renamed" });
+  });
+});
+
+describe("Workspace.setAgentSkillOverride", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Workspace, "_update")
+      .mockResolvedValue({ workspace: null, message: null });
+    jest
+      .spyOn(Workspace, "agentSkillOverrides")
+      .mockResolvedValue({ "web-scraping": false });
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  it("adds an override to the existing ones", async () => {
+    await Workspace.setAgentSkillOverride(1, "create-chart", true);
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      agentSkillOverrides: JSON.stringify({
+        "web-scraping": false,
+        "create-chart": true,
+      }),
+    });
+  });
+
+  it("removes an override when enabled is null", async () => {
+    await Workspace.setAgentSkillOverride(1, "create-chart", null);
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      agentSkillOverrides: JSON.stringify({ "web-scraping": false }),
+    });
+  });
+
+  it("stores null once the last override is removed", async () => {
+    await Workspace.setAgentSkillOverride(1, "web-scraping", null);
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      agentSkillOverrides: null,
+    });
+  });
+
+  it("returns an error message and does not write on invalid input", async () => {
+    const { message } = await Workspace.setAgentSkillOverride(1, "", true);
+    expect(message).toBeTruthy();
+    expect(Workspace._update).not.toHaveBeenCalled();
   });
 });
