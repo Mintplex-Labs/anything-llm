@@ -1905,8 +1905,9 @@ const TRANSLATIONS = {
       "llm-section-label":
         "LLM kuralları — eğer hiçbir hesaplanmış kural eşleşmiyorsa, toplu olarak değerlendirilir.",
       "llm-rule-body":
-        'Ardından "<desc>" içindeki "{{description}}" öğesini eşleştirin ve ardından <route>\'ye yönlendirin.',
-      "calculated-no-conditions": "Şart yok — <route>'a giden rota",
+        '<desc>"{{description}}"</desc> ile eşleşirse rotayı <route>{{route}}</route> olarak belirle.',
+      "calculated-no-conditions":
+        "Şart yok — rotayı <route>{{route}}</route> olarak belirle",
       "calculated-single-condition":
         'Eğer <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> ise, rotayı <route> {{route}} </route> olarak belirle.',
       "calculated-multi-condition":

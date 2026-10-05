@@ -1781,9 +1781,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "沒有任何限制 — 路線為 <route>{{route}}</route>",
       "calculated-single-condition":
-        "如果符合 <prop>、{{property}}、</prop> 的條件，則前往 {{comparator}}、<val>、「{{value}}」、</val>，然後前往 <route>、{{route}}、</route>。",
+        "如果 <prop>{{property}}</prop> {{comparator}} <val>「{{value}}」</val>，則將路線設定為 <route>{{route}}</route>",
       "calculated-multi-condition":
-        "如果 {{quantifier}} 符合 <cond> 的條件，則將路線設定為 </cond>{{route}}</route>",
+        "如果符合 <cond>{{conditions}}</cond> 中的{{quantifier}}條件，則將路線設定為 <route>{{route}}</route>",
       "comparator-contains": "包含",
       "comparator-matches": "比賽",
       "comparator-between": "之間",

@@ -1836,7 +1836,7 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "ללא תנאים – מסל הגעה ל<route>{{route}}</route>",
       "calculated-single-condition":
-        "אם <prop> נמצא במיקום {{property}} וגם </prop> נמצא במיקום {{comparator}} וגם <val> נמצא במיקום {{value}} אז, יש להעביר את המסלול ל-<route> במיקום {{route}}",
+        'אם <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, יש לנתב אל <route>{{route}}</route>',
       "calculated-multi-condition":
         "אם {{quantifier}} של <cond> נמצא ב{{conditions}} של </cond>, אז יש לכוון את המסלול ל<route> של {{route}} של </route>",
       "comparator-contains": "כולל",
@@ -1944,7 +1944,7 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "בחר/י נתב",
       "invalid-model": "בחירת מודל לא תקינה",
-      "routed-to": "מופנה ל-{{model}} בתוך <route>",
+      "routed-to": "נשלח אל <route>{{model}}</route>",
       "routed-to-rule":
         "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
     },

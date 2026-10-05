@@ -1872,7 +1872,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'إذا كانت <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>، فقم بتوجيهها إلى <route>{{route}}</route>',
       "calculated-multi-condition":
-        "إذا كان {{quantifier}} من <cond>، فإن المسار يجب أن يكون إلى <route>، {{route}}، </route>",
+        "إذا تحقق {{quantifier}} من <cond>{{conditions}}</cond>، فقم بتوجيهها إلى <route>{{route}}</route>",
       "comparator-contains": "يحتوي على",
       "comparator-matches": "المباريات",
       "comparator-between": "بين",

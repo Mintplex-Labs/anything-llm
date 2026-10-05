@@ -1882,13 +1882,13 @@ const TRANSLATIONS = {
       "llm-section-label":
         "LLMのルール—計算されたルールに一致しない場合に、まとめて評価",
       "llm-rule-body":
-        "次に、<desc>「{{description}}」</desc> にマッチし、その後、<route>へルーティングします。",
+        "<desc>「{{description}}」</desc> にマッチした場合、<route>{{route}}</route> へルーティングします。",
       "calculated-no-conditions":
-        "条件なし—ルート：<route>へ、{{route}}、</route>",
+        "条件なし — <route>{{route}}</route> へルーティング",
       "calculated-single-condition":
-        'もし <prop>が条件{{property}}、</prop>が条件{{comparator}}、そして<val>が条件 "{{value}}"、</val>である場合、<route>へ移動する',
+        'もし <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> の場合、<route>{{route}}</route> へルーティングします',
       "calculated-multi-condition":
-        "もし、[{{quantifier}}]が[<cond>]である場合、[{{conditions}}]、[</cond>]を通過して、[<route>]、[{{route}}]、[</route>]へ移動する。",
+        "<cond>{{conditions}}</cond> の{{quantifier}}に一致する場合、<route>{{route}}</route> へルーティングします",
       "comparator-contains": "これには",
       "comparator-matches": "試合",
       "comparator-between": "間、間隔",
@@ -1897,7 +1897,7 @@ const TRANSLATIONS = {
       "aria-drag-to-reorder": "ドラッグして並び順を変更",
       "aria-edit-rule": "編集規則",
       "aria-delete-rule": "ルールを削除する",
-      "quantifier-any": "何でも",
+      "quantifier-any": "いずれか",
       "quantifier-all": "すべて",
     },
     "rule-form": {
@@ -1998,7 +1998,7 @@ const TRANSLATIONS = {
       "invalid-model": "無効なモデルの選択",
       "routed-to": "<route>、{{model}}、</route> 宛にルーティング",
       "routed-to-rule":
-        "<route>～</route>を経由して、<rule>～</rule>へルーティング",
+        "<rule>{{ruleTitle}}</rule> により <route>{{model}}</route> へルーティング",
     },
   },
   imageGeneration: {
