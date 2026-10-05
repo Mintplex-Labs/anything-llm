@@ -70,9 +70,7 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
   const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
 
   useEffect(() => {
-    System.checkDocumentProcessorOnline().then((status) => {
-      if (mountedRef.current) setReady(status);
-    });
+    System.checkDocumentProcessorOnline().then((status) => setReady(status));
   }, []);
 
   useEffect(() => {
@@ -189,7 +187,6 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
         });
       }
     }
-    if (!mountedRef.current) return;
     setFiles((prev) => [...prev, ...newAccepted]);
     embedEligibleAttachments(newAccepted);
   }
@@ -226,7 +223,6 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
       }
     }
 
-    if (!mountedRef.current) return;
     setFiles((prev) => [...prev, ...newAccepted]);
     embedEligibleAttachments(newAccepted);
   }
@@ -261,7 +257,6 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
       promises.push(
         Workspace.parseFile(workspace.slug, formData).then(
           async ({ response, data }) => {
-            if (!mountedRef.current) return;
             if (!response.ok) {
               const updates = {
                 status: "failed",
@@ -394,7 +389,7 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
         Workspace.embedParsedFile(workspace.slug, file.parsedFileId).then(
           (result) => {
             completed++;
-            if (mountedRef.current) setEmbedProgress(completed);
+            setEmbedProgress(completed);
             return result;
           }
         )
@@ -424,10 +419,7 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
     setIsEmbedding(false);
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
     showToast(
-      `${pendingFiles.length} ${pluralize(
-        "file",
-        pendingFiles.length
-      )} embedded successfully`,
+      `${pendingFiles.length} ${pluralize("file", pendingFiles.length)} embedded successfully`,
       "success"
     );
   };
