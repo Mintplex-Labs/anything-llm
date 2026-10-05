@@ -1964,7 +1964,7 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "라우터를 선택하세요",
       "invalid-model": "유효하지 않은 모델 선택",
-      "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
+      "routed-to": "<route>{{model}}</route>(으)로 연결됨",
       "routed-to-rule":
         "<rule>{{ruleTitle}}</rule> 규칙을 통해 <route>{{model}}</route>(으)로 연결",
     },

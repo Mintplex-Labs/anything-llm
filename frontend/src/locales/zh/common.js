@@ -1785,8 +1785,7 @@ const TRANSLATIONS = {
         "LLM 规则——如果没有任何规则计算结果与给定条件匹配，则作为批量进行评估",
       "llm-rule-body":
         "匹配 <desc>“{{description}}”</desc> 后，路由到 <route>{{route}}</route>",
-      "calculated-no-conditions":
-        "无任何条件——前往<route>，{{route}}，</route>",
+      "calculated-no-conditions": "无条件——路由到 <route>{{route}}</route>",
       "calculated-single-condition":
         '如果满足条件：<prop> {{property}}，</prop> {{comparator}}，<val>"{{value}}"，</val>，则将路由到 <route>{{route}}</route>',
       "calculated-multi-condition":

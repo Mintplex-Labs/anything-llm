@@ -1884,11 +1884,11 @@ const TRANSLATIONS = {
       "llm-rule-body":
         "<desc>「{{description}}」</desc> にマッチした場合、<route>{{route}}</route> へルーティングします。",
       "calculated-no-conditions":
-        "条件なし—ルート：<route>へ、{{route}}、</route>",
+        "条件なし — <route>{{route}}</route> へルーティング",
       "calculated-single-condition":
         'もし <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> の場合、<route>{{route}}</route> へルーティングします',
       "calculated-multi-condition":
-        "もし、[{{quantifier}}]が[<cond>]である場合、[{{conditions}}]、[</cond>]を通過して、[<route>]、[{{route}}]、[</route>]へ移動する。",
+        "<cond>{{conditions}}</cond> の{{quantifier}}に一致する場合、<route>{{route}}</route> へルーティングします",
       "comparator-contains": "これには",
       "comparator-matches": "試合",
       "comparator-between": "間、間隔",
@@ -1897,7 +1897,7 @@ const TRANSLATIONS = {
       "aria-drag-to-reorder": "ドラッグして並び順を変更",
       "aria-edit-rule": "編集規則",
       "aria-delete-rule": "ルールを削除する",
-      "quantifier-any": "何でも",
+      "quantifier-any": "いずれか",
       "quantifier-all": "すべて",
     },
     "rule-form": {
