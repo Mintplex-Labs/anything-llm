@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { v4 } from "uuid";
 import System from "@/models/system";
 import { useDropzone } from "react-dropzone";
@@ -45,6 +45,20 @@ export function DnDFileUploaderProvider({
   threadSlug = null,
   children,
 }) {
+  // Attachment state and event listeners belong to one conversation.
+  return (
+    <DnDFileUploader
+      key={`${workspace.slug}:${threadSlug ?? "default"}`}
+      workspace={workspace}
+      threadSlug={threadSlug}
+    >
+      {children}
+    </DnDFileUploader>
+  );
+}
+
+function DnDFileUploader({ workspace, threadSlug, children }) {
+  const mountedRef = useRef(true);
   const [files, setFiles] = useState([]);
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -56,10 +70,13 @@ export function DnDFileUploaderProvider({
   const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
 
   useEffect(() => {
-    System.checkDocumentProcessorOnline().then((status) => setReady(status));
+    System.checkDocumentProcessorOnline().then((status) => {
+      if (mountedRef.current) setReady(status);
+    });
   }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
     window.addEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
     window.addEventListener(CLEAR_ATTACHMENTS_EVENT, resetAttachments);
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePastedAttachment);
@@ -69,6 +86,8 @@ export function DnDFileUploaderProvider({
     );
 
     return () => {
+      // In-flight uploads must not dispatch events to the next conversation.
+      mountedRef.current = false;
       window.removeEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
       window.removeEventListener(CLEAR_ATTACHMENTS_EVENT, resetAttachments);
       window.removeEventListener(
@@ -170,6 +189,7 @@ export function DnDFileUploaderProvider({
         });
       }
     }
+    if (!mountedRef.current) return;
     setFiles((prev) => [...prev, ...newAccepted]);
     embedEligibleAttachments(newAccepted);
   }
@@ -206,6 +226,7 @@ export function DnDFileUploaderProvider({
       }
     }
 
+    if (!mountedRef.current) return;
     setFiles((prev) => [...prev, ...newAccepted]);
     embedEligibleAttachments(newAccepted);
   }
@@ -215,11 +236,13 @@ export function DnDFileUploaderProvider({
    * @param {Attachment[]} newAttachments
    */
   async function embedEligibleAttachments(newAttachments = []) {
+    if (!mountedRef.current) return;
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
     const promises = [];
 
     const { currentContextTokenCount, contextWindow } =
       await Workspace.getParsedFiles(workspace.slug, threadSlug);
+    if (!mountedRef.current) return;
     const workspaceContextWindow = contextWindow
       ? Math.floor(contextWindow * Workspace.maxContextWindowLimit)
       : Number.POSITIVE_INFINITY;
@@ -238,6 +261,7 @@ export function DnDFileUploaderProvider({
       promises.push(
         Workspace.parseFile(workspace.slug, formData).then(
           async ({ response, data }) => {
+            if (!mountedRef.current) return;
             if (!response.ok) {
               const updates = {
                 status: "failed",
@@ -301,9 +325,10 @@ export function DnDFileUploaderProvider({
     }
 
     // Wait for all promises to resolve in some way before dispatching the event to unlock the send button
-    Promise.all(promises).finally(() =>
-      window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT))
-    );
+    Promise.all(promises).finally(() => {
+      if (mountedRef.current)
+        window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
+    });
   }
 
   // Handle modal actions
@@ -315,6 +340,7 @@ export function DnDFileUploaderProvider({
       workspace.slug,
       pendingFiles.map((file) => file.parsedFileId)
     );
+    if (!mountedRef.current) return;
 
     // Remove all files from this batch from the UI
     setFiles((prev) =>
@@ -368,12 +394,13 @@ export function DnDFileUploaderProvider({
         Workspace.embedParsedFile(workspace.slug, file.parsedFileId).then(
           (result) => {
             completed++;
-            setEmbedProgress(completed);
+            if (mountedRef.current) setEmbedProgress(completed);
             return result;
           }
         )
       )
     );
+    if (!mountedRef.current) return;
 
     // Update status for all files
     const fileUpdates = pendingFiles.map((file, i) => ({
@@ -397,7 +424,10 @@ export function DnDFileUploaderProvider({
     setIsEmbedding(false);
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
     showToast(
-      `${pendingFiles.length} ${pluralize("file", pendingFiles.length)} embedded successfully`,
+      `${pendingFiles.length} ${pluralize(
+        "file",
+        pendingFiles.length
+      )} embedded successfully`,
       "success"
     );
   };
