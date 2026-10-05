@@ -412,9 +412,14 @@ class BackgroundService {
     try {
       worker.send({ jobId, runId });
       await new Promise((resolve, reject) => {
-        worker.on("exit", (code, signal) => {
-          // SIGTERM is sent by removeScheduledJob when the job is deleted
-          // mid-run; treat that as a normal exit rather than a worker failure.
+        worker.on("exit", async (code, signal) => {
+          // SIGTERM is sent by killRun/removeScheduledJob and is a normal exit.
+          // Windows terminates the child without running its SIGTERM handler,
+          // so finalize the run here. kill() only updates non-terminal rows.
+          if (signal === "SIGTERM") {
+            const { ScheduledJobRun } = require("../../models/scheduledJobRun");
+            await ScheduledJobRun.kill(runId);
+          }
           if (code === 0 || code == null || signal === "SIGTERM") {
             resolve();
           } else {
