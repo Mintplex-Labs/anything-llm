@@ -7,7 +7,6 @@
     "start": "vite --open",
     "dev": "cross-env NODE_ENV=development vite --debug --host=0.0.0.0",
     "build": "vite build && node scripts/postbuild.js",
-    "test:attachments": "node --test tests/chat-attachments.cjs",
     "lint:check": "eslint src",
     "lint": "eslint --fix src",
     "preview": "vite preview"
@@ -66,7 +65,6 @@
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "eslint": "^9.39.2",
-    "esbuild": "^0.18.20",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-ft-flow": "^3.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -80,7 +78,6 @@
     "hermes-eslint": "^0.15.0",
     "postcss": "^8.4.23",
     "prettier": "^3.0.3",
-    "react-test-renderer": "18.3.1",
     "rollup-plugin-visualizer": "^5.9.0",
     "tailwindcss": "^3.3.1",
     "vite": "^4.3.0"
