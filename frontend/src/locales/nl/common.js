@@ -755,7 +755,7 @@ const TRANSLATIONS = {
       "start-server": "Start de MCP-server",
       "delete-server": "Verwijder de MCP-server",
       "tool-count-warning":
-        "Deze MCP-server heeft <b> bepaalde tools ingeschakeld</b> die context gebruiken in elke chat. <br /> Overweeg om ongewenste tools uit te schakelen om context te besparen.",
+        "Deze MCP-server heeft <b>{{count}} tools ingeschakeld</b> die context gebruiken in elke chat.<br />Overweeg om ongewenste tools uit te schakelen om context te besparen.",
       "startup-command": "Startcommando",
       command: "Instructie",
       arguments: "Argumenten",

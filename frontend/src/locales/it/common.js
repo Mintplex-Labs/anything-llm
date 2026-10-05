@@ -768,7 +768,7 @@ const TRANSLATIONS = {
       "start-server": "Avvia il server MCP",
       "delete-server": "Elimina il server MCP",
       "tool-count-warning":
-        "Questo server MCP ha <b> alcune funzionalità abilitate</b> che consumano contesto in ogni chat.<br /> Considera di disabilitare le funzionalità indesiderate per preservare il contesto.",
+        "Questo server MCP ha <b>{{count}} strumenti abilitati</b> che consumano contesto in ogni chat.<br />Considera di disabilitare gli strumenti indesiderati per preservare il contesto.",
       "startup-command": "Comando di avvio",
       command: "Ordine",
       arguments: "Argomentazioni",
