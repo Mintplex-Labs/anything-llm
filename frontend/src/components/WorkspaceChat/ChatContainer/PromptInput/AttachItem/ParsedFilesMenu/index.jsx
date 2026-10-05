@@ -71,11 +71,12 @@ export default function ParsedFilesMenu({
     setEmbedProgress(1);
     try {
       let completed = 0;
-      await Promise.all(
+      const results = await Promise.all(
         files.map((file) =>
-          Workspace.embedParsedFile(workspaceSlug, file.id).then(() => {
+          Workspace.embedParsedFile(workspaceSlug, file.id).then((result) => {
             completed++;
             setEmbedProgress(completed + 1);
+            return result;
           })
         )
       );
@@ -89,9 +90,12 @@ export default function ParsedFilesMenu({
         currentContextTokenCount >=
           contextWindow * Workspace.maxContextWindowLimit
       );
+      const allEmbedded = results.every(({ response }) => response.ok);
       showToast(
-        `${files.length} ${pluralize("file", files.length)} embedded successfully`,
-        "success"
+        allEmbedded
+          ? `${files.length} ${pluralize("file", files.length)} embedded successfully`
+          : "Failed to embed files",
+        allEmbedded ? "success" : "error"
       );
       tooltipRef?.current?.close();
     } catch (error) {
