@@ -329,6 +329,25 @@ describe("WebsiteDepth websiteScraper", () => {
     expect(writeToServerDocuments).toHaveBeenCalledTimes(2);
   });
 
+  it("scrapes the start page once when the start URL has a #fragment", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="/docs/api">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/page#intro",
+      1,
+      3
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
+  });
+
   it("skips a page that fails to load without aborting the crawl", async () => {
     mockSite({
       "https://example.com/docs/page":
