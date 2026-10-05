@@ -746,7 +746,7 @@ const TRANSLATIONS = {
       "start-server": "Start MCP-serveren",
       "delete-server": "Slet MCP-serveren",
       "tool-count-warning":
-        "Denne MCP-server har <b>aktiverede</b>værktøjer, som vil forbruge kontekst i hvert chat-session.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
+        "Denne MCP-server har <b>{{count}} aktiverede værktøjer</b>, som vil forbruge kontekst i hver chat.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
       "startup-command": "Startkommando",
       command: "Instruktion",
       arguments: "Argumenter",

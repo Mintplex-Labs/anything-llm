@@ -799,7 +799,7 @@ const TRANSLATIONS = {
       "start-server": "Uruchom serwer MCP",
       "delete-server": "Usuń serwer MCP",
       "tool-count-warning":
-        "Ten serwer MCP ma włączone <b> narzędzia, które będą zużywać kontekst w każdej rozmowie.</b> Rozważ wyłączenie niepotrzebnych narzędzi, aby oszczędzać kontekst.",
+        "Ten serwer MCP ma <b>włączone narzędzia ({{count}})</b>, które będą zużywać kontekst w każdej rozmowie.<br />Rozważ wyłączenie niepotrzebnych narzędzi, aby oszczędzać kontekst.",
       "startup-command": "Polecenie uruchamiające",
       command: "Rozkaz",
       arguments: "Argumenty",

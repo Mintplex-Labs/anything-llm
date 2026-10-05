@@ -739,7 +739,7 @@ const TRANSLATIONS = {
       "start-server": "启动 MCP 服务器",
       "delete-server": "删除 MCP 服务器",
       "tool-count-warning":
-        "这个 MCP 服务器启用了 <b> 工具，这些工具会在每次聊天中使用上下文信息。</b> 建议禁用不需要的工具，以节省上下文。<br />",
+        "这个 MCP 服务器启用了 <b>{{count}} 个工具</b>，这些工具会在每次聊天中消耗上下文。<br />建议禁用不需要的工具，以节省上下文。",
       "startup-command": "启动命令",
       command: "命令",
       arguments: "争论",

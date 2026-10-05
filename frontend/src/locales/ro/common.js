@@ -1353,7 +1353,7 @@ const TRANSLATIONS = {
       "start-server": "Pornește serverul MCP",
       "delete-server": "Șterge serverul MCP",
       "tool-count-warning":
-        "Acest server MCP are activate<b> instrumentele menționate</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
+        "Acest server MCP are <b>instrumente activate ({{count}})</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
       "startup-command": "Comanda de pornire",
       command: "Ordine",
       arguments: "Argumente",
