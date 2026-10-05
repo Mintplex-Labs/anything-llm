@@ -13,8 +13,11 @@ const { decodePathname } = require("../../url");
 
 async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   const baseUrl = new URL(startUrl);
-  const discoveredLinks = new Set([startUrl]);
-  let queue = [[startUrl, 0]]; // [url, currentDepth]
+  // Matches extractLinks, so in-page anchors resolve to the start page itself.
+  baseUrl.hash = "";
+  const startHref = baseUrl.href;
+  const discoveredLinks = new Set([startHref]);
+  let queue = [[startHref, 0]]; // [url, currentDepth]
   const scrapedUrls = new Set();
 
   for (let currentDepth = 0; currentDepth < maxDepth; currentDepth++) {
@@ -119,6 +122,7 @@ function extractLinks(html, baseUrl, pageUrl = baseUrl) {
         absoluteUrl.pathname === scopePath ||
         absoluteUrl.pathname.startsWith(`${scopePath}/`));
     if (inScope) {
+      absoluteUrl.hash = "";
       extractedLinks.add(absoluteUrl.href);
     }
   }

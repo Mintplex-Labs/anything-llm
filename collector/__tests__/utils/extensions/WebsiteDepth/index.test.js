@@ -145,11 +145,13 @@ describe("WebsiteDepth extractLinks scope", () => {
     ).toEqual(["https://example.com/docs/Upper"]);
   });
 
-  it("keeps query strings and fragments on in-scope links", () => {
-    const html = '<a href="/docs/guide?page=2#install">in</a>';
+  it("keeps query strings but drops fragments on in-scope links", () => {
+    const html =
+      '<a href="/docs/guide?page=2#install">in</a>' +
+      '<a href="/docs/guide?page=2#usage">in</a>';
     expect(
       extractLinks(html, new URL("https://example.com/docs/page"))
-    ).toEqual(["https://example.com/docs/guide?page=2#install"]);
+    ).toEqual(["https://example.com/docs/guide?page=2"]);
   });
 });
 
@@ -305,6 +307,45 @@ describe("WebsiteDepth websiteScraper", () => {
 
     // The start URL counts toward the cap, leaving room for two links.
     expect(scraped).toHaveLength(3);
+  });
+
+  it("does not spend maxLinks on #fragment links to pages already found", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="#usage">u</a>' +
+        '<a href="/docs/api">a</a><a href="/docs/api#auth">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page", 1, 3);
+
+    // The in-page anchors are the start page itself, so the cap of 3 still
+    // has room for /docs/api, and each page is loaded and stored only once.
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
+    expect(fetchedUrls().filter((url) => url.includes("#"))).toEqual([]);
+    expect(writeToServerDocuments).toHaveBeenCalledTimes(2);
+  });
+
+  it("scrapes the start page once when the start URL has a #fragment", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="/docs/api">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/page#intro",
+      1,
+      3
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
   });
 
   it("skips a page that fails to load without aborting the crawl", async () => {
