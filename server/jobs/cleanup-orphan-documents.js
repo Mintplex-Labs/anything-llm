@@ -48,11 +48,26 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
     const filesToDelete = [];
     const knownFiles = await WorkspaceParsedFiles.where({}, null, null, {
       filename: true,
-    })
-      // Slugify the filename to match the direct uploads naming convention otherwise
-      // files with spaces will not result in a match and will be pruned when attached to a thread.
-      // This could then result in files showing "Attached" but the model not seeing them during chat.
-      .then((files) => new Set(files.map((f) => slugify(f.filename))));
+      metadata: true,
+    }).then(
+      (files) =>
+        new Set(
+          files.map((file) => {
+            let metadata = null;
+            try {
+              metadata = JSON.parse(file.metadata);
+            } catch {}
+
+            // Collector filenames can differ from the original upload name (e.g. MBOX messages).
+            // Match the same basename that getContextFiles uses to read the attachment.
+            if (typeof metadata?.location === "string" && metadata.location)
+              return path.basename(metadata.location);
+
+            // Preserve the existing naming convention for legacy records without a location.
+            return slugify(file.filename);
+          })
+        )
+    );
 
     if (!fs.existsSync(directUploadsPath))
       return log("No direct uploads path found - exiting.");
