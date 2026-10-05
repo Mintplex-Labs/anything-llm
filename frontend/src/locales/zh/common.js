@@ -1248,7 +1248,7 @@ const TRANSLATIONS = {
     workspace_llm_manager: {
       search: "搜索",
       loading_workspace_settings: "正在载入工作区设置",
-      available_models: "可用模型",
+      available_models: "{{provider}} 的可用模型",
       available_models_description: "可用模型说明",
       save: "保存",
       saving: "正在保存",
@@ -1783,13 +1783,14 @@ const TRANSLATIONS = {
       "calculated-section-label": "计算规则——按照优先级顺序进行评估",
       "llm-section-label":
         "LLM 规则——如果没有任何规则计算结果与给定条件匹配，则作为批量进行评估",
-      "llm-rule-body": "匹配“{{description}}”后，然后将结果路由到“<route>”",
+      "llm-rule-body":
+        "匹配 <desc>“{{description}}”</desc> 后，路由到 <route>{{route}}</route>",
       "calculated-no-conditions":
         "无任何条件——前往<route>，{{route}}，</route>",
       "calculated-single-condition":
         '如果满足条件：<prop> {{property}}，</prop> {{comparator}}，<val>"{{value}}"，</val>，则将路由到 <route>{{route}}</route>',
       "calculated-multi-condition":
-        "如果满足<cond>的条件，则将路径设置为<route>",
+        "如果满足 <cond>{{conditions}}</cond> 中的{{quantifier}}条件，则路由到 <route>{{route}}</route>",
       "comparator-contains": "包含",
       "comparator-matches": "比赛",
       "comparator-between": "之间",

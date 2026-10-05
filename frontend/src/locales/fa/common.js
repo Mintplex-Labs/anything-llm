@@ -1888,7 +1888,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'اگر <prop>، {{property}}، </prop>، {{comparator}}، <val>، "{{value}}"، </val> باشد، مسیر را به <route>، {{route}}، </route> تعیین کنید.',
       "calculated-multi-condition":
-        "اگر {{quantifier}} از نوع <cond> باشد، مسیر را به <route>{{route}}</route> تغییر دهید.",
+        "اگر {{quantifier}} از <cond>{{conditions}}</cond> برقرار باشد، مسیر را به <route>{{route}}</route> تغییر دهید.",
       "comparator-contains": "شامل",
       "comparator-matches": "مسابقات",
       "comparator-between": "بین",

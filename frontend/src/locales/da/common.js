@@ -1901,7 +1901,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'Hvis <prop>{{property}}</prop> {{comparator}} <val> "_{{value}}_"</val>, så følg ruten til <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Hvis {{quantifier}} fra <cond> er tilfældet, så følg ruten til <route>",
+        "Hvis {{quantifier}} af <cond>{{conditions}}</cond> er opfyldt, så følg ruten til <route>{{route}}</route>",
       "comparator-contains": "indeholder",
       "comparator-matches": "kampe",
       "comparator-between": "mellem",

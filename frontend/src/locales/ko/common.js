@@ -1853,11 +1853,12 @@ const TRANSLATIONS = {
         "LLM 규칙 — 계산된 규칙이 일치하는 경우 일괄적으로 평가",
       "llm-rule-body":
         '다음 단계는 <desc>"{{description}}"</desc>을 매칭한 후, <route>{{route}}</route>로 경로를 지정하는 것입니다.',
-      "calculated-no-conditions": "특정 조건 없음 – <route> 경로로 이동",
+      "calculated-no-conditions":
+        "특정 조건 없음 – <route>{{route}}</route> 경로로 이동",
       "calculated-single-condition":
         '만약 <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> 이면, <route> {{route}} </route>로 이동합니다.',
       "calculated-multi-condition":
-        "만약 {{quantifier}} (태그 0)가 {{conditions}} (태그 1)인 경우, <route> (태그 2)로 이동합니다.",
+        "만약 <cond>{{conditions}}</cond> 중 {{quantifier}} 조건을 충족하면, <route>{{route}}</route>로 이동합니다.",
       "comparator-contains": "포함",
       "comparator-matches": "경쟁",
       "comparator-between": "사이",
@@ -1964,7 +1965,8 @@ const TRANSLATIONS = {
       "select-router-error": "라우터를 선택하세요",
       "invalid-model": "유효하지 않은 모델 선택",
       "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
-      "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
+      "routed-to-rule":
+        "<rule>{{ruleTitle}}</rule> 규칙을 통해 <route>{{model}}</route>(으)로 연결",
     },
   },
   imageGeneration: {

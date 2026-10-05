@@ -1897,7 +1897,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'Nếu <prop> có {{property}} và </prop> thì {{comparator}} và <val> "{{value}}" và </val>, thì điều hướng đến <route> {{route}} và </route>',
       "calculated-multi-condition":
-        "Nếu {{quantifier}} thuộc loại <cond> và </cond>, thì đường đi sẽ là <route> và {{route}} </route>",
+        "Nếu {{quantifier}} trong <cond>{{conditions}}</cond> thỏa mãn, thì chuyển hướng đến <route>{{route}}</route>",
       "comparator-contains": "chứa",
       "comparator-matches": "trận đấu",
       "comparator-between": "giữa",

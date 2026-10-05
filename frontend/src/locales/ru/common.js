@@ -1927,9 +1927,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "Без каких-либо условий — маршрут к <route>{{route}}</route>",
       "calculated-single-condition":
-        'Если <prop> находится в {{property}} и </prop>, то перенаправить на {{comparator}} и <val>"{{value}}"</val>',
+        'Если <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, то перенаправить на <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Если условие {{quantifier}} в <cond> выполняется, то перенаправить на <route>",
+        "Если выполняется {{quantifier}} из <cond>{{conditions}}</cond>, то перенаправить на <route>{{route}}</route>",
       "comparator-contains": "содержит",
       "comparator-matches": "матчи",
       "comparator-between": "между",

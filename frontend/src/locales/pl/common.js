@@ -2030,7 +2030,8 @@ const TRANSLATIONS = {
       "select-router-error": "Wybierz router",
       "invalid-model": "Nieprawidłowy wybór modelu",
       "routed-to": "Przekazane do <route>{{model}}</route>",
-      "routed-to-rule": "Przekazane do <route> przez <rule>",
+      "routed-to-rule":
+        "Przekazane do <route>{{model}}</route> przez <rule>{{ruleTitle}}</rule>",
     },
   },
   imageGeneration: {

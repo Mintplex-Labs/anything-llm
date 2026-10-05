@@ -1332,7 +1332,7 @@ const TRANSLATIONS = {
     workspace_llm_manager: {
       search: "Buscar provedores de LLM",
       loading_workspace_settings: "Carregando configurações do workspace...",
-      available_models: "Modelos Disponíveis",
+      available_models: "Modelos Disponíveis para {{provider}}",
       available_models_description: "Selecione um modelo para este workspace",
       save: "Salvar modelo do workspace",
       saving: "Salvando...",
