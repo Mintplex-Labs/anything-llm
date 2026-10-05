@@ -17,6 +17,7 @@ const UNLOADED = Object.freeze({
   items: [],
   hasMore: false,
   totalCount: 0,
+  fetched: 0,
 });
 
 const EMPTY_SET = Object.freeze(new Set());
@@ -159,6 +160,10 @@ function reducer(state, action) {
               : action.items,
             hasMore: action.hasMore,
             totalCount: action.totalCount,
+            // Server offset of the next page. Pages are windows over the
+            // folder's full file list and embedded files are filtered out of
+            // each one, so this tracks windows fetched, not items shown.
+            fetched: (action.append ? prev.fetched : 0) + PAGE_SIZE,
           },
         },
       };
@@ -313,6 +318,11 @@ function reducer(state, action) {
                   0,
                   entry.totalCount - removedPerFolder[name]
                 ),
+                // Deleted files leave the folder's file list; files only staged
+                // for the workspace are still on disk, so the window stays put.
+                fetched: action.deleted
+                  ? Math.max(0, entry.fetched - removedPerFolder[name])
+                  : entry.fetched,
               };
       }
       const selectedFiles = new Set(state.selectedFiles);
@@ -415,7 +425,7 @@ export default function useDocumentPicker({ slug }) {
     if (entry.status === "loaded" && !append) return;
 
     dispatch({ type: "folder-loading", name });
-    const offset = append ? entry.items.length : 0;
+    const offset = append ? entry.fetched : 0;
     const result = await System.localFiles(name, offset, PAGE_SIZE);
     if (!result) return dispatch({ type: "folder-failed", name });
 
@@ -618,7 +628,8 @@ export default function useDocumentPicker({ slug }) {
     [loadFolder]
   );
   const removeFiles = useCallback(
-    (ids) => dispatch({ type: "remove-files", ids }),
+    (ids, { deleted = false } = {}) =>
+      dispatch({ type: "remove-files", ids, deleted }),
     []
   );
   const addFolder = useCallback(
