@@ -117,15 +117,20 @@ const ScheduledJobRun = {
 
   complete: async function (id, { result } = {}) {
     try {
-      const run = await prisma.scheduled_job_runs.update({
-        where: { id: Number(id) },
+      // A cancellation in the parent may win the race with this worker.
+      const updated = await prisma.scheduled_job_runs.updateMany({
+        where: {
+          id: Number(id),
+          status: { in: this.nonTerminalStatuses },
+        },
         data: {
           status: this.statuses.completed,
           result: typeof result === "string" ? result : JSON.stringify(result),
           completedAt: new Date(),
         },
       });
-      return run;
+      if (updated.count === 0) return null;
+      return await this.get({ id: Number(id) });
     } catch (error) {
       console.error("Failed to complete scheduled job run:", error.message);
       return null;
