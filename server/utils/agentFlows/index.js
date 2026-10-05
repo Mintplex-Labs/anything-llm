@@ -183,12 +183,15 @@ class AgentFlows {
 
   /**
    * Get all active flows as plugins that can be loaded into the agent
+   * @param {Object<string, boolean>} [overrides] - workspace agent skill overrides keyed by `@@flow_{uuid}`
    * @returns {string[]} Array of flow names in @@flow_{uuid} format
    */
-  static activeFlowPlugins() {
+  static activeFlowPlugins(overrides = {}) {
     const flows = AgentFlows.getAllFlows();
     return Object.entries(flows)
-      .filter(([_, flow]) => flow.active !== false)
+      .filter(
+        ([uuid, flow]) => overrides[`@@flow_${uuid}`] ?? flow.active !== false
+      )
       .map(([uuid]) => `@@flow_${uuid}`);
   }
 

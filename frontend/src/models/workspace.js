@@ -274,6 +274,37 @@ const Workspace = {
       .catch(() => null);
     return capabilities ?? { reasoning: "unknown", reasoningOptions: [] };
   },
+  /**
+   * Agent skills this workspace overrides from the global agent skill settings.
+   * @param {string} slug - Workspace slug
+   * @returns {Promise<Object<string, boolean>>} skill -> enabled
+   */
+  agentSkillOverrides: async function (slug = "") {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skill-overrides`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res.overrides ?? {})
+      .catch(() => ({}));
+  },
+
+  /**
+   * Override an agent skill for this workspace. `null` follows the global setting again.
+   * @param {string} slug - Workspace slug
+   * @param {string} skill - Skill key (built-in name, sub-skill name, hubId, `@@flow_<uuid>` or `<server>-<tool>`)
+   * @param {boolean|null} enabled
+   * @returns {Promise<Object<string, boolean>|null>} updated overrides, or null on failure
+   */
+  setAgentSkillOverride: async function (slug = "", skill, enabled) {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skill-overrides`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ skill, enabled }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => res?.overrides ?? null)
+      .catch(() => null);
+  },
   delete: async function (slug) {
     const result = await fetch(`${API_BASE}/workspace/${slug}`, {
       method: "DELETE",

@@ -60,10 +60,11 @@ class ImportedPlugin {
 
   /**
    * Loads plugins from `plugins` folder in storage that are custom loaded and defined.
-   * only loads plugins that are active: true.
+   * only loads plugins that are active: true, unless a workspace override says otherwise.
+   * @param {Object<string, boolean>} [overrides] - workspace agent skill overrides keyed by hubId
    * @returns {string[]} - array of plugin names to be loaded later.
    */
-  static activeImportedPlugins() {
+  static activeImportedPlugins(overrides = {}) {
     const plugins = [];
     this.checkPluginFolderExists();
     const folders = fs.readdirSync(path.resolve(pluginsPath));
@@ -75,7 +76,8 @@ class ImportedPlugin {
       );
       if (!this.isValidLocation(configLocation)) continue;
       const config = safeJsonParse(fs.readFileSync(configLocation, "utf8"));
-      if (config.active) plugins.push(`@@${config.hubId}`);
+      if (overrides[config.hubId] ?? config.active)
+        plugins.push(`@@${config.hubId}`);
     }
     return plugins;
   }

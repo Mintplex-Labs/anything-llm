@@ -1,5 +1,6 @@
 const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
+const { Workspace } = require("../../models/workspace");
 const { safeJsonParse } = require("../http");
 const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
@@ -12,6 +13,19 @@ const DEFAULT_SKILLS = [
   AgentPlugins.docSummarizer.name,
   AgentPlugins.webScraping.name,
   AgentPlugins.webBrowsing.name,
+];
+
+// Built-in skills that are off until enabled in the agent skill settings.
+const OPTIONAL_SKILLS = [
+  AgentPlugins.rechart.name,
+  AgentPlugins.generateImage.name,
+  AgentPlugins.sqlAgent.name,
+  AgentPlugins.filesystemAgent.name,
+  AgentPlugins.createFilesAgent.name,
+  AgentPlugins.gmailAgent.name,
+  AgentPlugins.outlookAgent.name,
+  AgentPlugins.googleCalendarAgent.name,
+  AgentPlugins.createScheduledJob.name,
 ];
 
 // Skills that must never be injected when the instance is running in multi-user mode.
@@ -75,13 +89,14 @@ const WORKSPACE_AGENT = {
     user = null,
     prompt = ""
   ) => {
-    let [role, clarifyingQuestionsSkills] = await Promise.all([
+    let [role, clarifyingQuestionsSkills, skillOverrides] = await Promise.all([
       Provider.systemPrompt({
         workspace,
         user,
         prompt,
       }),
       clarifyingQuestionsSkillIfEnabled(),
+      Workspace.agentSkillOverrides(workspace?.id),
     ]);
 
     // If clarifying questions tools are enabled, add a note to the role that the user must use the request-user-input tool to ask questions.
@@ -92,10 +107,10 @@ const WORKSPACE_AGENT = {
     return {
       role,
       functions: [
-        ...(await agentSkillsFromSystemSettings()),
+        ...(await agentSkillsFromSystemSettings(skillOverrides)),
         ...clarifyingQuestionsSkills,
-        ...ImportedPlugin.activeImportedPlugins(),
-        ...AgentFlows.activeFlowPlugins(),
+        ...ImportedPlugin.activeImportedPlugins(skillOverrides),
+        ...AgentFlows.activeFlowPlugins(skillOverrides),
         ...(await new MCPCompatibilityLayer().activeMCPServers()),
       ],
     };
@@ -126,11 +141,14 @@ async function clarifyingQuestionsSkillIfEnabled() {
 /**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically
  * loaded later
+ * @param {Object<string, boolean>} [overrides] - workspace agent skill overrides, see Workspace.agentSkillOverrides
  * @returns {Promise<string[]>}
  */
-async function agentSkillsFromSystemSettings() {
+async function agentSkillsFromSystemSettings(overrides = {}) {
   const systemFunctions = [];
   const isMultiUser = await SystemSettings.isMultiUserMode();
+  const isEnabled = (skill, globallyEnabled) =>
+    overrides[skill] ?? globallyEnabled;
 
   // Load non-imported built-in skills that are configurable, but are default enabled.
   const _disabledDefaultSkills = safeJsonParse(
@@ -141,7 +159,7 @@ async function agentSkillsFromSystemSettings() {
     []
   );
   DEFAULT_SKILLS.forEach((skill) => {
-    if (!_disabledDefaultSkills.includes(skill))
+    if (isEnabled(skill, !_disabledDefaultSkills.includes(skill)))
       systemFunctions.push(AgentPlugins[skill].name);
   });
 
@@ -153,11 +171,14 @@ async function agentSkillsFromSystemSettings() {
     ),
     []
   );
+  const enabledSkills = OPTIONAL_SKILLS.filter((skill) =>
+    isEnabled(skill, _setting.includes(skill))
+  );
 
   // Pre-load disabled sub-skills and availability for configured skills
   const skillFilterState = {};
   for (const skillName of Object.keys(SKILL_FILTER_CONFIG)) {
-    if (!_setting.includes(skillName)) continue;
+    if (!enabledSkills.includes(skillName)) continue;
     const config = SKILL_FILTER_CONFIG[skillName];
     skillFilterState[skillName] = {
       available: await config.getAvailability(),
@@ -171,7 +192,7 @@ async function agentSkillsFromSystemSettings() {
     };
   }
 
-  for (const skillName of _setting) {
+  for (const skillName of enabledSkills) {
     if (!AgentPlugins.hasOwnProperty(skillName)) continue;
     if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
 
@@ -181,10 +202,11 @@ async function agentSkillsFromSystemSettings() {
       for (const subPlugin of AgentPlugins[skillName].plugin) {
         // Check if this skill has filter configuration
         const filterState = skillFilterState[skillName];
-        if (filterState) {
-          if (!filterState.available) continue;
-          if (filterState.disabledSubSkills.includes(subPlugin.name)) continue;
-        }
+        if (filterState && !filterState.available) continue;
+        const globallyEnabled = !filterState?.disabledSubSkills.includes(
+          subPlugin.name
+        );
+        if (!isEnabled(subPlugin.name, globallyEnabled)) continue;
 
         systemFunctions.push(
           `${AgentPlugins[skillName].name}#${subPlugin.name}`

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Admin from "@/models/admin";
 import System from "@/models/system";
-import AgentPlugins from "@/models/experimental/agentPlugins";
+import Workspace from "@/models/workspace";
 import AgentFlows from "@/models/agentFlows";
 import MCPServers from "@/models/mcpServers";
 import { getSubSkillPreferenceKeys } from "./skillRegistry";
@@ -11,8 +11,12 @@ import { toggleAgentSessionTool } from "@/utils/chat/agent";
 /**
  * Core hook for managing all agent skill state.
  * Handles fetching, toggling, and persisting skill preferences.
+ * Toggles are saved as overrides on this workspace, everything else follows the
+ * global agent skill settings.
+ * @param {Object} defaultSkills
+ * @param {{slug: string}} workspace
  */
-export default function useAgentSkillsState(defaultSkills) {
+export default function useAgentSkillsState(defaultSkills, workspace) {
   // Core skill state
   const [fileSystemAgentAvailable, setFileSystemAgentAvailable] =
     useState(false);
@@ -24,6 +28,7 @@ export default function useAgentSkillsState(defaultSkills) {
   const [importedSkills, setImportedSkills] = useState([]);
   const [flows, setFlows] = useState([]);
   const [mcpServers, setMcpServers] = useState([]);
+  const [overrides, setOverrides] = useState({});
   const [loading, setLoading] = useState(true);
   const [mcpLoading, setMcpLoading] = useState(true);
 
@@ -34,7 +39,7 @@ export default function useAgentSkillsState(defaultSkills) {
   useEffect(() => {
     fetchSkillSettings();
     fetchMcpServers();
-  }, []);
+  }, [workspace?.slug]);
 
   async function fetchSkillSettings() {
     try {
@@ -45,6 +50,7 @@ export default function useAgentSkillsState(defaultSkills) {
         fsAgentAvailable,
         multiUserMode,
         imageGenAvailable,
+        workspaceOverrides,
       ] = await Promise.all([
         Admin.systemPreferencesByFields([
           "disabled_agent_skills",
@@ -56,6 +62,7 @@ export default function useAgentSkillsState(defaultSkills) {
         System.isFileSystemAgentAvailable(),
         System.isMultiUserMode(),
         System.isImageGenerationAvailable(),
+        Workspace.agentSkillOverrides(workspace?.slug),
       ]);
 
       if (prefs?.settings) {
@@ -68,6 +75,7 @@ export default function useAgentSkillsState(defaultSkills) {
       setFileSystemAgentAvailable(fsAgentAvailable);
       setImageGenerationAvailable(imageGenAvailable);
       setIsMultiUser(!!multiUserMode);
+      setOverrides(workspaceOverrides);
     } catch (e) {
       console.error(e);
     } finally {
@@ -86,96 +94,115 @@ export default function useAgentSkillsState(defaultSkills) {
     }
   }
 
+  // A workspace override wins over the global setting.
+  const withOverride = useCallback(
+    (key, globallyEnabled) => overrides[key] ?? globallyEnabled,
+    [overrides]
+  );
+
+  // Save a toggle as a workspace override and apply it to a running agent session.
+  // Landing back on the global setting clears the override so the workspace
+  // follows future global changes again.
+  const saveOverride = useCallback(
+    async (key, enabled, globallyEnabled, serverName = null) => {
+      const value = enabled === globallyEnabled ? null : enabled;
+      setOverrides((prev) => {
+        const next = { ...prev };
+        if (value === null) delete next[key];
+        else next[key] = value;
+        return next;
+      });
+
+      const saved = await Workspace.setAgentSkillOverride(
+        workspace?.slug,
+        key,
+        value
+      );
+      if (!saved) {
+        setOverrides(await Workspace.agentSkillOverrides(workspace?.slug));
+        return;
+      }
+      setOverrides(saved);
+      toggleAgentSessionTool(key, enabled, serverName);
+    },
+    [workspace?.slug]
+  );
+
+  // Global state of each skill type, before workspace overrides
+  const skillGloballyEnabled = useCallback(
+    (key) =>
+      key in defaultSkills
+        ? !disabledDefaults.includes(key)
+        : enabledConfigurable.includes(key),
+    [defaultSkills, disabledDefaults, enabledConfigurable]
+  );
+  const mcpToolKey = (server, toolName) => `${server.name}-${toolName}`;
+  const mcpToolGloballyEnabled = (server, toolName) =>
+    !(server.config?.anythingllm?.suppressedTools || []).includes(toolName);
+
   // Skill enabled/disabled checks
   const isSkillEnabled = useCallback(
-    (key) => {
-      return key in defaultSkills
-        ? !disabledDefaults.includes(key)
-        : enabledConfigurable.includes(key);
-    },
-    [defaultSkills, disabledDefaults, enabledConfigurable]
+    (key) => withOverride(key, skillGloballyEnabled(key)),
+    [withOverride, skillGloballyEnabled]
+  );
+  const isSubSkillEnabled = useCallback(
+    (skillKey, subSkillName) =>
+      withOverride(
+        subSkillName,
+        subSkillPrefs.isSubSkillEnabled(skillKey, subSkillName)
+      ),
+    [withOverride, subSkillPrefs.isSubSkillEnabled]
+  );
+  const isImportedSkillEnabled = useCallback(
+    (skill) => withOverride(skill.hubId, !!skill.active),
+    [withOverride]
+  );
+  const isFlowEnabled = useCallback(
+    (flow) => withOverride(`@@flow_${flow.uuid}`, flow.active),
+    [withOverride]
+  );
+  const isMcpToolEnabled = useCallback(
+    (server, toolName) =>
+      withOverride(
+        mcpToolKey(server, toolName),
+        mcpToolGloballyEnabled(server, toolName)
+      ),
+    [withOverride]
   );
 
   // Toggle functions
   const toggleSkill = useCallback(
-    async (key) => {
-      const toggleItem = (arr, item) =>
-        arr.includes(item) ? arr.filter((s) => s !== item) : [...arr, item];
-      const newEnabled = !isSkillEnabled(key);
-
-      if (key in defaultSkills) {
-        const updated = toggleItem(disabledDefaults, key);
-        setDisabledDefaults(updated);
-        await Admin.updateSystemPreferences({
-          disabled_agent_skills: updated.join(","),
-          default_agent_skills: enabledConfigurable.join(","),
-        });
-        toggleAgentSessionTool(key, newEnabled);
-        return;
-      }
-
-      const updated = toggleItem(enabledConfigurable, key);
-      setEnabledConfigurable(updated);
-      await Admin.updateSystemPreferences({
-        disabled_agent_skills: disabledDefaults.join(","),
-        default_agent_skills: updated.join(","),
-      });
-      toggleAgentSessionTool(key, newEnabled);
-    },
-    [defaultSkills, disabledDefaults, enabledConfigurable, isSkillEnabled]
+    (key) => saveOverride(key, !isSkillEnabled(key), skillGloballyEnabled(key)),
+    [saveOverride, isSkillEnabled, skillGloballyEnabled]
   );
-
-  const toggleImportedSkill = useCallback(async (skill) => {
-    const newActive = !skill.active;
-    setImportedSkills((prev) =>
-      prev.map((s) =>
-        s.hubId === skill.hubId ? { ...s, active: newActive } : s
-      )
-    );
-    await AgentPlugins.toggleFeature(skill.hubId, newActive);
-    toggleAgentSessionTool(skill.hubId, newActive);
-  }, []);
-
-  const toggleFlow = useCallback(async (flow) => {
-    const newActive = !flow.active;
-    setFlows((prev) =>
-      prev.map((f) => (f.uuid === flow.uuid ? { ...f, active: newActive } : f))
-    );
-    await AgentFlows.toggleFlow(flow.uuid, newActive);
-    toggleAgentSessionTool(`@@flow_${flow.uuid}`, newActive);
-  }, []);
-
+  const toggleSubSkill = useCallback(
+    (skillKey, subSkillName) =>
+      saveOverride(
+        subSkillName,
+        !isSubSkillEnabled(skillKey, subSkillName),
+        subSkillPrefs.isSubSkillEnabled(skillKey, subSkillName)
+      ),
+    [saveOverride, isSubSkillEnabled, subSkillPrefs.isSubSkillEnabled]
+  );
+  const toggleImportedSkill = useCallback(
+    (skill) =>
+      saveOverride(skill.hubId, !isImportedSkillEnabled(skill), !!skill.active),
+    [saveOverride, isImportedSkillEnabled]
+  );
+  const toggleFlow = useCallback(
+    (flow) =>
+      saveOverride(`@@flow_${flow.uuid}`, !isFlowEnabled(flow), flow.active),
+    [saveOverride, isFlowEnabled]
+  );
   const toggleMcpTool = useCallback(
-    async (serverName, toolName, currentlyEnabled) => {
-      const newEnabled = !currentlyEnabled;
-      setMcpServers((prev) => {
-        return prev.map((server) => {
-          if (server.name !== serverName) return server;
-          const currentSuppressed =
-            server.config?.anythingllm?.suppressedTools || [];
-          const newSuppressed = newEnabled
-            ? currentSuppressed.filter((t) => t !== toolName)
-            : [...currentSuppressed, toolName];
-          return {
-            ...server,
-            config: {
-              ...server.config,
-              anythingllm: {
-                ...server.config?.anythingllm,
-                suppressedTools: newSuppressed,
-              },
-            },
-          };
-        });
-      });
-      await MCPServers.toggleTool(serverName, toolName, newEnabled);
-      toggleAgentSessionTool(
-        `${serverName}-${toolName}`,
-        newEnabled,
-        serverName
-      );
-    },
-    []
+    (server, toolName) =>
+      saveOverride(
+        mcpToolKey(server, toolName),
+        !isMcpToolEnabled(server, toolName),
+        mcpToolGloballyEnabled(server, toolName),
+        server.name
+      ),
+    [saveOverride, isMcpToolEnabled]
   );
 
   return {
@@ -193,16 +220,19 @@ export default function useAgentSkillsState(defaultSkills) {
 
     // Skill checks
     isSkillEnabled,
+    isSubSkillEnabled,
+    isImportedSkillEnabled,
+    isFlowEnabled,
+    isMcpToolEnabled,
 
     // Toggle functions
     toggleSkill,
+    toggleSubSkill,
     toggleImportedSkill,
     toggleFlow,
     toggleMcpTool,
 
     // Sub-skill preferences (delegated)
-    isSubSkillEnabled: subSkillPrefs.isSubSkillEnabled,
-    toggleSubSkill: subSkillPrefs.toggleSubSkill,
     disabledSubSkills: subSkillPrefs.disabledSubSkills,
   };
 }

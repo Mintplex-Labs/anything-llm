@@ -40,6 +40,9 @@ export default function AgentSkillsTab({
     loading,
     mcpLoading,
     isSkillEnabled,
+    isImportedSkillEnabled,
+    isFlowEnabled,
+    isMcpToolEnabled,
     toggleSkill,
     toggleImportedSkill,
     toggleFlow,
@@ -48,7 +51,7 @@ export default function AgentSkillsTab({
     isSubSkillEnabled,
     toggleSubSkill,
     disabledSubSkills,
-  } = useAgentSkillsState(defaultSkills);
+  } = useAgentSkillsState(defaultSkills, workspace);
 
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
@@ -76,6 +79,9 @@ export default function AgentSkillsTab({
     toggleSkill,
     isSubSkillEnabled,
     toggleSubSkill,
+    isImportedSkillEnabled,
+    isFlowEnabled,
+    isMcpToolEnabled,
     toggleImportedSkill,
     toggleFlow,
     toggleMcpTool,

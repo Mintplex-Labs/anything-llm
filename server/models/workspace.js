@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
 const { SystemSettings } = require("./systemSettings");
+const { safeJsonParse } = require("../utils/http");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -30,6 +31,7 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {string|null} agentSkillOverrides - JSON of { [skill]: boolean } overriding the global agent skill settings
  */
 
 const Workspace = {
@@ -142,6 +144,16 @@ const Workspace = {
       const date = new Date(value);
       if (isNaN(date.getTime())) return new Date();
       return date;
+    },
+    agentSkill: (value) => {
+      if (typeof value !== "string" || !value.trim() || value.length > 255)
+        throw new Error("Invalid agent skill.");
+      return value.trim();
+    },
+    agentSkillEnabled: (value) => {
+      if (![true, false, null].includes(value))
+        throw new Error("enabled must be true, false or null.");
+      return value;
     },
   },
 
@@ -287,6 +299,53 @@ const Workspace = {
       return { workspace, message: null };
     } catch (error) {
       console.error(error.message);
+      return { workspace: null, message: error.message };
+    }
+  },
+
+  /**
+   * Get the agent skills a workspace overrides from the global agent skill settings.
+   * Read from the db every time so a running agent sees changes made mid-session.
+   * @param {number|null} workspaceId
+   * @returns {Promise<Object<string, boolean>>} skill -> enabled
+   */
+  agentSkillOverrides: async function (workspaceId = null) {
+    if (!workspaceId) return {};
+    try {
+      const workspace = await prisma.workspaces.findUnique({
+        where: { id: Number(workspaceId) },
+        select: { agentSkillOverrides: true },
+      });
+      return safeJsonParse(workspace?.agentSkillOverrides, {}) || {};
+    } catch (error) {
+      console.error(error.message);
+      return {};
+    }
+  },
+
+  /**
+   * Override an agent skill for a workspace. Passing `enabled: null` removes the
+   * override so the workspace follows the global setting again.
+   * @param {number} workspaceId
+   * @param {string} skill
+   * @param {boolean|null} enabled
+   * @returns {Promise<{workspace: Object | null, message: string | null}>}
+   */
+  setAgentSkillOverride: async function (workspaceId, skill, enabled) {
+    try {
+      skill = this.validations.agentSkill(skill);
+      enabled = this.validations.agentSkillEnabled(enabled);
+
+      const overrides = await this.agentSkillOverrides(workspaceId);
+      if (enabled === null) delete overrides[skill];
+      else overrides[skill] = enabled;
+
+      return this._update(Number(workspaceId), {
+        agentSkillOverrides: Object.keys(overrides).length
+          ? JSON.stringify(overrides)
+          : null,
+      });
+    } catch (error) {
       return { workspace: null, message: error.message };
     }
   },

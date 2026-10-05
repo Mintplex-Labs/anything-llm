@@ -116,6 +116,49 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.get(
+    "/workspace/:slug/agent-skill-overrides",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_request, response) => {
+      try {
+        const overrides = await Workspace.agentSkillOverrides(
+          response.locals.workspace.id
+        );
+        return response.status(200).json({ overrides });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/agent-skill-overrides",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const { skill, enabled } = reqBody(request);
+        const workspaceId = response.locals.workspace.id;
+        const { message } = await Workspace.setAgentSkillOverride(
+          workspaceId,
+          skill,
+          enabled
+        );
+        if (message) return response.status(400).json({ error: message });
+
+        const overrides = await Workspace.agentSkillOverrides(workspaceId);
+        return response.status(200).json({ overrides });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
   app.post(
     "/workspace/:slug/upload",
     [
