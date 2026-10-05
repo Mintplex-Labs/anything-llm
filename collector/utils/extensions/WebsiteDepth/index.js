@@ -122,8 +122,6 @@ function extractLinks(html, baseUrl, pageUrl = baseUrl) {
         absoluteUrl.pathname === scopePath ||
         absoluteUrl.pathname.startsWith(`${scopePath}/`));
     if (inScope) {
-      // The fragment never reaches the server, so "/guide#install" is the
-      // same page as "/guide" and must not be scraped (and counted) again.
       absoluteUrl.hash = "";
       extractedLinks.add(absoluteUrl.href);
     }
