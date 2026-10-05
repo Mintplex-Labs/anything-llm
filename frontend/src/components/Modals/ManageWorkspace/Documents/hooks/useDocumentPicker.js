@@ -160,9 +160,9 @@ function reducer(state, action) {
               : action.items,
             hasMore: action.hasMore,
             totalCount: action.totalCount,
-            // Pages are windows over the folder's raw file list, and the items
-            // kept from each page are fewer once embedded files are filtered
-            // out, so the next window cannot start at items.length.
+            // Server offset of the next page. Pages are windows over the
+            // folder's full file list and embedded files are filtered out of
+            // each one, so this tracks windows fetched, not items shown.
             fetched: (action.append ? prev.fetched : 0) + PAGE_SIZE,
           },
         },
