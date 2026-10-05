@@ -281,9 +281,7 @@ class BackgroundService {
 
     if (enabledJobs.length > 0) {
       this.#log(
-        `Registered ${enabledJobs.length} scheduled job(s) (max concurrent: ${
-          this.#scheduledJobQueue.concurrency
-        })`,
+        `Registered ${enabledJobs.length} scheduled job(s) (max concurrent: ${this.#scheduledJobQueue.concurrency})`,
         enabledJobs.map((j) => `${j.name} (${j.schedule})`)
       );
     }
@@ -415,8 +413,9 @@ class BackgroundService {
       worker.send({ jobId, runId });
       await new Promise((resolve, reject) => {
         worker.on("exit", async (code, signal) => {
-          // On Windows SIGTERM bypasses the child's handler. Finalize here
-          // as well, including workers stopped by job updates or deletion.
+          // SIGTERM is sent by killRun/removeScheduledJob and is a normal exit.
+          // Windows terminates the child without running its SIGTERM handler,
+          // so finalize the run here. kill() only updates non-terminal rows.
           if (signal === "SIGTERM") {
             const { ScheduledJobRun } = require("../../models/scheduledJobRun");
             await ScheduledJobRun.kill(runId);
