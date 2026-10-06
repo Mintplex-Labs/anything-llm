@@ -170,6 +170,49 @@ describe("validYoutubeVideoUrl", () => {
     expect(validYoutubeVideoUrl("https://www.youtube.com/")).toBe(false);
   });
 
+  it("returns false for channel URLs that are 11 or more word characters", () => {
+    // Legacy custom channel URLs have no /c/ or /@ prefix. Their first 11
+    // characters must not be read as a video ID.
+    expect(validYoutubeVideoUrl("https://www.youtube.com/LinusTechTips")).toBe(
+      false
+    );
+    expect(validYoutubeVideoUrl("https://www.youtube.com/MrBeast6000")).toBe(
+      false
+    );
+    expect(validYoutubeVideoUrl("youtube.com/LinusTechTips")).toBe(false);
+    expect(
+      validYoutubeVideoUrl("https://www.youtube.com/LinusTechTips", true)
+    ).toBe(null);
+    expect(
+      validYoutubeVideoUrl(
+        `https://www.youtube.com/watch_videos?video_ids=${ID}`,
+        true
+      )
+    ).toBe(null);
+  });
+
+  it("returns false when the video ID is longer than 11 characters", () => {
+    expect(validYoutubeVideoUrl(`https://youtu.be/${ID}abc`)).toBe(false);
+    expect(
+      validYoutubeVideoUrl(`https://www.youtube.com/watch?v=${ID}abc`)
+    ).toBe(false);
+  });
+
+  it("returns the video ID for live and shorts URLs", () => {
+    expect(
+      validYoutubeVideoUrl(`https://www.youtube.com/live/${ID}`, true)
+    ).toBe(ID);
+    expect(
+      validYoutubeVideoUrl(
+        `https://youtube.com/shorts/${ID}?feature=share`,
+        true
+      )
+    ).toBe(ID);
+    expect(
+      validYoutubeVideoUrl(`https://www.youtube.com/watch?v=${ID}#t=30`, true)
+    ).toBe(ID);
+  });
+
   it("returns false for empty or bad inputs", () => {
     expect(validYoutubeVideoUrl("")).toBe(false);
     expect(validYoutubeVideoUrl(null)).toBe(false);
