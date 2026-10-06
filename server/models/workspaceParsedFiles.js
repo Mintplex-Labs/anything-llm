@@ -101,13 +101,13 @@ const WorkspaceParsedFiles = {
   },
 
   /**
-   * Moves a parsed file to the documents and embeds it.
+   * Moves a parsed file into custom-documents so it can be embedded and removes the parsed file record.
    * @param {import("@prisma/client").users | null} user - The user performing the operation.
    * @param {number} fileId - The ID of the parsed file.
    * @param {import("@prisma/client").workspaces} workspace - The workspace the file belongs to.
-   * @returns {Promise<{ success: boolean, error: string | null, document: import("@prisma/client").workspace_documents | null }>} The result of the operation.
+   * @returns {Promise<string>} The document location, eg: custom-documents/my-file-uuid.json
    */
-  moveToDocumentsAndEmbed: async function (user = null, fileId, workspace) {
+  moveToDocuments: async function (user = null, fileId, workspace) {
     try {
       const parsedFile = await this.get({
         id: parseInt(fileId),
@@ -134,16 +134,31 @@ const WorkspaceParsedFiles = {
       const targetPath = path.join(customDocsPath, path.basename(location));
       fs.copyFileSync(sourceFile, targetPath);
       fs.unlinkSync(sourceFile);
+      return `custom-documents/${path.basename(location)}`;
+    } finally {
+      await this.delete({
+        id: parseInt(fileId),
+        ...(user ? { userId: user.id } : {}),
+        workspaceId: workspace.id,
+      });
+    }
+  },
 
+  /**
+   * Moves a parsed file to the documents and embeds it.
+   * @param {import("@prisma/client").users | null} user - The user performing the operation.
+   * @param {number} fileId - The ID of the parsed file.
+   * @param {import("@prisma/client").workspaces} workspace - The workspace the file belongs to.
+   * @returns {Promise<{ success: boolean, error: string | null, document: import("@prisma/client").workspace_documents | null }>} The result of the operation.
+   */
+  moveToDocumentsAndEmbed: async function (user = null, fileId, workspace) {
+    try {
+      const docpath = await this.moveToDocuments(user, fileId, workspace);
       const {
         failedToEmbed = [],
         errors = [],
         embedded = [],
-      } = await Document.addDocuments(
-        workspace,
-        [`custom-documents/${path.basename(location)}`],
-        parsedFile.userId
-      );
+      } = await Document.addDocuments(workspace, [docpath], user?.id ?? null);
 
       if (failedToEmbed.length > 0)
         throw new Error(errors[0] || "Failed to embed document");
@@ -156,12 +171,6 @@ const WorkspaceParsedFiles = {
     } catch (error) {
       console.error("Failed to move and embed file:", error);
       return { success: false, error: error.message, document: null };
-    } finally {
-      await this.delete({
-        id: parseInt(fileId),
-        ...(user ? { userId: user.id } : {}),
-        workspaceId: workspace.id,
-      });
     }
   },
 

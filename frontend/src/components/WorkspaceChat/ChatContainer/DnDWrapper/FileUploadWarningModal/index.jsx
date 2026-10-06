@@ -1,4 +1,3 @@
-import { CircleNotch } from "@phosphor-icons/react";
 import Modal, {
   ModalHeader,
   ModalBody,
@@ -21,32 +20,10 @@ export default function FileUploadWarningModal({
   tokenCount,
   maxTokens,
   fileCount = 1,
-  isEmbedding = false,
-  embedProgress = 0,
 }) {
   const { user } = useUser();
   const canEmbed = !user || user.role !== "default";
   if (!show) return null;
-
-  if (isEmbedding) {
-    return (
-      <Modal isOpen={show} onClose={onClose} size="lg">
-        <div className="flex flex-col items-center justify-center">
-          <p className="text-slate-50 light:text-slate-900 text-lg font-semibold mb-4">
-            Embedding {embedProgress + 1} of {fileCount}{" "}
-            {pluralize("file", fileCount)}
-          </p>
-          <CircleNotch
-            size={32}
-            className="animate-spin text-slate-50 light:text-slate-900"
-          />
-          <p className="text-zinc-400 light:text-slate-600 text-sm mt-2">
-            Please wait while we embed your files...
-          </p>
-        </div>
-      </Modal>
-    );
-  }
 
   return (
     <Modal isOpen={show} onClose={onClose} size="lg">
@@ -81,7 +58,7 @@ export default function FileUploadWarningModal({
           {canEmbed && (
             <ModalPrimaryButton
               onClick={onEmbed}
-              disabled={isEmbedding || !canEmbed}
+              disabled={!canEmbed}
               type="button"
             >
               Embed {pluralize("File", fileCount)}
