@@ -289,25 +289,33 @@ describeValidation("agentSkill", () => {
   });
 
   it("throws on empty, non-string or overly long values", () => {
-    expect(() => Workspace.validations.agentSkill("")).toThrow();
-    expect(() => Workspace.validations.agentSkill("   ")).toThrow();
-    expect(() => Workspace.validations.agentSkill(null)).toThrow();
-    expect(() => Workspace.validations.agentSkill(123)).toThrow();
-    expect(() => Workspace.validations.agentSkill("a".repeat(256))).toThrow();
+    const error = "Invalid agent skill.";
+    expect(() => Workspace.validations.agentSkill("")).toThrow(error);
+    expect(() => Workspace.validations.agentSkill("   ")).toThrow(error);
+    expect(() => Workspace.validations.agentSkill(null)).toThrow(error);
+    expect(() => Workspace.validations.agentSkill(123)).toThrow(error);
+    expect(() => Workspace.validations.agentSkill("a".repeat(256))).toThrow(
+      error
+    );
   });
 });
 
 describeValidation("agentSkillEnabled", () => {
-  it("passes true, false and null through", () => {
+  it("passes true and false through", () => {
     expect(Workspace.validations.agentSkillEnabled(true)).toBe(true);
     expect(Workspace.validations.agentSkillEnabled(false)).toBe(false);
-    expect(Workspace.validations.agentSkillEnabled(null)).toBeNull();
   });
 
   it("throws on anything else", () => {
-    expect(() => Workspace.validations.agentSkillEnabled("true")).toThrow();
-    expect(() => Workspace.validations.agentSkillEnabled(1)).toThrow();
-    expect(() => Workspace.validations.agentSkillEnabled(undefined)).toThrow();
+    const error = "enabled must be true or false.";
+    expect(() => Workspace.validations.agentSkillEnabled("true")).toThrow(
+      error
+    );
+    expect(() => Workspace.validations.agentSkillEnabled(1)).toThrow(error);
+    expect(() => Workspace.validations.agentSkillEnabled(null)).toThrow(error);
+    expect(() => Workspace.validations.agentSkillEnabled(undefined)).toThrow(
+      error
+    );
   });
 });
 
@@ -409,44 +417,131 @@ describe("Workspace.update", () => {
   });
 });
 
-describe("Workspace.setAgentSkillOverride", () => {
-  beforeEach(() => {
-    jest
-      .spyOn(Workspace, "_update")
-      .mockResolvedValue({ workspace: null, message: null });
-    jest
-      .spyOn(Workspace, "agentSkillOverrides")
-      .mockResolvedValue({ "web-scraping": false });
+describe("Workspace.parseAgentSkills", () => {
+  it("returns null when the workspace follows the system settings", () => {
+    expect(Workspace.parseAgentSkills(null)).toBeNull();
+    expect(Workspace.parseAgentSkills("null")).toBeNull();
+    expect(Workspace.parseAgentSkills("[]")).toBeNull();
+    expect(Workspace.parseAgentSkills("not json")).toBeNull();
   });
+
+  it("keeps only string entries", () => {
+    const stored = JSON.stringify({
+      enabled: ["web-browsing", 1, null, { a: 1 }],
+      mcpSuppressedTools: { srv: ["a", 2], other: "nope" },
+    });
+    expect(Workspace.parseAgentSkills(stored)).toEqual({
+      enabled: ["web-browsing"],
+      mcpSuppressedTools: { srv: ["a"], other: [] },
+    });
+  });
+
+  it("defaults missing fields to empty", () => {
+    expect(Workspace.parseAgentSkills("{}")).toEqual({
+      enabled: [],
+      mcpSuppressedTools: {},
+    });
+  });
+});
+
+describe("Workspace.setAgentSkill", () => {
+  const prisma = require("../../utils/prisma");
+  const systemSkills = () => ({
+    enabled: ["web-browsing", "create-chart"],
+    mcpSuppressedTools: { known: ["b"] },
+  });
+  let tx;
+
+  function mockStored(agentSkills) {
+    tx = {
+      workspaces: {
+        findUnique: jest.fn().mockResolvedValue({ agentSkills }),
+        update: jest.fn().mockResolvedValue({}),
+      },
+    };
+    jest.spyOn(prisma, "$transaction").mockImplementation((fn) => fn(tx));
+  }
+
+  function savedSkills() {
+    return JSON.parse(tx.workspaces.update.mock.calls[0][0].data.agentSkills);
+  }
+
   afterEach(() => jest.restoreAllMocks());
 
-  it("adds an override to the existing ones", async () => {
-    await Workspace.setAgentSkillOverride(1, "create-chart", true);
-    expect(Workspace._update).toHaveBeenCalledWith(1, {
-      agentSkillOverrides: JSON.stringify({
-        "web-scraping": false,
-        "create-chart": true,
-      }),
+  it("copies the system toggles on the first edit and applies the change", async () => {
+    mockStored(null);
+    const { agentSkills } = await Workspace.setAgentSkill(
+      1,
+      { skill: "web-browsing", enabled: false },
+      systemSkills()
+    );
+    const expected = {
+      enabled: ["create-chart"],
+      mcpSuppressedTools: { known: ["b"] },
+    };
+    expect(agentSkills).toEqual(expected);
+    expect(savedSkills()).toEqual(expected);
+  });
+
+  it("edits the existing copy and ignores the system toggles", async () => {
+    mockStored(
+      JSON.stringify({ enabled: ["rag-memory"], mcpSuppressedTools: {} })
+    );
+    const { agentSkills } = await Workspace.setAgentSkill(
+      1,
+      { skill: "create-chart", enabled: true },
+      systemSkills()
+    );
+    expect(agentSkills).toEqual({
+      enabled: ["rag-memory", "create-chart"],
+      mcpSuppressedTools: {},
     });
   });
 
-  it("removes an override when enabled is null", async () => {
-    await Workspace.setAgentSkillOverride(1, "create-chart", null);
-    expect(Workspace._update).toHaveBeenCalledWith(1, {
-      agentSkillOverrides: JSON.stringify({ "web-scraping": false }),
-    });
+  it("does not duplicate a skill that is already enabled", async () => {
+    mockStored(null);
+    const { agentSkills } = await Workspace.setAgentSkill(
+      1,
+      { skill: "create-chart", enabled: true },
+      systemSkills()
+    );
+    expect(agentSkills.enabled).toEqual(["web-browsing", "create-chart"]);
   });
 
-  it("stores null once the last override is removed", async () => {
-    await Workspace.setAgentSkillOverride(1, "web-scraping", null);
-    expect(Workspace._update).toHaveBeenCalledWith(1, {
-      agentSkillOverrides: null,
-    });
+  it("toggles a tool on an MCP server the workspace already knows", async () => {
+    mockStored(null);
+    const { agentSkills } = await Workspace.setAgentSkill(
+      1,
+      { skill: "b", enabled: true, mcpServer: "known", mcpServerTools: [] },
+      systemSkills()
+    );
+    expect(agentSkills.mcpSuppressedTools.known).toEqual([]);
+  });
+
+  it("keeps the other tools off when enabling one on a new MCP server", async () => {
+    mockStored(null);
+    const { agentSkills } = await Workspace.setAgentSkill(
+      1,
+      {
+        skill: "b",
+        enabled: true,
+        mcpServer: "new",
+        mcpServerTools: ["a", "b", "c"],
+      },
+      systemSkills()
+    );
+    expect(agentSkills.mcpSuppressedTools.new).toEqual(["a", "c"]);
   });
 
   it("returns an error message and does not write on invalid input", async () => {
-    const { message } = await Workspace.setAgentSkillOverride(1, "", true);
-    expect(message).toBeTruthy();
-    expect(Workspace._update).not.toHaveBeenCalled();
+    mockStored(null);
+    const { agentSkills, message } = await Workspace.setAgentSkill(
+      1,
+      { skill: "", enabled: true },
+      systemSkills()
+    );
+    expect(agentSkills).toBeNull();
+    expect(message).toBe("Invalid agent skill.");
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 });

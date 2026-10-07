@@ -9,6 +9,11 @@ const { PromptHistory } = require("./promptHistory");
 const { SystemSettings } = require("./systemSettings");
 const { safeJsonParse } = require("../utils/http");
 
+function withItem(list = [], item, included) {
+  const rest = list.filter((i) => i !== item);
+  return included ? [...rest, item] : rest;
+}
+
 function isNullOrNaN(value) {
   if (value === null) return true;
   return isNaN(value);
@@ -31,7 +36,14 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
- * @property {string|null} agentSkillOverrides - JSON of { [skill]: boolean } overriding the global agent skill settings
+ * @property {string|null} agentSkills - JSON of WorkspaceAgentSkills, null follows the system agent skill settings
+ */
+
+/**
+ * A workspace's own copy of the agent skill toggles, made on its first edit.
+ * @typedef {Object} WorkspaceAgentSkills
+ * @property {string[]} enabled - Enabled built-in skills, sub-skills, imported skill hubIds and `@@flow_<uuid>` flows
+ * @property {Object<string, string[]>} mcpSuppressedTools - Suppressed tools per MCP server. Servers missing here are off.
  */
 
 const Workspace = {
@@ -151,8 +163,8 @@ const Workspace = {
       return value.trim();
     },
     agentSkillEnabled: (value) => {
-      if (![true, false, null].includes(value))
-        throw new Error("enabled must be true, false or null.");
+      if (typeof value !== "boolean")
+        throw new Error("enabled must be true or false.");
       return value;
     },
   },
@@ -304,49 +316,125 @@ const Workspace = {
   },
 
   /**
-   * Get the agent skills a workspace overrides from the global agent skill settings.
+   * Parse a stored agent skills column, keeping only string entries.
+   * @param {string|null} value
+   * @returns {WorkspaceAgentSkills|null} null when the workspace follows the system settings
+   */
+  parseAgentSkills: function (value = null) {
+    const parsed = safeJsonParse(value, null);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+      return null;
+
+    const strings = (list) =>
+      Array.isArray(list) ? list.filter((v) => typeof v === "string") : [];
+    return {
+      enabled: strings(parsed.enabled),
+      mcpSuppressedTools: Object.fromEntries(
+        Object.entries(parsed.mcpSuppressedTools ?? {}).map(
+          ([server, tools]) => [server, strings(tools)]
+        )
+      ),
+    };
+  },
+
+  /**
+   * Get a workspace's own agent skill toggles.
    * Read from the db every time so a running agent sees changes made mid-session.
    * @param {number|null} workspaceId
-   * @returns {Promise<Object<string, boolean>>} skill -> enabled
+   * @returns {Promise<WorkspaceAgentSkills|null>} null when the workspace follows the system settings
    */
-  agentSkillOverrides: async function (workspaceId = null) {
-    if (!workspaceId) return {};
+  agentSkills: async function (workspaceId = null) {
+    if (!workspaceId) return null;
     try {
       const workspace = await prisma.workspaces.findUnique({
         where: { id: Number(workspaceId) },
-        select: { agentSkillOverrides: true },
+        select: { agentSkills: true },
       });
-      return safeJsonParse(workspace?.agentSkillOverrides, {}) || {};
+      return this.parseAgentSkills(workspace?.agentSkills);
     } catch (error) {
       console.error(error.message);
-      return {};
+      return null;
     }
   },
 
   /**
-   * Override an agent skill for a workspace. Passing `enabled: null` removes the
-   * override so the workspace follows the global setting again.
+   * Turn an agent skill or MCP tool on or off for a workspace. The first edit copies
+   * `systemSkills` into the workspace inside the same transaction, so two quick
+   * edits can't each make their own copy.
    * @param {number} workspaceId
-   * @param {string} skill
-   * @param {boolean|null} enabled
-   * @returns {Promise<{workspace: Object | null, message: string | null}>}
+   * @param {Object} change
+   * @param {string} change.skill - Skill key, or the tool name when `mcpServer` is set
+   * @param {boolean} change.enabled
+   * @param {string|null} [change.mcpServer] - MCP server the tool belongs to
+   * @param {string[]} [change.mcpServerTools] - Every tool on `mcpServer`, all off if the server is new to this workspace
+   * @param {WorkspaceAgentSkills} systemSkills - System toggles to copy on the first edit
+   * @returns {Promise<{agentSkills: WorkspaceAgentSkills|null, message: string|null}>}
    */
-  setAgentSkillOverride: async function (workspaceId, skill, enabled) {
+  setAgentSkill: async function (
+    workspaceId,
+    { skill, enabled, mcpServer = null, mcpServerTools = [] },
+    systemSkills
+  ) {
     try {
       skill = this.validations.agentSkill(skill);
       enabled = this.validations.agentSkillEnabled(enabled);
+      if (mcpServer !== null)
+        mcpServer = this.validations.agentSkill(mcpServer);
 
-      const overrides = await this.agentSkillOverrides(workspaceId);
-      if (enabled === null) delete overrides[skill];
-      else overrides[skill] = enabled;
+      const agentSkills = await prisma.$transaction(async (tx) => {
+        const workspace = await tx.workspaces.findUnique({
+          where: { id: Number(workspaceId) },
+          select: { agentSkills: true },
+        });
+        const skills =
+          this.parseAgentSkills(workspace?.agentSkills) ?? systemSkills;
 
-      return this._update(Number(workspaceId), {
-        agentSkillOverrides: Object.keys(overrides).length
-          ? JSON.stringify(overrides)
-          : null,
+        if (mcpServer) {
+          const suppressed = Object.hasOwn(skills.mcpSuppressedTools, mcpServer)
+            ? skills.mcpSuppressedTools[mcpServer]
+            : mcpServerTools;
+          skills.mcpSuppressedTools[mcpServer] = withItem(
+            suppressed,
+            skill,
+            !enabled
+          );
+        } else {
+          skills.enabled = withItem(skills.enabled, skill, enabled);
+        }
+
+        await tx.workspaces.update({
+          where: { id: Number(workspaceId) },
+          data: { agentSkills: JSON.stringify(skills) },
+        });
+        return skills;
+      });
+      return { agentSkills, message: null };
+    } catch (error) {
+      return { agentSkills: null, message: error.message };
+    }
+  },
+
+  /**
+   * Drop a workspace's own agent skill toggles so it follows the system settings again.
+   * @param {number} workspaceId
+   * @returns {Promise<{workspace: Object | null, message: string | null}>}
+   */
+  resetAgentSkills: async function (workspaceId) {
+    return await this._update(Number(workspaceId), { agentSkills: null });
+  },
+
+  /**
+   * Count the workspaces with their own agent skill toggles.
+   * @returns {Promise<number>}
+   */
+  countWithOwnAgentSkills: async function () {
+    try {
+      return await prisma.workspaces.count({
+        where: { agentSkills: { not: null } },
       });
     } catch (error) {
-      return { workspace: null, message: error.message };
+      console.error(error.message);
+      return 0;
     }
   },
 

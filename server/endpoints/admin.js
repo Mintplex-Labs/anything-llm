@@ -329,6 +329,20 @@ function adminEndpoints(app) {
 
   // System preferences but only by array of labels
   app.get(
+    "/admin/workspaces/own-agent-skills-count",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_request, response) => {
+      try {
+        const count = await Workspace.countWithOwnAgentSkills();
+        return response.status(200).json({ count });
+      } catch (e) {
+        console.error(e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
+  app.get(
     "/admin/system-preferences-for",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {

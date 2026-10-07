@@ -330,6 +330,10 @@ const TRANSLATIONS = {
     },
   },
   agent: {
+    workspaces_with_own_skills_one:
+      "Changes here only apply to workspaces that haven't customized their agent skills. {{count}} workspace has its own settings.",
+    workspaces_with_own_skills_other:
+      "Changes here only apply to workspaces that haven't customized their agent skills. {{count}} workspaces have their own settings.",
     "performance-warning":
       "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
     provider: {
@@ -1638,6 +1642,7 @@ const TRANSLATIONS = {
     slash_commands: "Slash Commands",
     agent_skills: "Agent Skills",
     manage_agent_skills: "Manage Agent Skills",
+    reset_agent_skills: "Reset to system defaults",
     app_integrations: "App Integrations",
     custom_skills: "Custom Skills",
     agent_flows: "Agent Flows",

@@ -36,6 +36,8 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
 const { messageToSpeech } = require("../utils/TextToSpeech/messageToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+const { systemAgentSkills } = require("../utils/agents/defaults");
+const MCPCompatibilityLayer = require("../utils/MCP");
 
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
@@ -117,14 +119,14 @@ function workspaceEndpoints(app) {
   );
 
   app.get(
-    "/workspace/:slug/agent-skill-overrides",
+    "/workspace/:slug/agent-skills",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (_request, response) => {
       try {
-        const overrides = await Workspace.agentSkillOverrides(
+        const agentSkills = await Workspace.agentSkills(
           response.locals.workspace.id
         );
-        return response.status(200).json({ overrides });
+        return response.status(200).json({ agentSkills });
       } catch (e) {
         console.error(e.message, e);
         return response.sendStatus(500);
@@ -133,7 +135,7 @@ function workspaceEndpoints(app) {
   );
 
   app.post(
-    "/workspace/:slug/agent-skill-overrides",
+    "/workspace/:slug/agent-skills",
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
@@ -141,17 +143,41 @@ function workspaceEndpoints(app) {
     ],
     async (request, response) => {
       try {
-        const { skill, enabled } = reqBody(request);
-        const workspaceId = response.locals.workspace.id;
-        const { message } = await Workspace.setAgentSkillOverride(
-          workspaceId,
-          skill,
-          enabled
+        const { skill, enabled, mcpServer = null } = reqBody(request);
+        const mcpServerTools = mcpServer
+          ? (
+              (await new MCPCompatibilityLayer().mcps[mcpServer]?.listTools())
+                ?.tools ?? []
+            ).map((tool) => tool.name)
+          : [];
+        const { agentSkills, message } = await Workspace.setAgentSkill(
+          response.locals.workspace.id,
+          { skill, enabled, mcpServer, mcpServerTools },
+          await systemAgentSkills()
         );
         if (message) return response.status(400).json({ error: message });
+        return response.status(200).json({ agentSkills });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
 
-        const overrides = await Workspace.agentSkillOverrides(workspaceId);
-        return response.status(200).json({ overrides });
+  app.delete(
+    "/workspace/:slug/agent-skills",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (_request, response) => {
+      try {
+        const { message } = await Workspace.resetAgentSkills(
+          response.locals.workspace.id
+        );
+        if (message) return response.status(500).json({ error: message });
+        return response.status(200).json({ agentSkills: null });
       } catch (e) {
         console.error(e.message, e);
         return response.sendStatus(500);

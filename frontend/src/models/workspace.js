@@ -275,35 +275,49 @@ const Workspace = {
     return capabilities ?? { reasoning: "unknown", reasoningOptions: [] };
   },
   /**
-   * Agent skills this workspace overrides from the global agent skill settings.
+   * This workspace's own agent skill toggles, or null when it follows the system settings.
    * @param {string} slug - Workspace slug
-   * @returns {Promise<Object<string, boolean>>} skill -> enabled
+   * @returns {Promise<{enabled: string[], mcpSuppressedTools: Object<string, string[]>}|null>}
    */
-  agentSkillOverrides: async function (slug = "") {
-    return await fetch(`${API_BASE}/workspace/${slug}/agent-skill-overrides`, {
+  agentSkills: async function (slug = "") {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skills`, {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .then((res) => res.overrides ?? {})
-      .catch(() => ({}));
+      .then((res) => res.agentSkills ?? null)
+      .catch(() => null);
   },
 
   /**
-   * Override an agent skill for this workspace. `null` follows the global setting again.
+   * Turn an agent skill or MCP tool on or off for this workspace. The first change
+   * copies the system toggles into the workspace.
    * @param {string} slug - Workspace slug
-   * @param {string} skill - Skill key (built-in name, sub-skill name, hubId, `@@flow_<uuid>` or `<server>-<tool>`)
-   * @param {boolean|null} enabled
-   * @returns {Promise<Object<string, boolean>|null>} updated overrides, or null on failure
+   * @param {{skill: string, enabled: boolean, mcpServer?: string}} change - `skill` is the tool name when `mcpServer` is set
+   * @returns {Promise<{enabled: string[], mcpSuppressedTools: Object<string, string[]>}|null>} updated toggles, or null on failure
    */
-  setAgentSkillOverride: async function (slug = "", skill, enabled) {
-    return await fetch(`${API_BASE}/workspace/${slug}/agent-skill-overrides`, {
+  setAgentSkill: async function (slug = "", change) {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skills`, {
       method: "POST",
       headers: baseHeaders(),
-      body: JSON.stringify({ skill, enabled }),
+      body: JSON.stringify(change),
     })
       .then((res) => (res.ok ? res.json() : null))
-      .then((res) => res?.overrides ?? null)
+      .then((res) => res?.agentSkills ?? null)
       .catch(() => null);
+  },
+
+  /**
+   * Drop this workspace's own agent skill toggles so it follows the system settings again.
+   * @param {string} slug - Workspace slug
+   * @returns {Promise<boolean>}
+   */
+  resetAgentSkills: async function (slug = "") {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skills`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
   },
   delete: async function (slug) {
     const result = await fetch(`${API_BASE}/workspace/${slug}`, {
