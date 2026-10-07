@@ -272,6 +272,11 @@ class BackgroundService {
    */
   async #bootScheduledJobs() {
     const { ScheduledJob } = require("../../models/scheduledJob");
+    const { SystemSettings } = require("../../models/systemSettings");
+
+    // Scheduled jobs are only available in single-user mode.
+    if (await SystemSettings.isMultiUserMode()) return;
+
     const enabledJobs = await ScheduledJob.allEnabled();
 
     for (const job of enabledJobs) {
@@ -373,10 +378,18 @@ class BackgroundService {
    *
    * @param {number} jobId - scheduled_jobs.id
    * @returns {Promise<object|null>} the created run row, or null if skipped
-   *   because a run is already in flight for this job.
+   *   because a run is already in flight for this job or the instance is in
+   *   multi-user mode.
    */
   async enqueueScheduledJob(jobId) {
     const { ScheduledJobRun } = require("../../models/scheduledJobRun");
+    const { SystemSettings } = require("../../models/systemSettings");
+
+    // Timers registered before the switch to multi-user mode stop here.
+    if (await SystemSettings.isMultiUserMode()) {
+      this.removeScheduledJob(jobId);
+      return null;
+    }
 
     const run = await ScheduledJobRun.start(jobId);
     // if start returns null, skip enqueuing, schueduled job already has a run in flight
