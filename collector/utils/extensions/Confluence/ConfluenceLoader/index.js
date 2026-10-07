@@ -47,16 +47,11 @@ class ConfluencePagesLoader {
   }
 
   async load(options) {
-    try {
-      const pages = await this.fetchAllPagesInSpace(
-        options?.start,
-        options?.limit
-      );
-      return pages.map((page) => this.createDocumentFromPage(page));
-    } catch (error) {
-      this.log("Error:", error);
-      return [];
-    }
+    const pages = await this.fetchAllPagesInSpace(
+      options?.start,
+      options?.limit
+    );
+    return pages.map((page) => this.createDocumentFromPage(page));
   }
 
   async fetchConfluenceData(url) {
