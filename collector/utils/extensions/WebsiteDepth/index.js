@@ -197,7 +197,7 @@ async function bulkScrapePages(links, outFolderPath) {
 
       writeToServerDocuments({
         data,
-        filename: data.title,
+        filename: `${slugify(filename)}-${data.id}`,
         destinationOverride: outFolderPath,
       });
       scrapedData.push(data);
