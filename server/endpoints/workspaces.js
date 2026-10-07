@@ -136,11 +136,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/agent-skills",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      validWorkspaceSlug,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.admin]), validWorkspaceSlug],
     async (request, response) => {
       try {
         const { skill, enabled, mcpServer = null } = reqBody(request);
@@ -166,11 +162,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/agent-skills",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      validWorkspaceSlug,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.admin]), validWorkspaceSlug],
     async (_request, response) => {
       try {
         const { message } = await Workspace.resetAgentSkills(
