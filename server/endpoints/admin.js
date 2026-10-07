@@ -327,7 +327,6 @@ function adminEndpoints(app) {
     }
   );
 
-  // System preferences but only by array of labels
   app.get(
     "/admin/workspaces/own-agent-skills-count",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
@@ -342,6 +341,7 @@ function adminEndpoints(app) {
     }
   );
 
+  // System preferences but only by array of labels
   app.get(
     "/admin/system-preferences-for",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
