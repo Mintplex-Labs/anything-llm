@@ -396,6 +396,33 @@ describe("WebsiteDepth websiteScraper", () => {
     expect(writeToServerDocuments).toHaveBeenCalledTimes(1);
   });
 
+  it("writes pages that differ only by query string or non-Latin path to separate files with distinct titles", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="/docs/item?id=1">1</a><a href="/docs/item?id=2">2</a>' +
+        '<a href="/docs/%E5%8C%97%E4%BA%AC">b</a><a href="/docs/%E4%B8%8A%E6%B5%B7">s</a>',
+      "https://example.com/docs/item?id=1": "item one",
+      "https://example.com/docs/item?id=2": "item two",
+      "https://example.com/docs/%E5%8C%97%E4%BA%AC": "beijing",
+      "https://example.com/docs/%E4%B8%8A%E6%B5%B7": "shanghai",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(scraped).toHaveLength(5);
+    const filenames = writeToServerDocuments.mock.calls.map(
+      ([args]) => args.filename
+    );
+    expect(new Set(filenames).size).toBe(5);
+    expect(scraped.map((doc) => doc.title).sort()).toEqual([
+      "example.com_docs_item?id=1.html",
+      "example.com_docs_item?id=2.html",
+      "example.com_docs_page.html",
+      "example.com_docs_上海.html",
+      "example.com_docs_北京.html",
+    ]);
+  });
+
   it("survives a start page that cannot be loaded at all", async () => {
     mockSite({
       "https://example.com/docs/page": new Error("net::ERR_CONNECTION_REFUSED"),
