@@ -15,19 +15,6 @@ const sanitizeNamespace = (namespace) => {
   return `ns_${namespace.replace(/[^a-zA-Z0-9_]/g, "_")}`;
 };
 
-// Add this helper method to check if collection exists more reliably
-const collectionExists = async function (provider, client, namespace) {
-  try {
-    const collections = await provider.allNamespaces(client);
-    if (collections) {
-      return collections.includes(namespace);
-    }
-  } catch (error) {
-    provider.logger("collectionExists check error", error?.message || error);
-    return false; // Return false for any error to allow creation attempt
-  }
-};
-
 class AstraDB extends VectorDatabase {
   constructor() {
     super();
@@ -120,13 +107,25 @@ class AstraDB extends VectorDatabase {
     return true;
   }
 
+  async collectionExists(client, namespace) {
+    try {
+      const collections = await this.allNamespaces(client);
+      if (collections) {
+        return collections.includes(namespace);
+      }
+    } catch (error) {
+      this.logger("collectionExists check error", error?.message || error);
+      return false; // Return false for any error to allow creation attempt
+    }
+  }
+
   // AstraDB requires a dimension aspect for collection creation
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
   async getOrCreateCollection(client, namespace, dimensions = null) {
     const sanitizedNamespace = sanitizeNamespace(namespace);
     try {
-      const exists = await collectionExists(this, client, sanitizedNamespace);
+      const exists = await this.collectionExists(client, sanitizedNamespace);
 
       if (!exists) {
         if (!dimensions) {
