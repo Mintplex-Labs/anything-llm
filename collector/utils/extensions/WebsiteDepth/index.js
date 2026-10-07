@@ -184,7 +184,9 @@ async function bulkScrapePages(links, outFolderPath) {
       const data = {
         id: v4(),
         url: "file://" + slugify(filename) + ".html",
-        title: slugify(filename) + ".html",
+        // Unslugified so pages that differ only by query string or by
+        // non-Latin path segments stay distinguishable in the document picker.
+        title: `${filename}${url.search}.html`,
         docAuthor: "no author found",
         description: "No description found.",
         docSource: "URL link uploaded by the user.",

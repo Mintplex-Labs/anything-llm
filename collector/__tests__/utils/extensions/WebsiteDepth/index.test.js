@@ -396,7 +396,7 @@ describe("WebsiteDepth websiteScraper", () => {
     expect(writeToServerDocuments).toHaveBeenCalledTimes(1);
   });
 
-  it("writes pages that differ only by query string or non-Latin path to separate files", async () => {
+  it("writes pages that differ only by query string or non-Latin path to separate files with distinct titles", async () => {
     mockSite({
       "https://example.com/docs/page":
         '<a href="/docs/item?id=1">1</a><a href="/docs/item?id=2">2</a>' +
@@ -414,6 +414,13 @@ describe("WebsiteDepth websiteScraper", () => {
       ([args]) => args.filename
     );
     expect(new Set(filenames).size).toBe(5);
+    expect(scraped.map((doc) => doc.title).sort()).toEqual([
+      "example.com_docs_item?id=1.html",
+      "example.com_docs_item?id=2.html",
+      "example.com_docs_page.html",
+      "example.com_docs_上海.html",
+      "example.com_docs_北京.html",
+    ]);
   });
 
   it("survives a start page that cannot be loaded at all", async () => {
