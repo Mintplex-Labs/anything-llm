@@ -16,6 +16,7 @@ const SCHEDULED_JOB_TIMEOUT_MS =
 function agentActionCb() {
   const thoughts = [];
   const toolCalls = [];
+  let lastChunkUuid = null;
 
   // Use a container object so the reference is preserved when values are updated
   const state = {
@@ -35,8 +36,12 @@ function agentActionCb() {
 
       if (data.type === "reportStreamEvent" && data.content) {
         const inner = data.content;
-        if (inner.type === "textResponseChunk" && inner.content)
+        if (inner.type === "textResponseChunk" && inner.content) {
+          // Each agent round has its own uuid, keep only the latest round's text
+          if (inner.uuid !== lastChunkUuid) state.textResponse = "";
           state.textResponse += inner.content;
+          lastChunkUuid = inner.uuid;
+        }
         if (inner.type === "fullTextResponse" && inner.content)
           state.textResponse = inner.content;
         if (inner.type === "usageMetrics" && inner.metrics)
