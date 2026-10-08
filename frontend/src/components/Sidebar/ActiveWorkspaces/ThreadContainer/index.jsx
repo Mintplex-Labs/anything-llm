@@ -195,7 +195,7 @@ function NewThreadButton({ workspace, onNewThread }) {
     setLoading(true);
     const { thread, error } = await Workspace.threads.new(workspace.slug);
     if (!!error) {
-      showToast(`Could not create thread - ${error}`, "error", { clear: true });
+      showToast(`Có lỗi khi tạo cuộc hội thoại mới - ${error}`, "error", { clear: true });
       setLoading(false);
       return;
     }
@@ -234,11 +234,11 @@ function NewThreadButton({ workspace, onNewThread }) {
 
         {loading ? (
           <p className="text-left text-white light:text-theme-text-primary text-sm">
-            Starting Thread...
+            Tạo cuộc hội thoại mới ...
           </p>
         ) : (
           <p className="text-left text-white light:text-theme-text-primary text-sm font-semibold">
-            New Thread
+            Cuộc hội thoại mới
           </p>
         )}
       </div>

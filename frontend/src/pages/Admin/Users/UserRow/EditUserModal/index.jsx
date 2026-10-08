@@ -76,16 +76,16 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
           hint={t("common.username_requirements")}
         />
         <ModalInput
-          label="New Password"
+          label="Mật khẩu mới"
           name="password"
           type="password"
-          placeholder={`${user.username}'s new password`}
+          placeholder={`Mật khẩu mới của ${user.username}`}
           autoComplete="off"
           minLength={8}
           hint="Password must be at least 8 characters long"
         />
         <ModalTextarea
-          label="Bio"
+          label="Mô tả"
           name="bio"
           placeholder="User's bio"
           defaultValue={user.bio}

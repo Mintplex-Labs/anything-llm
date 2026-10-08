@@ -17,7 +17,7 @@ import Modal, {
 import { EmbeddingProgressProvider } from "@/EmbeddingProgressContext";
 import { useModalEscape } from "@/hooks/useModalEscape";
 
-const noop = () => {};
+const noop = () => { };
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { t } = useTranslation();
   const { slug } = useParams();
@@ -87,12 +87,17 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             />
           )}
 
-          {selectedTab === "documents" ? (
+          {/* {selectedTab === "documents" ? (
             <EmbeddingProgressProvider>
               <DocumentSettings workspace={workspace} />
             </EmbeddingProgressProvider>
           ) : (
             <DataConnectors workspace={workspace} systemSettings={settings} />
+          )} */}
+          {selectedTab === "documents" && (
+            <EmbeddingProgressProvider>
+              <DocumentSettings workspace={workspace} />
+            </EmbeddingProgressProvider>
           )}
         </div>
       </div>
@@ -109,24 +114,22 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
       <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-zinc-900 light:bg-white p-1 rounded-xl shadow border-2 border-zinc-800 light:border-slate-300 w-fit">
         <button
           onClick={() => setSelectedTab("documents")}
-          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-zinc-800 light:hover:bg-sky-100 ${
-            selectedTab === "documents"
-              ? "bg-zinc-800 font-bold text-white light:bg-sky-100 light:text-sky-700"
-              : "text-white/20 font-medium hover:text-white light:bg-white light:text-slate-500"
-          }`}
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-zinc-800 light:hover:bg-sky-100 ${selectedTab === "documents"
+            ? "bg-zinc-800 font-bold text-white light:bg-sky-100 light:text-sky-700"
+            : "text-white/20 font-medium hover:text-white light:bg-white light:text-slate-500"
+            }`}
         >
           {t("connectors.manage.documents")}
         </button>
-        <button
+        {/* <button
           onClick={() => setSelectedTab("dataConnectors")}
-          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-zinc-800 light:hover:bg-sky-100 ${
-            selectedTab === "dataConnectors"
-              ? "bg-zinc-800 font-bold text-white light:bg-sky-100 light:text-sky-700"
-              : "text-white/20 font-medium hover:text-white light:bg-white light:text-slate-500"
-          }`}
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-zinc-800 light:hover:bg-sky-100 ${selectedTab === "dataConnectors"
+            ? "bg-zinc-800 font-bold text-white light:bg-sky-100 light:text-sky-700"
+            : "text-white/20 font-medium hover:text-white light:bg-white light:text-slate-500"
+            }`}
         >
           {t("connectors.manage.data-connectors")}
-        </button>
+        </button> */}
       </div>
     </div>
   );

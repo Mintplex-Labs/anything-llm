@@ -24,6 +24,7 @@ import System from "@/models/system";
 import Option from "./MenuOption";
 import { CanViewChatHistoryProvider } from "../CanViewChatHistory";
 import useAppVersion from "@/hooks/useAppVersion";
+import customLogo from "../../media/logo/logo-cong-an-vector-02.jpg";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -58,7 +59,7 @@ export default function SettingsSidebar() {
           </button>
           <div className="flex items-center justify-center flex-grow">
             <img
-              src={logo}
+              src={customLogo}
               alt="Logo"
               className="block mx-auto h-6 w-auto"
               style={{ maxHeight: "40px", objectFit: "contain" }}
@@ -143,15 +144,15 @@ export default function SettingsSidebar() {
           className="flex shrink-0 items-center justify-start mx-[20.5px] my-[18px]"
         >
           <img
-            src={logo}
+            src={customLogo}
             alt="Logo"
-            className="rounded max-h-[24px]"
+            className="rounded max-h-[140px]"
             style={{ objectFit: "contain" }}
           />
         </Link>
         <div
           ref={sidebarRef}
-          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-194px)]"
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">

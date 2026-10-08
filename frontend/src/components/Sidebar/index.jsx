@@ -15,6 +15,8 @@ import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
 import SearchBox from "./SearchBox";
 import { Tooltip } from "react-tooltip";
 import { createPortal } from "react-dom";
+import customLogo from "../../media/logo/logo-cong-an-vector-02.jpg";
+
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -47,16 +49,16 @@ export default function Sidebar() {
             <div className="flex w-[250px] min-w-[250px]">
               <Link to={paths.home()} aria-label="Home">
                 <img
-                  src={logo}
+                  src={customLogo}
                   alt="Logo"
-                  className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                  className={`rounded w-[90%] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
                 />
               </Link>
             </div>
           </div>
           <div
             ref={sidebarRef}
-            className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar light:bg-slate-200 border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+            className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar light:bg-slate-200 border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-194px)]"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <div className="flex-grow flex flex-col min-w-[235px] min-h-0">
@@ -136,11 +138,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
-              ? "transition-all opacity-1"
-              : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
+          className={`${showBgOverlay
+            ? "transition-all opacity-1"
+            : "transition-none opacity-0"
+            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div

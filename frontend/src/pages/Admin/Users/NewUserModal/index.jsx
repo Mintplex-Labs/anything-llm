@@ -70,7 +70,7 @@ export default function NewUserModal({ closeModal }) {
           hint="Password must be at least 8 characters long"
         />
         <ModalTextarea
-          label="Bio"
+          label="Mô tả"
           name="bio"
           placeholder="User's bio"
           autoComplete="off"

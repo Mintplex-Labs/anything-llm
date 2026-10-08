@@ -49,7 +49,7 @@ export default function Footer() {
     return (
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
-          <div className="flex w-fit">
+          {/* <div className="flex w-fit">
             <Link
               to={paths.github()}
               target="_blank"
@@ -80,8 +80,8 @@ export default function Footer() {
                 className="h-5 w-5 text-white light:text-slate-800"
               />
             </Link>
-          </div>
-          <div className="flex w-fit">
+          </div> */}
+          {/* <div className="flex w-fit">
             <Link
               to={paths.discord()}
               target="_blank"
@@ -96,7 +96,7 @@ export default function Footer() {
                 className="h-5 w-5 text-white light:text-slate-800"
               />
             </Link>
-          </div>
+          </div> */}
           {!isMobile && <SettingsButton />}
         </div>
         <Tooltip

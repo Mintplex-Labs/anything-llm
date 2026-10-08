@@ -377,19 +377,19 @@ export default function PromptInput({
                       workspaceSlug={workspaceSlug}
                       workspaceThreadSlug={threadSlug}
                     />
-                    <AgentSessionButton
+                    {/* <AgentSessionButton
                       sendCommand={sendCommand}
                       promptInput={promptInput}
                       textareaRef={textareaRef}
                       visible={!agentSessionActive & showAgentCommand}
-                    />
+                    /> */}
                   </div>
-                  <ToolsButton
+                  {/* <ToolsButton
                     showTools={showTools}
                     setShowTools={setShowTools}
                     textareaRef={textareaRef}
                     autoOpenedToolsRef={autoOpenedToolsRef}
-                  />
+                  /> */}
                 </div>
                 <div className="flex gap-x-2 items-center">
                   <SpeechToText sendCommand={sendCommand} />

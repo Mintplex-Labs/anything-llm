@@ -487,7 +487,7 @@ export default function ChatContainer({
           />
           <div className="flex-1 min-w-0 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
             {isMobile && <SidebarMobileHeader />}
-            <WorkspaceModelPicker workspaceSlug={workspace.slug} />
+            {/* <WorkspaceModelPicker workspaceSlug={workspace.slug} /> */}
             <DnDFileUploaderWrapper>
               <div className="flex flex-col h-full w-full items-center justify-center">
                 <div className="flex flex-col items-center w-full max-w-[750px]">
@@ -545,7 +545,7 @@ export default function ChatContainer({
         />
         <div className="flex-1 min-w-0 relative md:rounded-[16px] bg-zinc-900 light:bg-white text-white light:text-slate-900 h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
           {isMobile && <SidebarMobileHeader />}
-          <WorkspaceModelPicker workspaceSlug={workspace.slug} />
+          {/* <WorkspaceModelPicker workspaceSlug={workspace.slug} /> */}
           <DnDFileUploaderWrapper>
             <div className="flex flex-col h-full w-full pb-20 md:pb-0">
               <div className="contents">

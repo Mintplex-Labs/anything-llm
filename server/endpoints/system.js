@@ -227,7 +227,7 @@ function systemEndpoints(app) {
             user: null,
             valid: false,
             token: null,
-            message: "[001] Invalid login credentials.",
+            message: "[001] Sai tên tài khoản hoặc mật khẩu.",
           });
           return;
         }
@@ -245,7 +245,7 @@ function systemEndpoints(app) {
             user: null,
             valid: false,
             token: null,
-            message: "[002] Invalid login credentials.",
+            message: "[002] Sai tên tài khoản hoặc mật khẩu.",
           });
           return;
         }

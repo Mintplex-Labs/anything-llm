@@ -121,12 +121,12 @@ const TRANSLATIONS = {
       login: "Đăng nhập",
       validating: "Đang xác thực...",
       "forgot-pass": "Quên mật khẩu",
-      reset: "Đặt lại",
+      reset: "Lấy lại mật khẩu",
     },
     "sign-in": "Đăng nhập vào {{appName}} sử dụng tài khoản của bạn.",
     "password-reset": {
-      title: "Đặt lại Mật khẩu",
-      description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
+      title: "Lấy lại mật khẩu",
+      description: "Cung cấp thông tin cần thiết dưới đây để lấy lại mật khẩu mật khẩu.",
       "recovery-codes": "Mã khôi phục",
       "back-to-login": "Quay lại Đăng nhập",
     },
@@ -1967,7 +1967,7 @@ const TRANSLATIONS = {
     },
   },
   imageGeneration: {
-    title: "Ưu tiên tạo ảnh",
+    title: "Tạo ảnh",
     description:
       "Cấu hình nhà cung cấp được sử dụng để tạo ảnh từ lệnh `/img`.",
     provider: "Nhà cung cấp dịch vụ tạo hình ảnh",

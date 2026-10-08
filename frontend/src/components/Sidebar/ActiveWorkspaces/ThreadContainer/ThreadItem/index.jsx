@@ -47,21 +47,19 @@ export default function ThreadItem({
       {/* Curved line Element and leader if required */}
       <div
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
-        className={`${
-          isActive
+        className={`${isActive
             ? "border-l-2 border-b-2 border-white light:border-blue-800 z-[2]"
             : "border-l border-b border-zinc-500 light:border-slate-400 z-[1]"
-        } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
+          } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
         <div
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
-          className={`${
-            idx <= activeIdx && !isActive
+          className={`${idx <= activeIdx && !isActive
               ? "border-l-2 border-white light:border-blue-800 z-[2]"
               : "border-l border-zinc-500 light:border-slate-400 z-[1]"
-          } h-[100%] absolute top-0 left-3`}
+            } h-[100%] absolute top-0 left-3`}
         ></div>
       )}
 
@@ -105,11 +103,10 @@ export default function ThreadItem({
             aria-current={isActive ? "page" : ""}
           >
             <p
-              className={`text-left text-sm truncate max-w-[150px] ${
-                isActive
+              className={`text-left text-sm truncate max-w-[150px] ${isActive
                   ? "font-semibold text-theme-text-primary light:text-blue-900"
                   : "text-theme-text-primary font-medium light:text-slate-800"
-              }`}
+                }`}
             >
               {thread.name}
             </p>
@@ -267,7 +264,7 @@ function OptionsMenu({
         className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-primary"
       >
         <PencilSimple size={18} />
-        <p className="text-sm">Rename</p>
+        <p className="text-sm">Đổi tên cuộc hội thoại</p>
       </button>
       <button
         onClick={handleDelete}
@@ -275,7 +272,7 @@ function OptionsMenu({
         className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
       >
         <Trash size={18} />
-        <p className="text-sm">Delete Thread</p>
+        <p className="text-sm">Xóa cuộc hội thoại</p>
       </button>
     </div>
   );

@@ -153,7 +153,7 @@ export default function AccountModal({ user, hideModal }) {
             hint={t("profile_settings.password_description")}
           />
           <ModalTextarea
-            label="Bio"
+            label="Mô tả"
             name="bio"
             placeholder="Tell us about yourself..."
             defaultValue={user.bio}
