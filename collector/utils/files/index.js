@@ -158,15 +158,9 @@ async function wipeCollectorStorage() {
   const cleanHotDir = new Promise((resolve) => {
     const directory = path.resolve(__dirname, "../../hotdir");
 
-    if (!fs.existsSync(directory)) {
-      console.log(`Collector hot directory not found, skipping wipe.`);
-      return resolve();
-    }
+    if (!fs.existsSync(directory)) return resolve();
     fs.readdir(directory, (err, files) => {
-      if (err) {
-        console.error(`Failed to read collector hot directory: ${err.code}`);
-        return resolve();
-      }
+      if (err) return resolve();
 
       for (const file of files) {
         if (file === "__HOTDIR__.md") continue;
@@ -181,10 +175,7 @@ async function wipeCollectorStorage() {
   const cleanTmpDir = new Promise((resolve) => {
     const directory = path.resolve(__dirname, "../../storage/tmp");
     fs.readdir(directory, (err, files) => {
-      if (err) {
-        console.error(`Failed to read collector tmp storage: ${err.code}`);
-        return resolve();
-      }
+      if (err) return resolve();
 
       for (const file of files) {
         if (file === ".placeholder") continue;
