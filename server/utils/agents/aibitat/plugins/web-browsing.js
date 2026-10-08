@@ -1770,6 +1770,7 @@ const webBrowsing = {
                 method: "POST",
                 headers,
                 body: JSON.stringify({ query: String(query), max_results: 10 }),
+                signal: AbortSignal.timeout(20_000),
               }
             )
               .then(async (res) => {
@@ -1788,6 +1789,10 @@ const webBrowsing = {
                 if (data?.code !== 0)
                   throw new Error(
                     data?.message || `API error code ${data?.code}`
+                  );
+                if (!Array.isArray(data?.data?.results))
+                  throw new Error(
+                    "Malformed response: code 0 but no data.results"
                   );
                 return { response: data, error: null };
               })
