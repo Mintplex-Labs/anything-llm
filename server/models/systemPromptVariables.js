@@ -289,7 +289,7 @@ const SystemPromptVariables = {
                 );
                 value = `[${variableTypeDisplay} ${prop}]`;
               }
-              result = result.replace(match, value);
+              result = result.replace(match, () => value);
             } else {
               let value;
               try {
@@ -306,11 +306,14 @@ const SystemPromptVariables = {
                 );
                 value = `[${variableTypeDisplay} ${prop}]`;
               }
-              result = result.replace(match, value);
+              result = result.replace(match, () => value);
             }
           } else {
             // If the variable is not a function, replace the match with the variable value
-            result = result.replace(match, `[${variableTypeDisplay} ${prop}]`);
+            result = result.replace(
+              match,
+              () => `[${variableTypeDisplay} ${prop}]`
+            );
           }
           continue;
         }
@@ -327,17 +330,17 @@ const SystemPromptVariables = {
           try {
             if (variable.value.constructor.name === "AsyncFunction") {
               const value = await variable.value(userId);
-              result = result.replace(match, value);
+              result = result.replace(match, () => value);
             } else {
               const value = variable.value();
-              result = result.replace(match, value);
+              result = result.replace(match, () => value);
             }
           } catch (error) {
             console.error(`Error processing dynamic variable ${key}:`, error);
-            result = result.replace(match, match);
+            result = result.replace(match, () => match);
           }
         } else {
-          result = result.replace(match, variable.value || match);
+          result = result.replace(match, () => variable.value || match);
         }
       }
       return result;
