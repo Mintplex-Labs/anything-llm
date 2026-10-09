@@ -15,6 +15,16 @@ class VectorDatabase {
   }
 
   /**
+   * The name a namespace is stored under in the vector database.
+   * Providers with naming rules for collections should override this.
+   * @param {string} namespace - Namespace to normalize
+   * @returns {string}
+   */
+  normalize(namespace) {
+    return namespace;
+  }
+
+  /**
    * Connect to vector database client
    * @returns {Promise<{client: any}>}
    */

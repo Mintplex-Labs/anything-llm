@@ -190,6 +190,25 @@ const Workspace = {
   },
 
   /**
+   * Check if another workspace's slug resolves to the same vector database namespace.
+   * Some vector databases store namespaces under a normalized name, so distinct slugs
+   * like `sales-2024` and `sales2024` can resolve to one collection (eg: `Sales2024` in Weaviate).
+   * @param {string} slug - The slug to check.
+   * @returns {Promise<boolean>}
+   */
+  vectorNamespaceInUse: async function (slug) {
+    const { getVectorDbClass } = require("../utils/helpers");
+    const VectorDb = getVectorDbClass();
+    const namespace = VectorDb.normalize(slug);
+    const workspaces = await prisma.workspaces.findMany({
+      select: { slug: true },
+    });
+    return workspaces.some(
+      (workspace) => VectorDb.normalize(workspace.slug) === namespace
+    );
+  },
+
+  /**
    * Create a new workspace.
    * @param {string} name - The name of the workspace.
    * @param {number} creatorId - The ID of the user creating the workspace.
@@ -202,7 +221,7 @@ const Workspace = {
     slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
-    if (existingBySlug !== null) {
+    if (existingBySlug !== null || (await this.vectorNamespaceInUse(slug))) {
       const slugSeed = Math.floor(10000000 + Math.random() * 90000000);
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
