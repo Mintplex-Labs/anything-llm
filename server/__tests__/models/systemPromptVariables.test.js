@@ -99,4 +99,24 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     expect(out).toBe("X before $` after $' Y");
   });
 
+  it("preserves $ specials in default user and workspace variable values", async () => {
+    prisma.users.findUnique = jest.fn().mockResolvedValue({
+      ...mockUser,
+      username: "$&john",
+      bio: "I charge $$50/hr, $` and $' included",
+    });
+    prisma.workspaces.findUnique = jest.fn().mockResolvedValue({
+      ...mockWorkspace,
+      name: "Team $& Co",
+    });
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.name} | {user.bio} | {workspace.name}",
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(
+      "$&john | I charge $$50/hr, $` and $' included | Team $& Co"
+    );
+  });
+
 });
