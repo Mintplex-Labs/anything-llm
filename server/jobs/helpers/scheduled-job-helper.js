@@ -44,10 +44,11 @@ function agentActionCb() {
         return;
       }
 
-      // Final message from agent (onMessage event)
-      if (data.content && data.from && data.from !== "USER") {
-        if (!state.textResponse) state.textResponse = data.content;
-      }
+      // The final agent message is the complete reply for the last round, the same
+      // value chat-history persists for normal chats. Streamed chunks span every
+      // round, so they are only a fallback when no final message arrives (e.g. timeout).
+      if (data.content && data.from && data.from !== "USER")
+        state.textResponse = data.content;
     },
     close() {},
   };
