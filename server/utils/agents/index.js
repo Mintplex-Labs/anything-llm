@@ -475,13 +475,13 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  async #providerSetupAndCheck() {
+  async #providerSetupAndCheck(prompt = null) {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
 
     // If provider resolved to model router, resolve the actual provider/model
     if (this.provider === "anythingllm-router") {
-      await this.#resolveRouterProvider();
+      await this.#resolveRouterProvider(prompt);
     }
 
     if (!this.provider)
@@ -917,48 +917,51 @@ class AgentHandler {
     this.aibitat.updateReasoningEffort = (effort) =>
       this.#updateReasoningEffort(effort);
 
-    // If the workspace uses the model router, attach a resolver so routing
-    // is re-evaluated on every agent turn instead of only at initialization.
-    // Skip the first invocation since routing was already resolved during init()
+    // Re-read the workspace and re-resolve the provider/model on every agent turn
+    // so model changes and router rules apply mid-session, not only at initialization.
+    // Skip the first invocation since the route was already resolved during init()
     // and re-resolving would cause shouldNotify to return false (route already recorded).
-    if (this.routingMetadata) {
-      let isFirstCall = true;
-      this.aibitat.resolveRoute = async (prompt) => {
-        if (isFirstCall) {
-          isFirstCall = false;
-          return {
-            provider: this.provider,
-            model: this.model,
-            reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
-          };
-        }
-        try {
-          await this.#resolveRouterProvider(prompt);
-          this.aibitat.handlerProps.routingMetadata =
-            this.routingMetadata || null;
-          return {
-            provider: this.provider,
-            model: this.model,
-            reasoningEffort: await this.#reasoningEffortForRoute(),
-          };
-        } catch (e) {
-          this.log(
-            "Router re-resolution failed, keeping current route",
-            e.message
-          );
-          return null;
-        }
-      };
+    let isFirstCall = true;
+    this.aibitat.resolveRoute = async (prompt) => {
+      if (isFirstCall) {
+        isFirstCall = false;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
+        };
+      }
+      try {
+        this.invocation.workspace =
+          (await Workspace.get({ id: this.invocation.workspace.id })) ??
+          this.invocation.workspace;
+        this.routingMetadata = null;
+        this._modelRouter = null;
+        await this.#providerSetupAndCheck(prompt);
+        this.aibitat.handlerProps.routingMetadata =
+          this.routingMetadata || null;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: await this.#reasoningEffortForRoute(),
+        };
+      } catch (e) {
+        this.log(
+          "Route re-resolution failed, keeping current route",
+          e.message
+        );
+        return null;
+      }
+    };
 
-      this.log(
-        `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
-      );
-      this.aibitat.use(
-        AgentPlugins.modelRouterCooldown.plugin(() =>
-          this._modelRouter?.onInferenceComplete()
-        )
-      );
-    }
+    this.log(
+      `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
+    );
+    this.aibitat.use(
+      AgentPlugins.modelRouterCooldown.plugin(() =>
+        this._modelRouter?.onInferenceComplete()
+      )
+    );
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
