@@ -7656,7 +7656,7 @@ w3c-xmlserializer@^5.0.0:
   dependencies:
     xml-name-validator "^5.0.0"
 
-weaviate-client@~3.9.0:
+weaviate-client@3.9.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/weaviate-client/-/weaviate-client-3.9.0.tgz#e597c596b40cf5bf4be78ca19d543d338d6a8535"
   integrity sha512-7qwg7YONAaT4zWnohLrFdzky+rZegVe76J+Tky/+7tuyvjFpdKgSrdqI/wPDh8aji0ZGZrL4DdGwGfFnZ+uV4w==
