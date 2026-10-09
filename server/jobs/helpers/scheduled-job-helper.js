@@ -16,7 +16,6 @@ const SCHEDULED_JOB_TIMEOUT_MS =
 function agentActionCb() {
   const thoughts = [];
   const toolCalls = [];
-  let lastChunkUuid = null;
 
   // Use a container object so the reference is preserved when values are updated
   const state = {
@@ -36,12 +35,8 @@ function agentActionCb() {
 
       if (data.type === "reportStreamEvent" && data.content) {
         const inner = data.content;
-        if (inner.type === "textResponseChunk" && inner.content) {
-          // Each agent round has its own uuid, keep only the latest round's text
-          if (inner.uuid !== lastChunkUuid) state.textResponse = "";
+        if (inner.type === "textResponseChunk" && inner.content)
           state.textResponse += inner.content;
-          lastChunkUuid = inner.uuid;
-        }
         if (inner.type === "fullTextResponse" && inner.content)
           state.textResponse = inner.content;
         if (inner.type === "usageMetrics" && inner.metrics)
@@ -49,10 +44,11 @@ function agentActionCb() {
         return;
       }
 
-      // Final message from agent (onMessage event)
-      if (data.content && data.from && data.from !== "USER") {
-        if (!state.textResponse) state.textResponse = data.content;
-      }
+      // The final agent message is the complete reply for the last round, the same
+      // value chat-history persists for normal chats. Streamed chunks span every
+      // round, so they are only a fallback when no final message arrives (e.g. timeout).
+      if (data.content && data.from && data.from !== "USER")
+        state.textResponse = data.content;
     },
     close() {},
   };
