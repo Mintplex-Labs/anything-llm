@@ -190,21 +190,34 @@ You can fix this by restarting AnythingLLM so the model map is re-pulled.
    * If the model is not found, the provider's entire model map is returned.
    *
    * if both provider and model are provided, the context window for the given model is returned.
+   *
+   * The synced model map takes precedence, but anything it does not cover is
+   * resolved from the bundled legacy model map so a missing/stale/unreachable
+   * remote map cannot shrink models we already know about.
    * @param {string|null} provider - The provider to get the context window for
    * @param {string|null} model - The model to get the context window for
    * @returns {number|null} - The context window for the given provider and model
    */
   get(provider = null, model = null) {
-    if (!provider || !this.cachedModelMap || !this.cachedModelMap[provider])
-      return null;
-    if (!model) return this.cachedModelMap[provider];
+    if (!provider) return null;
 
-    const modelContextWindow = this.cachedModelMap[provider][model];
+    const modelMap = {
+      ...(ContextWindowFinder.modelMap?.[provider] ?? {}),
+      ...(this.cachedModelMap?.[provider] ?? {}),
+    };
+
+    if (Object.keys(modelMap).length === 0) return null;
+    if (!model) return modelMap;
+
+    const modelContextWindow = modelMap[model];
     if (!modelContextWindow) {
-      this.log("Invalid access to model context window - not found in cache", {
-        provider,
-        model,
-      });
+      this.log(
+        "Invalid access to model context window - not found in model map",
+        {
+          provider,
+          model,
+        }
+      );
       return null;
     }
     return Number(modelContextWindow);

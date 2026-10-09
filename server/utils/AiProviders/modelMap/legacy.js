@@ -116,6 +116,11 @@ const LEGACY_MODEL_MAP = {
     "deepseek-chat": 128000,
     "deepseek-coder": 128000,
     "deepseek-reasoner": 128000,
+    // Current API models with a 1M context window.
+    // https://api-docs.deepseek.com/quick_start/pricing
+    "deepseek-flash": 1_000_000,
+    "deepseek-v4-flash": 1_000_000,
+    "deepseek-v4-pro": 1_000_000,
   },
   minimax: {
     "MiniMax-M2.7": 196000,
