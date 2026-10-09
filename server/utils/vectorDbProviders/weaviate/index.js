@@ -1,4 +1,4 @@
-const { default: weaviate } = require("weaviate-ts-client");
+const { default: weaviate } = require("weaviate-client");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
@@ -17,20 +17,43 @@ class Weaviate extends VectorDatabase {
     return "Weaviate";
   }
 
+  // Weaviate class names must start with a capital letter, so namespaces are stored
+  // PascalCased (eg: `sales-2024` -> `Sales2024`).
+  normalize(namespace) {
+    return camelCase(namespace);
+  }
+
+  // Weaviate Cloud serves gRPC on a separate host, which `connectToWeaviateCloud` resolves.
+  // Self-hosted instances serve gRPC on the same host as HTTP, on WEAVIATE_GRPC_PORT.
   async connect() {
     if (process.env.VECTOR_DB !== "weaviate")
       throw new Error("Weaviate::Invalid ENV settings");
 
     const weaviateUrl = new URL(process.env.WEAVIATE_ENDPOINT);
+    const isSecure = weaviateUrl.protocol === "https:";
+    const isWeaviateCloud =
+      weaviateUrl.hostname.endsWith(".weaviate.cloud") ||
+      weaviateUrl.hostname.endsWith(".weaviate.network");
     const options = {
-      scheme: weaviateUrl.protocol?.replace(":", "") || "http",
-      host: weaviateUrl?.host,
       ...(process.env?.WEAVIATE_API_KEY?.length > 0
-        ? { apiKey: new weaviate.ApiKey(process.env?.WEAVIATE_API_KEY) }
+        ? {
+            authCredentials: new weaviate.ApiKey(process.env?.WEAVIATE_API_KEY),
+          }
         : {}),
     };
-    const client = weaviate.client(options);
-    const isAlive = await await client.misc.liveChecker().do();
+
+    const client = isWeaviateCloud
+      ? await weaviate.connectToWeaviateCloud(weaviateUrl.origin, options)
+      : await weaviate.connectToCustom({
+          httpHost: weaviateUrl.hostname,
+          httpPort: Number(weaviateUrl.port) || (isSecure ? 443 : 80),
+          httpSecure: isSecure,
+          grpcHost: weaviateUrl.hostname,
+          grpcPort: Number(process.env.WEAVIATE_GRPC_PORT) || 50051,
+          grpcSecure: isSecure,
+          ...options,
+        });
+    const isAlive = await client.isLive();
     if (!isAlive)
       throw new Error(
         "Weaviate::Invalid Alive signal received - is the service online?"
@@ -72,14 +95,7 @@ class Weaviate extends VectorDatabase {
 
   async namespaceCountWithClient(client, namespace) {
     try {
-      const response = await client.graphql
-        .aggregate()
-        .withClassName(camelCase(namespace))
-        .withFields("meta { count }")
-        .do();
-      return (
-        response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
-      );
+      return await client.collections.get(this.normalize(namespace)).length();
     } catch (e) {
       this.logger(`namespaceCountWithClient`, e.message);
       return 0;
@@ -87,21 +103,8 @@ class Weaviate extends VectorDatabase {
   }
 
   async namespaceCount(namespace = null) {
-    try {
-      const { client } = await this.connect();
-      const response = await client.graphql
-        .aggregate()
-        .withClassName(camelCase(namespace))
-        .withFields("meta { count }")
-        .do();
-
-      return (
-        response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
-      );
-    } catch (e) {
-      this.logger(`namespaceCountWithClient`, e.message);
-      return 0;
-    }
+    const { client } = await this.connect();
+    return await this.namespaceCountWithClient(client, namespace);
   }
 
   async similarityResponse({
@@ -118,35 +121,25 @@ class Weaviate extends VectorDatabase {
       scores: [],
     };
 
-    const weaviateClass = await this.namespace(client, namespace);
-    const fields =
-      weaviateClass.properties?.map((prop) => prop.name)?.join(" ") ?? "";
-    const queryResponse = await client.graphql
-      .get()
-      .withClassName(camelCase(namespace))
-      .withFields(`${fields} _additional { id distance }`)
-      .withNearVector({ vector: queryVector })
-      .withLimit(topN)
-      .do();
+    const { objects } = await client.collections
+      .get(this.normalize(namespace))
+      .query.nearVector(queryVector, {
+        limit: topN,
+        returnMetadata: ["distance"],
+      });
 
-    const responses = queryResponse?.data?.Get?.[camelCase(namespace)];
-    responses.forEach((response) => {
-      // In Weaviate we have to pluck id from _additional and spread it into the rest
-      // of the properties.
-      const {
-        _additional: { id, distance },
-        ...rest
-      } = response;
-      const score = this.distanceToSimilarity(distance);
+    objects.forEach((object) => {
+      const { uuid: id, properties, metadata } = object;
+      const score = this.distanceToSimilarity(metadata?.distance);
       if (score < similarityThreshold) return;
-      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+      if (filterIdentifiers.includes(sourceIdentifier(properties))) {
         this.logger(
           "A source was filtered from context as it's parent document is pinned."
         );
         return;
       }
-      result.contextTexts.push(rest.text);
-      result.sourceDocuments.push({ ...rest, id, score });
+      result.contextTexts.push(properties.text);
+      result.sourceDocuments.push({ ...properties, id, score });
       result.scores.push(score);
     });
 
@@ -155,8 +148,8 @@ class Weaviate extends VectorDatabase {
 
   async allNamespaces(client) {
     try {
-      const { classes = [] } = await client.schema.getter().do();
-      return classes.map((classObj) => classObj.class);
+      const collections = await client.collections.listAll();
+      return collections.map((collection) => collection.name);
     } catch (e) {
       this.logger("AllNamespace", e);
       return [];
@@ -167,50 +160,43 @@ class Weaviate extends VectorDatabase {
     if (!namespace) throw new Error("No namespace value provided.");
     if (!(await this.namespaceExists(client, namespace))) return null;
 
-    const weaviateClass = await client.schema
-      .classGetter()
-      .withClassName(camelCase(namespace))
-      .do();
-
+    const collection = client.collections.get(this.normalize(namespace));
     return {
-      ...weaviateClass,
-      vectorCount: await this.namespaceCount(namespace),
+      ...(await collection.config.get()),
+      vectorCount: await collection.length(),
     };
   }
 
-  async addVectors(client, vectors = []) {
-    const response = { success: true, errors: new Set([]) };
-    const results = await client.batch
-      .objectsBatcher()
-      .withObjects(...vectors)
-      .do();
+  async addVectors(client, namespace, vectors = []) {
+    const { hasErrors, errors } = await client.collections
+      .get(this.normalize(namespace))
+      .data.insertMany(
+        vectors.map(({ id, vector, properties }) => ({
+          id,
+          vectors: vector,
+          properties,
+        }))
+      );
 
-    results.forEach((res) => {
-      const { status, errors = [] } = res.result;
-      if (status === "SUCCESS" || errors.length === 0) return;
-      response.success = false;
-      response.errors.add(errors.error?.[0]?.message || null);
-    });
-
-    response.errors = [...response.errors];
-    return response;
+    return {
+      success: !hasErrors,
+      errors: [...new Set(Object.values(errors).map((e) => e.message))],
+    };
   }
 
   async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
-    const weaviateClasses = await this.allNamespaces(client);
-    return weaviateClasses.includes(camelCase(namespace));
+    return await client.collections.exists(this.normalize(namespace));
   }
 
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const weaviateClasses = await this.allNamespaces(client);
-    return weaviateClasses.includes(camelCase(namespace));
+    return await client.collections.exists(this.normalize(namespace));
   }
 
   async deleteVectorsInNamespace(client, namespace = null) {
-    await client.schema.classDeleter().withClassName(camelCase(namespace)).do();
+    await client.collections.delete(this.normalize(namespace));
     return true;
   }
 
@@ -237,23 +223,20 @@ class Weaviate extends VectorDatabase {
           const { client } = await this.connect();
           const weaviateClassExits = await this.hasNamespace(namespace);
           if (!weaviateClassExits) {
-            await client.schema
-              .classCreator()
-              .withClass({
-                class: camelCase(namespace),
-                description: `Class created by AnythingLLM named ${camelCase(
-                  namespace
-                )}`,
-                vectorizer: "none",
-              })
-              .do();
+            await client.collections.createFromSchema({
+              class: this.normalize(namespace),
+              description: `Class created by AnythingLLM named ${this.normalize(
+                namespace
+              )}`,
+              vectorizer: "none",
+            });
           }
 
           const { chunks } = cacheResult;
           const documentVectors = [];
-          const vectors = [];
 
           for (const chunk of chunks) {
+            const vectors = [];
             // Before sending to Weaviate and saving the records to our db
             // we need to assign the id of each chunk that is stored in the cached file.
             chunk.forEach((chunk) => {
@@ -264,7 +247,6 @@ class Weaviate extends VectorDatabase {
               documentVectors.push({ docId, vectorId: id });
               const vectorRecord = {
                 id,
-                class: camelCase(namespace),
                 vector: chunk.vector || chunk.values || [],
                 properties: { ...flattenedMetadata },
               };
@@ -272,7 +254,7 @@ class Weaviate extends VectorDatabase {
             });
 
             const { success: additionResult, errors = [] } =
-              await this.addVectors(client, vectors);
+              await this.addVectors(client, namespace, vectors);
             if (!additionResult) {
               this.logger("addVectors failed to insert", errors);
               throw new Error("Error embedding into Weaviate");
@@ -319,7 +301,6 @@ class Weaviate extends VectorDatabase {
         for (const [i, vector] of vectorValues.entries()) {
           const flattenedMetadata = this.flattenObjectForWeaviate(metadata);
           const vectorRecord = {
-            class: camelCase(namespace),
             id: uuidv4(),
             vector: vector,
             // [DO NOT REMOVE]
@@ -344,16 +325,13 @@ class Weaviate extends VectorDatabase {
       const { client } = await this.connect();
       const weaviateClassExits = await this.hasNamespace(namespace);
       if (!weaviateClassExits) {
-        await client.schema
-          .classCreator()
-          .withClass({
-            class: camelCase(namespace),
-            description: `Class created by AnythingLLM named ${camelCase(
-              namespace
-            )}`,
-            vectorizer: "none",
-          })
-          .do();
+        await client.collections.createFromSchema({
+          class: this.normalize(namespace),
+          description: `Class created by AnythingLLM named ${this.normalize(
+            namespace
+          )}`,
+          vectorizer: "none",
+        });
       }
 
       if (vectors.length > 0) {
@@ -361,13 +339,13 @@ class Weaviate extends VectorDatabase {
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         this.logger("Inserting vectorized chunks into Weaviate collection.");
-        const { success: additionResult, errors = [] } = await this.addVectors(
-          client,
-          vectors
-        );
-        if (!additionResult) {
-          this.logger("addVectors failed to insert", errors);
-          throw new Error("Error embedding into Weaviate");
+        for (const chunk of chunks) {
+          const { success: additionResult, errors = [] } =
+            await this.addVectors(client, namespace, chunk);
+          if (!additionResult) {
+            this.logger("addVectors failed to insert", errors);
+            throw new Error("Error embedding into Weaviate");
+          }
         }
         await storeVectorResult(chunks, fullFilePath);
       }
@@ -388,12 +366,11 @@ class Weaviate extends VectorDatabase {
     const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
-    for (const doc of knownDocuments) {
-      await client.data
-        .deleter()
-        .withClassName(camelCase(namespace))
-        .withId(doc.vectorId)
-        .do();
+    const collection = client.collections.get(this.normalize(namespace));
+    for (const chunk of toChunks(knownDocuments, 500)) {
+      await collection.data.deleteMany(
+        collection.filter.byId().containsAny(chunk.map((doc) => doc.vectorId))
+      );
     }
 
     const indexes = knownDocuments.map((doc) => doc.id);
@@ -457,7 +434,7 @@ class Weaviate extends VectorDatabase {
     const details = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
     return {
-      message: `Namespace ${camelCase(namespace)} was deleted along with ${
+      message: `Namespace ${this.normalize(namespace)} was deleted along with ${
         details?.vectorCount
       } vectors.`,
     };
@@ -465,10 +442,7 @@ class Weaviate extends VectorDatabase {
 
   async reset() {
     const { client } = await this.connect();
-    const weaviateClasses = await this.allNamespaces(client);
-    for (const weaviateClass of weaviateClasses) {
-      await client.schema.classDeleter().withClassName(weaviateClass).do();
-    }
+    await client.collections.deleteAll();
     return { reset: true };
   }
 

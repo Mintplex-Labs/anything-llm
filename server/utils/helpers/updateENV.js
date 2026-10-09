@@ -398,6 +398,10 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
   },
+  WeaviateGrpcPort: {
+    envKey: "WEAVIATE_GRPC_PORT",
+    checks: [nonZero],
+  },
 
   // QDrant Options
   QdrantEndpoint: {
