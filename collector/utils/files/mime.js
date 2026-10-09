@@ -8,6 +8,17 @@ class MimeDetector {
     "application/vnd.microsoft.portable-executable",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX are binaries and need to be handled explicitly.
     "application/x-msdownload",
+    // Binary formats with no converter that must not be assumed as text.
+    "image/gif",
+    "image/bmp",
+    "image/tiff",
+    "image/heic",
+    "image/heif",
+    "application/msword",
+    "application/vnd.ms-excel",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.rar",
+    "application/x-7z-compressed",
   ];
 
   constructor() {
