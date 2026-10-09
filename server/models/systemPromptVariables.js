@@ -310,7 +310,10 @@ const SystemPromptVariables = {
             }
           } else {
             // If the variable is not a function, replace the match with the variable value
-            result = result.replace(match, () => `[${variableTypeDisplay} ${prop}]`);
+            result = result.replace(
+              match,
+              () => `[${variableTypeDisplay} ${prop}]`
+            );
           }
           continue;
         }
