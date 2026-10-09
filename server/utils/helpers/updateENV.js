@@ -1537,6 +1537,7 @@ async function logChangesToEventLog(newValues = {}, userId = null) {
 function dumpENV() {
   const fs = require("fs");
   const path = require("path");
+  const { serializeEnvValue } = require("./envValueCodec");
 
   const frozenEnvs = {};
   const protectedKeys = [
@@ -1644,16 +1645,9 @@ function dumpENV() {
     "VERTEX_AI_LLM_MAX_TOKENS",
   ];
 
-  // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
-  function sanitizeValue(value) {
-    const offendingChars =
-      /[\n\r\t\v\f\u0085\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000"'`#]/;
-    const firstOffendingCharIndex = value.search(offendingChars);
-    if (firstOffendingCharIndex === -1) return value;
-
-    return value.substring(0, firstOffendingCharIndex);
-  }
-
+  // Simple sanitization of each value to prevent ENV injection via newline or
+  // quote escaping. Line breaks survive for the keys that are allowed to hold
+  // them and are stored as escaped characters - see envValueCodec.js.
   for (const key of protectedKeys) {
     const envValue = process.env?.[key] || null;
     if (!envValue) continue;
@@ -1662,7 +1656,7 @@ function dumpENV() {
 
   var envResult = `# Auto-dump ENV from system call on ${new Date().toTimeString()}\n`;
   envResult += Object.entries(frozenEnvs)
-    .map(([key, value]) => `${key}='${sanitizeValue(value)}'`)
+    .map(([key, value]) => `${key}=${serializeEnvValue(key, value)}`)
     .join("\n");
 
   const envPath = path.join(__dirname, "../../.env");
