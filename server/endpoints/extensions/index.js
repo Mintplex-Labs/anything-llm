@@ -86,6 +86,28 @@ function extensionEndpoints(app) {
   );
 
   app.post(
+    "/ext/twelvelabs/video",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/twelvelabs-video",
+            method: "POST",
+            body: request.body,
+          });
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "twelvelabs_video",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/ext/confluence",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
