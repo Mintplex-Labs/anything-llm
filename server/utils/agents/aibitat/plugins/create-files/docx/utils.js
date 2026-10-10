@@ -527,12 +527,26 @@ async function processTable(tableElement, docx, log, theme = null) {
  * @param {boolean} isOrdered - Whether the list is ordered
  * @param {number} level - Nesting level
  * @param {Function} log - Logging function
+ * @param {number} instance - Numbering instance shared by this list and its nested lists.
+ * Word continues numbering across every paragraph that uses the same instance, so each
+ * top-level list needs its own for ordered lists to restart at 1.
  * @returns {Promise<Array>} Array of docx Paragraphs
  */
-async function processList(listElement, docx, isOrdered, level = 0, log) {
+async function processList(
+  listElement,
+  docx,
+  isOrdered,
+  level = 0,
+  log,
+  instance = 0
+) {
   const { Paragraph } = docx;
   const paragraphs = [];
-  const items = listElement.querySelectorAll(":scope > li");
+  // Only the list's own items: jsdom's `:scope > li` also matches the items of
+  // nested lists, which then get rendered a second time at this level.
+  const items = Array.from(listElement.children).filter(
+    (child) => child.tagName.toLowerCase() === "li"
+  );
 
   for (const li of items) {
     const inlineChildren = [];
@@ -565,7 +579,7 @@ async function processList(listElement, docx, isOrdered, level = 0, log) {
           children: inlineChildren,
           bullet: isOrdered ? undefined : { level },
           numbering: isOrdered
-            ? { reference: "default-numbering", level }
+            ? { reference: "default-numbering", level, instance }
             : undefined,
         })
       );
@@ -578,7 +592,8 @@ async function processList(listElement, docx, isOrdered, level = 0, log) {
           docx,
           nested.ordered,
           level + 1,
-          log
+          log,
+          instance
         ))
       );
     }
@@ -612,6 +627,11 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
     h5: { level: HeadingLevel.HEADING_5, size: 24 },
     h6: { level: HeadingLevel.HEADING_6, size: 22 },
   };
+
+  // Every list in the document shares one numbering definition, so without a
+  // numbering instance of its own each ordered list continues counting from the
+  // previous one instead of restarting at 1.
+  let listInstance = 0;
 
   for (const child of body.children) {
     const tagName = child.tagName.toLowerCase();
@@ -657,10 +677,18 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
             })
           );
         }
-      } else if (tagName === "ul") {
-        elements.push(...(await processList(child, docx, false, 0, log)));
-      } else if (tagName === "ol") {
-        elements.push(...(await processList(child, docx, true, 0, log)));
+      } else if (tagName === "ul" || tagName === "ol") {
+        listInstance++;
+        elements.push(
+          ...(await processList(
+            child,
+            docx,
+            tagName === "ol",
+            0,
+            log,
+            listInstance
+          ))
+        );
       } else if (tagName === "table") {
         elements.push(await processTable(child, docx, log, colors));
         elements.push(new Paragraph({ children: [] }));
