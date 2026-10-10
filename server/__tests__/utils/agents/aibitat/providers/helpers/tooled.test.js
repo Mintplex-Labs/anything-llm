@@ -319,3 +319,276 @@ describe("required parameters of bundled plugins", () => {
     ]);
   });
 });
+
+describe("tooledStream malformed tool call arguments", () => {
+  const messages = [{ role: "user", content: "hi" }];
+
+  function streamClient(deltas) {
+    const create = jest.fn(async () =>
+      (async function* () {
+        for (const delta of deltas) {
+          yield { choices: [{ delta }] };
+        }
+      })()
+    );
+    return { client: { chat: { completions: { create } } }, create };
+  }
+
+  it("returns retryWithError when the streamed tool call arguments fail to parse as JSON", async () => {
+    const usage = { prompt_tokens: 5, completion_tokens: 3 };
+    const create = jest.fn(async () =>
+      (async function* () {
+        yield {
+          usage,
+          choices: [
+            {
+              delta: {
+                tool_calls: [
+                  {
+                    index: 0,
+                    id: "call_1",
+                    function: {
+                      name: "lookup",
+                      arguments: "I think I should call the tool",
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        };
+      })()
+    );
+    const client = { chat: { completions: { create } } };
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toBeNull();
+    expect(result.textResponse).toBeNull();
+    expect(result.usage).toEqual(usage);
+    expect(result.retryWithError).toMatchObject({
+      role: "function",
+      name: "lookup",
+    });
+    expect(result.retryWithError.content).toContain(
+      "Failed to parse tool call arguments as JSON"
+    );
+    expect(result.retryWithError.originalFunctionCall).toMatchObject({
+      id: "call_1",
+      name: "lookup",
+      arguments: "I think I should call the tool",
+    });
+  });
+
+  it("still returns functionCall when the streamed tool call arguments parse as JSON", async () => {
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            function: { name: "lookup", arguments: '{"query":"lat"}' },
+          },
+        ],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "lookup",
+      arguments: { query: "lat" },
+    });
+    expect(result.retryWithError).toBeUndefined();
+  });
+
+  it("treats a tool call with no arguments field as a zero-arg call with {} instead of a retry", async () => {
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          { index: 0, id: "call_1", function: { name: "list-database" } },
+        ],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "list-database",
+      arguments: {},
+    });
+    expect(result.retryWithError).toBeUndefined();
+  });
+
+  it("treats whitespace-only streamed arguments as a zero-arg call with {}", async () => {
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            function: { name: "gcal-list-calendars", arguments: "   " },
+          },
+        ],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "gcal-list-calendars",
+      arguments: {},
+    });
+    expect(result.retryWithError).toBeUndefined();
+  });
+
+  it("returns retryWithError when the streamed arguments are the JSON literal null", async () => {
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            function: { name: "lookup", arguments: "null" },
+          },
+        ],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toBeNull();
+    expect(result.retryWithError).toMatchObject({
+      role: "function",
+      name: "lookup",
+    });
+  });
+
+  it("returns retryWithError when arguments split across multiple chunks end up unparseable", async () => {
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            function: { name: "lookup", arguments: "I " },
+          },
+        ],
+      },
+      {
+        tool_calls: [{ index: 0, function: { arguments: "think so" } }],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toBeNull();
+    expect(result.retryWithError.content).toContain(
+      "Failed to parse tool call arguments as JSON"
+    );
+    expect(result.retryWithError.content).toContain("I think so");
+    expect(result.retryWithError.originalFunctionCall).toMatchObject({
+      id: "call_1",
+      name: "lookup",
+      arguments: "I think so",
+    });
+  });
+
+  it("carries extra_content and the message uuid into retryWithError", async () => {
+    const extraContent = { google: { thought_signature: "sig" } };
+    const { client } = streamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            function: { name: "lookup", arguments: "I think so" },
+            extra_content: extraContent,
+          },
+        ],
+      },
+    ]);
+
+    const result = await tooledStream(client, "m", messages, [], null, {
+      provider: {},
+    });
+
+    expect(typeof result.uuid).toBe("string");
+    expect(result.uuid.length).toBeGreaterThan(0);
+    expect(result.retryWithError.originalFunctionCall.extra_content).toEqual(
+      extraContent
+    );
+  });
+
+  it("tooledComplete treats a tool call with no arguments field as a zero-arg call with {}", async () => {
+    const create = jest.fn(async () => ({
+      choices: [
+        {
+          message: {
+            role: "assistant",
+            tool_calls: [{ id: "call_1", function: { name: "list-database" } }],
+          },
+        },
+      ],
+      usage: null,
+    }));
+    const client = { chat: { completions: { create } } };
+
+    const result = await tooledComplete(client, "m", messages, [], () => 0, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "list-database",
+      arguments: {},
+    });
+    expect(result.retryWithError).toBeUndefined();
+  });
+
+  it("tooledComplete returns retryWithError when the provider sends explicit null arguments", async () => {
+    const create = jest.fn(async () => ({
+      choices: [
+        {
+          message: {
+            role: "assistant",
+            tool_calls: [
+              {
+                id: "call_1",
+                function: { name: "list-database", arguments: null },
+              },
+            ],
+          },
+        },
+      ],
+      usage: null,
+    }));
+    const client = { chat: { completions: { create } } };
+
+    const result = await tooledComplete(client, "m", messages, [], () => 0, {
+      provider: {},
+    });
+
+    expect(result.functionCall).toBeUndefined();
+    expect(result.retryWithError).toMatchObject({
+      role: "function",
+      name: "list-database",
+    });
+    expect(result.retryWithError.content).toContain("null");
+  });
+});

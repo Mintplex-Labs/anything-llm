@@ -208,6 +208,37 @@ function temperatureParam(temperature) {
 }
 
 /**
+ * The maximum number of times a provider will re-call the LLM when the model
+ * keeps returning tool call arguments that fail to parse as JSON. The agent
+ * loop's own maxToolCalls limit only bounds successful tool executions, not
+ * these provider-level retries, so without this cap a stubbed/broken model
+ * that repeats the same bad arguments would retry indefinitely.
+ */
+const MAX_PARSE_RETRIES = 2;
+
+/**
+ * Normalize tool call arguments before JSON parsing. Providers that send a
+ * tool call without an `arguments` field (zero-arg tools) arrive as an empty,
+ * whitespace-only, or missing (undefined) string, which is a valid
+ * zero-argument call resolving to `{}` - not a parse failure worth a retry.
+ * This mirrors the streaming accumulation, which initializes absent arguments
+ * to "". An explicit `null` is left untouched and treated as a parse failure:
+ * OpenAI-compatible `arguments` are always JSON strings, so a provider that
+ * serializes them as null is returning an unexpected value that the model
+ * should get the chance to correct.
+ * @param {unknown} rawArguments
+ * @returns {unknown}
+ */
+function normalizeToolCallArguments(rawArguments) {
+  if (
+    rawArguments === undefined ||
+    (typeof rawArguments === "string" && rawArguments.trim() === "")
+  )
+    return "{}";
+  return rawArguments;
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -369,10 +400,37 @@ async function tooledStream(
   const toolCallIndices = Object.keys(toolCallsByIndex).map(Number);
   if (toolCallIndices.length > 0) {
     const firstToolCall = toolCallsByIndex[Math.min(...toolCallIndices)];
+    const functionArgs = safeJsonParse(
+      normalizeToolCallArguments(firstToolCall.arguments),
+      null
+    );
+
+    if (functionArgs === null) {
+      return {
+        textResponse: null,
+        functionCall: null,
+        retryWithError: {
+          role: "function",
+          name: firstToolCall.name,
+          content: `Failed to parse tool call arguments as JSON. Raw arguments: ${firstToolCall.arguments}`,
+          originalFunctionCall: {
+            id: firstToolCall.id,
+            name: firstToolCall.name,
+            arguments: firstToolCall.arguments,
+            ...(firstToolCall.extra_content
+              ? { extra_content: firstToolCall.extra_content }
+              : {}),
+          },
+        },
+        uuid: msgUUID,
+        usage,
+      };
+    }
+
     result.functionCall = {
       id: firstToolCall.id,
       name: firstToolCall.name,
-      arguments: safeJsonParse(firstToolCall.arguments, {}),
+      arguments: functionArgs,
       ...(firstToolCall.extra_content
         ? { extra_content: firstToolCall.extra_content }
         : {}),
@@ -451,7 +509,10 @@ async function tooledComplete(
 
   if (completion.tool_calls && completion.tool_calls.length > 0) {
     const toolCall = completion.tool_calls[0];
-    const functionArgs = safeJsonParse(toolCall.function.arguments, null);
+    const functionArgs = safeJsonParse(
+      normalizeToolCallArguments(toolCall.function.arguments),
+      null
+    );
 
     if (functionArgs === null) {
       return {
@@ -510,4 +571,6 @@ module.exports = {
   temperatureParam,
   serviceTierParam,
   maxTokensParam,
+  normalizeToolCallArguments,
+  MAX_PARSE_RETRIES,
 };
