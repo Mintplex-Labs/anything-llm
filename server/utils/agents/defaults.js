@@ -1,5 +1,6 @@
 const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
+const { Workspace } = require("../../models/workspace");
 const { safeJsonParse } = require("../http");
 const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
@@ -83,6 +84,7 @@ const WORKSPACE_AGENT = {
       }),
       clarifyingQuestionsSkillIfEnabled(),
     ]);
+    const workspaceSkills = Workspace.parseAgentSkills(workspace?.agentSkills);
 
     // If clarifying questions tools are enabled, add a note to the role that the user must use the request-user-input tool to ask questions.
     if (!!clarifyingQuestionsSkills?.length)
@@ -92,10 +94,10 @@ const WORKSPACE_AGENT = {
     return {
       role,
       functions: [
-        ...(await agentSkillsFromSystemSettings()),
+        ...(await agentSkillsFromSystemSettings(workspaceSkills)),
         ...clarifyingQuestionsSkills,
-        ...ImportedPlugin.activeImportedPlugins(),
-        ...AgentFlows.activeFlowPlugins(),
+        ...ImportedPlugin.activeImportedPlugins(workspaceSkills),
+        ...AgentFlows.activeFlowPlugins(workspaceSkills),
         ...(await new MCPCompatibilityLayer().activeMCPServers()),
       ],
     };
@@ -126,11 +128,14 @@ async function clarifyingQuestionsSkillIfEnabled() {
 /**
  * Fetches and preloads the names/identifiers for plugins that will be dynamically
  * loaded later
+ * @param {import("../../models/workspace").WorkspaceAgentSkills|null} [workspaceSkills] - a workspace's own toggles, null follows the system settings
  * @returns {Promise<string[]>}
  */
-async function agentSkillsFromSystemSettings() {
+async function agentSkillsFromSystemSettings(workspaceSkills = null) {
   const systemFunctions = [];
   const isMultiUser = await SystemSettings.isMultiUserMode();
+  const isEnabled = (skill, systemEnabled) =>
+    workspaceSkills ? workspaceSkills.enabled.includes(skill) : systemEnabled;
 
   // Load non-imported built-in skills that are configurable, but are default enabled.
   const _disabledDefaultSkills = safeJsonParse(
@@ -141,7 +146,7 @@ async function agentSkillsFromSystemSettings() {
     []
   );
   DEFAULT_SKILLS.forEach((skill) => {
-    if (!_disabledDefaultSkills.includes(skill))
+    if (isEnabled(skill, !_disabledDefaultSkills.includes(skill)))
       systemFunctions.push(AgentPlugins[skill].name);
   });
 
@@ -153,11 +158,14 @@ async function agentSkillsFromSystemSettings() {
     ),
     []
   );
+  const enabledSkills = (workspaceSkills?.enabled ?? _setting).filter(
+    (skill) => !DEFAULT_SKILLS.includes(skill)
+  );
 
   // Pre-load disabled sub-skills and availability for configured skills
   const skillFilterState = {};
   for (const skillName of Object.keys(SKILL_FILTER_CONFIG)) {
-    if (!_setting.includes(skillName)) continue;
+    if (!enabledSkills.includes(skillName)) continue;
     const config = SKILL_FILTER_CONFIG[skillName];
     skillFilterState[skillName] = {
       available: await config.getAvailability(),
@@ -171,7 +179,7 @@ async function agentSkillsFromSystemSettings() {
     };
   }
 
-  for (const skillName of _setting) {
+  for (const skillName of enabledSkills) {
     if (!AgentPlugins.hasOwnProperty(skillName)) continue;
     if (isMultiUser && SINGLE_USER_ONLY_SKILLS.has(skillName)) continue;
 
@@ -183,7 +191,10 @@ async function agentSkillsFromSystemSettings() {
         const filterState = skillFilterState[skillName];
         if (filterState) {
           if (!filterState.available) continue;
-          if (filterState.disabledSubSkills.includes(subPlugin.name)) continue;
+          const systemEnabled = !filterState.disabledSubSkills.includes(
+            subPlugin.name
+          );
+          if (!isEnabled(subPlugin.name, systemEnabled)) continue;
         }
 
         systemFunctions.push(
@@ -197,6 +208,51 @@ async function agentSkillsFromSystemSettings() {
     systemFunctions.push(AgentPlugins[skillName].name);
   }
   return systemFunctions;
+}
+
+/**
+ * Copy of the system agent skill toggles in the shape a workspace stores them.
+ * Reads the toggle settings directly rather than `agentSkillsFromSystemSettings`
+ * so skills that are only unavailable right now are kept.
+ * @returns {Promise<import("../../models/workspace").WorkspaceAgentSkills>}
+ */
+async function systemAgentSkills() {
+  const setting = async (label) =>
+    safeJsonParse(await SystemSettings.getValueOrFallback({ label }, "[]"), []);
+  const [disabledDefaultSkills, enabledSkills, ...disabledSubSkills] =
+    await Promise.all([
+      setting("disabled_agent_skills"),
+      setting("default_agent_skills"),
+      ...Object.values(SKILL_FILTER_CONFIG).map((config) =>
+        setting(config.disabledSettingKey)
+      ),
+    ]);
+
+  const subSkills = Object.keys(SKILL_FILTER_CONFIG).flatMap((skill, i) =>
+    AgentPlugins[skill].plugin
+      .map((subPlugin) => subPlugin.name)
+      .filter((name) => !disabledSubSkills[i].includes(name))
+  );
+
+  return {
+    enabled: [
+      ...DEFAULT_SKILLS.filter(
+        (skill) => !disabledDefaultSkills.includes(skill)
+      ),
+      ...enabledSkills,
+      ...subSkills,
+      ...ImportedPlugin.activeImportedPlugins().map((name) =>
+        name.replace(/^@@/, "")
+      ),
+      ...AgentFlows.activeFlowPlugins(),
+    ],
+    mcpSuppressedTools: Object.fromEntries(
+      new MCPCompatibilityLayer().mcpServerConfigs.map(({ name, server }) => [
+        name,
+        server?.anythingllm?.suppressedTools || [],
+      ])
+    ),
+  };
 }
 
 /**
@@ -267,5 +323,6 @@ module.exports = {
   USER_AGENT,
   WORKSPACE_AGENT,
   agentSkillsFromSystemSettings,
+  systemAgentSkills,
   resolveAgentSkill,
 };

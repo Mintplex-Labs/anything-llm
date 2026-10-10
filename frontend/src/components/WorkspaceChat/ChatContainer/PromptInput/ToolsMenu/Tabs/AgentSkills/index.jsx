@@ -12,7 +12,12 @@ import useAgentSkillsState from "./useAgentSkillsState";
 import useSkillSections from "./useSkillSections";
 import SkillRow from "./SkillRow";
 import SkillSection from "./SkillSection";
-import { Wrench, MagnifyingGlass, CircleNotch } from "@phosphor-icons/react";
+import {
+  Wrench,
+  MagnifyingGlass,
+  CircleNotch,
+  ArrowCounterClockwise,
+} from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
 const MIN_ITEMS_TO_SHOW_SEARCH = 10;
@@ -39,7 +44,12 @@ export default function AgentSkillsTab({
     mcpServers,
     loading,
     mcpLoading,
+    hasOwnSkills,
+    resetToSystemDefaults,
     isSkillEnabled,
+    isImportedSkillEnabled,
+    isFlowEnabled,
+    isMcpToolEnabled,
     toggleSkill,
     toggleImportedSkill,
     toggleFlow,
@@ -48,7 +58,7 @@ export default function AgentSkillsTab({
     isSubSkillEnabled,
     toggleSubSkill,
     disabledSubSkills,
-  } = useAgentSkillsState(defaultSkills);
+  } = useAgentSkillsState(defaultSkills, workspace);
 
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
@@ -76,6 +86,9 @@ export default function AgentSkillsTab({
     toggleSkill,
     isSubSkillEnabled,
     toggleSubSkill,
+    isImportedSkillEnabled,
+    isFlowEnabled,
+    isMcpToolEnabled,
     toggleImportedSkill,
     toggleFlow,
     toggleMcpTool,
@@ -258,6 +271,21 @@ export default function AgentSkillsTab({
         <p className="text-xs text-zinc-500 light:text-slate-400 text-center py-2">
           {t("chat_window.no_tools_found")}
         </p>
+      )}
+      {hasOwnSkills && (
+        <button
+          type="button"
+          onClick={resetToSystemDefaults}
+          className="border-none flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary"
+        >
+          <ArrowCounterClockwise
+            size={12}
+            className="text-theme-text-primary"
+          />
+          <span className="text-xs text-theme-text-primary">
+            {t("chat_window.reset_agent_skills")}
+          </span>
+        </button>
       )}
       <Link to={paths.settings.agentSkills()}>
         <button className="border-none flex items-center gap-1.5 px-2 h-6 rounded cursor-pointer hover:bg-zinc-700/50 light:hover:bg-slate-100 text-theme-text-primary">

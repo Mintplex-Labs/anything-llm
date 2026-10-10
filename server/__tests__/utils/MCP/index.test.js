@@ -192,3 +192,68 @@ describe("MCPCompatibilityLayer.servers", () => {
     expect(alive.tools.map((t) => t.name)).toEqual(["echo"]);
   });
 });
+
+describe("MCPCompatibilityLayer.convertServerToolsToPlugins workspace filter", () => {
+  const { Workspace } = require("../../../models/workspace");
+  const aibitat = { handlerProps: { invocation: { workspace_id: 1 } } };
+  let storageDir;
+  let mcpLayer;
+
+  beforeEach(() => {
+    storageDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-compat-"));
+    process.env.STORAGE_DIR = storageDir;
+    MCPCompatibilityLayer._instance = undefined;
+    MCPHypervisor._instance = undefined;
+    jest.spyOn(console, "log").mockImplementation(() => {});
+
+    mcpLayer = new MCPCompatibilityLayer();
+    const listTools = () =>
+      Promise.resolve({
+        tools: [
+          { ...GOOD_TOOL, name: "a" },
+          { ...GOOD_TOOL, name: "b" },
+        ],
+      });
+    mcpLayer.mcps = { srv: { listTools }, constructor: { listTools } };
+    jest.spyOn(mcpLayer, "getSuppressedTools").mockReturnValue(["b"]);
+  });
+
+  afterEach(() => {
+    mcpLayer.mcps = {};
+    MCPCompatibilityLayer._instance = undefined;
+    MCPHypervisor._instance = undefined;
+    delete process.env.STORAGE_DIR;
+    fs.rmSync(storageDir, { recursive: true, force: true });
+    jest.restoreAllMocks();
+  });
+
+  const toolNames = (plugins) => plugins?.map((p) => p.name) ?? null;
+
+  it("uses the system suppressed tools when the workspace has no copy", async () => {
+    jest.spyOn(Workspace, "agentSkills").mockResolvedValue(null);
+    const plugins = await mcpLayer.convertServerToolsToPlugins("srv", aibitat);
+    expect(toolNames(plugins)).toEqual(["srv-a"]);
+  });
+
+  it("uses the workspace's suppressed tools in both directions", async () => {
+    jest.spyOn(Workspace, "agentSkills").mockResolvedValue({
+      enabled: [],
+      mcpSuppressedTools: { srv: ["a"] },
+    });
+    const plugins = await mcpLayer.convertServerToolsToPlugins("srv", aibitat);
+    expect(toolNames(plugins)).toEqual(["srv-b"]);
+  });
+
+  it("skips servers the workspace copy doesn't know", async () => {
+    jest.spyOn(Workspace, "agentSkills").mockResolvedValue({
+      enabled: [],
+      mcpSuppressedTools: {},
+    });
+    expect(
+      await mcpLayer.convertServerToolsToPlugins("srv", aibitat)
+    ).toBeNull();
+    expect(
+      await mcpLayer.convertServerToolsToPlugins("constructor", aibitat)
+    ).toBeNull();
+  });
+});
