@@ -184,7 +184,10 @@ async function anthropicTooledStream(
         messages: chats,
         stream: true,
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: formatAnthropicTools(functions) }
+          ? {
+              tools: formatAnthropicTools(functions),
+              tool_choice: { type: "auto", disable_parallel_tool_use: true },
+            }
           : {}),
       },
       extraCreateOptions
@@ -324,7 +327,10 @@ async function anthropicTooledComplete(
         messages: chats,
         stream: false,
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: formatAnthropicTools(functions) }
+          ? {
+              tools: formatAnthropicTools(functions),
+              tool_choice: { type: "auto", disable_parallel_tool_use: true },
+            }
           : {}),
       },
       extraCreateOptions
