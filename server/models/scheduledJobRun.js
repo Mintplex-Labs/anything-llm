@@ -219,6 +219,26 @@ const ScheduledJobRun = {
     }
   },
 
+  /**
+   * Cancel waiting runs when a job is resynced. The queued predicate races
+   * atomically with markRunning; workers that already started are stopped by
+   * BackgroundService. Propagate errors so a failed cancellation is reported.
+   * @param {number} jobId - scheduled_jobs.id
+   * @returns {Promise<number>} The number of cancelled runs.
+   */
+  cancelQueuedForJob: async function (jobId) {
+    const result = await prisma.scheduled_job_runs.updateMany({
+      where: { jobId: Number(jobId), status: this.statuses.queued },
+      data: {
+        status: this.statuses.failed,
+        error: "Job killed by user",
+        completedAt: new Date(),
+        readAt: new Date(),
+      },
+    });
+    return result.count;
+  },
+
   get: async function (clause = {}, include = {}) {
     try {
       const run = await prisma.scheduled_job_runs.findFirst({
