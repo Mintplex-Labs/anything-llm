@@ -527,9 +527,7 @@ async function processTable(tableElement, docx, log, theme = null) {
  * @param {boolean} isOrdered - Whether the list is ordered
  * @param {number} level - Nesting level
  * @param {Function} log - Logging function
- * @param {number} instance - Numbering instance shared by this list and its nested lists.
- * Word continues numbering across every paragraph that uses the same instance, so each
- * top-level list needs its own for ordered lists to restart at 1.
+ * @param {number} instance - Numbering instance shared by this list and its nested lists
  * @returns {Promise<Array>} Array of docx Paragraphs
  */
 async function processList(
@@ -542,8 +540,7 @@ async function processList(
 ) {
   const { Paragraph } = docx;
   const paragraphs = [];
-  // Only the list's own items: jsdom's `:scope > li` also matches the items of
-  // nested lists, which then get rendered a second time at this level.
+  // Direct <li> children only; jsdom's `:scope > li` also matches nested items.
   const items = Array.from(listElement.children).filter(
     (child) => child.tagName.toLowerCase() === "li"
   );
@@ -628,9 +625,7 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
     h6: { level: HeadingLevel.HEADING_6, size: 22 },
   };
 
-  // Every list in the document shares one numbering definition, so without a
-  // numbering instance of its own each ordered list continues counting from the
-  // previous one instead of restarting at 1.
+  // Each top-level list gets its own numbering instance so ordered lists restart at 1.
   let listInstance = 0;
 
   for (const child of body.children) {
