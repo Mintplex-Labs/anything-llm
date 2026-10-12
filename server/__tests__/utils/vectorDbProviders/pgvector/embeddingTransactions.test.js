@@ -97,7 +97,7 @@ describe.each([false, true])("PGVector embedding (cached: %s)", (cached) => {
     ["INSERT", true],
     ["COMMIT", true],
   ])(
-    "returns the %s error even when rollback fails: %s",
+    "returns the %s error (rollback fails: %s)",
     async (statement, rollbackFails) => {
       const originalError = new Error(`${statement} rejected by PostgreSQL`);
       connection.query.mockImplementation(async (sql) => {
