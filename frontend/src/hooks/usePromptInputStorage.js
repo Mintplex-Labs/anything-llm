@@ -40,6 +40,26 @@ export function clearPromptInputDraft(storageKey) {
 }
 
 /**
+ * Moves an unsent draft to another thread/workspace key. Used when a new
+ * thread is created mid-draft (eg: attaching a file from the Home page or a
+ * workspace's default chat) so the PromptInput hydrating under the new key
+ * keeps the text the user already typed.
+ * @param {Object} params
+ * @param {string|null} params.from - storage key the draft currently lives under, if any
+ * @param {string} params.to - storage key to move the draft to
+ * @param {string} params.value - current prompt input text
+ */
+export function movePromptInputDraft({ from = null, to, value = "" }) {
+  try {
+    if (from) clearPromptInputDraft(from);
+    if (!to || !value) return;
+    const map = readPromptInputMap();
+    map[to] = value;
+    writePromptInputMap(map);
+  } catch {}
+}
+
+/**
  * Synchronizes prompt input value with localStorage, scoped to the current thread.
  *
  * Persists unsent prompt text across page refreshes and navigation. Each thread/workspace maintains
