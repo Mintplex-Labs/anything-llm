@@ -49,8 +49,11 @@ class PaperlessNgxLoader {
 
           documents.push(...validResults);
 
-          if (data.next === nextUrl) break;
-          nextUrl = data.next || null;
+          if (!data.next) break;
+          const { search } = new URL(data.next, nextUrl);
+          const next = `${this.baseUrl}/api/documents/${search}`;
+          if (next === nextUrl) break;
+          nextUrl = next;
           page++;
         } catch (error) {
           console.error(
