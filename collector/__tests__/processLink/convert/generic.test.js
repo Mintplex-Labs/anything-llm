@@ -278,13 +278,15 @@ describe("scrapeGenericUrl", () => {
       const expected = { success: true, content: "pdf text" };
       processAsFile.mockResolvedValue(expected);
 
-      const result = await scrape("text");
+      const options = { whisperProvider: "openai", ocr: { langList: "deu" } };
+      const result = await scrape("text", { options });
 
       expect(result).toBe(expected);
       expect(processAsFile).toHaveBeenCalledWith({
         uri: LINK,
         saveAsDocument: false,
         metadata: {},
+        options,
       });
       expect(PuppeteerWebBaseLoader).not.toHaveBeenCalled();
     });
