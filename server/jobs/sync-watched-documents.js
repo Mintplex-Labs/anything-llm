@@ -135,7 +135,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
       );
       // Remove document_vectors rows on delete
       await DocumentVectors.delete({ docId: document.docId });
-      await vectorDatabase.addDocumentToNamespace(
+      const embedResult = await vectorDatabase.addDocumentToNamespace(
         workspace.slug,
         {
           ...currentDocumentData,
@@ -146,19 +146,28 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         document.docpath,
         true
       );
-      updateSourceDocument(document.docpath, {
-        ...currentDocumentData,
-        pageContent: newContent,
-        docId: document.docId,
-        published: publishedAt,
-        // Todo: Update word count and token_estimate?
-      });
-      log(
-        `Workspace "${workspace.name}" vectors of ${source} updated. Document and vector cache updated.`
-      );
+      if (embedResult?.vectorized === false) {
+        // The old vectors are already gone, so leave the source document as it was. The new
+        // content is then still seen as a change and re-embedded on the next worker interval.
+        log(
+          `Failed to embed the new content of ${source} into workspace "${workspace.name}": ${embedResult.error}. Skipping, but will retry next worker interval.`
+        );
+        await DocumentSyncQueue.saveRun(
+          queue.id,
+          DocumentSyncRun.statuses.failed,
+          {
+            filename: document.filename,
+            workspacesModified: [],
+            reason: embedResult.error || "Failed to embed the new content.",
+          }
+        );
+        continue;
+      }
+      log(`Workspace "${workspace.name}" vectors of ${source} updated.`);
 
       // Now we can bloom the results to all matching documents in all other workspaces
       const workspacesModified = [workspace.slug];
+      const failedWorkspaces = [];
       const moreReferences = await Document.where(
         {
           id: { not: document.id },
@@ -182,7 +191,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             additionalDocumentRef.docId
           );
           await DocumentVectors.delete({ docId: additionalDocumentRef.docId });
-          await vectorDatabase.addDocumentToNamespace(
+          const additionalResult = await vectorDatabase.addDocumentToNamespace(
             additionalWorkspace.slug,
             {
               ...currentDocumentData,
@@ -192,11 +201,41 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             },
             additionalDocumentRef.docpath
           );
+          if (additionalResult?.vectorized === false) {
+            failedWorkspaces.push(additionalWorkspace.slug);
+            log(
+              `Failed to embed the new content of ${source} into workspace "${additionalWorkspace.name}": ${additionalResult.error}.`
+            );
+            continue;
+          }
           log(
             `Workspace "${additionalWorkspace.name}" vectors for ${source} was also updated with the new content from cache.`
           );
         }
       }
+
+      if (failedWorkspaces.length !== 0) {
+        await DocumentSyncQueue.saveRun(
+          queue.id,
+          DocumentSyncRun.statuses.failed,
+          {
+            filename: document.filename,
+            workspacesModified: workspacesModified.filter(
+              (slug) => !failedWorkspaces.includes(slug)
+            ),
+            reason: `Failed to embed the new content into: ${failedWorkspaces.join(", ")}`,
+          }
+        );
+        continue;
+      }
+
+      updateSourceDocument(document.docpath, {
+        ...currentDocumentData,
+        pageContent: newContent,
+        docId: document.docId,
+        published: publishedAt,
+        // Todo: Update word count and token_estimate?
+      });
 
       const nextRefresh = DocumentSyncQueue.calcNextSync(queue);
       log(

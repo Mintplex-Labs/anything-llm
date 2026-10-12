@@ -6,12 +6,14 @@ const OLD_CONTENT = "the old content of the watched document";
 const NEW_CONTENT = "the new content of the watched document";
 
 let mockResolveConcluded;
-const concluded = new Promise((resolve) => (mockResolveConcluded = resolve));
+let mockContent = OLD_CONTENT;
 const mockVectorDatabase = {
   deleteDocumentFromNamespace: jest.fn(),
   addDocumentToNamespace: jest.fn(),
 };
 const mockUpdateSourceDocument = jest.fn();
+const mockSaveRun = jest.fn();
+const mockUpdateQueue = jest.fn();
 
 jest.mock("../../jobs/helpers", () => ({
   log: jest.fn(),
@@ -30,11 +32,14 @@ jest.mock("../../utils/collectorApi", () => ({
   })),
 }));
 jest.mock("../../utils/files", () => ({
-  fileData: jest.fn().mockResolvedValue({
+  fileData: jest.fn(async () => ({
     title: "watched-and-pinned.html",
     published: STALE_PUBLISHED,
-    pageContent: OLD_CONTENT,
-  }),
+    pageContent: mockContent,
+  })),
+}));
+jest.mock("../../models/vectors", () => ({
+  DocumentVectors: { delete: jest.fn() },
 }));
 jest.mock("../../models/documents", () => ({
   Document: {
@@ -48,6 +53,11 @@ jest.mock("../../models/documents", () => ({
         docId: "other-workspace-doc-id",
         docpath: "custom-documents/watched-and-pinned.json",
         workspace: { slug: "other-workspace", name: "Other Workspace" },
+      },
+      {
+        docId: "third-workspace-doc-id",
+        docpath: "custom-documents/watched-and-pinned.json",
+        workspace: { slug: "third-workspace", name: "Third Workspace" },
       },
     ]),
   },
@@ -68,23 +78,29 @@ jest.mock("../../models/documentSyncQueue", () => ({
       },
     ]),
     calcNextSync: jest.fn(() => new Date()),
-    _update: jest.fn(),
-    saveRun: jest.fn(),
+    _update: mockUpdateQueue,
+    saveRun: mockSaveRun,
   },
 }));
 jest.mock("../../models/documentSyncRun", () => ({
-  DocumentSyncRun: { statuses: { success: "success" } },
+  DocumentSyncRun: {
+    statuses: { success: "success", failed: "failed", exited: "exited" },
+  },
 }));
+
+async function runJob() {
+  jest.resetModules();
+  const concluded = new Promise((resolve) => (mockResolveConcluded = resolve));
+  require("../../jobs/sync-watched-documents");
+  await concluded;
+}
 
 // A pinned document is de-duplicated out of the RAG results by comparing the `sourceIdentifier` of
 // the on-disk document against the identifier of every chunk returned by the vector database. A
 // re-sync rewrites both of those, so if they drift apart the pinned document is also returned as
 // chunks and gets injected into the context twice.
 describe("watched document re-sync", () => {
-  beforeAll(async () => {
-    require("../../jobs/sync-watched-documents");
-    await concluded;
-  });
+  beforeAll(runJob);
 
   it("stamps the workspace vectors with the source identifier written to disk", () => {
     const [, vectorPayload] =
@@ -103,3 +119,56 @@ describe("watched document re-sync", () => {
     expect(sourceIdentifier(bloomedPayload)).toBe(sourceIdentifier(diskPayload));
   });
 });
+
+it.each(["workspace", "other-workspace"])(
+  "retries a failed update to %s before accepting the new source",
+  async (failedWorkspace) => {
+    jest.clearAllMocks();
+    mockContent = OLD_CONTENT;
+    mockUpdateSourceDocument.mockImplementation((_, data) => {
+      mockContent = data.pageContent;
+    });
+    mockVectorDatabase.addDocumentToNamespace.mockImplementation(
+      async (slug) => ({
+        vectorized: slug !== failedWorkspace,
+        error: "write failed",
+      })
+    );
+    await runJob();
+    expect(mockUpdateSourceDocument).not.toHaveBeenCalled();
+    expect(mockUpdateQueue).not.toHaveBeenCalled();
+    expect(mockSaveRun).toHaveBeenLastCalledWith(
+      1,
+      "failed",
+      expect.objectContaining({
+        workspacesModified:
+          failedWorkspace === "workspace"
+            ? []
+            : ["workspace", "third-workspace"],
+      })
+    );
+
+    mockVectorDatabase.addDocumentToNamespace
+      .mockReset()
+      .mockResolvedValue({ vectorized: true });
+    await runJob();
+    expect(
+      mockVectorDatabase.addDocumentToNamespace.mock.calls.map(([slug]) => slug)
+    ).toEqual(["workspace", "other-workspace", "third-workspace"]);
+    expect(mockContent).toBe(NEW_CONTENT);
+    expect(mockSaveRun).toHaveBeenLastCalledWith(
+      1,
+      "success",
+      expect.any(Object)
+    );
+
+    mockVectorDatabase.addDocumentToNamespace.mockClear();
+    await runJob();
+    expect(mockVectorDatabase.addDocumentToNamespace).not.toHaveBeenCalled();
+    expect(mockSaveRun).toHaveBeenLastCalledWith(
+      1,
+      "exited",
+      expect.any(Object)
+    );
+  }
+);
