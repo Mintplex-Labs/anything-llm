@@ -464,7 +464,12 @@ class PGVector extends VectorDatabase {
         `Rolling back ${submissions.length} vectors to ${namespace}`,
         err
       );
-      await connection.query(`ROLLBACK`);
+      try {
+        await connection.query(`ROLLBACK`);
+      } catch (rollbackError) {
+        this.logger("Failed to roll back vector inserts", rollbackError);
+      }
+      throw err;
     }
     return true;
   }

@@ -773,7 +773,7 @@ const TRANSLATIONS = {
       "start-server": "Alusta MCP-serverit",
       "delete-server": "Kasuta MCP-serveri kustutamise funktsiooni",
       "tool-count-warning":
-        "See MCP server on lubanud <b>_, mis tarbivad konteksti igas vestluses.</b> Selle asemel võid soovimatuid tööriistu välja lülitada, et säästa konteksti.",
+        "Selles MCP serveris on <b>{{count}} lubatud tööriista</b>, mis tarbivad konteksti igas vestluses.<br />Konteksti säästmiseks kaalu soovimatute tööriistade välja lülitamist.",
       "startup-command": "Alustamine",
       command: "Juhendamine",
       arguments: "Argumentid",

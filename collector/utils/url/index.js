@@ -136,7 +136,7 @@ function validYoutubeVideoUrl(link, returnVideoId = false) {
     }
 
     const regex =
-      /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|(?:live\/)?|shorts\/))([\w-]{11})(?:\S+)?$/;
+      /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|live\/|shorts\/))([\w-]{11})(?:[?&#/]\S*)?$/;
     const match = urlToValidate.match(regex);
     if (returnVideoId) return match?.[1] ?? null;
     return !!match?.[1];

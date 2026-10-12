@@ -17,6 +17,7 @@ const UNLOADED = Object.freeze({
   items: [],
   hasMore: false,
   totalCount: 0,
+  fetched: 0,
 });
 
 const EMPTY_SET = Object.freeze(new Set());
@@ -159,6 +160,10 @@ function reducer(state, action) {
               : action.items,
             hasMore: action.hasMore,
             totalCount: action.totalCount,
+            // Server offset of the next page. Pages are windows over the
+            // folder's full file list and embedded files are filtered out of
+            // each one, so this tracks windows fetched, not items shown.
+            fetched: (action.append ? prev.fetched : 0) + PAGE_SIZE,
           },
         },
       };
@@ -224,9 +229,15 @@ function reducer(state, action) {
       // selected (how a fresh upload arrives) renders as checked, and clicking
       // a checked box has to uncheck it. Anything short of fully checked
       // selects the whole folder, so a partial box fills in on one click.
+      // Individual selections cannot cover pages not fetched yet, so a folder
+      // with more pages is never fully selected that way (search match lists
+      // are complete, so they are exempt).
+      const partiallyLoaded =
+        !state.searchResults && (state.contents[name] ?? UNLOADED).hasMore;
       const fullySelected = state.selectedFolders.has(name)
         ? !items.some((file) => state.deselectedFiles.has(file.id))
         : items.length > 0 &&
+          !partiallyLoaded &&
           items.every((file) => state.selectedFiles.has(file.id));
       const turningOn = !fullySelected;
       const selectedFiles = new Set(state.selectedFiles);
@@ -272,6 +283,22 @@ function reducer(state, action) {
       return { ...state, selectedFiles, deselectedFiles };
     }
 
+    // Wholesale selection, so files on pages not fetched yet are included.
+    case "select-folders": {
+      if (!action.names.length) return state;
+      const selectedFolders = new Set(state.selectedFolders);
+      const selectedFiles = new Set(state.selectedFiles);
+      const deselectedFiles = new Set(state.deselectedFiles);
+      for (const name of action.names) {
+        selectedFolders.add(name);
+        for (const file of (state.contents[name] ?? UNLOADED).items) {
+          selectedFiles.delete(file.id);
+          deselectedFiles.delete(file.id);
+        }
+      }
+      return { ...state, selectedFolders, selectedFiles, deselectedFiles };
+    }
+
     // Optimistically drop files from the picker (moved into the workspace or
     // deleted) without a round trip, so the UI never stalls behind a refetch.
     case "remove-files": {
@@ -291,6 +318,11 @@ function reducer(state, action) {
                   0,
                   entry.totalCount - removedPerFolder[name]
                 ),
+                // Deleted files leave the folder's file list; files only staged
+                // for the workspace are still on disk, so the window stays put.
+                fetched: action.deleted
+                  ? Math.max(0, entry.fetched - removedPerFolder[name])
+                  : entry.fetched,
               };
       }
       const selectedFiles = new Set(state.selectedFiles);
@@ -393,7 +425,7 @@ export default function useDocumentPicker({ slug }) {
     if (entry.status === "loaded" && !append) return;
 
     dispatch({ type: "folder-loading", name });
-    const offset = append ? entry.items.length : 0;
+    const offset = append ? entry.fetched : 0;
     const result = await System.localFiles(name, offset, PAGE_SIZE);
     if (!result) return dispatch({ type: "folder-failed", name });
 
@@ -446,8 +478,13 @@ export default function useDocumentPicker({ slug }) {
    */
   const folderSelectionState = useCallback(
     (name, visibleFiles) => {
-      const { selectedFolders, deselectedFiles, selectedFiles, contents } =
-        state;
+      const {
+        selectedFolders,
+        deselectedFiles,
+        selectedFiles,
+        contents,
+        searchResults,
+      } = state;
       const items = visibleFiles ?? (contents[name] ?? UNLOADED).items;
       if (selectedFolders.has(name)) {
         const opted = items.some((f) => deselectedFiles.has(f.id));
@@ -456,7 +493,11 @@ export default function useDocumentPicker({ slug }) {
       if (items.length === 0) return "none";
       const hits = items.filter((f) => selectedFiles.has(f.id)).length;
       if (hits === 0) return "none";
-      return hits === items.length ? "all" : "some";
+      // Mirrors `toggle-folder`: individual selections cannot make a folder
+      // with unfetched pages "all".
+      const partiallyLoaded =
+        !searchResults && (contents[name] ?? UNLOADED).hasMore;
+      return hits === items.length && !partiallyLoaded ? "all" : "some";
     },
     [state]
   );
@@ -587,7 +628,8 @@ export default function useDocumentPicker({ slug }) {
     [loadFolder]
   );
   const removeFiles = useCallback(
-    (ids) => dispatch({ type: "remove-files", ids }),
+    (ids, { deleted = false } = {}) =>
+      dispatch({ type: "remove-files", ids, deleted }),
     []
   );
   const addFolder = useCallback(
@@ -628,6 +670,8 @@ export default function useDocumentPicker({ slug }) {
    * Reconcile the picker after an upload finishes. Refreshes shells in place,
    * pulls the pages of any folder whose file count grew, and pre-selects the
    * files that are genuinely new so the user can embed them immediately.
+   * A folder that was empty before the upload is selected wholesale instead,
+   * since every file in it is new and only its first page is fetched here.
    * Never touches `status`, so the tree stays on screen throughout.
    */
   const syncAfterUpload = useCallback(async () => {
@@ -655,6 +699,7 @@ export default function useDocumentPicker({ slug }) {
     );
 
     const freshIds = [];
+    const freshFolders = [];
     changed.forEach((folder, i) => {
       const result = pages[i];
       if (!result) return;
@@ -670,10 +715,16 @@ export default function useDocumentPicker({ slug }) {
         totalCount: result.totalCount ?? items.length,
       });
       dispatch({ type: "set-expanded", name: folder.name, value: true });
+      // Wholesale selection would also pick up a non-empty folder's old files.
+      if (!before.get(folder.name)) {
+        freshFolders.push(folder.name);
+        return;
+      }
       for (const file of items)
         if (!knownIds.has(file.id)) freshIds.push(file.id);
     });
 
+    dispatch({ type: "select-folders", names: freshFolders });
     dispatch({ type: "select-files", ids: freshIds });
   }, [refresh]);
 

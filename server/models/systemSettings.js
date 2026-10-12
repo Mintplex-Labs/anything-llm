@@ -370,6 +370,9 @@ const SystemSettings = {
           "clientSecret",
           (v) => !v.match(/^\*+$/)
         );
+        mergeStringField(mergedConfig, newConfig, "authType", (v) =>
+          Object.values(OutlookBridge.AUTH_TYPES).includes(v)
+        );
 
         if (newConfig.accessToken !== undefined) {
           mergedConfig.accessToken = newConfig.accessToken;

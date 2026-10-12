@@ -27,7 +27,9 @@ export default function AddVariableModal({ closeModal, onRefresh }) {
     }
 
     try {
-      await System.promptVariables.create(newVariable);
+      const { success, error } =
+        await System.promptVariables.create(newVariable);
+      if (!success) throw new Error(error);
       showToast("Variable created successfully", "success", { clear: true });
       if (onRefresh) onRefresh();
       closeModal();

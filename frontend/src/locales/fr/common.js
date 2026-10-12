@@ -1107,7 +1107,7 @@ const TRANSLATIONS = {
       "delete-confirmation":
         "Êtes-vous sûr de vouloir supprimer ces fichiers et dossiers ?\nCela supprimera les fichiers du système et les retirera automatiquement de tout espace de travail existant.\nCette action est irréversible.",
       "removing-message":
-        "Suppression de {{count}} documents et dossiers. Veuillez patienter.",
+        "Suppression de {{count}} documents et {{folderCount}} dossiers. Veuillez patienter.",
       "move-success": "{{count}} documents déplacés avec succès.",
       no_docs: "Aucun document",
       select_all: "Tout sélectionner",
@@ -1159,7 +1159,7 @@ const TRANSLATIONS = {
       vault_location: "Emplacement du coffre",
       vault_description:
         "Sélectionnez le dossier racine de votre coffre Obsidian.",
-      selected_files: "fichiers sélectionnés",
+      selected_files: "{{count}} fichiers markdown trouvés",
       importing: "Importation...",
       import_vault: "Importer le coffre",
       processing_time:
@@ -1231,7 +1231,7 @@ const TRANSLATIONS = {
       search: "Rechercher des modèles",
       loading_workspace_settings:
         "Chargement des paramètres de l'espace de travail...",
-      available_models: "Modèles disponibles",
+      available_models: "Modèles disponibles pour {{provider}}",
       available_models_description:
         "Sélectionnez un modèle à utiliser pour cet espace de travail.",
       save: "Sauvegarder",
@@ -1368,11 +1368,11 @@ const TRANSLATIONS = {
     update_account: "Mettre à jour le compte",
     theme: "Thème",
     language: "Langue",
-    failed_upload: "Échec du téléchargement de l'image.",
+    failed_upload: "Échec du téléchargement de l'image : {{error}}",
     upload_success: "Image téléchargée avec succès.",
-    failed_remove: "Échec de la suppression de l'image.",
+    failed_remove: "Échec de la suppression de l'image : {{error}}",
     profile_updated: "Profil mis à jour avec succès.",
-    failed_update_user: "Échec de la mise à jour de l'utilisateur.",
+    failed_update_user: "Échec de la mise à jour de l'utilisateur : {{error}}",
     account: "Compte",
     support: "Support",
     signout: "Déconnexion",
@@ -1923,7 +1923,7 @@ const TRANSLATIONS = {
       "llm-section-label":
         "Règles LLM – évaluées par lots si aucune règle calculée ne correspond",
       "llm-rule-body":
-        'Correspondance avec "<desc>" puis redirection vers "<route>"{{route}}"</route>"',
+        'Correspondance avec <desc>"{{description}}"</desc> puis redirection vers <route>{{route}}</route>',
       "calculated-no-conditions":
         "Aucune condition – itinéraire vers <route>{{route}}</route>",
       "calculated-single-condition":

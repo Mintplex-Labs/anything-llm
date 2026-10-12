@@ -125,6 +125,9 @@ const createScheduledJob = {
             const userId = this.super.handlerProps.invocation?.user_id ?? null;
             const { timezone } = UserMetaCache.get(userId);
             const cron = convertCronLocalToUtc(localCron, timezone);
+            if (!cron) {
+              return `'${localCron}' cannot be stored as a single schedule in the ${timezone} time zone, because its run times do not map onto one UTC cron expression. Split it into separate jobs so that each one uses a single minute value and its hours stay on the same day (e.g. '0 9 * * 1-5' and '0 10-17 * * 1-5' instead of '0 9-17 * * 1-5').`;
+            }
 
             // Resolve the tools the job may use. A scheduled job can ONLY use
             // the tools stored on it, and - exactly like the manual Scheduled

@@ -810,7 +810,7 @@ const TRANSLATIONS = {
       "start-server": "Iniciar el servidor MCP",
       "delete-server": "Eliminar el servidor MCP",
       "tool-count-warning":
-        "Este servidor de MCP tiene <b> herramientas habilitadas</b> que consumirán contexto en cada conversación.<br /> Considere desactivar las herramientas no deseadas para ahorrar contexto.",
+        "Este servidor de MCP tiene <b>{{count}} herramientas habilitadas</b> que consumirán contexto en cada conversación.<br />Considere desactivar las herramientas no deseadas para ahorrar contexto.",
       "startup-command": "Comando inicial",
       command: "Órden",
       arguments: "Argumentos",
