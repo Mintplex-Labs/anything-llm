@@ -76,6 +76,7 @@ const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { isReservedCommand } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 const { Memory } = require("../models/memory");
+const { dummyHashCompare } = require("../utils/helpers/dummyHashCompare");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -215,8 +216,8 @@ function systemEndpoints(app) {
         const existingUser = await User._get({ username: String(username) });
 
         if (!existingUser) {
-          // Hash anyway so an unknown username takes as long as a wrong password.
-          bcrypt.hashSync(String(password), 10);
+          // Compare anyway so an unknown username takes as long as a wrong password.
+          dummyHashCompare(password);
           await EventLogs.logEvent(
             "failed_login_invalid_username",
             {
