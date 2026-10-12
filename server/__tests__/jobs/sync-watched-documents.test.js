@@ -116,12 +116,14 @@ describe("watched document re-sync", () => {
       mockVectorDatabase.addDocumentToNamespace.mock.calls[1];
     const [, diskPayload] = mockUpdateSourceDocument.mock.calls[0];
 
-    expect(sourceIdentifier(bloomedPayload)).toBe(sourceIdentifier(diskPayload));
+    expect(sourceIdentifier(bloomedPayload)).toBe(
+      sourceIdentifier(diskPayload)
+    );
   });
 });
 
 it.each(["workspace", "other-workspace"])(
-  "retries a failed update to %s before accepting the new source",
+  "records a failed update to %s without retrying it",
   async (failedWorkspace) => {
     jest.clearAllMocks();
     mockContent = OLD_CONTENT;
@@ -135,32 +137,20 @@ it.each(["workspace", "other-workspace"])(
       })
     );
     await runJob();
-    expect(mockUpdateSourceDocument).not.toHaveBeenCalled();
-    expect(mockUpdateQueue).not.toHaveBeenCalled();
-    expect(mockSaveRun).toHaveBeenLastCalledWith(
-      1,
-      "failed",
-      expect.objectContaining({
-        workspacesModified:
-          failedWorkspace === "workspace"
-            ? []
-            : ["workspace", "third-workspace"],
-      })
-    );
-
-    mockVectorDatabase.addDocumentToNamespace
-      .mockReset()
-      .mockResolvedValue({ vectorized: true });
-    await runJob();
     expect(
       mockVectorDatabase.addDocumentToNamespace.mock.calls.map(([slug]) => slug)
     ).toEqual(["workspace", "other-workspace", "third-workspace"]);
     expect(mockContent).toBe(NEW_CONTENT);
-    expect(mockSaveRun).toHaveBeenLastCalledWith(
-      1,
-      "success",
-      expect.any(Object)
-    );
+    expect(mockUpdateQueue).toHaveBeenCalledTimes(1);
+    expect(mockSaveRun).toHaveBeenLastCalledWith(1, "failed", {
+      filename: "watched-and-pinned.json",
+      workspacesModified: [
+        "workspace",
+        "other-workspace",
+        "third-workspace",
+      ].filter((slug) => slug !== failedWorkspace),
+      reason: `Failed to embed the new content into: ${failedWorkspace} (write failed)`,
+    });
 
     mockVectorDatabase.addDocumentToNamespace.mockClear();
     await runJob();

@@ -146,28 +146,20 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         document.docpath,
         true
       );
+      // Embed failures are recorded on the run but not retried. The new content is still saved
+      // below so the next sync compares against it instead of re-embedding the same change.
+      const failures = [];
       if (embedResult?.vectorized === false) {
-        // The old vectors are already gone, so leave the source document as it was. The new
-        // content is then still seen as a change and re-embedded on the next worker interval.
+        failures.push({ workspace: workspace.slug, error: embedResult.error });
         log(
-          `Failed to embed the new content of ${source} into workspace "${workspace.name}": ${embedResult.error}. Skipping, but will retry next worker interval.`
+          `Failed to embed the new content of ${source} into workspace "${workspace.name}": ${embedResult.error}`
         );
-        await DocumentSyncQueue.saveRun(
-          queue.id,
-          DocumentSyncRun.statuses.failed,
-          {
-            filename: document.filename,
-            workspacesModified: [],
-            reason: embedResult.error || "Failed to embed the new content.",
-          }
-        );
-        continue;
+      } else {
+        log(`Workspace "${workspace.name}" vectors of ${source} updated.`);
       }
-      log(`Workspace "${workspace.name}" vectors of ${source} updated.`);
 
       // Now we can bloom the results to all matching documents in all other workspaces
       const workspacesModified = [workspace.slug];
-      const failedWorkspaces = [];
       const moreReferences = await Document.where(
         {
           id: { not: document.id },
@@ -202,9 +194,12 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             additionalDocumentRef.docpath
           );
           if (additionalResult?.vectorized === false) {
-            failedWorkspaces.push(additionalWorkspace.slug);
+            failures.push({
+              workspace: additionalWorkspace.slug,
+              error: additionalResult.error,
+            });
             log(
-              `Failed to embed the new content of ${source} into workspace "${additionalWorkspace.name}": ${additionalResult.error}.`
+              `Failed to embed the new content of ${source} into workspace "${additionalWorkspace.name}": ${additionalResult.error}`
             );
             continue;
           }
@@ -212,21 +207,6 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             `Workspace "${additionalWorkspace.name}" vectors for ${source} was also updated with the new content from cache.`
           );
         }
-      }
-
-      if (failedWorkspaces.length !== 0) {
-        await DocumentSyncQueue.saveRun(
-          queue.id,
-          DocumentSyncRun.statuses.failed,
-          {
-            filename: document.filename,
-            workspacesModified: workspacesModified.filter(
-              (slug) => !failedWorkspaces.includes(slug)
-            ),
-            reason: `Failed to embed the new content into: ${failedWorkspaces.join(", ")}`,
-          }
-        );
-        continue;
       }
 
       updateSourceDocument(document.docpath, {
@@ -245,10 +225,28 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         lastSyncedAt: new Date().toISOString(),
         nextSyncAt: nextRefresh.toISOString(),
       });
+      if (failures.length === 0) {
+        await DocumentSyncQueue.saveRun(
+          queue.id,
+          DocumentSyncRun.statuses.success,
+          { filename: document.filename, workspacesModified }
+        );
+        continue;
+      }
+
+      const failedSlugs = failures.map((f) => f.workspace);
       await DocumentSyncQueue.saveRun(
         queue.id,
-        DocumentSyncRun.statuses.success,
-        { filename: document.filename, workspacesModified }
+        DocumentSyncRun.statuses.failed,
+        {
+          filename: document.filename,
+          workspacesModified: workspacesModified.filter(
+            (slug) => !failedSlugs.includes(slug)
+          ),
+          reason: `Failed to embed the new content into: ${failures
+            .map((f) => `${f.workspace} (${f.error || "unknown error"})`)
+            .join(", ")}`,
+        }
       );
     }
   } catch (e) {
