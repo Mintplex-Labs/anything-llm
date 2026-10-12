@@ -130,9 +130,15 @@ async function determineContentType(uri) {
  * @param {string} uri - The link to process as a file
  * @param {boolean} saveAsDocument - Whether to save the content as a document. Default is true
  * @param {{[key: string]: string}} metadata - Metadata to use when creating the document
+ * @param {Object} options - The collector options sent by the server (eg: transcription provider, OCR languages)
  * @returns {Promise<{success: boolean, reason: string|null, documents: Object[], content: string|null, saveAsDocument: boolean}>} - The content of the file
  */
-async function processAsFile({ uri, saveAsDocument = true, metadata = {} }) {
+async function processAsFile({
+  uri,
+  saveAsDocument = true,
+  metadata = {},
+  options = {},
+}) {
   const fileContentResult = await downloadURIToFile(uri);
   if (!fileContentResult.success)
     return returnResult({
@@ -158,7 +164,7 @@ async function processAsFile({ uri, saveAsDocument = true, metadata = {} }) {
    */
   const processSingleFileResult = await processSingleFile(
     targetFilename,
-    { parseOnly: saveAsDocument === false },
+    { ...options, parseOnly: saveAsDocument === false },
     metadata
   );
   if (!processSingleFileResult.success) {

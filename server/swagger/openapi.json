@@ -2332,7 +2332,7 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Document not found"
+            "description": "Workspace or document not found"
           },
           "500": {
             "description": "Internal Server Error"

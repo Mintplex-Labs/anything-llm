@@ -13,8 +13,11 @@ const { decodePathname } = require("../../url");
 
 async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   const baseUrl = new URL(startUrl);
-  const discoveredLinks = new Set([startUrl]);
-  let queue = [[startUrl, 0]]; // [url, currentDepth]
+  // Matches extractLinks, so in-page anchors resolve to the start page itself.
+  baseUrl.hash = "";
+  const startHref = baseUrl.href;
+  const discoveredLinks = new Set([startHref]);
+  let queue = [[startHref, 0]]; // [url, currentDepth]
   const scrapedUrls = new Set();
 
   for (let currentDepth = 0; currentDepth < maxDepth; currentDepth++) {
@@ -119,6 +122,7 @@ function extractLinks(html, baseUrl, pageUrl = baseUrl) {
         absoluteUrl.pathname === scopePath ||
         absoluteUrl.pathname.startsWith(`${scopePath}/`));
     if (inScope) {
+      absoluteUrl.hash = "";
       extractedLinks.add(absoluteUrl.href);
     }
   }
@@ -180,7 +184,9 @@ async function bulkScrapePages(links, outFolderPath) {
       const data = {
         id: v4(),
         url: "file://" + slugify(filename) + ".html",
-        title: slugify(filename) + ".html",
+        // Unslugified so pages that differ only by query string or by
+        // non-Latin path segments stay distinguishable in the document picker.
+        title: `${filename}${url.search}.html`,
         docAuthor: "no author found",
         description: "No description found.",
         docSource: "URL link uploaded by the user.",
@@ -193,7 +199,7 @@ async function bulkScrapePages(links, outFolderPath) {
 
       writeToServerDocuments({
         data,
-        filename: data.title,
+        filename: `${slugify(filename)}-${data.id}`,
         destinationOverride: outFolderPath,
       });
       scrapedData.push(data);

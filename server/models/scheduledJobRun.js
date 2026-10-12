@@ -117,15 +117,20 @@ const ScheduledJobRun = {
 
   complete: async function (id, { result } = {}) {
     try {
-      const run = await prisma.scheduled_job_runs.update({
-        where: { id: Number(id) },
+      // A cancellation in the parent may win the race with this worker.
+      const updated = await prisma.scheduled_job_runs.updateMany({
+        where: {
+          id: Number(id),
+          status: { in: this.nonTerminalStatuses },
+        },
         data: {
           status: this.statuses.completed,
           result: typeof result === "string" ? result : JSON.stringify(result),
           completedAt: new Date(),
         },
       });
-      return run;
+      if (updated.count === 0) return null;
+      return await this.get({ id: Number(id) });
     } catch (error) {
       console.error("Failed to complete scheduled job run:", error.message);
       return null;
@@ -212,6 +217,26 @@ const ScheduledJobRun = {
       console.error("Failed to kill scheduled job run:", error.message);
       return null;
     }
+  },
+
+  /**
+   * Cancel waiting runs when a job is resynced. The queued predicate races
+   * atomically with markRunning; workers that already started are stopped by
+   * BackgroundService. Propagate errors so a failed cancellation is reported.
+   * @param {number} jobId - scheduled_jobs.id
+   * @returns {Promise<number>} The number of cancelled runs.
+   */
+  cancelQueuedForJob: async function (jobId) {
+    const result = await prisma.scheduled_job_runs.updateMany({
+      where: { jobId: Number(jobId), status: this.statuses.queued },
+      data: {
+        status: this.statuses.failed,
+        error: "Job killed by user",
+        completedAt: new Date(),
+        readAt: new Date(),
+      },
+    });
+    return result.count;
   },
 
   get: async function (clause = {}, include = {}) {

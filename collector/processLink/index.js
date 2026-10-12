@@ -8,9 +8,15 @@ const { validateURL } = require("../utils/url");
  * @param {string} link - The link to process
  * @param {{[key: string]: string}} scraperHeaders - Custom headers to apply when scraping the link
  * @param {Object} metadata - Optional metadata to attach to the document
+ * @param {Object} options - The collector options sent by the server, used when the link is a file
  * @returns {Promise<{success: boolean, content: string}>} - Response from collector
  */
-async function processLink(link, scraperHeaders = {}, metadata = {}) {
+async function processLink(
+  link,
+  scraperHeaders = {},
+  metadata = {},
+  options = {}
+) {
   const validatedLink = validateURL(link);
   if (!validURL(validatedLink))
     return { success: false, reason: "Not a valid URL." };
@@ -19,6 +25,7 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
     captureAs: "text",
     scraperHeaders,
     metadata,
+    options,
     saveAsDocument: true,
   });
 }
@@ -28,15 +35,17 @@ async function processLink(link, scraperHeaders = {}, metadata = {}) {
  * Mostly used in agentic flows/tools calls to get the text content of a link
  * @param {string} link - The link to get the text content of
  * @param {('html' | 'text' | 'json')} captureAs - The format to capture the page content as
+ * @param {Object} options - The collector options sent by the server, used when the link is a file
  * @returns {Promise<{success: boolean, content: string}>} - Response from collector
  */
-async function getLinkText(link, captureAs = "text") {
+async function getLinkText(link, captureAs = "text", options = {}) {
   const validatedLink = validateURL(link);
   if (!validURL(validatedLink))
     return { success: false, reason: "Not a valid URL." };
   return await scrapeGenericUrl({
     link: validatedLink,
     captureAs,
+    options,
     saveAsDocument: false,
   });
 }

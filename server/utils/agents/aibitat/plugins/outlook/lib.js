@@ -1115,6 +1115,7 @@ class OutlookBridge {
         );
         if (!attachResult.success) {
           this.#log(`Failed to add attachment: ${attachResult.error}`);
+          return attachResult;
         }
       }
     }
@@ -1135,10 +1136,10 @@ class OutlookBridge {
    * @param {string} messageId - The message ID to reply to
    * @param {string} body - Reply body
    * @param {boolean} replyAll - Whether to reply all
-   * @param {object} options - Additional options
+   * @param {object} options - Additional options (attachments)
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
-  async createDraftReply(messageId, body, replyAll = false, _options = {}) {
+  async createDraftReply(messageId, body, replyAll = false, options = {}) {
     const endpoint = replyAll
       ? `/me/messages/${messageId}/createReplyAll`
       : `/me/messages/${messageId}/createReply`;
@@ -1151,6 +1152,17 @@ class OutlookBridge {
     });
 
     if (!result.success) return result;
+
+    for (const attachment of options.attachments || []) {
+      const attachResult = await this.request(
+        `/me/messages/${result.data.id}/attachments`,
+        { method: "POST", body: JSON.stringify(attachment) }
+      );
+      if (!attachResult.success) {
+        this.#log(`Failed to add attachment: ${attachResult.error}`);
+        return attachResult;
+      }
+    }
 
     return {
       success: true,
@@ -1306,9 +1318,10 @@ class OutlookBridge {
    * @param {string} messageId - The message ID to reply to
    * @param {string} body - Reply body
    * @param {boolean} replyAll - Whether to reply all
+   * @param {object} options - Additional options (attachments)
    * @returns {Promise<{success: boolean, error?: string}>}
    */
-  async replyToMessage(messageId, body, replyAll = false) {
+  async replyToMessage(messageId, body, replyAll = false, options = {}) {
     const endpoint = replyAll
       ? `/me/messages/${messageId}/replyAll`
       : `/me/messages/${messageId}/reply`;
@@ -1317,6 +1330,10 @@ class OutlookBridge {
       method: "POST",
       body: JSON.stringify({
         comment: body,
+        message:
+          options.attachments?.length > 0
+            ? { attachments: options.attachments }
+            : undefined,
       }),
     });
   }
