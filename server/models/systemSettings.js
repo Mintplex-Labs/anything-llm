@@ -1065,6 +1065,9 @@ const SystemSettings = {
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
 
+      // Embedded Lemonade Keys
+      ...require("../utils/AiProviders/embeddedLemonade/config").settings(),
+
       // Minimax Keys
       MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
       MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,

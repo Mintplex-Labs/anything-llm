@@ -143,6 +143,141 @@ container rebuilds or pulls from Docker Hub.
 
 - To access the full application, visit `http://localhost:3001` in your browser.
 
+## Built-in LLM engine (optional)
+
+AnythingLLM can run local LLMs inside the container, so you do not need to run Ollama, LM Studio or another
+inference server next to it. The engine is [Lemonade](https://lemonade-server.ai) running
+[llama.cpp](https://github.com/ggml-org/llama.cpp), and it is off unless you turn it on.
+
+When `EMBEDDED_LEMONADE_ENABLED=true` is set:
+
+- On first boot the container downloads the engine (a few MB) into your storage folder, at
+  `<STORAGE_LOCATION>/engines/embedded-lemonade`. It is not part of the image and is kept across container updates.
+- **AnythingLLM (Llama.cpp)** becomes the default LLM provider during onboarding. You can also select it later in
+  **Settings > AI Providers > LLM**.
+- Pick and download a model from the model table. Models are stored in `<STORAGE_LOCATION>/models/embedded-lemonade`.
+- The first chat downloads the llama.cpp runtime for your hardware, so it takes a little longer than later chats.
+
+The engine is only reachable from inside the container - nothing new is exposed on your network.
+
+### CPU only
+
+Works on any `amd64` or `arm64` host, including Docker Desktop on Windows and macOS.
+
+```shell
+export STORAGE_LOCATION=$HOME/anythingllm && \
+mkdir -p $STORAGE_LOCATION && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+-e EMBEDDED_LEMONADE_ENABLED=true \
+mintplexlabs/anythingllm
+```
+
+### GPU acceleration
+
+The engine picks the best backend for the GPU it can see and downloads it on first use: CUDA for NVIDIA GPUs, Vulkan
+for AMD and Intel GPUs. Without a GPU, models run on the CPU.
+
+| Host | NVIDIA | AMD / Intel |
+| --- | --- | --- |
+| Linux | ✅ CUDA | ✅ Vulkan |
+| Windows (Docker Desktop) | ✅ CUDA | CPU only |
+| macOS (Docker Desktop) | - | CPU only |
+
+**AMD or Intel** - add the GPU devices and give the container user access to them:
+
+```shell
+docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
+--device /dev/dri \
+--group-add $(getent group render | cut -d: -f3) \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+-e EMBEDDED_LEMONADE_ENABLED=true \
+mintplexlabs/anythingllm
+```
+
+Without `--group-add`, the container can see the GPU but cannot open it, and models silently run on the CPU.
+
+**NVIDIA** - add `--gpus all`. On Linux, install the
+[NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+first. Docker Desktop on Windows supports `--gpus all` out of the box.
+
+```shell
+docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
+--gpus all \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+-e EMBEDDED_LEMONADE_ENABLED=true \
+mintplexlabs/anythingllm
+```
+
+<details>
+<summary>Docker Compose</summary>
+
+```yaml
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm
+    ports:
+      - "3001:3001"
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - ${STORAGE_LOCATION}:/app/server/storage
+      - ${STORAGE_LOCATION}/.env:/app/server/.env
+    environment:
+      - STORAGE_DIR=/app/server/storage
+      - EMBEDDED_LEMONADE_ENABLED=true
+    # AMD or Intel GPU
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "${RENDER_GID}" # getent group render | cut -d: -f3
+    # NVIDIA GPU - use this instead of devices/group_add
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+```
+
+</details>
+
+### Options
+
+| ENV | Default | Description |
+| --- | --- | --- |
+| `EMBEDDED_LEMONADE_ENABLED` | _unset_ | Set to `true` to turn on the built-in engine. |
+| `EMBEDDED_LEMONADE_LLAMACPP_BACKEND` | `auto` | Force a llama.cpp backend: `cuda`, `vulkan` or `cpu`. |
+| `EMBEDDED_LEMONADE_REGISTRY` | `auto` | Where models download from: `auto` (Hugging Face, falling back to ModelScope), `huggingface` or `modelscope`. |
+| `EMBEDDED_LEMONADE_PORT` | `13355` | Port the engine listens on inside the container. Only change it if something else in the container uses it. |
+
+The model and context window are set in the UI and saved as `EMBEDDED_LEMONADE_MODEL_PREF` and
+`EMBEDDED_LEMONADE_MODEL_TOKEN_LIMIT` in your `.env`. Leave the context window empty to use each model's own
+context length, capped at 16,384 tokens to avoid running out of memory. Set a larger value yourself if your
+hardware can handle it.
+
+### Checking that your GPU is used
+
+After your first chat, check where the model is loaded:
+
+```shell
+docker exec <container> node -e 'fetch("http://127.0.0.1:13355/api/v1/health").then(r=>r.json()).then(h=>console.log(h.all_models_loaded))'
+```
+
+`device: 'gpu'` means the GPU is used. If it says `cpu`, check `--gpus all` for NVIDIA, or the
+`--device`/`--group-add` flags for AMD and Intel.
+
 ## About UID and GID in the ENV
 
 - The UID and GID are set to 1000 by default. This is the default user in the Docker container and on most host operating systems. If there is a mismatch between your host user UID and GID and what is set in the `.env` file, you may experience permission issues.

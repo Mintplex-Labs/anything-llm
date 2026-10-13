@@ -248,6 +248,13 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     ],
     logo: LemonadeLogo,
   },
+  embedded_lemonade: {
+    name: "AnythingLLM (Llama.cpp)",
+    description: [
+      "Your model and chats are only accessible on the server running AnythingLLM.",
+    ],
+    logo: AnythingLLMIcon,
+  },
   omlx: {
     name: "oMLX",
     description: [

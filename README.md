@@ -59,6 +59,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 
 ## Cool Features of AnythingLLM
 
+- [Built-in local LLM engine](/docker/HOW_TO_USE_DOCKER.md#built-in-llm-engine-optional) - Run llama.cpp models on your CPU or GPU (NVIDIA via CUDA, AMD and Intel via Vulkan) inside the Docker container with one ENV. _Docker version only_
 - [Dynamic Model Routing](https://docs.anythingllm.com/model-router/overview) - Automatically route chats to the best provider & model for the conversation based on rules you define.
 - [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories) - Have your LLM remember important information about you or your workspace.
 - [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview) - Run recurring tasks or prompts on a cron schedule with full agent capabilities.
