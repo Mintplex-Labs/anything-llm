@@ -7,6 +7,7 @@ import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
 import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
+import { withEmbeddedLemonade } from "@/components/LLMSelection/EmbeddedLemonadeOptions";
 
 const ENABLED_PROVIDERS = [
   "openai",
@@ -86,7 +87,8 @@ export default function AgentLLMSelection({ settings, workspace }) {
     if (selection === "none") save();
   }
 
-  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+  const llms = withEmbeddedLemonade(LLMS, settings, { after: "none" });
+  const selectedLLMObject = llms.find((llm) => llm.value === selectedLLM);
   return (
     <div className="flex flex-col gap-y-[8px]">
       {WARN_PERFORMANCE.includes(selectedLLM) && (
@@ -111,13 +113,13 @@ export default function AgentLLMSelection({ settings, workspace }) {
       <div className="relative">
         <input type="hidden" name="agentProvider" value={selectedLLM} />
         <ProviderSearchMenu
-          items={LLMS}
+          items={llms}
           selected={selectedLLMObject}
           placeholder="Search available LLM providers"
           renderItem={(llm, close) => (
             <AgentLLMItem
               llm={llm}
-              availableLLMs={LLMS}
+              availableLLMs={llms}
               settings={settings}
               checked={selectedLLM === llm.value}
               onClick={() => {

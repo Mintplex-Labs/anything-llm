@@ -121,6 +121,24 @@ const ENV_KEYS = {
   },
 };
 
+/**
+ * updateENV hook for the system LLM provider. Moving off this provider unloads every model and stops lemond so
+ * its RAM and VRAM are freed; moving onto it starts lemond in the background.
+ * @param {string} _key
+ * @param {string} prev - the previous LLM_PROVIDER
+ * @param {string} next - the new LLM_PROVIDER
+ */
+function manageEngineOnProviderChange(_key, prev, next) {
+  if (prev === next || !isEnabled()) return;
+  if (prev !== PROVIDER && next !== PROVIDER) return;
+  const { EmbeddedLemonadeEngine } = require("./engine");
+  if (next === PROVIDER) return EmbeddedLemonadeEngine.prepareInBackground();
+  // Not awaited - lemond can take a few seconds to shut down and the settings save should not wait on it.
+  EmbeddedLemonadeEngine.stop().catch((e) =>
+    EmbeddedLemonadeEngine.log(`Stop failed: ${e.message}`)
+  );
+}
+
 /** Settings this provider adds to SystemSettings.currentSettings. */
 function settings() {
   return {
@@ -145,4 +163,5 @@ module.exports = {
   paths,
   ENV_KEYS,
   settings,
+  manageEngineOnProviderChange,
 };

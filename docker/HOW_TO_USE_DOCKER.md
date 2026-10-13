@@ -153,7 +153,7 @@ When `EMBEDDED_LEMONADE_ENABLED=true` is set:
 
 - On first boot the container downloads the engine (a few MB) into your storage folder, at
   `<STORAGE_LOCATION>/engines/embedded-lemonade`. It is not part of the image and is kept across container updates.
-- **AnythingLLM (Llama.cpp)** becomes the default LLM provider during onboarding. You can also select it later in
+- **Built-in** becomes the default LLM provider during onboarding. You can also select it later in
   **Settings > AI Providers > LLM**.
 - Pick and download a model from the model table. Models are stored in `<STORAGE_LOCATION>/models/embedded-lemonade`.
 - The first chat downloads the llama.cpp runtime for your hardware, so it takes a little longer than later chats.

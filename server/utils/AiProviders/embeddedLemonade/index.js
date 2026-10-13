@@ -822,12 +822,17 @@ function modelIdForCheckpoint(checkpoint = "") {
 
 /**
  * Chat models for the custom models endpoint.
+ * Without the catalog only downloaded models are listed, and without the `downloaded` flag - the workspace, agent,
+ * chat and router model pickers would otherwise list each model twice (as "Downloaded" and as "Discovered").
  * @param {boolean} includeCatalog - Also list the models that are not downloaded yet (for the model table).
  */
 async function getEmbeddedLemonadeModels(includeCatalog = false) {
   const models = await EmbeddedLemonadeLLM.availableModels();
+  if (includeCatalog) return { models, error: null };
   return {
-    models: includeCatalog ? models : models.filter((m) => m.downloaded),
+    models: models
+      .filter((model) => model.downloaded)
+      .map(({ downloaded: _, ...model }) => model),
     error: null,
   };
 }

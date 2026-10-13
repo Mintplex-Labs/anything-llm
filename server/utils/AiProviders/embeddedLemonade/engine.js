@@ -28,6 +28,8 @@ class EmbeddedLemonadeEngine {
   static process = null;
   /** @type {Promise<boolean>|null} The install or boot in flight, so concurrent callers share it. */
   static #pending = null;
+  /** @type {Promise<void>|null} The stop in flight, so a boot waits for it instead of racing it. */
+  static #stopping = null;
   /** @type {{state: 'idle'|'installing'|'starting'|'ready'|'error', message: string|null, progress: number|null}} */
   static status = { state: "idle", message: null, progress: null };
 
@@ -60,6 +62,7 @@ class EmbeddedLemonadeEngine {
    */
   static async bootOrContinue() {
     if (!isEnabled()) return false;
+    if (this.#stopping) await this.#stopping;
     if (await this.isRunning()) return true;
     if (!this.#pending)
       this.#pending = this.#boot().finally(() => (this.#pending = null));
@@ -230,7 +233,8 @@ class EmbeddedLemonadeEngine {
         "127.0.0.1",
         "--no-broadcast",
       ],
-      { stdio: ["ignore", "pipe", "pipe"] }
+      // Its own process group, so stopping lemond also stops the llama.cpp backends it started.
+      { stdio: ["ignore", "pipe", "pipe"], detached: true }
     );
     this.process = child;
     this.log(`lemond started on port ${port()}. PID ${child.pid}.`);
@@ -253,14 +257,61 @@ class EmbeddedLemonadeEngine {
   }
 
   /**
-   * Stops lemond. Only called on server exit (the container goes down with it) or before a respawn, so the
-   * llama.cpp backends lemond started are not tracked separately.
+   * Sends a signal to lemond and the llama.cpp backends it started (its process group).
+   * @param {import("child_process").ChildProcess} child
+   * @param {NodeJS.Signals} signal
+   */
+  static #signal(child, signal) {
+    try {
+      process.kill(-child.pid, signal);
+    } catch {
+      child.kill(signal);
+    }
+  }
+
+  /**
+   * Stops lemond and its llama.cpp backends right away. Used on server exit and before a respawn.
    */
   static kill() {
     if (!this.process) return;
-    this.process.kill();
+    this.#signal(this.process, "SIGKILL");
     this.process = null;
     this.#setStatus("idle");
+  }
+
+  /**
+   * Unloads every model and stops lemond so its RAM and VRAM are freed - eg: when the system LLM moves to another
+   * provider. A workspace or agent still set to this provider boots it again on its next request.
+   */
+  static stop() {
+    if (!this.#stopping)
+      this.#stopping = this.#stop().finally(() => (this.#stopping = null));
+    return this.#stopping;
+  }
+
+  static async #stop() {
+    const child = this.process;
+    if (!child) return;
+    this.log("Stopping lemond and unloading all models.");
+    await fetch(`${this.baseUrl}/api/v1/unload`, {
+      method: "POST",
+      signal: AbortSignal.timeout(5_000),
+    }).catch(() => null);
+
+    const exited = new Promise((resolve) => {
+      if (child.exitCode !== null || child.signalCode !== null)
+        return resolve();
+      child.once("exit", resolve);
+    });
+    this.#signal(child, "SIGTERM");
+    const timeout = new Promise((resolve) => setTimeout(resolve, 5_000));
+    await Promise.race([exited, timeout]);
+    this.#signal(child, "SIGKILL"); // Anything that ignored SIGTERM.
+
+    if (this.process === child) {
+      this.process = null;
+      this.#setStatus("idle");
+    }
   }
 }
 

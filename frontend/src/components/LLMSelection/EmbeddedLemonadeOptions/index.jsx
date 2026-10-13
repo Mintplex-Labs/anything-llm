@@ -26,7 +26,7 @@ import EmbeddedLemonadeUtils from "./utils";
  */
 function embeddedLemonadeLLM({ onboarding = false } = {}) {
   return {
-    name: "AnythingLLM (Llama.cpp)",
+    name: "Built-in",
     value: "embedded_lemonade",
     logo: AnythingLLMIcon,
     options: (settings) => (
@@ -39,19 +39,25 @@ function embeddedLemonadeLLM({ onboarding = false } = {}) {
 }
 
 /**
- * Puts the embedded engine first in a provider list when the server has it enabled.
+ * Adds the embedded engine to a provider list when the server has it enabled - first, or right after the
+ * `after` entry (eg: a "System default" entry that should stay on top).
  * @param {Array<object>} providers
  * @param {object|null} settings - System.keys()
- * @param {{onboarding?: boolean}} options
+ * @param {{onboarding?: boolean, after?: string}} options
  * @returns {Array<object>}
  */
 export function withEmbeddedLemonade(
   providers = [],
   settings = null,
-  options = {}
+  { after = null, ...options } = {}
 ) {
   if (!settings?.EmbeddedLemonadeEnabled) return providers;
-  return [embeddedLemonadeLLM(options), ...providers];
+  const index = providers.findIndex((llm) => llm.value === after) + 1;
+  return [
+    ...providers.slice(0, index),
+    embeddedLemonadeLLM(options),
+    ...providers.slice(index),
+  ];
 }
 
 const DOWNLOAD_CANCELLED = "Download cancelled.";

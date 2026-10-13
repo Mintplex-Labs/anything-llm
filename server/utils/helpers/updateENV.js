@@ -5,6 +5,10 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
+    postUpdate: [
+      require("../AiProviders/embeddedLemonade/config")
+        .manageEngineOnProviderChange,
+    ],
   },
   // Model Router Settings
   ModelRouterId: {
