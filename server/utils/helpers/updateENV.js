@@ -398,9 +398,17 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
   },
+  WeaviateDeployment: {
+    envKey: "WEAVIATE_DEPLOYMENT",
+    checks: [validWeaviateDeployment],
+  },
+  WeaviateGrpcHost: {
+    envKey: "WEAVIATE_GRPC_HOST",
+    checks: [optional(validHostname)],
+  },
   WeaviateGrpcPort: {
     envKey: "WEAVIATE_GRPC_PORT",
-    checks: [nonZero],
+    checks: [optional(validPort)],
   },
 
   // QDrant Options
@@ -1087,6 +1095,11 @@ const KEY_MAPPING = {
   },
 };
 
+// Skips check when value is empty
+function optional(check) {
+  return (input = "") => (input ? check(input) : null);
+}
+
 function isNotEmpty(input = "") {
   return !input || input.length === 0 ? "Value cannot be empty" : null;
 }
@@ -1105,6 +1118,19 @@ function nonNegative(input = "") {
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input);
+}
+
+function validPort(input = "") {
+  const port = Number(input);
+  return /^\d+$/.test(input) && port >= 1 && port <= 65535
+    ? null
+    : "Port must be a whole number from 1 to 65535";
+}
+
+function validHostname(input = "") {
+  return /^[a-z0-9.-]+$/i.test(input)
+    ? null
+    : "Enter a hostname only, without a protocol, port or path";
 }
 
 function isValidURL(input = "") {
@@ -1245,6 +1271,13 @@ function validGeminiSafetySetting(input = "") {
   return validModes.includes(input)
     ? null
     : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
+}
+
+function validWeaviateDeployment(input = "") {
+  const validDeployments = ["cloud", "self-hosted"];
+  return validDeployments.includes(input)
+    ? null
+    : `Invalid Weaviate deployment. Must be one of ${validDeployments.join(", ")}.`;
 }
 
 function supportedEmbeddingModel(input = "") {
