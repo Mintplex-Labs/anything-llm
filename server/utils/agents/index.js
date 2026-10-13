@@ -486,7 +486,6 @@ class AgentHandler {
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }
 
@@ -777,6 +776,7 @@ class AgentHandler {
   async init() {
     await this.#validInvocation();
     await this.#providerSetupAndCheck();
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
@@ -932,12 +932,18 @@ class AgentHandler {
         };
       }
       try {
+        const { provider, model } = this;
         this.invocation.workspace =
-          (await Workspace.get({ id: this.invocation.workspace.id })) ??
-          this.invocation.workspace;
+          (await Workspace._findFirst({
+            where: { id: this.invocation.workspace.id },
+          })) ?? this.invocation.workspace;
         this.routingMetadata = null;
         this._modelRouter = null;
         await this.#providerSetupAndCheck(prompt);
+        if (this.provider !== provider || this.model !== model)
+          this.log(
+            `Route changed ${this.#invocationUUID}::${this.provider}:${this.model}`
+          );
         this.aibitat.handlerProps.routingMetadata =
           this.routingMetadata || null;
         return {
