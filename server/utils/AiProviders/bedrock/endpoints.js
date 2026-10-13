@@ -34,6 +34,7 @@ const INFERENCE_PROFILE_PREFIXES = [
   "jp.",
   "au.",
   "ca.",
+  "in.",
 ];
 
 /**
