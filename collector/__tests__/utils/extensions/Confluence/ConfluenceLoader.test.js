@@ -50,6 +50,19 @@ describe("ConfluencePagesLoader", () => {
     expect(document.pageContent).toBe("\n```js\nlet x = 1;\n```\n");
   });
 
+  test("load rejects with the HTTP status instead of resolving to no pages", async () => {
+    jest
+      .spyOn(global, "fetch")
+      .mockResolvedValue({ ok: false, status: 401, json: async () => ({}) });
+    const loader = new ConfluencePagesLoader({
+      baseUrl: "https://example.com",
+      spaceKey: "SP",
+      cloud: false,
+    });
+
+    await expect(loader.load()).rejects.toThrow("from Confluence: 401");
+  });
+
   describe("cloud mode", () => {
     test("API requests include /wiki prefix", async () => {
       const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({

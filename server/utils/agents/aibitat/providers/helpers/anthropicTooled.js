@@ -125,8 +125,8 @@ function prepareAnthropicMessages(messages = []) {
  */
 function formatAnthropicTools(functions = []) {
   return functions.map((func) => {
-    const { name, description, parameters, required } = func;
-    const { type, properties } = dereferenceSchema(parameters);
+    const { name, description, parameters } = func;
+    const { type, properties, required } = dereferenceSchema(parameters);
     return {
       name,
       description,
@@ -184,7 +184,10 @@ async function anthropicTooledStream(
         messages: chats,
         stream: true,
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: formatAnthropicTools(functions) }
+          ? {
+              tools: formatAnthropicTools(functions),
+              tool_choice: { type: "auto", disable_parallel_tool_use: true },
+            }
           : {}),
       },
       extraCreateOptions
@@ -324,7 +327,10 @@ async function anthropicTooledComplete(
         messages: chats,
         stream: false,
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: formatAnthropicTools(functions) }
+          ? {
+              tools: formatAnthropicTools(functions),
+              tool_choice: { type: "auto", disable_parallel_tool_use: true },
+            }
           : {}),
       },
       extraCreateOptions

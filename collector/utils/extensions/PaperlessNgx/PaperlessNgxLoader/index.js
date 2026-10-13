@@ -40,10 +40,7 @@ class PaperlessNgxLoader {
               ...this.baseHeaders,
             },
           }).then((res) => {
-            if (!res.ok)
-              throw new Error(
-                `Failed to fetch documents from Paperless-ngx: ${res.status}`
-              );
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
             return res.json();
           });
 
@@ -52,14 +49,20 @@ class PaperlessNgxLoader {
 
           documents.push(...validResults);
 
-          if (data.next === nextUrl) break;
-          nextUrl = data.next || null;
+          if (!data.next) break;
+          const { search } = new URL(data.next, nextUrl);
+          const next = `${this.baseUrl}/api/documents/${search}`;
+          if (next === nextUrl) break;
+          nextUrl = next;
           page++;
         } catch (error) {
           console.error(
             `Error fetching page ${page} from Paperless-ngx:`,
             error
           );
+          // Nothing was fetched, so the instance could not be read at all, for
+          // example a wrong token or URL. Report that instead of an empty import.
+          if (!documents.length) throw error;
           break;
         }
       }

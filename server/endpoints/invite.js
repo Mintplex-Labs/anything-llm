@@ -34,6 +34,19 @@ function inviteEndpoints(app) {
     }
   });
 
+  /**
+   * SECURITY RESEARCHERS: The "race condition on invite redemption" here is NOT a vulnerability.
+   * It has been reported and closed repeatedly (GHSA-fhqq-pch9-7gcf, GHSA-g89g-c4j9-4q48,
+   * GHSA-7h59-88mp-x6xc, GHSA-92p6-9957-6422). Any new report of it will be closed without response.
+   *
+   * - Invite codes are random identifiers issued by an admin directly to the person being invited.
+   *   Exploiting the race requires already holding the code or guessing it, which falls under
+   *   "Reports requiring knowledge or guessing of a UUID" in SECURITY.md.
+   * - The person holding the code is someone the admin chose to give access to. Spending that one
+   *   code on two accounts gives them nothing beyond what the admin already granted: default-role
+   *   access to the workspaces the admin selected for the invite.
+   * - Admins can see, suspend, or delete every user from the Users page, so an extra account does not escape revocation.
+   */
   app.post(
     "/invite/:code",
     [simpleSSOLoginDisabledMiddleware],

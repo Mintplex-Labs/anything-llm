@@ -167,7 +167,8 @@ module.exports.OutlookCreateDraft = {
                 result = await outlookLib.createDraftReply(
                   replyToMessageId,
                   body,
-                  replyAll
+                  replyAll,
+                  { attachments: preparedAttachments }
                 );
               } else {
                 this.super.introspect(

@@ -145,11 +145,13 @@ describe("WebsiteDepth extractLinks scope", () => {
     ).toEqual(["https://example.com/docs/Upper"]);
   });
 
-  it("keeps query strings and fragments on in-scope links", () => {
-    const html = '<a href="/docs/guide?page=2#install">in</a>';
+  it("keeps query strings but drops fragments on in-scope links", () => {
+    const html =
+      '<a href="/docs/guide?page=2#install">in</a>' +
+      '<a href="/docs/guide?page=2#usage">in</a>';
     expect(
       extractLinks(html, new URL("https://example.com/docs/page"))
-    ).toEqual(["https://example.com/docs/guide?page=2#install"]);
+    ).toEqual(["https://example.com/docs/guide?page=2"]);
   });
 });
 
@@ -307,6 +309,45 @@ describe("WebsiteDepth websiteScraper", () => {
     expect(scraped).toHaveLength(3);
   });
 
+  it("does not spend maxLinks on #fragment links to pages already found", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="#usage">u</a>' +
+        '<a href="/docs/api">a</a><a href="/docs/api#auth">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page", 1, 3);
+
+    // The in-page anchors are the start page itself, so the cap of 3 still
+    // has room for /docs/api, and each page is loaded and stored only once.
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
+    expect(fetchedUrls().filter((url) => url.includes("#"))).toEqual([]);
+    expect(writeToServerDocuments).toHaveBeenCalledTimes(2);
+  });
+
+  it("scrapes the start page once when the start URL has a #fragment", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="/docs/api">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/page#intro",
+      1,
+      3
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
+  });
+
   it("skips a page that fails to load without aborting the crawl", async () => {
     mockSite({
       "https://example.com/docs/page":
@@ -353,6 +394,33 @@ describe("WebsiteDepth websiteScraper", () => {
       "link://https://example.com/docs/page",
     ]);
     expect(writeToServerDocuments).toHaveBeenCalledTimes(1);
+  });
+
+  it("writes pages that differ only by query string or non-Latin path to separate files with distinct titles", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="/docs/item?id=1">1</a><a href="/docs/item?id=2">2</a>' +
+        '<a href="/docs/%E5%8C%97%E4%BA%AC">b</a><a href="/docs/%E4%B8%8A%E6%B5%B7">s</a>',
+      "https://example.com/docs/item?id=1": "item one",
+      "https://example.com/docs/item?id=2": "item two",
+      "https://example.com/docs/%E5%8C%97%E4%BA%AC": "beijing",
+      "https://example.com/docs/%E4%B8%8A%E6%B5%B7": "shanghai",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(scraped).toHaveLength(5);
+    const filenames = writeToServerDocuments.mock.calls.map(
+      ([args]) => args.filename
+    );
+    expect(new Set(filenames).size).toBe(5);
+    expect(scraped.map((doc) => doc.title).sort()).toEqual([
+      "example.com_docs_item?id=1.html",
+      "example.com_docs_item?id=2.html",
+      "example.com_docs_page.html",
+      "example.com_docs_上海.html",
+      "example.com_docs_北京.html",
+    ]);
   });
 
   it("survives a start page that cannot be loaded at all", async () => {
