@@ -135,7 +135,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
       );
       // Remove document_vectors rows on delete
       await DocumentVectors.delete({ docId: document.docId });
-      await vectorDatabase.addDocumentToNamespace(
+      const embedResult = await vectorDatabase.addDocumentToNamespace(
         workspace.slug,
         {
           ...currentDocumentData,
@@ -146,16 +146,17 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         document.docpath,
         true
       );
-      updateSourceDocument(document.docpath, {
-        ...currentDocumentData,
-        pageContent: newContent,
-        docId: document.docId,
-        published: publishedAt,
-        // Todo: Update word count and token_estimate?
-      });
-      log(
-        `Workspace "${workspace.name}" vectors of ${source} updated. Document and vector cache updated.`
-      );
+      // Embed failures are recorded on the run but not retried. The new content is still saved
+      // below so the next sync compares against it instead of re-embedding the same change.
+      const failures = [];
+      if (embedResult?.vectorized === false) {
+        failures.push({ workspace: workspace.slug, error: embedResult.error });
+        log(
+          `Failed to embed the new content of ${source} into workspace "${workspace.name}": ${embedResult.error}`
+        );
+      } else {
+        log(`Workspace "${workspace.name}" vectors of ${source} updated.`);
+      }
 
       // Now we can bloom the results to all matching documents in all other workspaces
       const workspacesModified = [workspace.slug];
@@ -182,7 +183,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             additionalDocumentRef.docId
           );
           await DocumentVectors.delete({ docId: additionalDocumentRef.docId });
-          await vectorDatabase.addDocumentToNamespace(
+          const additionalResult = await vectorDatabase.addDocumentToNamespace(
             additionalWorkspace.slug,
             {
               ...currentDocumentData,
@@ -192,11 +193,29 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             },
             additionalDocumentRef.docpath
           );
+          if (additionalResult?.vectorized === false) {
+            failures.push({
+              workspace: additionalWorkspace.slug,
+              error: additionalResult.error,
+            });
+            log(
+              `Failed to embed the new content of ${source} into workspace "${additionalWorkspace.name}": ${additionalResult.error}`
+            );
+            continue;
+          }
           log(
             `Workspace "${additionalWorkspace.name}" vectors for ${source} was also updated with the new content from cache.`
           );
         }
       }
+
+      updateSourceDocument(document.docpath, {
+        ...currentDocumentData,
+        pageContent: newContent,
+        docId: document.docId,
+        published: publishedAt,
+        // Todo: Update word count and token_estimate?
+      });
 
       const nextRefresh = DocumentSyncQueue.calcNextSync(queue);
       log(
@@ -206,10 +225,28 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         lastSyncedAt: new Date().toISOString(),
         nextSyncAt: nextRefresh.toISOString(),
       });
+      if (failures.length === 0) {
+        await DocumentSyncQueue.saveRun(
+          queue.id,
+          DocumentSyncRun.statuses.success,
+          { filename: document.filename, workspacesModified }
+        );
+        continue;
+      }
+
+      const failedSlugs = failures.map((f) => f.workspace);
       await DocumentSyncQueue.saveRun(
         queue.id,
-        DocumentSyncRun.statuses.success,
-        { filename: document.filename, workspacesModified }
+        DocumentSyncRun.statuses.failed,
+        {
+          filename: document.filename,
+          workspacesModified: workspacesModified.filter(
+            (slug) => !failedSlugs.includes(slug)
+          ),
+          reason: `Failed to embed the new content into: ${failures
+            .map((f) => `${f.workspace} (${f.error || "unknown error"})`)
+            .join(", ")}`,
+        }
       );
     }
   } catch (e) {

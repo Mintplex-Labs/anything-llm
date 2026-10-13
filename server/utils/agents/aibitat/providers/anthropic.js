@@ -271,7 +271,10 @@ class AnthropicProvider extends Provider {
           messages: chats,
           stream: true,
           ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
+            ? {
+                tools: this.#formatFunctions(functions),
+                tool_choice: { type: "auto", disable_parallel_tool_use: true },
+              }
             : {}),
           ...this.reasoningConfig,
         },
@@ -419,7 +422,10 @@ class AnthropicProvider extends Provider {
           messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
+            ? {
+                tools: this.#formatFunctions(functions),
+                tool_choice: { type: "auto", disable_parallel_tool_use: true },
+              }
             : {}),
           ...this.reasoningConfig,
         },
