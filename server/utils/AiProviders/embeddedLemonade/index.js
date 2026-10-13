@@ -45,7 +45,7 @@ class EmbeddedLemonadeLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!isEnabled())
       throw new Error(
-        "The built-in LLM engine is not enabled. Set EMBEDDED_LEMONADE_ENABLED=true when starting the AnythingLLM Docker container."
+        "The built-in LLM engine is not enabled. Set ENABLE_BUILT_IN_LLM=true when starting the AnythingLLM Docker container."
       );
     this.className = "EmbeddedLemonadeLLM";
     this.model = modelPreference || process.env.EMBEDDED_LEMONADE_MODEL_PREF;

@@ -20,7 +20,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
         xdg-utils git build-essential ffmpeg \
-        # Vulkan loader + Mesa drivers so the embedded Lemonade engine (EMBEDDED_LEMONADE_ENABLED) can use AMD/Intel GPUs
+        # Vulkan loader + Mesa drivers so the embedded Lemonade engine (ENABLE_BUILT_IN_LLM) can use AMD/Intel GPUs
         libvulkan1 mesa-vulkan-drivers && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
@@ -91,7 +91,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
         xdg-utils git build-essential ffmpeg \
-        # Vulkan loader + Mesa drivers so the embedded Lemonade engine (EMBEDDED_LEMONADE_ENABLED) can use AMD/Intel GPUs
+        # Vulkan loader + Mesa drivers so the embedded Lemonade engine (ENABLE_BUILT_IN_LLM) can use AMD/Intel GPUs
         libvulkan1 mesa-vulkan-drivers && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \

@@ -21,7 +21,7 @@ import EmbeddedLemonadeUtils from "./utils";
 
 /**
  * The embedded Lemonade engine (`embedded_lemonade`) - a lemond server this instance runs itself. Only offered when
- * the server has it enabled (EMBEDDED_LEMONADE_ENABLED), so it never shows up anywhere else.
+ * the server has it enabled (ENABLE_BUILT_IN_LLM), so it never shows up anywhere else.
  * @param {{onboarding?: boolean}} options - onboarding shows recommended models before the full model table.
  */
 function embeddedLemonadeLLM({ onboarding = false } = {}) {
@@ -364,9 +364,9 @@ function RecommendedModels({
     );
 
   const hardware = result.vramGb
-    ? `a ${result.vramGb} GB GPU`
+    ? `${result.vramGb} GB GPU`
     : result.ramGb
-      ? `${result.ramGb} GB of memory and no supported GPU`
+      ? `${result.ramGb} GB of memory (no supported GPU)`
       : null;
 
   async function choose(model) {

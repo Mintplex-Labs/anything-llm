@@ -149,7 +149,7 @@ AnythingLLM can run local LLMs inside the container, so you do not need to run O
 inference server next to it. The engine is [Lemonade](https://lemonade-server.ai) running
 [llama.cpp](https://github.com/ggml-org/llama.cpp), and it is off unless you turn it on.
 
-When `EMBEDDED_LEMONADE_ENABLED=true` is set:
+When `ENABLE_BUILT_IN_LLM=true` is set:
 
 - On first boot the container downloads the engine (a few MB) into your storage folder, at
   `<STORAGE_LOCATION>/engines/embedded-lemonade`. It is not part of the image and is kept across container updates.
@@ -173,7 +173,7 @@ docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
--e EMBEDDED_LEMONADE_ENABLED=true \
+-e ENABLE_BUILT_IN_LLM=true \
 mintplexlabs/anythingllm
 ```
 
@@ -198,7 +198,7 @@ docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
--e EMBEDDED_LEMONADE_ENABLED=true \
+-e ENABLE_BUILT_IN_LLM=true \
 mintplexlabs/anythingllm
 ```
 
@@ -215,7 +215,7 @@ docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
--e EMBEDDED_LEMONADE_ENABLED=true \
+-e ENABLE_BUILT_IN_LLM=true \
 mintplexlabs/anythingllm
 ```
 
@@ -235,7 +235,7 @@ services:
       - ${STORAGE_LOCATION}/.env:/app/server/.env
     environment:
       - STORAGE_DIR=/app/server/storage
-      - EMBEDDED_LEMONADE_ENABLED=true
+      - ENABLE_BUILT_IN_LLM=true
     # AMD or Intel GPU
     devices:
       - /dev/dri:/dev/dri
@@ -257,7 +257,7 @@ services:
 
 | ENV | Default | Description |
 | --- | --- | --- |
-| `EMBEDDED_LEMONADE_ENABLED` | _unset_ | Set to `true` to turn on the built-in engine. |
+| `ENABLE_BUILT_IN_LLM` | _unset_ | Set to `true` to turn on the built-in engine. |
 | `EMBEDDED_LEMONADE_LLAMACPP_BACKEND` | `auto` | Force a llama.cpp backend: `cuda`, `vulkan` or `cpu`. |
 | `EMBEDDED_LEMONADE_REGISTRY` | `auto` | Where models download from: `auto` (Hugging Face, falling back to ModelScope), `huggingface` or `modelscope`. |
 | `EMBEDDED_LEMONADE_PORT` | `13355` | Port the engine listens on inside the container. Only change it if something else in the container uses it. |

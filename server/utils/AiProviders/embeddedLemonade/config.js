@@ -5,7 +5,7 @@ const path = require("path");
  *
  * Everything for this provider lives in this folder so it can be ignored or deleted downstream (eg: AnythingLLM
  * Desktop, which has its own built-in engine `anythingllm_lemond`). Nothing here runs outside the Docker image or
- * without EMBEDDED_LEMONADE_ENABLED in the container's start environment - see isEnabled().
+ * without ENABLE_BUILT_IN_LLM in the container's start environment - see isEnabled().
  */
 
 /** The provider tag. Distinct from `lemonade` (an external Lemonade server) and desktop's `anythingllm_lemond`. */
@@ -64,14 +64,14 @@ let enabled = null;
 /**
  * Whether the embedded engine is available on this instance. Only true when ALL of these hold:
  * - the process is the Docker image (ANYTHING_LLM_RUNTIME=docker, set by the Dockerfile)
- * - EMBEDDED_LEMONADE_ENABLED is set in the docker run command or compose file (not the .env file)
+ * - ENABLE_BUILT_IN_LLM is set in the docker run command or compose file (not the .env file)
  * - there is a lemond build for this platform (Linux x64/arm64)
  * Decided once per process since the startup environment cannot change.
  */
 function isEnabled() {
   if (enabled !== null) return enabled;
   const env = startupEnv();
-  const flag = String(env.EMBEDDED_LEMONADE_ENABLED || "").toLowerCase();
+  const flag = String(env.ENABLE_BUILT_IN_LLM || "").toLowerCase();
   enabled =
     env.ANYTHING_LLM_RUNTIME === "docker" &&
     process.env.ANYTHING_LLM_RUNTIME === "docker" &&
