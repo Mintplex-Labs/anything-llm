@@ -703,7 +703,7 @@ const TRANSLATIONS = {
       "start-server": "啟動 MCP 伺服器",
       "delete-server": "刪除 MCP 伺服器",
       "tool-count-warning":
-        "這個 MCP 伺服器已啟用 <b> 工具，這些工具會消耗聊天中的語境 </b>。建議停用不需要的工具，以節省語境。",
+        "這個 MCP 伺服器已啟用 <b>{{count}} 個工具</b>，這些工具會在每次聊天中消耗語境。<br />建議停用不需要的工具，以節省語境。",
       "startup-command": "啟動指令",
       command: "指令",
       arguments: "辯論",
@@ -1781,9 +1781,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "沒有任何限制 — 路線為 <route>{{route}}</route>",
       "calculated-single-condition":
-        "如果符合 <prop>、{{property}}、</prop> 的條件，則前往 {{comparator}}、<val>、「{{value}}」、</val>，然後前往 <route>、{{route}}、</route>。",
+        "如果 <prop>{{property}}</prop> {{comparator}} <val>「{{value}}」</val>，則將路線設定為 <route>{{route}}</route>",
       "calculated-multi-condition":
-        "如果 {{quantifier}} 符合 <cond> 的條件，則將路線設定為 </cond>{{route}}</route>",
+        "如果符合 <cond>{{conditions}}</cond> 中的{{quantifier}}條件，則將路線設定為 <route>{{route}}</route>",
       "comparator-contains": "包含",
       "comparator-matches": "比賽",
       "comparator-between": "之間",

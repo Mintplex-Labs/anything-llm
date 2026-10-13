@@ -95,6 +95,7 @@ const memory = {
                   namespace: workspace.slug,
                   input: query,
                   LLMConnector,
+                  similarityThreshold: workspace?.similarityThreshold ?? 0.25,
                   topN: workspace?.topN ?? 4,
                   rerank: workspace?.vectorSearchMode === "rerank",
                 });

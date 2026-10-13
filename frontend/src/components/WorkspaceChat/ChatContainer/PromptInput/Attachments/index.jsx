@@ -21,13 +21,19 @@ export default function AttachmentManager({ attachments }) {
   if (attachments.length === 0) return null;
 
   function handleImageClick(attachment) {
-    const imageAttachments = attachments
-      .filter((a) => a.type === "attachment" && a.contentString)
-      .map((a) => ({ contentString: a.contentString, name: a.file.name }));
-    const idx = imageAttachments.findIndex(
-      (img) => img.name === attachment.file?.name
+    const images = attachments.filter(
+      (a) => a.type === "attachment" && a.contentString
     );
-    if (idx !== -1) openImageLightbox(imageAttachments, idx);
+    // Images can share a file name, so find the clicked attachment itself.
+    const idx = images.indexOf(attachment);
+    if (idx === -1) return;
+    openImageLightbox(
+      images.map((a) => ({
+        contentString: a.contentString,
+        name: a.file.name,
+      })),
+      idx
+    );
   }
 
   return (

@@ -5,6 +5,7 @@ const {
 const { MODEL_MAP } = require("../modelMap");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const {
   temperatureParam,
@@ -82,7 +83,11 @@ class DeepSeekLLM {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory, ({ userPrompt }) => userPrompt),
+      { role: "user", content: userPrompt },
+    ];
   }
 
   /**

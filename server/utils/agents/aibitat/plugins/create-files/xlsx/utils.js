@@ -127,6 +127,18 @@ function detectDelimiter(csvString) {
 }
 
 /**
+ * Excel stores numbers as IEEE-754 doubles, which only keep about 15
+ * significant digits. A longer digit string (a card number, an account or
+ * tracking ID) would be silently rounded if converted, so it stays as text.
+ * @param {string} numericText - A numeric string, possibly signed or with a decimal point.
+ * @returns {boolean} True if the value has at most 15 significant digits.
+ */
+function fitsInDouble(numericText) {
+  const digits = numericText.replace(/[^0-9]/g, "").replace(/^0+/, "");
+  return digits.length <= 15;
+}
+
+/**
  * Attempts to convert a string value to an appropriate type (number, date, boolean, or string).
  * @param {string} value - The string value to convert
  * @returns {string|number|Date|boolean} The converted value
@@ -143,6 +155,7 @@ function inferCellType(value) {
   if (lowerTrimmed === "false") return false;
 
   if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+    if (!fitsInDouble(trimmed)) return value;
     const num = parseFloat(trimmed);
     if (!isNaN(num) && isFinite(num)) {
       return num;
@@ -150,6 +163,7 @@ function inferCellType(value) {
   }
 
   if (/^-?\d{1,3}(,\d{3})*(\.\d+)?$/.test(trimmed)) {
+    if (!fitsInDouble(trimmed)) return value;
     const num = parseFloat(trimmed.replace(/,/g, ""));
     if (!isNaN(num) && isFinite(num)) {
       return num;
@@ -160,6 +174,7 @@ function inferCellType(value) {
     /^[$€£¥₹]\s*(-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)$/
   );
   if (currencyMatch) {
+    if (!fitsInDouble(currencyMatch[1])) return value;
     const num = parseFloat(currencyMatch[1].replace(/,/g, ""));
     if (!isNaN(num) && isFinite(num)) {
       return num;

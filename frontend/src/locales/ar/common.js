@@ -743,7 +743,7 @@ const TRANSLATIONS = {
       "start-server": "ابدأ خادم MCP",
       "delete-server": "حذف خادم MCP",
       "tool-count-warning":
-        "يحتوي هذا خادم MCP على <b> أدوات مُفعّلة</b> والتي ستستهلك السياق في كل محادثة. <br /> ضع في اعتبارك تعطيل الأدوات غير المرغوب فيها لتوفير السياق.",
+        "يحتوي خادم MCP هذا على <b>أدوات مُفعّلة ({{count}})</b> ستستهلك السياق في كل محادثة.<br />ضع في اعتبارك تعطيل الأدوات غير المرغوب فيها لتوفير السياق.",
       "startup-command": "أمر البدء",
       command: "الأمر",
       arguments: "حجج",
@@ -1872,7 +1872,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'إذا كانت <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>، فقم بتوجيهها إلى <route>{{route}}</route>',
       "calculated-multi-condition":
-        "إذا كان {{quantifier}} من <cond>، فإن المسار يجب أن يكون إلى <route>، {{route}}، </route>",
+        "إذا تحقق {{quantifier}} من <cond>{{conditions}}</cond>، فقم بتوجيهها إلى <route>{{route}}</route>",
       "comparator-contains": "يحتوي على",
       "comparator-matches": "المباريات",
       "comparator-between": "بين",

@@ -82,7 +82,8 @@ export function getTimezoneAbbreviation() {
 
 /**
  * Humanize a cron expression for display in the user's local timezone.
- * The cron is stored in UTC, so we convert it to local time for display.
+ * The cron is stored in UTC, so we convert it to local time for display. A
+ * schedule with no single local expression is shown in UTC.
  * @param {string} cron - The cron expression (in UTC).
  * @param {string} locale - The locale.
  * @returns {string} The humanized cron expression with timezone indicator.
@@ -91,50 +92,158 @@ export function humanizeCron(cron, locale) {
   if (!cron) return "";
   try {
     const localCron = convertCronToLocalTime(cron);
-    const humanized = cronstrue.toString(localCron, {
+    const humanized = cronstrue.toString(localCron ?? cron, {
       throwExceptionOnParseError: false,
       locale: toCronstrueLocale(locale),
     });
-    return `${humanized} ${getTimezoneAbbreviation()}`;
+    return `${humanized} ${localCron ? getTimezoneAbbreviation() : "UTC"}`;
   } catch {
     return cron;
   }
 }
 
+const WEEKDAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
 /**
- * Convert a UTC cron expression to local time for display purposes.
- * Converts time and day fields for patterns that have a specific time.
- * @param {string} cron - The cron expression in UTC.
- * @returns {string} The cron expression adjusted to local time.
+ * Expand a cron minute or hour field into its sorted values. Supports numbers,
+ * ranges, steps and lists of those.
+ * @returns {number[]|null} null when the field has any other syntax or a value outside min-max.
  */
-function convertCronToLocalTime(cron) {
+function expandField(field, min, max) {
+  const values = new Set();
+  for (const part of field.split(",")) {
+    const match = /^(?:\*|(\d+)(?:-(\d+))?)(?:\/(\d+))?$/.exec(part);
+    if (!match) return null;
+    const [, from, to, step] = match;
+    let start = min;
+    let end = max;
+    if (from !== undefined) {
+      start = Number(from);
+      end = to !== undefined ? Number(to) : step !== undefined ? max : start;
+    }
+    const increment = step !== undefined ? Number(step) : 1;
+    if (start < min || end > max || start > end || increment < 1) return null;
+    for (let v = start; v <= end; v += increment) values.add(v);
+  }
+  return [...values].sort((a, b) => a - b);
+}
+
+/** Write sorted values back as a cron field: "*", a step, or a list of numbers and ranges. */
+function compressField(values, min, max) {
+  if (values.length === max - min + 1) return "*";
+  const step = values[1] - values[0];
+  if (
+    values.length >= 3 &&
+    step > 1 &&
+    values.every((v, i) => v === values[0] + i * step)
+  ) {
+    const last = values[values.length - 1];
+    return values[0] === min && last + step > max
+      ? `*/${step}`
+      : `${values[0]}-${last}/${step}`;
+  }
+  const parts = [];
+  for (let i = 0; i < values.length; ) {
+    let j = i;
+    while (values[j + 1] === values[j] + 1) j++;
+    if (j - i >= 2) parts.push(`${values[i]}-${values[j]}`);
+    else for (let k = i; k <= j; k++) parts.push(String(values[k]));
+    i = j + 1;
+  }
+  return parts.join(",");
+}
+
+/**
+ * Move a weekday field by whole days. Weekday lists and ranges ("1-5", "0,6",
+ * "MON-FRI") become an explicit shifted list. Other values stay as they are.
+ */
+function shiftWeekdayField(dow, dayShift) {
+  const numericDow = dow.replace(
+    /[a-z]+/gi,
+    // Unknown names become -1, which fails the pattern check below.
+    (name) => WEEKDAY_NAMES.indexOf(name.toUpperCase())
+  );
+  if (!/^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(numericDow)) return dow;
+  const days = numericDow.split(",").flatMap((part) => {
+    const [from, to = from] = part.split("-").map(Number);
+    return Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  });
+  return shiftWeekdays(days, dayShift).join(",");
+}
+
+/**
+ * Move every run of a 5-field cron expression by a number of minutes. Mirrors
+ * shiftCron in server/utils/agents/aibitat/plugins/create-scheduled-job/cronUtils.js.
+ *
+ * Returns null when no single expression has the moved runs: the moved
+ * minute and hour values no longer combine into exactly the moved runs, or
+ * some runs cross midnight and others do not while a day field is set.
+ * @param {string} cron - 5-field cron expression.
+ * @param {number} shiftMinutes - Minutes to add to every run.
+ * @returns {string|null}
+ */
+function shiftCron(cron, shiftMinutes) {
   if (!cron || typeof cron !== "string") return cron;
   const parts = cron.trim().split(/\s+/);
   if (parts.length !== 5) return cron;
 
-  const [minute, hour, dom, mon, dow] = parts;
+  const [minute, hour, dom, month, dow] = parts;
+  const minutes = expandField(minute, 0, 59);
+  const hours = expandField(hour, 0, 23);
+  if (!minutes || !hours) return null;
 
-  // Only convert if hour is a specific number (not * or */n)
-  if (/^\d+$/.test(hour) && /^\d+$/.test(minute)) {
-    const local = utcTimeToLocal(parseInt(hour, 10), parseInt(minute, 10));
-    const localDom =
-      local.dayShift !== 0 && /^\d+$/.test(dom)
-        ? shiftDayOfMonth(parseInt(dom, 10), local.dayShift)
-        : dom;
-    const localDow =
-      local.dayShift !== 0 && /^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(dow)
-        ? shiftWeekdays(
-            dow.split(",").flatMap((part) => {
-              const [from, to = from] = part.split("-").map(Number);
-              return Array.from({ length: to - from + 1 }, (_, i) => from + i);
-            }),
-            local.dayShift
-          ).join(",")
-        : dow;
-    return `${local.minute} ${local.hour} ${localDom} ${mon} ${localDow}`;
+  const movedMinutes = new Set();
+  const movedHours = new Set();
+  const dayShifts = new Set();
+  for (const h of hours) {
+    for (const m of minutes) {
+      const total = h * 60 + m + shiftMinutes;
+      const minuteOfDay = ((total % 1440) + 1440) % 1440;
+      movedHours.add(Math.floor(minuteOfDay / 60));
+      movedMinutes.add(minuteOfDay % 60);
+      dayShifts.add(Math.floor(total / 1440));
+    }
   }
 
-  return cron;
+  // Every run moves to a distinct minute of the day, so the moved runs fill
+  // all hour/minute combinations exactly when the counts match.
+  if (movedHours.size * movedMinutes.size !== hours.length * minutes.length)
+    return null;
+
+  const daysRestricted = !["*", "?"].includes(dom) || !["*", "?"].includes(dow);
+  if (dayShifts.size > 1 && daysRestricted) return null;
+  const dayShift = dayShifts.size === 1 ? [...dayShifts][0] : 0;
+
+  // Keep the original text of a field whose values did not change.
+  const rewrite = (field, values, moved, max) =>
+    values.length === moved.size && values.every((v) => moved.has(v))
+      ? field
+      : compressField(
+          [...moved].sort((a, b) => a - b),
+          0,
+          max
+        );
+
+  return [
+    rewrite(minute, minutes, movedMinutes, 59),
+    rewrite(hour, hours, movedHours, 23),
+    dayShift && /^\d+$/.test(dom)
+      ? String(shiftDayOfMonth(Number(dom), dayShift))
+      : dom,
+    month,
+    dayShift ? shiftWeekdayField(dow, dayShift) : dow,
+  ].join(" ");
+}
+
+/**
+ * Convert a UTC cron expression to local time for display purposes, using the
+ * browser's current offset.
+ * @param {string} cron - The cron expression in UTC.
+ * @returns {string|null} The cron expression in local time, or null when no
+ *   single local expression runs at the same times.
+ */
+function convertCronToLocalTime(cron) {
+  return shiftCron(cron, moment().utcOffset());
 }
 
 /**
@@ -219,7 +328,7 @@ export function parseCronToBuilderState(cron) {
       state: {
         ...DEFAULT_BUILDER_STATE,
         frequency: "hour",
-        hourMinuteOffset: parseInt(m, 10),
+        hourMinuteOffset: utcTimeToLocal(0, parseInt(m, 10)).minute,
       },
       wasFallback: false,
     };
@@ -302,7 +411,7 @@ export function buildCronFromBuilderState(state) {
       return n === 1 ? "* * * * *" : `*/${n} * * * *`;
     }
     case "hour":
-      return `${state.hourMinuteOffset} * * * *`;
+      return `${localTimeToUTC(0, state.hourMinuteOffset).minute} * * * *`;
     case "day": {
       const utc = localTimeToUTC(state.hour, state.minute);
       return `${utc.minute} ${utc.hour} * * *`;

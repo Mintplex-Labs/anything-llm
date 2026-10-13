@@ -761,7 +761,7 @@ const TRANSLATIONS = {
       "start-server": "Запустить сервер MCP",
       "delete-server": "Удалить сервер MCP",
       "tool-count-warning":
-        "Этот сервер MCP имеет включенные <b> инструменты, которые потребляют контекст в каждом чате.</b> Рассмотрите возможность отключения нежелательных инструментов для экономии контекста.",
+        "Этот сервер MCP имеет <b>включенные инструменты ({{count}})</b>, которые потребляют контекст в каждом чате.<br />Рассмотрите возможность отключения нежелательных инструментов для экономии контекста.",
       "startup-command": "Команда для запуска",
       command: "Приказ",
       arguments: "Аргументы",
@@ -1358,7 +1358,7 @@ const TRANSLATIONS = {
     update_account: "Обновить учётную запись",
     theme: "Предпочтения темы",
     language: "Предпочитаемый язык",
-    failed_upload: "Не удалось загрузить фотографию профиля: {{ошибка}}",
+    failed_upload: "Не удалось загрузить фотографию профиля: {{error}}",
     upload_success: "Фотография профиля загружена.",
     failed_remove: "Не удалось удалить фотографию профиля: {{error}}",
     profile_updated: "Профиль обновлен.",
@@ -1927,9 +1927,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "Без каких-либо условий — маршрут к <route>{{route}}</route>",
       "calculated-single-condition":
-        'Если <prop> находится в {{property}} и </prop>, то перенаправить на {{comparator}} и <val>"{{value}}"</val>',
+        'Если <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, то перенаправить на <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Если условие {{quantifier}} в <cond> выполняется, то перенаправить на <route>",
+        "Если выполняется {{quantifier}} из <cond>{{conditions}}</cond>, то перенаправить на <route>{{route}}</route>",
       "comparator-contains": "содержит",
       "comparator-matches": "матчи",
       "comparator-between": "между",

@@ -146,6 +146,18 @@ We cannot act as a discovery or marketing engine for early-stage startups. To qu
 - **Footprint Metrics:** The provider or core underlying model organization must possess a verifiable footprint (e.g., `50,000` aggregate downloads on Hugging Face, or `1,000` stars on its core open-source repository).
 - **Operational Longevity:** The provider's production API must be publicly accessible and stable for a minimum of **90 days**. We do not accept integrations for services that launched less than 90 days ago.
 
+## 🧩 Criteria for All Other Third-Party Integrations
+
+The criteria above are not limited to LLM providers. They apply to **any** integration with a third-party product or service, including embedding engines, vector databases, web search providers, rerankers, TTS/STT providers, data connectors, and agent skills.
+
+In addition, every third-party integration must meet the following:
+
+- **Existing traction or relationship:** The product must already have meaningful adoption, a reputation we recognize, or an existing relationship with the Mintplex Labs team. Being new, being a good product, or being cheaper than an existing option is not enough on its own.
+- **Testable by maintainers:** We must be able to test and maintain the integration without paying for it. If the service has no free tier or trial and requires a funded API key just to make a request, we cannot verify it works today or keep it working later.
+- **No promotional contributions:** AnythingLLM is not a distribution or marketing channel. Integrations opened by, or on behalf of, a provider primarily to gain visibility, backlinks, or a spot in our provider list will be closed. If you work for the provider, say so in the issue.
+
+Requests that don't meet these criteria will be labeled as an integration request and left for community demand to build up. PRs for them will be closed without review.
+
 ## 🤖 AI Use in Contributions
 
 We are an AI company — we obviously use AI tools and expect contributors do too. However, we believe in **AI-augmented engineers**, not AI-replaced engineers. There is a difference between using an LLM to help you write code and having an LLM write code for you.

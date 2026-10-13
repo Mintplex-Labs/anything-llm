@@ -64,4 +64,59 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     const variables = await SystemPromptVariables.expandSystemPromptVariables("Hello {invalid.variable} {user.password} the current user is {user.name} on workspace id #{workspace.id}", null, null);
     expect(variables).toBe("Hello {invalid.variable} [User password] the current user is [User name] on workspace id #[Workspace ID]");
   });
+
+  it("preserves $$ and $& in static variable values (String.replace specials)", async () => {
+    prisma.system_prompt_variables.findMany = jest.fn().mockResolvedValue([
+      {
+        id: 2,
+        key: "dollars",
+        value: "cost is $$5 and matched $& here",
+        description: "dollar specials",
+        type: "static",
+        userId: null,
+      },
+    ]);
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "Invoice {dollars}"
+    );
+    expect(out).toBe("Invoice cost is $$5 and matched $& here");
+  });
+
+  it("preserves $` and $' in static variable values", async () => {
+    prisma.system_prompt_variables.findMany = jest.fn().mockResolvedValue([
+      {
+        id: 3,
+        key: "ticks",
+        value: "before $` after $'",
+        description: "tick specials",
+        type: "static",
+        userId: null,
+      },
+    ]);
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "X {ticks} Y"
+    );
+    expect(out).toBe("X before $` after $' Y");
+  });
+
+  it("preserves $ specials in default user and workspace variable values", async () => {
+    prisma.users.findUnique = jest.fn().mockResolvedValue({
+      ...mockUser,
+      username: "$&john",
+      bio: "I charge $$50/hr, $` and $' included",
+    });
+    prisma.workspaces.findUnique = jest.fn().mockResolvedValue({
+      ...mockWorkspace,
+      name: "Team $& Co",
+    });
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.name} | {user.bio} | {workspace.name}",
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(
+      "$&john | I charge $$50/hr, $` and $' included | Team $& Co"
+    );
+  });
+
 });

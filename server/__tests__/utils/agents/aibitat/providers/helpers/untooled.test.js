@@ -1,4 +1,7 @@
 const UnTooled = require("../../../../../../utils/agents/aibitat/providers/helpers/untooled");
+const {
+  rechart,
+} = require("../../../../../../utils/agents/aibitat/plugins/rechart.js");
 
 describe("UnTooled: validFuncCall", () => {
   const untooled = new UnTooled();
@@ -83,5 +86,21 @@ describe("UnTooled: validFuncCall", () => {
       }, [validFunc]);
     expect(result.valid).toBe(false);
     expect(result.reason).toBe("Unknown argument: unknown provided but not in schema.");
+  });
+});
+
+describe("UnTooled: validFuncCall with a bundled plugin definition", () => {
+  it("Be falsey if a create-chart call is missing its required dataset", () => {
+    const functions = [];
+    rechart.plugin.call(rechart).setup({
+      function: (definition) => functions.push(definition),
+    });
+
+    const result = new UnTooled().validFuncCall(
+      { name: "create-chart", arguments: { type: "bar", title: "Sales" } },
+      functions
+    );
+    expect(result.valid).toBe(false);
+    expect(result.reason).toBe("Missing required argument: dataset");
   });
 });
