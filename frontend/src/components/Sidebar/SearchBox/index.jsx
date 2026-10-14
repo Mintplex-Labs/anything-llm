@@ -141,6 +141,7 @@ function SearchResults({ searchResults, searchTerm, loading }) {
           to: paths.workspace.thread(thread.workspace.slug, thread.slug),
           name: thread.name,
           hint: thread.workspace.name,
+          excerpt: thread.excerpt ?? null, // content match excerpt — null for title matches
         }))}
       />
     </SearchResultWrapper>
@@ -161,6 +162,7 @@ function SearchResultCategory({ items, name }) {
             to={item.to}
             name={item.name}
             hint={item.hint}
+            excerpt={item.excerpt}
           />
         ))}
       </div>
@@ -168,7 +170,7 @@ function SearchResultCategory({ items, name }) {
   );
 }
 
-function SearchResultItem({ to, name, hint }) {
+function SearchResultItem({ to, name, hint, excerpt }) {
   return (
     <Link
       to={to}
@@ -183,6 +185,12 @@ function SearchResultItem({ to, name, hint }) {
           </span>
         )}
       </p>
+      {/* Show content excerpt only for content-matched threads, not title matches */}
+      {excerpt && (
+        <p className="text-theme-text-secondary text-xs mt-[2px] line-clamp-2 w-full italic">
+          {excerpt}
+        </p>
+      )}
     </Link>
   );
 }
