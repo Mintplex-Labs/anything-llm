@@ -79,7 +79,7 @@ export default function EmbeddingFileRow({
       : 0;
 
   return (
-    <div className="text-slate-100 light:text-slate-900 text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5">
+    <div className="text-slate-100 light:text-slate-900 text-xs grid grid-cols-12 py-2 pl-3.5 pr-3.5 h-[34px] items-center border-b border-white/5 last:border-b-0">
       <div className="col-span-7 flex items-center gap-x-2 overflow-hidden">
         {STATUS_STYLES[status]?.icon || STATUS_STYLES.pending.icon}
         <p
