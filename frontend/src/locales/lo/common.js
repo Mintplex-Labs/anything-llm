@@ -300,6 +300,7 @@ const TRANSLATIONS = {
         max: "ສູງສຸດ",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "ຕົວລະບຸຖານຂໍ້ມູນເວກເຕີ",

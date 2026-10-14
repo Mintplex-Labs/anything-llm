@@ -281,6 +281,8 @@ const TRANSLATIONS = {
       "tooltip-description":
         "You are in query mode, which only uses information from your documents. Switch to chat mode for more flexible conversations, or click here to visit our documentation to learn more about chat modes.",
     },
+    token_limit_reached:
+      "Response hit the max output token limit. Increase the model's max output tokens to allow longer responses.",
     temperature: {
       title: "LLM Temperature",
       "desc-end":

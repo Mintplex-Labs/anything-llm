@@ -18,13 +18,16 @@ function TimeoutProgressBar({ percent }) {
   );
 }
 
-function CardWrapper({ children }) {
+function CardWrapper({ children, onInteract }) {
   return (
     <div className="flex justify-center w-full my-1 pr-4">
       <div className="w-full flex flex-col">
         <div
           style={{ borderRadius: "20px" }}
           className="relative border border-solid border-zinc-700 light:border-zinc-300 bg-transparent p-[18px] flex flex-col gap-[18px] overflow-hidden"
+          onPointerEnter={onInteract}
+          onPointerDownCapture={onInteract}
+          onKeyDownCapture={onInteract}
         >
           {children}
         </div>
@@ -117,6 +120,10 @@ function CompletedSurvey({ questions, drafts, submittedResult }) {
  * more questions in a single batch (paginated), then renders a read-only
  * SurveyBody once the user submits, skips, or the timeout fires.
  *
+ * The first hover, click or keypress on the card hides the countdown and tells the
+ * server to hold the request open, so the user is never racing the clock while
+ * answering. Focus is not used as the signal because the inputs autofocus.
+ *
  * Persisted/historical chats use the same SurveyBody via HistoricalClarifyingQuestions.
  */
 export default function ClarifyingQuestionCard({
@@ -128,13 +135,14 @@ export default function ClarifyingQuestionCard({
 }) {
   const [index, setIndex] = useState(0);
   const [responded, setResponded] = useState(false);
+  const [engaged, setEngaged] = useState(false);
   const [submittedResult, setSubmittedResult] = useState(null);
   const [drafts, setDrafts] = useState(() =>
     questions.map((q) => emptyDraftFor(q))
   );
 
   const progressPercent = useTimeoutProgress(timeoutMs, {
-    active: !responded,
+    active: !responded && !engaged,
     onTimeout: () => {
       setResponded(true);
       setSubmittedResult({ timedOut: true });
@@ -163,6 +171,14 @@ export default function ClarifyingQuestionCard({
     setDrafts((prev) =>
       prev.map((d, i) => (i === index ? { ...d, ...patch } : d))
     );
+  }
+
+  function handleInteract() {
+    if (engaged || responded) return;
+    setEngaged(true);
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+      websocket.send(JSON.stringify({ type: "clarificationHold", requestId }));
+    }
   }
 
   function send(payload) {
@@ -215,7 +231,7 @@ export default function ClarifyingQuestionCard({
   }
 
   return (
-    <CardWrapper>
+    <CardWrapper onInteract={handleInteract}>
       {!responded && (
         <>
           <Header
@@ -265,7 +281,7 @@ export default function ClarifyingQuestionCard({
           submittedResult={submittedResult}
         />
       )}
-      {timeoutMs && !responded && (
+      {timeoutMs && !responded && !engaged && (
         <TimeoutProgressBar percent={progressPercent} />
       )}
     </CardWrapper>

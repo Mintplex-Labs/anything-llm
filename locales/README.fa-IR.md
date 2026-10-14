@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> ما همچنین روی [Open Computer](../open-computer) کار می‌کنیم که یک محیط کامل کامپیوتری در اختیار عامل‌های هوش مصنوعی قرار می‌دهد.
->
-> این قابلیت‌های عاملِ AnythingLLM را به سطح تازه‌ای می‌رساند و الگوی جدیدی برای تجربه کاربری عامل‌های هوش مصنوعی ارائه می‌کند.
->
-> ⭐ برای دریافت آخرین اخبار به مخزن ستاره بدهید!
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
