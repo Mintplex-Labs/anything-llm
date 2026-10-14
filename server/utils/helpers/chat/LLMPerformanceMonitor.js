@@ -13,6 +13,7 @@ const { TokenManager } = require("../tiktoken");
  * @property {number} total_tokens - the total number of tokens
  * @property {number} outputTps - the tokens per second of the output
  * @property {number} duration - the duration of the stream
+ * @property {boolean} [truncated] - true when generation stopped at the max output token limit
  */
 
 /**
@@ -22,6 +23,20 @@ const { TokenManager } = require("../tiktoken");
  * @property {StreamMetrics} metrics - the metrics of the stream
  * @property {EndMeasurementFunction} endMeasurement - the method to end the stream and calculate the metrics
  */
+
+/**
+ * Whether a stream chunk or event reports that generation stopped at the max output token limit.
+ * @param {Object} chunk
+ * @returns {boolean}
+ */
+function hitTokenLimit(chunk) {
+  return (
+    chunk?.choices?.[0]?.finish_reason === "length" || // OpenAI-compatible
+    chunk?.done_reason === "length" || // Ollama
+    chunk?.delta?.stop_reason === "max_tokens" || // Anthropic
+    chunk?.response?.incomplete_details?.reason === "max_output_tokens" // OpenAI Responses
+  );
+}
 
 class LLMPerformanceMonitor {
   static tokenManager = new TokenManager();
@@ -84,6 +99,31 @@ class LLMPerformanceMonitor {
       ...(modelTag ? { model: modelTag } : {}),
       ...(provider ? { provider: provider } : {}),
     };
+
+    // Flag responses cut off by the max output token limit so the UI can say why they stopped.
+    const markTruncated = (chunk) => {
+      if (hitTokenLimit(chunk)) stream.metrics.truncated = true;
+    };
+    if (typeof stream.on === "function")
+      stream.on("streamEvent", markTruncated);
+    if (typeof stream[Symbol.asyncIterator] === "function") {
+      const iterate = stream[Symbol.asyncIterator].bind(stream);
+      stream[Symbol.asyncIterator] = () => {
+        const iterator = iterate();
+        return {
+          async next() {
+            const result = await iterator.next();
+            if (!result.done) markTruncated(result.value);
+            return result;
+          },
+          return: async (value) =>
+            iterator.return ? iterator.return(value) : { done: true, value },
+          [Symbol.asyncIterator]() {
+            return this;
+          },
+        };
+      };
+    }
 
     stream.endMeasurement = (reportedUsage = {}) => {
       const end = Date.now();

@@ -2,7 +2,6 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
-  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
@@ -396,7 +395,6 @@ class OllamaAILLM {
             usage.prompt_tokens = chunk.prompt_eval_count;
             usage.completion_tokens = chunk.eval_count;
             usage.duration = chunk.eval_duration / 1e9;
-            if (isTruncatedFinish(chunk.done_reason)) usage.truncated = true;
             writeResponseChunk(response, {
               uuid,
               sources,

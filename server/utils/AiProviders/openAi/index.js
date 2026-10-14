@@ -5,7 +5,6 @@ const {
   formatChatHistory,
   writeResponseChunk,
   clientAbortedHandler,
-  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const {
@@ -313,8 +312,6 @@ class OpenAiLLM {
                 total_tokens: res.usage?.total_tokens || 0,
               };
             }
-            if (isTruncatedFinish(res.incomplete_details?.reason))
-              usage.truncated = true;
 
             writeResponseChunk(response, {
               uuid,

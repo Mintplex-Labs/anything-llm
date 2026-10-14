@@ -4,7 +4,6 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
-  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -378,9 +377,6 @@ class NovitaLLM {
             response.removeListener("close", handleAbort);
             stream?.endMeasurement({
               completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-              ...(isTruncatedFinish(message?.finish_reason)
-                ? { truncated: true }
-                : {}),
             });
             resolve(fullText);
           }

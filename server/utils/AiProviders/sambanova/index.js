@@ -8,7 +8,6 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
-  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const {
@@ -234,8 +233,6 @@ class SambaNovaLLM {
             message.finish_reason !== "" &&
             message.finish_reason !== null
           ) {
-            if (isTruncatedFinish(message.finish_reason))
-              usage.truncated = true;
             writeResponseChunk(response, {
               uuid,
               sources,

@@ -4,7 +4,6 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
-  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -304,9 +303,6 @@ class ApiPieLLM {
             response.removeListener("close", handleAbort);
             stream?.endMeasurement({
               completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-              ...(isTruncatedFinish(message?.finish_reason)
-                ? { truncated: true }
-                : {}),
             });
             resolve(fullText);
           }
