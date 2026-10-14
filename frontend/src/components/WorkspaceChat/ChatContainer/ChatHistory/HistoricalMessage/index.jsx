@@ -180,6 +180,12 @@ const HistoricalMessage = ({
             )}
             <ChatAttachments attachments={attachments} />
             <HistoricalOutputs outputs={outputs} />
+            {metrics?.truncated && (
+              <div className="flex items-center gap-x-1.5 mt-2 text-xs text-amber-400 light:text-amber-600">
+                <Warning className="h-4 w-4 shrink-0" />
+                <p className="!m-0">{t("chat.token_limit_reached")}</p>
+              </div>
+            )}
           </div>
         )}
         {hasVisibleContent(message) && (

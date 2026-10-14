@@ -196,6 +196,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     let textResponse = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
+    this.watchTokenLimit(stream);
 
     eventHandler?.("reportStreamEvent", {
       type: "statusResponse",
@@ -351,6 +352,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         const stream = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
+        this.watchTokenLimit(stream);
 
         for await (const chunk of stream) {
           if (!chunk?.choices?.[0]) continue; // Skip if no choices
@@ -433,6 +435,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         const response = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
+        this.watchTokenLimit(response);
         // If the response from the callback is the raw OpenAI Spec response object, we can use that directly.
         // Otherwise, we will assume the response is just the string output we wanted (see: `#handleFunctionCallChat` which returns the content only)
         // This handles both streaming and non-streaming completions.
