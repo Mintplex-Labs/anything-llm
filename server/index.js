@@ -49,7 +49,8 @@ const { memoryEndpoints } = require("./endpoints/memory");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
-const BODY_LIMIT = process.env.SERVER_BODY_LIMIT || "100mb";
+const FILE_LIMIT = "3GB";
+const EMBED_BODY_LIMIT = "1mb";
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -63,11 +64,18 @@ if (
   );
 }
 app.use(cors({ origin: true }));
-app.use(bodyParser.text({ limit: BODY_LIMIT }));
-app.use(bodyParser.json({ limit: BODY_LIMIT }));
+// Embed endpoints are public-facing and only accept small payloads, so parse them
+// first with a tight limit. The global parsers below skip already-parsed bodies.
+app.use("/api/embed", [
+  bodyParser.text({ limit: EMBED_BODY_LIMIT }),
+  bodyParser.json({ limit: EMBED_BODY_LIMIT }),
+  bodyParser.urlencoded({ limit: EMBED_BODY_LIMIT, extended: true }),
+]);
+app.use(bodyParser.text({ limit: FILE_LIMIT }));
+app.use(bodyParser.json({ limit: FILE_LIMIT }));
 app.use(
   bodyParser.urlencoded({
-    limit: BODY_LIMIT,
+    limit: FILE_LIMIT,
     extended: true,
   })
 );
