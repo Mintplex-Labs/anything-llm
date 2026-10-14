@@ -119,4 +119,46 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     );
   });
 
+  it("does not expand placeholders inside inserted user values", async () => {
+    prisma.users.findUnique = jest.fn().mockResolvedValue({
+      ...mockUser,
+      bio: "see {workspace.name}",
+    });
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.bio} | in {workspace.name}",
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(`see {workspace.name} | in ${mockWorkspace.name}`);
+  });
+
+  it("does not expand placeholders inside inserted static values", async () => {
+    prisma.system_prompt_variables.findMany = jest.fn().mockResolvedValue([
+      {
+        id: 4,
+        key: "greeting",
+        value: "Hi {user.name}",
+        description: "nested placeholder",
+        type: "static",
+        userId: null,
+      },
+    ]);
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{greeting} | {user.name}",
+      mockUser.id
+    );
+    expect(out).toBe(`Hi {user.name} | ${mockUser.username}`);
+  });
+
+  it("expands the same placeholder used more than once", async () => {
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.name} and {user.name} in {workspace.name}",
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(
+      `${mockUser.username} and ${mockUser.username} in ${mockWorkspace.name}`
+    );
+  });
+
 });
