@@ -49,7 +49,12 @@ const { memoryEndpoints } = require("./endpoints/memory");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
-const FILE_LIMIT = "3GB";
+// Body-parser limit for JSON/text/urlencoded request bodies. This governs only
+// these parsers - binary file uploads are handled by multer (multipart/form-data)
+// and are NOT bound by this value. It is kept well under V8's MAX_STRING_LENGTH
+// (~512MB) so an oversized body is rejected with HTTP 413 instead of throwing an
+// uncaught RangeError that crashes the process. See GHSA-qmjm-qjhp-qfm7.
+const BODY_LIMIT = process.env.SERVER_BODY_LIMIT || "100mb";
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -63,14 +68,27 @@ if (
   );
 }
 app.use(cors({ origin: true }));
-app.use(bodyParser.text({ limit: FILE_LIMIT }));
-app.use(bodyParser.json({ limit: FILE_LIMIT }));
+app.use(bodyParser.text({ limit: BODY_LIMIT }));
+app.use(bodyParser.json({ limit: BODY_LIMIT }));
 app.use(
   bodyParser.urlencoded({
-    limit: FILE_LIMIT,
+    limit: BODY_LIMIT,
     extended: true,
   })
 );
+// Catch body-parser failures (oversized/malformed payloads) and return a clean
+// error instead of letting them bubble up. Public routes such as the embed
+// stream-chat endpoint parse bodies before any auth/quota check, so without this
+// a single oversized body on an unauthenticated route would otherwise be able to
+// take the process down. See GHSA-qmjm-qjhp-qfm7.
+app.use((err, request, response, next) => {
+  if (err?.type === "entity.too.large")
+    return response.status(413).json({ error: "Request payload too large." });
+  if (err instanceof SyntaxError && "body" in err)
+    return response.status(400).json({ error: "Malformed request body." });
+  if (err) return response.status(400).json({ error: "Invalid request body." });
+  next();
+});
 
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
