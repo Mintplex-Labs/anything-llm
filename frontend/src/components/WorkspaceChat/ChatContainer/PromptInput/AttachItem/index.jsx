@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import {
   ATTACHMENTS_PROCESSED_EVENT,
+  PARSED_FILES_UPDATED_EVENT,
   REMOVE_ATTACHMENT_EVENT,
 } from "../../DnDWrapper";
 import { useTheme } from "@/hooks/useTheme";
@@ -75,9 +76,11 @@ export default function AttachItem({
   useEffect(() => {
     fetchFiles();
     window.addEventListener(ATTACHMENTS_PROCESSED_EVENT, fetchFiles);
+    window.addEventListener(PARSED_FILES_UPDATED_EVENT, fetchFiles);
     window.addEventListener(REMOVE_ATTACHMENT_EVENT, handleRemoveAttachment);
     return () => {
       window.removeEventListener(ATTACHMENTS_PROCESSED_EVENT, fetchFiles);
+      window.removeEventListener(PARSED_FILES_UPDATED_EVENT, fetchFiles);
       window.removeEventListener(
         REMOVE_ATTACHMENT_EVENT,
         handleRemoveAttachment

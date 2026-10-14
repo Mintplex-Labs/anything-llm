@@ -119,6 +119,36 @@ function workspaceParsedFilesEndpoints(app) {
   );
 
   app.post(
+    "/workspace/:slug/move-parsed-files",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async function (request, response) {
+      try {
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        const { fileIds = [] } = reqBody(request);
+        if (!Array.isArray(fileIds)) return response.sendStatus(400);
+
+        // null marks a failed move
+        const locations = await Promise.all(
+          fileIds.map((fileId) =>
+            WorkspaceParsedFiles.moveToDocuments(user, fileId, workspace).catch(
+              () => null
+            )
+          )
+        );
+        return response.status(200).json({ locations });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
+  app.post(
     "/workspace/:slug/parse",
     [
       validatedRequest,
