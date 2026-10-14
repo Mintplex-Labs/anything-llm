@@ -19,7 +19,6 @@ on:
       - "embed/**/*"
       - "browser-extension/**/*"
       - "extras/**/*"
-      - 'open-computer/**/*'
 
 
 concurrency:

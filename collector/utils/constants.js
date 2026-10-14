@@ -35,6 +35,7 @@ const ACCEPTED_MIMES = {
 
   "video/mp4": [".mp4"],
   "video/mpeg": [".mpeg"],
+  "video/quicktime": [".mov"],
   "application/epub+zip": [".epub"],
   "image/png": [".png"],
   "image/jpeg": [".jpg"],
@@ -73,6 +74,7 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".wav": "./convert/asAudio.js",
   ".mp4": "./convert/asAudio.js",
   ".mpeg": "./convert/asAudio.js",
+  ".mov": "./convert/asAudio.js",
   ".ogg": "./convert/asAudio.js",
   ".oga": "./convert/asAudio.js",
   ".opus": "./convert/asAudio.js",

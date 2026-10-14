@@ -258,6 +258,8 @@ const TRANSLATIONS = {
         max: "Maximaal",
       },
     },
+    token_limit_reached:
+      "Het antwoord heeft het maximale aantal uitvoertokens bereikt. Verhoog het maximale aantal uitvoertokens van het model om langere antwoorden mogelijk te maken.",
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",

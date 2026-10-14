@@ -300,6 +300,8 @@ const TRANSLATIONS = {
         max: "Maksimalios",
       },
     },
+    token_limit_reached:
+      "Atsakymas pasiekė maksimalų išvesties žetonų limitą. Padidinkite modelio maksimalų išvesties žetonų skaičių, kad būtų galimi ilgesni atsakymai.",
   },
   "vector-workspace": {
     identifier: "Vektorių duomenų bazės identifikatorius",

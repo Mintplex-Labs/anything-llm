@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> 我们同时也在开发 [Open Computer](../open-computer)，为 AI 智能体提供完整的计算机运行环境。
->
-> 这将把 AnythingLLM 的智能体能力提升到新的高度，并带来全新的 AI 智能体使用范式。
->
-> ⭐ 为本仓库点亮 Star 以获取最新动态！
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>

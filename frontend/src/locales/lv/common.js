@@ -293,6 +293,8 @@ const TRANSLATIONS = {
         max: "Maksimāla",
       },
     },
+    token_limit_reached:
+      "Atbildē tika sasniegts maksimālais izvades tokenu limits. Palieliniet modeļa maksimālo izvades tokenu skaitu, lai varētu saņemt garākas atbildes.",
   },
   "vector-workspace": {
     identifier: "Vektoru datubāzes identifikators",
