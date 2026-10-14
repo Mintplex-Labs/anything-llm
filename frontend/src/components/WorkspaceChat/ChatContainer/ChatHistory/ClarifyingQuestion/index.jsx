@@ -20,15 +20,14 @@ function TimeoutProgressBar({ percent }) {
 
 function CardWrapper({ children, onInteract }) {
   return (
-    <div
-      className="flex justify-center w-full my-1 pr-4"
-      onPointerDownCapture={onInteract}
-      onKeyDownCapture={onInteract}
-    >
+    <div className="flex justify-center w-full my-1 pr-4">
       <div className="w-full flex flex-col">
         <div
           style={{ borderRadius: "20px" }}
           className="relative border border-solid border-zinc-700 light:border-zinc-300 bg-transparent p-[18px] flex flex-col gap-[18px] overflow-hidden"
+          onPointerEnter={onInteract}
+          onPointerDownCapture={onInteract}
+          onKeyDownCapture={onInteract}
         >
           {children}
         </div>
@@ -121,7 +120,7 @@ function CompletedSurvey({ questions, drafts, submittedResult }) {
  * more questions in a single batch (paginated), then renders a read-only
  * SurveyBody once the user submits, skips, or the timeout fires.
  *
- * The first click or keypress inside the card hides the countdown and tells the
+ * The first hover, click or keypress on the card hides the countdown and tells the
  * server to hold the request open, so the user is never racing the clock while
  * answering. Focus is not used as the signal because the inputs autofocus.
  *
