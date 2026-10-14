@@ -1127,8 +1127,12 @@ function validPort(input = "") {
     : "Port must be a whole number from 1 to 65535";
 }
 
+// Each dot-separated label must start and end with a letter, digit or underscore
+// (underscores allow Docker Compose service names like `weaviate_db`).
 function validHostname(input = "") {
-  return /^[a-z0-9.-]+$/i.test(input)
+  const label = /^[a-z0-9_]([a-z0-9_-]*[a-z0-9_])?$/i;
+  return input.length <= 253 &&
+    input.split(".").every((l) => l.length <= 63 && label.test(l))
     ? null
     : "Enter a hostname only, without a protocol, port or path";
 }
