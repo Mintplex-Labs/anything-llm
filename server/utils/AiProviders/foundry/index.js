@@ -4,6 +4,7 @@ const {
   formatChatHistory,
   writeResponseChunk,
   clientAbortedHandler,
+  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
@@ -532,6 +533,9 @@ class FoundryLLM {
             clearInterval(timeoutCheck);
             stream?.endMeasurement({
               completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+              ...(isTruncatedFinish(message.finish_reason)
+                ? { truncated: true }
+                : {}),
             });
             resolve(fullText);
             return; // Exit the loop after resolving

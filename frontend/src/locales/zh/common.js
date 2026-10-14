@@ -284,6 +284,7 @@ const TRANSLATIONS = {
         max: "最高",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "向量数据库标识符",

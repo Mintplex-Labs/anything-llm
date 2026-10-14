@@ -257,6 +257,7 @@ const TRANSLATIONS = {
         max: "Maksimum",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",

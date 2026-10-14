@@ -302,6 +302,7 @@ const TRANSLATIONS = {
         max: "Max",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Identifierare för vektordatabas",

@@ -258,6 +258,7 @@ const TRANSLATIONS = {
         max: "Maximaal",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",

@@ -304,6 +304,7 @@ const TRANSLATIONS = {
         max: "Maksimalno",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Identifikator vektorske baze podataka",

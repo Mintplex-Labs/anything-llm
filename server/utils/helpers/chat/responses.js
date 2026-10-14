@@ -16,6 +16,18 @@ function extractReasoningContent(messageOrDelta) {
   );
 }
 
+/**
+ * Whether a provider's stop reason means the response was cut off by the max output token limit.
+ * - `length` - OpenAI-compatible chat completions, Ollama `done_reason`
+ * - `max_tokens` - Anthropic `stop_reason`
+ * - `max_output_tokens` - OpenAI Responses API `incomplete_details.reason`
+ * @param {string|null|undefined} reason
+ * @returns {boolean}
+ */
+function isTruncatedFinish(reason) {
+  return ["length", "max_tokens", "max_output_tokens"].includes(reason);
+}
+
 function clientAbortedHandler(resolve, fullText) {
   console.log(
     "\x1b[43m\x1b[34m[STREAM ABORTED]\x1b[0m Client requested to abort stream. Exiting LLM stream handler early."
@@ -157,6 +169,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           message.finish_reason !== "" &&
           message.finish_reason !== null
         ) {
+          if (isTruncatedFinish(message.finish_reason)) usage.truncated = true;
           writeResponseChunk(response, {
             uuid,
             sources,
@@ -405,4 +418,5 @@ module.exports = {
   formatChatHistory,
   safeJSONStringify,
   extractReasoningContent,
+  isTruncatedFinish,
 };

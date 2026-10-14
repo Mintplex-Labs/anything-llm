@@ -294,6 +294,7 @@ const TRANSLATIONS = {
         max: "Maximal",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Vektordatenbank-Identifikator",

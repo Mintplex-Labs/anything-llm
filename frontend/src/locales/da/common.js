@@ -260,6 +260,7 @@ const TRANSLATIONS = {
         max: "Maks",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",

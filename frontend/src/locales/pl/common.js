@@ -293,6 +293,7 @@ const TRANSLATIONS = {
         max: "Maksymalny",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Identyfikator wektorowej bazy danych",

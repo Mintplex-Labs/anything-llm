@@ -257,6 +257,7 @@ const TRANSLATIONS = {
         max: "Tối đa",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Định danh cơ sở dữ liệu vector",

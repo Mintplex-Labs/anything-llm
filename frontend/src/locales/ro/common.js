@@ -294,6 +294,7 @@ const TRANSLATIONS = {
         max: "Maxim",
       },
     },
+    token_limit_reached: null,
   },
   vector: {
     title: "Baza de date vectorială",

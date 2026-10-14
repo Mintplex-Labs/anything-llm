@@ -8,6 +8,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   extractReasoningContent,
+  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const { v4: uuidv4 } = require("uuid");
 const { toValidNumber } = require("../../http");
@@ -405,6 +406,8 @@ class GenericOpenAiLLM {
             message.finish_reason !== "" &&
             message.finish_reason !== null
           ) {
+            if (isTruncatedFinish(message.finish_reason))
+              usage.truncated = true;
             writeResponseChunk(response, {
               uuid,
               sources,

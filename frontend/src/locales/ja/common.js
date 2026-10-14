@@ -255,6 +255,7 @@ const TRANSLATIONS = {
         max: "最大",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "ベクターデータベース識別子",

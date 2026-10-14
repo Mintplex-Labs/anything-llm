@@ -301,6 +301,7 @@ const TRANSLATIONS = {
         max: "Maximální",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Identifikátor vektorové databáze",

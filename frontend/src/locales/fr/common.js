@@ -257,6 +257,7 @@ const TRANSLATIONS = {
         max: "Maximal",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Identifiant de la base de données vectorielle",

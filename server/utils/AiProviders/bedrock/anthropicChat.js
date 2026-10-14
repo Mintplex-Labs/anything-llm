@@ -2,6 +2,7 @@ const { v4 } = require("uuid");
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 
 /**
@@ -112,8 +113,10 @@ function handleAnthropicChatStream(response, stream, responseProps) {
     stream.on("streamEvent", (data) => {
       if (data.type === "message_start")
         usage.prompt_tokens = data?.message?.usage?.input_tokens;
-      if (data.type === "message_delta")
+      if (data.type === "message_delta") {
         usage.completion_tokens = data?.usage?.output_tokens;
+        if (isTruncatedFinish(data?.delta?.stop_reason)) usage.truncated = true;
+      }
 
       if (
         data.type === "content_block_delta" &&

@@ -288,6 +288,7 @@ const TRANSLATIONS = {
         max: "מקסימלי",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "מזהה מסד נתונים וקטורי",

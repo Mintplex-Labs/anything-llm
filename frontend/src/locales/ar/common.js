@@ -257,6 +257,7 @@ const TRANSLATIONS = {
         max: "أقصى",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "معرف قاعدة بيانات المتجهة",

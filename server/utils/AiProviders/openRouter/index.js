@@ -4,6 +4,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
+  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -423,6 +424,7 @@ class OpenRouterLLM {
           if (chunk.hasOwnProperty("usage") && !hasUsageMetrics) {
             hasUsageMetrics = true;
             usage = {
+              ...usage,
               prompt_tokens: chunk.usage.prompt_tokens,
               completion_tokens: chunk.usage.completion_tokens,
               total_tokens: chunk.usage.total_tokens,
@@ -505,6 +507,8 @@ class OpenRouterLLM {
           }
 
           if (message?.finish_reason) {
+            if (isTruncatedFinish(message.finish_reason))
+              usage.truncated = true;
             writeResponseChunk(response, {
               uuid,
               sources,

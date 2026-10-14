@@ -304,6 +304,7 @@ const TRANSLATIONS = {
         max: "Максимално",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Идентификатор на векторната база данни",

@@ -301,6 +301,7 @@ const TRANSLATIONS = {
         max: "अधिकतम",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "वेक्टर डेटाबेस पहचानकर्ता",

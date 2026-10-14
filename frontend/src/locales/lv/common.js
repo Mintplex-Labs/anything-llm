@@ -293,6 +293,7 @@ const TRANSLATIONS = {
         max: "Maksimāla",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Vektoru datubāzes identifikators",

@@ -288,6 +288,7 @@ const TRANSLATIONS = {
         max: "최대",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",

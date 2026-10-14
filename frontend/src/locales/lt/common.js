@@ -300,6 +300,7 @@ const TRANSLATIONS = {
         max: "Maksimalios",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Vektorių duomenų bazės identifikatorius",

@@ -5,6 +5,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
+  isTruncatedFinish,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
@@ -269,6 +270,8 @@ class PerplexityLLM {
 
           if (message?.finish_reason) {
             console.log("closing");
+            if (isTruncatedFinish(message.finish_reason))
+              usage.truncated = true;
             writeResponseChunk(response, {
               uuid,
               sources,

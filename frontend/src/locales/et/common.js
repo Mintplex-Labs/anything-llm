@@ -290,6 +290,7 @@ const TRANSLATIONS = {
         max: "Maksimaalne",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Vektoriandmebaasi identifikaator",

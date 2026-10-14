@@ -303,6 +303,7 @@ const TRANSLATIONS = {
         max: "Maksimal",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "Pengenal basis data vektor",

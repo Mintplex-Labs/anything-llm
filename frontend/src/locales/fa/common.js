@@ -258,6 +258,7 @@ const TRANSLATIONS = {
         max: "حداکثر",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "شناسه پایگاه داده برداری",

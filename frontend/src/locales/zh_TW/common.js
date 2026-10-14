@@ -247,6 +247,7 @@ const TRANSLATIONS = {
         max: "最高",
       },
     },
+    token_limit_reached: null,
   },
   "vector-workspace": {
     identifier: "向量資料庫識別碼",
