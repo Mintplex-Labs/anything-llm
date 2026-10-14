@@ -88,6 +88,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
       messages,
       options: this.queryOptions,
     });
+    this.watchTokenLimit(response);
     return response?.message?.content || null;
   }
 
@@ -217,6 +218,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
+    this.watchTokenLimit(stream);
 
     eventHandler?.("reportStreamEvent", {
       type: "statusResponse",
@@ -324,6 +326,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
         stream: true,
         options: this.queryOptions,
       });
+      this.watchTokenLimit(stream);
 
       let textResponse = "";
       let toolCalls = null;
@@ -453,6 +456,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
         const stream = await this.#handleFunctionCallStream({
           messages: this.cleanMsgs(messages),
         });
+        this.watchTokenLimit(stream);
 
         for await (const chunk of stream) {
           if (!chunk.hasOwnProperty("message")) continue;
@@ -519,6 +523,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
         ...(tools.length > 0 ? { tools } : {}),
         options: this.queryOptions,
       });
+      this.watchTokenLimit(response);
 
       // Record usage (the Ollama API reports prompt_eval_count/eval_count)
       this.recordUsage({

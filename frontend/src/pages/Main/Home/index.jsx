@@ -28,7 +28,10 @@ import ChatSettingsMenu from "@/components/WorkspaceChat/ChatContainer/ChatSetti
 import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
-import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import {
+  clearPromptInputDraft,
+  movePromptInputDraft,
+} from "@/hooks/usePromptInputStorage";
 import {
   HOME_DRAFT_SESSION,
   getSessionReasoningEffort,
@@ -69,6 +72,25 @@ export default function Home() {
   const [dragging, setDragging] = useState(false);
   const pendingFilesRef = useRef([]);
 
+  /**
+   * Creates the thread pending files are uploaded into. The unsent draft is
+   * moved to the new thread first since switching to it remounts PromptInput
+   * under the thread's storage key.
+   * @param {Object} ws - workspace to create the thread in
+   * @param {string} draft - prompt text captured before any workspace was
+   * created, as setting a new workspace re-hydrates the input under its slug
+   */
+  async function createThreadForFiles(ws, draft) {
+    const { thread } = await Workspace.threads.new(ws.slug);
+    if (!thread) return;
+    movePromptInputDraft({ from: ws.slug, to: thread.slug, value: draft });
+    setThreadSlug(thread.slug);
+  }
+
+  function currentDraft() {
+    return document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+  }
+
   useEffect(() => {
     async function init() {
       const ws = await getTargetWorkspace();
@@ -108,14 +130,14 @@ export default function Home() {
       if (!files?.length) return;
 
       pendingFilesRef.current = files;
+      const draft = currentDraft();
       let ws = workspace;
       if (!ws) {
         ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
         if (!ws) return;
         setWorkspace(ws);
       }
-      const { thread } = await Workspace.threads.new(ws.slug);
-      if (thread) setThreadSlug(thread.slug);
+      await createThreadForFiles(ws, draft);
     }
 
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
@@ -126,18 +148,17 @@ export default function Home() {
   async function handleDropWithoutWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
+    const draft = currentDraft();
     const ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
     if (!ws) return;
     setWorkspace(ws);
-    const { thread } = await Workspace.threads.new(ws.slug);
-    if (thread) setThreadSlug(thread.slug);
+    await createThreadForFiles(ws, draft);
   }
 
   async function handleDropWithWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
-    const { thread } = await Workspace.threads.new(workspace.slug);
-    if (thread) setThreadSlug(thread.slug);
+    await createThreadForFiles(workspace, currentDraft());
   }
 
   if (workspaceLoading) {

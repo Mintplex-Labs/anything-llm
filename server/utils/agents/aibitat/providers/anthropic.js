@@ -271,12 +271,16 @@ class AnthropicProvider extends Provider {
           messages: chats,
           stream: true,
           ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
+            ? {
+                tools: this.#formatFunctions(functions),
+                tool_choice: { type: "auto", disable_parallel_tool_use: true },
+              }
             : {}),
           ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+      this.watchTokenLimit(response);
 
       const result = {
         functionCall: null,
@@ -419,12 +423,16 @@ class AnthropicProvider extends Provider {
           messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
+            ? {
+                tools: this.#formatFunctions(functions),
+                tool_choice: { type: "auto", disable_parallel_tool_use: true },
+              }
             : {}),
           ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+      this.watchTokenLimit(response);
 
       // Record usage from response (Anthropic uses input_tokens/output_tokens)
       if (response.usage) this.recordUsage(response.usage);

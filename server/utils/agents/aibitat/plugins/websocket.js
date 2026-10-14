@@ -35,6 +35,9 @@ function toolApprovalTimeoutMs() {
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 const TOOL_APPROVAL_TIMEOUT_MS = toolApprovalTimeoutMs();
 const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying questions
+// Once the user starts interacting with the clarification card they are present and
+// should not race the clock - this ceiling only exists so an abandoned card cannot hang the turn.
+const CLARIFICATION_ENGAGED_TIMEOUT_MS = 15 * 60 * 1_000; // 15 mins
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -350,15 +353,37 @@ const websocket = {
           const requestId = uuidv4();
           return new Promise((resolve) => {
             let timeoutId = null;
+            let held = false;
+
+            const handleTimeout = (ms) => {
+              delete socket.handleClarificationResponse;
+              console.log(
+                chalk.yellow(`Clarification request timed out after ${ms}ms`)
+              );
+              resolve({
+                skipped: false,
+                timedOut: true,
+                answers: questions.map(() => ({ skipped: true, answer: null })),
+              });
+            };
 
             socket.handleClarificationResponse = (message) => {
               try {
                 const data = safeJsonParse(message, {});
-                if (
-                  data?.type !== "clarificationResponse" ||
-                  data?.requestId !== requestId
-                )
+                if (data?.requestId !== requestId) return;
+
+                if (data?.type === "clarificationHold") {
+                  if (held) return;
+                  held = true;
+                  clearTimeout(timeoutId);
+                  timeoutId = setTimeout(
+                    () => handleTimeout(CLARIFICATION_ENGAGED_TIMEOUT_MS),
+                    CLARIFICATION_ENGAGED_TIMEOUT_MS
+                  );
                   return;
+                }
+
+                if (data?.type !== "clarificationResponse") return;
 
                 delete socket.handleClarificationResponse;
                 clearTimeout(timeoutId);
@@ -402,19 +427,7 @@ const websocket = {
               })
             );
 
-            timeoutId = setTimeout(() => {
-              delete socket.handleClarificationResponse;
-              console.log(
-                chalk.yellow(
-                  `Clarification request timed out after ${timeoutMs}ms`
-                )
-              );
-              resolve({
-                skipped: false,
-                timedOut: true,
-                answers: questions.map(() => ({ skipped: true, answer: null })),
-              });
-            }, timeoutMs);
+            timeoutId = setTimeout(() => handleTimeout(timeoutMs), timeoutMs);
           });
         };
 
