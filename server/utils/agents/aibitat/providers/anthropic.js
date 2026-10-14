@@ -280,6 +280,7 @@ class AnthropicProvider extends Provider {
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+      this.watchTokenLimit(response);
 
       const result = {
         functionCall: null,
@@ -431,6 +432,7 @@ class AnthropicProvider extends Provider {
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+      this.watchTokenLimit(response);
 
       // Record usage from response (Anthropic uses input_tokens/output_tokens)
       if (response.usage) this.recordUsage(response.usage);

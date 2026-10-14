@@ -192,6 +192,7 @@ async function anthropicTooledStream(
       },
       extraCreateOptions
     );
+    provider?.watchTokenLimit?.(response);
 
     const result = { functionCall: null, textResponse: "" };
     const usage = { input_tokens: 0, output_tokens: 0 };
@@ -335,6 +336,7 @@ async function anthropicTooledComplete(
       },
       extraCreateOptions
     );
+    provider?.watchTokenLimit?.(response);
 
     if (provider?.recordUsage && response.usage)
       provider.recordUsage(response.usage);

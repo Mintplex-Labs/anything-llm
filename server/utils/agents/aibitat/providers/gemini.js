@@ -281,6 +281,7 @@ class GeminiProvider extends Provider {
             }
           : {}),
       });
+      this.watchTokenLimit(response);
 
       const completion = {
         content: "",
@@ -410,6 +411,7 @@ class GeminiProvider extends Provider {
             }
           : {}),
       });
+      this.watchTokenLimit(response);
 
       if (response.usage) this.recordUsage(response.usage);
 
