@@ -119,4 +119,75 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     );
   });
 
+  it("does not expand placeholders inside inserted user values", async () => {
+    prisma.users.findUnique = jest.fn().mockResolvedValue({
+      ...mockUser,
+      bio: "see {workspace.name}",
+    });
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.bio} | in {workspace.name}",
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(`see {workspace.name} | in ${mockWorkspace.name}`);
+  });
+
+  it("does not expand placeholders inside inserted static values", async () => {
+    prisma.system_prompt_variables.findMany = jest.fn().mockResolvedValue([
+      {
+        id: 4,
+        key: "greeting",
+        value: "Hi {user.name}",
+        description: "nested placeholder",
+        type: "static",
+        userId: null,
+      },
+    ]);
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{greeting} | {user.name}",
+      mockUser.id
+    );
+    expect(out).toBe(`Hi {user.name} | ${mockUser.username}`);
+  });
+
+  it("expands the same placeholder used more than once", async () => {
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.name} and {user.name} in {workspace.name}",
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(
+      `${mockUser.username} and ${mockUser.username} in ${mockWorkspace.name}`
+    );
+    expect(prisma.users.findUnique).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not expand a user value that references its own placeholder", async () => {
+    prisma.users.findUnique = jest.fn().mockResolvedValue({
+      ...mockUser,
+      bio: "x{user.bio}",
+    });
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.bio} {user.bio}",
+      mockUser.id
+    );
+    expect(out).toBe("x{user.bio} x{user.bio}");
+  });
+
+  it("leaves unknown placeholders inside inserted static values as-is", async () => {
+    prisma.system_prompt_variables.findMany = jest.fn().mockResolvedValue([
+      {
+        id: 5,
+        key: "wrapper",
+        value: "{unknownvariable}",
+        description: "unknown nested placeholder",
+        type: "static",
+        userId: null,
+      },
+    ]);
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{wrapper} {unknownvariable}"
+    );
+    expect(out).toBe("{unknownvariable} {unknownvariable}");
+  });
 });
