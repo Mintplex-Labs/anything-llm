@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> 私たちは [Open Computer](../open-computer) も開発しています。これは AI エージェントが利用できる完全なコンピュータ環境を提供するものです。
->
-> これにより AnythingLLM のエージェント機能は新たな段階に到達し、AI エージェント利用における新しい UX パラダイムをもたらします。
->
-> ⭐ 最新情報を受け取るにはリポジトリに Star を付けてください！
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>

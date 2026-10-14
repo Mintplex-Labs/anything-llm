@@ -278,6 +278,7 @@ premium-sponsors (reserved for $100/mth sponsors who request to be called out he
 - **[AnythingLLM Mobile (Open-Source Licensed)][anythingllm-mobile]:** The same AnythingLLM on-device expierence, but on your phone.
 - **[AnythingLLM Browser Extension][anythingllm-extension]:** A browser extension that allows you to use AnythingLLM in your browser.
 - **[AnythingLLM Embed][anythingllm-embed]:** A widget that allows you to embed AnythingLLM in your website.
+- **[Open Computer][open-computer]:** A full computer environment for AI agents to use.
 
 <div align="right">
 
@@ -297,6 +298,7 @@ This project is [MIT](./LICENSE) licensed.
 [anythingllm-mobile]: https://github.com/Mintplex-Labs/anythingllm-mobile
 [anythingllm-extension]: https://github.com/Mintplex-Labs/anythingllm-extension
 [anythingllm-embed]: https://github.com/Mintplex-Labs/anythingllm-embed
+[open-computer]: https://github.com/Mintplex-Labs/open-computer
 [docker-btn]: ./images/deployBtns/docker.png
 [docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
 [aws-btn]: ./images/deployBtns/aws.png

@@ -257,6 +257,8 @@ const TRANSLATIONS = {
         max: "Tối đa",
       },
     },
+    token_limit_reached:
+      "Câu trả lời đã đạt đến giới hạn số lượng token tối đa. Tăng giới hạn số lượng token tối đa cho mô hình để cho phép câu trả lời dài hơn.",
   },
   "vector-workspace": {
     identifier: "Định danh cơ sở dữ liệu vector",
