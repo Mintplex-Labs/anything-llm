@@ -288,6 +288,8 @@ const TRANSLATIONS = {
         max: "최대",
       },
     },
+    token_limit_reached:
+      "응답이 최대 출력 토큰 제한에 도달했습니다. 모델의 최대 출력 토큰 수를 늘려 더 긴 답변을 생성할 수 있도록 합니다.",
   },
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",

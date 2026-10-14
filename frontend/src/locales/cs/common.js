@@ -301,6 +301,8 @@ const TRANSLATIONS = {
         max: "Maximální",
       },
     },
+    token_limit_reached:
+      "Odpověď dosáhla maximálního limitu tokenů. Zvyšte maximální počet tokenů, které model může generovat, aby bylo možné získat delší odpovědi.",
   },
   "vector-workspace": {
     identifier: "Identifikátor vektorové databáze",

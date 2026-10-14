@@ -168,6 +168,7 @@ async function responsesTooledStream(
       (body) => client.responses.create(body),
       { ...buildRequest(model, messages, functions, provider), stream: true }
     );
+    provider?.watchTokenLimit?.(response);
 
     const completion = {
       content: "",
@@ -292,6 +293,7 @@ async function responsesTooledComplete(
       (body) => client.responses.create(body),
       { ...buildRequest(model, messages, functions, provider), stream: false }
     );
+    provider?.watchTokenLimit?.(response);
 
     if (response.usage) provider?.recordUsage?.(response.usage);
     for (const outputBlock of response.output) {

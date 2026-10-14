@@ -256,6 +256,7 @@ async function tooledStream(
     ...(tools.length > 0 ? { tools } : {}),
     ...(provider?.reasoningConfig ?? {}),
   });
+  provider?.watchTokenLimit?.(stream);
 
   const result = {
     functionCall: null,
@@ -437,6 +438,7 @@ async function tooledComplete(
     ...(tools.length > 0 ? { tools } : {}),
     ...(provider?.reasoningConfig ?? {}),
   });
+  provider?.watchTokenLimit?.(response);
 
   const completion = response.choices[0].message;
   const cost = getCostFn(response.usage);

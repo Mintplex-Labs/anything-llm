@@ -13,6 +13,7 @@ const { TokenManager } = require("../tiktoken");
  * @property {number} total_tokens - the total number of tokens
  * @property {number} outputTps - the tokens per second of the output
  * @property {number} duration - the duration of the stream
+ * @property {boolean} [truncated] - true when generation stopped at the max output token limit
  */
 
 /**
@@ -22,6 +23,63 @@ const { TokenManager } = require("../tiktoken");
  * @property {StreamMetrics} metrics - the metrics of the stream
  * @property {EndMeasurementFunction} endMeasurement - the method to end the stream and calculate the metrics
  */
+
+/**
+ * Whether a stream chunk, stream event, or complete response reports that generation
+ * stopped at the max output token limit.
+ * @param {Object} chunk
+ * @returns {boolean}
+ */
+function hitTokenLimit(chunk) {
+  return (
+    chunk?.choices?.[0]?.finish_reason === "length" || // OpenAI-compatible
+    chunk?.done_reason === "length" || // Ollama
+    chunk?.delta?.stop_reason === "max_tokens" || // Anthropic stream
+    chunk?.stop_reason === "max_tokens" || // Anthropic response
+    chunk?.response?.incomplete_details?.reason === "max_output_tokens" || // OpenAI Responses stream
+    chunk?.incomplete_details?.reason === "max_output_tokens" // OpenAI Responses response
+  );
+}
+
+/**
+ * Calls `onHit` if a stream or complete response stopped at the max output token limit.
+ * Streams are checked chunk by chunk as they are consumed - async iterables via their
+ * iterator, event-based streams (Anthropic SDK) via `streamEvent`.
+ * @template T
+ * @param {T} streamOrResponse
+ * @param {() => void} onHit
+ * @returns {T} the same object, so the call can wrap stream creation
+ */
+function watchTokenLimit(streamOrResponse, onHit) {
+  const check = (chunk) => {
+    if (hitTokenLimit(chunk)) onHit();
+  };
+  check(streamOrResponse);
+  if (!streamOrResponse || typeof streamOrResponse !== "object")
+    return streamOrResponse;
+  if (typeof streamOrResponse.on === "function")
+    streamOrResponse.on("streamEvent", check);
+  if (typeof streamOrResponse[Symbol.asyncIterator] === "function") {
+    const iterate =
+      streamOrResponse[Symbol.asyncIterator].bind(streamOrResponse);
+    streamOrResponse[Symbol.asyncIterator] = () => {
+      const iterator = iterate();
+      return {
+        async next() {
+          const result = await iterator.next();
+          if (!result.done) check(result.value);
+          return result;
+        },
+        return: async (value) =>
+          iterator.return ? iterator.return(value) : { done: true, value },
+        [Symbol.asyncIterator]() {
+          return this;
+        },
+      };
+    };
+  }
+  return streamOrResponse;
+}
 
 class LLMPerformanceMonitor {
   static tokenManager = new TokenManager();
@@ -85,6 +143,9 @@ class LLMPerformanceMonitor {
       ...(provider ? { provider: provider } : {}),
     };
 
+    // Flag responses cut off by the max output token limit so the UI can say why they stopped.
+    watchTokenLimit(stream, () => (stream.metrics.truncated = true));
+
     stream.endMeasurement = (reportedUsage = {}) => {
       const end = Date.now();
       const estimatedDuration = (end - stream.start) / 1000;
@@ -110,4 +171,5 @@ class LLMPerformanceMonitor {
 
 module.exports = {
   LLMPerformanceMonitor,
+  watchTokenLimit,
 };
