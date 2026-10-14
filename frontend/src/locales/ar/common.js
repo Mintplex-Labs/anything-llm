@@ -257,7 +257,8 @@ const TRANSLATIONS = {
         max: "أقصى",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "وصلت الاستجابة إلى الحد الأقصى لعدد الرموز، لذا يجب زيادة الحد الأقصى لعدد الرموز التي يمكن للنموذج إنتاجها للسماح بإنتاج استجابات أطول.",
   },
   "vector-workspace": {
     identifier: "معرف قاعدة بيانات المتجهة",

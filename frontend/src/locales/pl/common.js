@@ -293,7 +293,8 @@ const TRANSLATIONS = {
         max: "Maksymalny",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "Odpowiedź osiągnęła maksymalną dopuszczalną liczbę tokenów. Zwiększ limit maksymalnej liczby tokenów, które model może wygenerować, aby uzyskać dłuższe odpowiedzi.",
   },
   "vector-workspace": {
     identifier: "Identyfikator wektorowej bazy danych",

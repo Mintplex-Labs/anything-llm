@@ -304,7 +304,8 @@ const TRANSLATIONS = {
         max: "Màxim",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "La resposta ha arribat al límit de tokens de sortida. Augmenta el nombre màxim de tokens de sortida del model per permetre respostes més llargues.",
   },
   "vector-workspace": {
     identifier: "Identificador de la base de dades vectorial",

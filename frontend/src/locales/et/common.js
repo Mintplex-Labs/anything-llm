@@ -290,7 +290,8 @@ const TRANSLATIONS = {
         max: "Maksimaalne",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "Vastus jõudis maksimaalse väljundtokenite piirini. Pikemate vastuste lubamiseks suurendage mudeli maksimaalset väljundtokenite arvu.",
   },
   "vector-workspace": {
     identifier: "Vektoriandmebaasi identifikaator",

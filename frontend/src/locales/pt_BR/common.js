@@ -293,7 +293,8 @@ const TRANSLATIONS = {
         max: "Máximo",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "A resposta atingiu o limite máximo de tokens de saída. Aumente o limite máximo de tokens de saída do modelo para permitir respostas mais longas.",
   },
   "vector-workspace": {
     identifier: "Identificador do banco de dados",

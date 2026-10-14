@@ -258,7 +258,8 @@ const TRANSLATIONS = {
         max: "حداکثر",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "پاسخ به حداکثر تعداد توکن‌های خروجی رسیده است. برای امکان تولید پاسخ‌های طولانی‌تر، حداکثر تعداد توکن‌های خروجی مدل را افزایش دهید.",
   },
   "vector-workspace": {
     identifier: "شناسه پایگاه داده برداری",

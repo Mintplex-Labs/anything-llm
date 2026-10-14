@@ -303,7 +303,8 @@ const TRANSLATIONS = {
         max: "Maksimal",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "Respons telah mencapai batas token keluaran maksimum. Tingkatkan batas token keluaran maksimum untuk model agar dapat menghasilkan respons yang lebih panjang.",
   },
   "vector-workspace": {
     identifier: "Pengenal basis data vektor",

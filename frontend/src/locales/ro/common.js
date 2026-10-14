@@ -294,7 +294,8 @@ const TRANSLATIONS = {
         max: "Maxim",
       },
     },
-    token_limit_reached: null,
+    token_limit_reached:
+      "Răspunsul a atins limita maximă de token-uri pentru ieșire. Crește numărul maxim de token-uri pe care modelul le poate genera, pentru a permite răspunsuri mai lungi.",
   },
   vector: {
     title: "Baza de date vectorială",
