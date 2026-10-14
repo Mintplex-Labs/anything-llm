@@ -159,6 +159,35 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     expect(out).toBe(
       `${mockUser.username} and ${mockUser.username} in ${mockWorkspace.name}`
     );
+    expect(prisma.users.findUnique).toHaveBeenCalledTimes(1);
   });
 
+  it("does not expand a user value that references its own placeholder", async () => {
+    prisma.users.findUnique = jest.fn().mockResolvedValue({
+      ...mockUser,
+      bio: "x{user.bio}",
+    });
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{user.bio} {user.bio}",
+      mockUser.id
+    );
+    expect(out).toBe("x{user.bio} x{user.bio}");
+  });
+
+  it("leaves unknown placeholders inside inserted static values as-is", async () => {
+    prisma.system_prompt_variables.findMany = jest.fn().mockResolvedValue([
+      {
+        id: 5,
+        key: "wrapper",
+        value: "{unknownvariable}",
+        description: "unknown nested placeholder",
+        type: "static",
+        userId: null,
+      },
+    ]);
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "{wrapper} {unknownvariable}"
+    );
+    expect(out).toBe("{unknownvariable} {unknownvariable}");
+  });
 });
