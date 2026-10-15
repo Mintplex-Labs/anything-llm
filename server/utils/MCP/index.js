@@ -250,7 +250,9 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   /**
    * Return the useful MCP payload as a string for the agent.
    * Text blocks are returned as-is so JSON inside them is not escaped again.
-   * `structuredContent` wins when the server sent a parsed payload.
+   * Error results keep the full envelope so the agent sees `isError: true`.
+   * `structuredContent` is only used when the server sent no content blocks,
+   * since the spec treats text content as the model-facing representation.
    * Images, mixed blocks, and anything else still stringify the whole result,
    * with circular references and bigints made safe.
    * @param {Object} result - The MCP CallToolResult
@@ -258,13 +260,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
    */
   static returnMCPResult(result) {
     if (typeof result !== "object" || result === null) return String(result);
-
-    if (
-      result.structuredContent &&
-      typeof result.structuredContent === "object"
-    ) {
-      return MCPCompatibilityLayer.#serialize(result.structuredContent);
-    }
+    if (result.isError) return MCPCompatibilityLayer.#serialize(result);
 
     const blocks = Array.isArray(result.content) ? result.content : [];
     if (
@@ -274,6 +270,14 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       )
     ) {
       return blocks.map((block) => block.text).join("\n");
+    }
+
+    if (
+      blocks.length === 0 &&
+      result.structuredContent &&
+      typeof result.structuredContent === "object"
+    ) {
+      return MCPCompatibilityLayer.#serialize(result.structuredContent);
     }
 
     return MCPCompatibilityLayer.#serialize(result);

@@ -204,9 +204,19 @@ describe("MCPCompatibilityLayer.returnMCPResult", () => {
     expect(JSON.parse(raw)).toEqual({ success: true, count: 3 });
   });
 
-  it("prefers structuredContent over the text envelope", () => {
+  it("prefers text content over structuredContent", () => {
     const raw = MCPCompatibilityLayer.returnMCPResult({
-      content: [{ type: "text", text: '{"success":false}' }],
+      content: [{ type: "text", text: "Found 3 issues. Top: #12 Login" }],
+      structuredContent: { count: 3 },
+      isError: false,
+    });
+
+    expect(raw).toBe("Found 3 issues. Top: #12 Login");
+  });
+
+  it("uses structuredContent when there are no content blocks", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [],
       structuredContent: { success: true, count: 3 },
       isError: false,
     });
@@ -226,13 +236,17 @@ describe("MCPCompatibilityLayer.returnMCPResult", () => {
     expect(raw).toBe("hello\nworld");
   });
 
-  it("returns an error tool's text as-is", () => {
+  it("keeps the envelope for error results so isError is visible", () => {
     const raw = MCPCompatibilityLayer.returnMCPResult({
       content: [{ type: "text", text: "tool failed: missing id" }],
+      structuredContent: { ok: false },
       isError: true,
     });
 
-    expect(raw).toBe("tool failed: missing id");
+    expect(JSON.parse(raw)).toMatchObject({
+      content: [{ type: "text", text: "tool failed: missing id" }],
+      isError: true,
+    });
   });
 
   it("stringifies non-text results so images are not dropped", () => {
