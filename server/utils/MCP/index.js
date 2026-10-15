@@ -248,23 +248,52 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   }
 
   /**
-   * Return the result of an MCP server call as a string
-   * This will handle circular references and bigints since an MCP server can return any type of data.
-   * @param {Object} result - The result to return
+   * Return the useful MCP payload as a string for the agent.
+   * Text blocks are returned as-is so JSON inside them is not escaped again.
+   * `structuredContent` wins when the server sent a parsed payload.
+   * Images, mixed blocks, and anything else still stringify the whole result,
+   * with circular references and bigints made safe.
+   * @param {Object} result - The MCP CallToolResult
    * @returns {string} The result as a string
    */
   static returnMCPResult(result) {
     if (typeof result !== "object" || result === null) return String(result);
 
+    if (
+      result.structuredContent &&
+      typeof result.structuredContent === "object"
+    ) {
+      return MCPCompatibilityLayer.#serialize(result.structuredContent);
+    }
+
+    const blocks = Array.isArray(result.content) ? result.content : [];
+    if (
+      blocks.length > 0 &&
+      blocks.every(
+        (block) => block?.type === "text" && typeof block.text === "string"
+      )
+    ) {
+      return blocks.map((block) => block.text).join("\n");
+    }
+
+    return MCPCompatibilityLayer.#serialize(result);
+  }
+
+  /**
+   * JSON.stringify that survives bigints and circular references.
+   * @param {unknown} value
+   * @returns {string}
+   */
+  static #serialize(value) {
     const seen = new WeakSet();
     try {
-      return JSON.stringify(result, (key, value) => {
-        if (typeof value === "bigint") return value.toString();
-        if (typeof value === "object" && value !== null) {
-          if (seen.has(value)) return "[Circular]";
-          seen.add(value);
+      return JSON.stringify(value, (_key, item) => {
+        if (typeof item === "bigint") return item.toString();
+        if (typeof item === "object" && item !== null) {
+          if (seen.has(item)) return "[Circular]";
+          seen.add(item);
         }
-        return value;
+        return item;
       });
     } catch (e) {
       return `[Unserializable: ${e.message}]`;
