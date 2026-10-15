@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
 const { spawn, execFile } = require("child_process");
 const { Readable } = require("stream");
 const { pipeline } = require("stream/promises");
@@ -37,6 +38,11 @@ class EmbeddedLemonadeEngine {
 
   static log(text, ...args) {
     console.log(`\x1b[32m[EmbeddedLemonade]\x1b[0m ${text}`, ...args);
+  }
+
+  /** One line of lemond or llama-server output, tagged so it can be filtered with `grep '\[lemond\]'`. */
+  static #logEngine(line) {
+    console.log(`\x1b[35m[lemond]\x1b[0m ${line}`);
   }
 
   static #setStatus(state, message = null, progress = null) {
@@ -253,13 +259,11 @@ class EmbeddedLemonadeEngine {
       this.process = null;
     });
 
-    if (process.env.NODE_ENV === "development") {
-      child.stdout.on("data", (d) => this.log(`[stdout] ${d}`));
-      child.stderr.on("data", (d) => this.log(`[stderr] ${d}`));
-    } else {
-      child.stdout.resume();
-      child.stderr.resume();
-    }
+    // llama.cpp logs to stderr even when nothing is wrong, so both streams share one tag.
+    for (const stream of [child.stdout, child.stderr])
+      readline
+        .createInterface({ input: stream })
+        .on("line", (line) => line.trim() && this.#logEngine(line));
 
     child.on("exit", (code, signal) => {
       this.log(`lemond ${child.pid} exited. Code ${code}. Signal ${signal}.`);
