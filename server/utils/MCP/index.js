@@ -1,4 +1,5 @@
 const MCPHypervisor = require("./hypervisor");
+const { Workspace } = require("../../models/workspace");
 
 class MCPCompatibilityLayer extends MCPHypervisor {
   static _instance;
@@ -22,10 +23,10 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   /**
    * Convert an MCP server name to an AnythingLLM Agent plugin
    * @param {string} name - The base name of the MCP server to convert - not the tool name. eg: `docker-mcp` not `docker-mcp:list-containers`
-   * @param {Object} aibitat - The aibitat object to pass to the plugin
+   * @param {Object} aibitat - The aibitat object to pass to the plugin. Its invocation's workspace may have its own suppressed tools.
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
-  async convertServerToolsToPlugins(name, _aibitat = null) {
+  async convertServerToolsToPlugins(name, aibitat = null) {
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
@@ -39,7 +40,20 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     }
     if (!tools || !tools.length) return null;
 
-    const suppressedTools = this.getSuppressedTools(name);
+    const workspaceSkills = await Workspace.agentSkills(
+      aibitat?.handlerProps?.invocation?.workspace_id
+    );
+    if (
+      workspaceSkills &&
+      !Object.hasOwn(workspaceSkills.mcpSuppressedTools, name)
+    ) {
+      this.log(`MCP server ${name}: Not enabled for this workspace, skipping`);
+      return null;
+    }
+
+    const suppressedTools =
+      workspaceSkills?.mcpSuppressedTools[name] ??
+      this.getSuppressedTools(name);
     const totalTools = tools.length;
     tools = tools.filter((tool) => !suppressedTools.includes(tool.name));
     const suppressedCount = totalTools - tools.length;

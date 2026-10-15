@@ -208,3 +208,25 @@ describe("FlowExecutor.executeFlow - variable initialization", () => {
     expect(result.variables.apiKey).toBe("secret");
   });
 });
+
+describe("AgentFlows.activeFlowPlugins", () => {
+  beforeEach(() => {
+    jest.spyOn(AgentFlows, "getAllFlows").mockReturnValue({
+      on: { active: true },
+      off: { active: false },
+    });
+  });
+
+  it("follows each flow's active flag when the workspace has no copy", () => {
+    expect(AgentFlows.activeFlowPlugins(null)).toEqual(["@@flow_on"]);
+  });
+
+  it("uses the workspace's enabled flows in both directions", () => {
+    expect(
+      AgentFlows.activeFlowPlugins({
+        enabled: ["@@flow_off"],
+        mcpSuppressedTools: {},
+      })
+    ).toEqual(["@@flow_off"]);
+  });
+});
