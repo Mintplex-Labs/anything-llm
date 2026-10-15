@@ -130,9 +130,15 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
   const compressedHistory = new Promise((resolve) => {
     const eligibleHistoryItems = [];
     var historyTokenCount = 0;
+    var pairIndex = 0;
 
-    for (const [i, history] of rawHistory.reverse().entries()) {
-      const [user, assistant] = convertToPromptHistory([history]);
+    for (const history of rawHistory.reverse()) {
+      const converted = convertToPromptHistory([history]);
+      // convertToPromptHistory skips records with a non-string prompt or text.
+      if (converted.length !== 2) continue;
+      const [user, assistant] = converted;
+      // Count only usable pairs so a skipped record can't take a "most recent 3" slot.
+      const i = pairIndex++;
       const [userTokens, assistantTokens] = [
         tokenManager.countFromString(user.content),
         tokenManager.countFromString(assistant.content),
@@ -236,6 +242,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
         targetTokenSize: llm.promptWindowLimit() * 0.8,
         tiktokenInstance: tokenManager,
       }),
+      attachments: promptArgs.attachments,
     });
   }
 
@@ -263,9 +270,15 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
   const compressedHistory = new Promise((resolve) => {
     const eligibleHistoryItems = [];
     var historyTokenCount = 0;
+    var pairIndex = 0;
 
-    for (const [i, history] of rawHistory.reverse().entries()) {
-      const [user, assistant] = convertToPromptHistory([history]);
+    for (const history of rawHistory.reverse()) {
+      const converted = convertToPromptHistory([history]);
+      // convertToPromptHistory skips records with a non-string prompt or text.
+      if (converted.length !== 2) continue;
+      const [user, assistant] = converted;
+      // Count only usable pairs so a skipped record can't take a "most recent 3" slot.
+      const i = pairIndex++;
       const [userTokens, assistantTokens] = [
         tokenManager.countFromString(user.content),
         tokenManager.countFromString(assistant.content),
@@ -327,6 +340,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
     contextTexts: promptArgs?.contextTexts || [],
     chatHistory: cHistory,
     userPrompt: cPrompt,
+    attachments: promptArgs.attachments,
   });
 }
 

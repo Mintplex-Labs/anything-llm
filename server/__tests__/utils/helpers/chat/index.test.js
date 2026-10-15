@@ -431,6 +431,82 @@ describe("messageArrayCompressor", () => {
     ]);
   });
 
+  describe("regression #6737: history records convertToPromptHistory skips", () => {
+    it.each([
+      ["a null response text", { response: JSON.stringify({ text: null }) }],
+      ["a null prompt", { prompt: null }],
+    ])(
+      "skips a record with %s instead of throwing",
+      async (_label, corrupt) => {
+        const rawHistory = [
+          makeHistoryRecord(1),
+          { ...makeHistoryRecord(2), ...corrupt },
+          makeHistoryRecord(3),
+        ];
+        const messages = buildMessages(rawHistory, "USER TURN 4: short");
+        const llm = {
+          model: "gpt-4o",
+          promptWindowLimit: () => tm.statsFrom(messages), // force compression
+          limits: { history: 10_000, system: 10_000, user: 100_000 },
+        };
+
+        const result = await messageArrayCompressor(llm, messages, rawHistory);
+
+        expect(turnsIn(result)).toEqual([
+          "user:1",
+          "assistant:1",
+          "user:3",
+          "assistant:3",
+          "user:4",
+        ]);
+      }
+    );
+
+    it("does not let a skipped record take one of the 3 most recent pair slots", async () => {
+      // The newest record is skipped, so turn 1 is the 3rd most recent usable
+      // pair. It is oversized but fits once cannonballed, so it must be kept.
+      const rawHistory = [
+        {
+          id: 1,
+          prompt: tokensOfText("USER TURN 1:", 500),
+          response: JSON.stringify({
+            text: "ASSISTANT TURN 1: brief",
+            sources: [],
+            attachments: [],
+          }),
+        },
+        makeHistoryRecord(2, { size: 30 }),
+        makeHistoryRecord(3, { size: 30 }),
+        {
+          ...makeHistoryRecord(4, { size: 30 }),
+          response: JSON.stringify({ text: null }),
+        },
+      ];
+      const smallPair =
+        tm.countFromString(rawHistory[1].prompt) +
+        tm.countFromString(JSON.parse(rawHistory[1].response).text);
+      const messages = buildMessages(rawHistory, "USER TURN 5: short");
+      const llm = {
+        model: "gpt-4o",
+        promptWindowLimit: () => tm.statsFrom(messages),
+        limits: { history: smallPair * 2 + 400, system: 10_000, user: 100_000 },
+      };
+
+      const result = await messageArrayCompressor(llm, messages, rawHistory);
+
+      expect(turnsIn(result)).toEqual([
+        "user:1",
+        "assistant:1",
+        "user:2",
+        "assistant:2",
+        "user:3",
+        "assistant:3",
+        "user:5",
+      ]);
+      expect(result[1].content).toContain(CANNONBALL_MARKER);
+    });
+  });
+
   it("cannonballs a system prompt over its limit but keeps its Context section", async () => {
     const rawHistory = [];
     const context = tokensOfText("CONTEXT_SENTINEL", 600);
@@ -539,12 +615,14 @@ describe("messageStringCompressor", () => {
         contextTexts = [],
         chatHistory = [],
         userPrompt = "",
+        attachments = [],
       }) =>
         [
           systemPrompt,
           ...contextTexts,
           ...chatHistory.map((m) => `${m.role}: ${m.content}`),
           `user: ${userPrompt}`,
+          ...attachments.map((a) => `[attachment: ${a.name}]`),
         ].join("\n"),
     };
   }
@@ -619,6 +697,94 @@ describe("messageStringCompressor", () => {
     ]);
   });
 
+  it.each([
+    ["a null response text", { response: JSON.stringify({ text: null }) }],
+    ["a null prompt", { prompt: null }],
+  ])(
+    "regression #6737: skips a history record with %s instead of throwing",
+    async (_label, corrupt) => {
+      const rawHistory = [
+        makeHistoryRecord(1),
+        { ...makeHistoryRecord(2), ...corrupt },
+        makeHistoryRecord(3),
+      ];
+      const promptArgs = {
+        systemPrompt: "You are helpful.",
+        userPrompt: "USER TURN 4: short",
+        contextTexts: [],
+        chatHistory: [],
+      };
+      const llm = makeLLM({
+        window: 100, // guaranteed overflow
+        limits: { history: 10_000, system: 10_000, user: 100_000 },
+      });
+
+      const result = await messageStringCompressor(llm, promptArgs, rawHistory);
+
+      const turnOrder = [
+        ...result.matchAll(/(user|assistant): (?:USER|ASSISTANT) TURN (\d)/g),
+      ].map((m) => `${m[1]}:${m[2]}`);
+      expect(turnOrder).toEqual([
+        "user:1",
+        "assistant:1",
+        "user:3",
+        "assistant:3",
+        "user:4",
+      ]);
+    }
+  );
+
+  it("regression #6737: does not let a skipped record take one of the 3 most recent pair slots", async () => {
+    // The newest record is skipped, so turn 1 is the 3rd most recent usable
+    // pair. It is oversized but fits once cannonballed, so it must be kept.
+    const rawHistory = [
+      {
+        id: 1,
+        prompt: tokensOfText("USER TURN 1:", 500),
+        response: JSON.stringify({
+          text: "ASSISTANT TURN 1: brief",
+          sources: [],
+          attachments: [],
+        }),
+      },
+      makeHistoryRecord(2, { size: 30 }),
+      makeHistoryRecord(3, { size: 30 }),
+      {
+        ...makeHistoryRecord(4, { size: 30 }),
+        response: JSON.stringify({ text: null }),
+      },
+    ];
+    const smallPair =
+      tm.countFromString(rawHistory[1].prompt) +
+      tm.countFromString(JSON.parse(rawHistory[1].response).text);
+    const promptArgs = {
+      systemPrompt: "You are helpful.",
+      userPrompt: "USER TURN 5: short",
+      contextTexts: [],
+      chatHistory: [],
+    };
+    const llm = makeLLM({
+      window: 100, // guaranteed overflow
+      limits: { history: smallPair * 2 + 400, system: 10_000, user: 100_000 },
+    });
+
+    const result = await messageStringCompressor(llm, promptArgs, rawHistory);
+
+    const turnOrder = [
+      ...result.matchAll(/(user|assistant): (?:USER|ASSISTANT) TURN (\d)/g),
+    ].map((m) => `${m[1]}:${m[2]}`);
+    expect(turnOrder).toEqual([
+      "user:1",
+      "assistant:1",
+      "user:2",
+      "assistant:2",
+      "user:3",
+      "assistant:3",
+      "user:5",
+    ]);
+    expect(result).toContain(CANNONBALL_MARKER);
+  });
+
   it("cannonballs a system prompt over its limit", async () => {
     const promptArgs = {
       systemPrompt: tokensOfText("SYSTEM_HEAD", 800) + " SYSTEM_TAIL",
@@ -637,5 +803,50 @@ describe("messageStringCompressor", () => {
     expect(result).toContain("SYSTEM_HEAD");
     expect(result).toContain("SYSTEM_TAIL");
     expect(result).toContain("user: USER TURN 1: short");
+  });
+
+  describe("the current turn's attachments", () => {
+    const attachments = [
+      { name: "chart.png", mime: "image/png", contentString: "data:..." },
+    ];
+
+    it("are kept when history and system are compressed", async () => {
+      const rawHistory = [1, 2].map((n) => makeHistoryRecord(n, { size: 100 }));
+      const promptArgs = {
+        systemPrompt: tokensOfText("SYSTEM", 800),
+        userPrompt: "USER TURN 3: what is in this chart?",
+        contextTexts: [],
+        chatHistory: [],
+        attachments,
+      };
+      const llm = makeLLM({
+        window: 100, // guaranteed overflow
+        limits: { history: 450, system: 300, user: 100_000 },
+      });
+
+      const result = await messageStringCompressor(llm, promptArgs, rawHistory);
+
+      expect(result).toContain(CANNONBALL_MARKER);
+      expect(result).toContain("[attachment: chart.png]");
+    });
+
+    it("are kept when an oversized user prompt hijacks the prompt", async () => {
+      const promptArgs = {
+        systemPrompt: "SYSTEM_SENTINEL you are helpful",
+        userPrompt: tokensOfText("HUGE", 4000),
+        contextTexts: [],
+        chatHistory: [],
+        attachments,
+      };
+      const llm = makeLLM({
+        window: 3000,
+        limits: { history: 450, system: 450, user: 2100 },
+      });
+
+      const result = await messageStringCompressor(llm, promptArgs, []);
+
+      expect(result).not.toContain("SYSTEM_SENTINEL");
+      expect(result).toContain("[attachment: chart.png]");
+    });
   });
 });
