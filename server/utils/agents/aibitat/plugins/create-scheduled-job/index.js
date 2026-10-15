@@ -157,6 +157,7 @@ const createScheduledJob = {
                 payload: {
                   name: args.name.trim(),
                   schedule: localCron,
+                  prompt: args.prompt.trim(),
                   tools: tools ?? [],
                 },
                 description: `Create scheduled job "${args.name.trim()}" (${localCron})`,
