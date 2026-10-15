@@ -255,7 +255,9 @@ class GitHubRepoLoader {
   async fetchSingleFile(sourceFilePath) {
     try {
       return fetch(
-        `${this.apiBase}/repos/${this.author}/${this.project}/contents/${sourceFilePath}?ref=${this.branch}`,
+        `${this.apiBase}/repos/${this.author}/${
+          this.project
+        }/contents/${sourceFilePath}?ref=${encodeURIComponent(this.branch)}`,
         {
           method: "GET",
           headers: {
