@@ -143,10 +143,13 @@ module.exports.OutlookCreateDraft = {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
                   payload: isReply
-                    ? { replyToMessageId, replyAll }
+                    ? { replyToMessageId, replyAll, body }
                     : {
                         to,
                         subject,
+                        body,
+                        ...(cc ? { cc } : {}),
+                        ...(bcc ? { bcc } : {}),
                         attachmentCount: preparedAttachments.length,
                       },
                   description,
