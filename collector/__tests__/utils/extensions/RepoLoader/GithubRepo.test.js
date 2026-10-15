@@ -251,7 +251,9 @@ describe("GitHubRepoLoader request urls", () => {
     await loader.init();
     await loader.fetchSingleFile("README.md");
 
-    expect(requestedUrls(fetchMock)).toContain("https://api.github.com/octocat");
+    expect(requestedUrls(fetchMock)).toContain(
+      "https://api.github.com/octocat"
+    );
     expect(requestedUrls(fetchMock)).toContain(
       "https://api.github.com/repos/org/repo/branches?per_page=100&page=0"
     );
@@ -259,6 +261,28 @@ describe("GitHubRepoLoader request urls", () => {
       "https://api.github.com/repos/org/repo/contents/README.md?ref=main"
     );
   });
+
+  test.each(["feature/#42-login", "fix/a&b", "release+1"])(
+    "file requests send the whole branch name %s as the ref",
+    async (branch) => {
+      const fetchMock = mockGithubApi({
+        branches: [{ name: "main" }, { name: branch }],
+        files: { "README.md": "# hello" },
+      });
+      const loader = new GitHubRepoLoader({
+        repo: "https://github.com/org/repo",
+        branch,
+      });
+      await loader.init();
+      await loader.fetchSingleFile("README.md");
+
+      const fileRefs = requestedUrls(fetchMock)
+        .map((url) => new URL(url))
+        .filter(({ pathname }) => pathname.includes("/contents/"))
+        .map(({ searchParams }) => searchParams.get("ref"));
+      expect(fileRefs).toEqual([branch]);
+    }
+  );
 
   test("an Enterprise Server host uses the same endpoint paths under /api/v3", async () => {
     const fetchMock = mockGithubApi({ files: { "README.md": "# hello" } });
