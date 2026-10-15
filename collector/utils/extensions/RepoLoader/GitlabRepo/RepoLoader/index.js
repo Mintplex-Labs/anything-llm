@@ -386,9 +386,9 @@ ${body}`
     try {
       const url = `${this.apiBase}/api/v4/projects/${
         this.projectId
-      }/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${
-        this.branch
-      }`;
+      }/repository/files/${encodeURIComponent(
+        sourceFilePath
+      )}/raw?ref=${encodeURIComponent(this.branch)}`;
       const response = await fetch(url, {
         method: "GET",
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},

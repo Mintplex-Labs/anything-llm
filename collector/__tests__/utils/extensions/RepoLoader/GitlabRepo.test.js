@@ -344,6 +344,30 @@ describe("GitLabRepoLoader request urls", () => {
       "http://gitlab.example.com:8080/api/v4/projects/acme%2Fwidgets/repository/files/src%2Findex.js/raw?ref=main"
     );
   });
+
+  test.each(["feature/#42-login", "fix/a&b", "release+1"])(
+    "file requests send the whole branch name %s as the ref",
+    async (branch) => {
+      const fetchMock = mockGitlabApi({
+        branches: [{ name: "main" }, { name: branch }],
+        tree: [{ type: "blob", path: "README.md" }],
+        files: { "README.md": "# hello" },
+      });
+      const loader = new GitLabRepoLoader({
+        repo: "https://gitlab.com/acme/widgets",
+        branch,
+      });
+      await loader.init();
+      const docs = await loader.recursiveLoader();
+
+      expect(docs).toHaveLength(1);
+      const fileRefs = requestedUrls(fetchMock)
+        .map((url) => new URL(url))
+        .filter(({ pathname }) => pathname.endsWith("/raw"))
+        .map(({ searchParams }) => searchParams.get("ref"));
+      expect(fileRefs).toEqual([branch]);
+    }
+  );
 });
 
 describe("GitLabRepoLoader branch resolution", () => {
