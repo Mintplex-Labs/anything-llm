@@ -1,6 +1,13 @@
 // agents/index.js resolves storage paths from STORAGE_DIR at require time.
 process.env.STORAGE_DIR = __dirname;
 
+// agents/index.js loads the MCP SDK, whose dynamic import() crashes the Jest worker on Node 18.
+jest.mock("../../../../utils/MCP", () =>
+  jest.fn().mockImplementation(() => ({
+    activeMCPServers: jest.fn().mockResolvedValue([]),
+  }))
+);
+
 let mockEnabled = true;
 jest.mock("../../../../utils/AiProviders/embeddedLemonade/config", () => ({
   ...jest.requireActual(
