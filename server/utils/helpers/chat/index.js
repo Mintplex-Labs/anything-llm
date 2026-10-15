@@ -236,6 +236,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
         targetTokenSize: llm.promptWindowLimit() * 0.8,
         tiktokenInstance: tokenManager,
       }),
+      attachments: promptArgs.attachments,
     });
   }
 
@@ -327,6 +328,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
     contextTexts: promptArgs?.contextTexts || [],
     chatHistory: cHistory,
     userPrompt: cPrompt,
+    attachments: promptArgs.attachments,
   });
 }
 

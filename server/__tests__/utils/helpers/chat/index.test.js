@@ -539,12 +539,14 @@ describe("messageStringCompressor", () => {
         contextTexts = [],
         chatHistory = [],
         userPrompt = "",
+        attachments = [],
       }) =>
         [
           systemPrompt,
           ...contextTexts,
           ...chatHistory.map((m) => `${m.role}: ${m.content}`),
           `user: ${userPrompt}`,
+          ...attachments.map((a) => `[attachment: ${a.name}]`),
         ].join("\n"),
     };
   }
@@ -637,5 +639,50 @@ describe("messageStringCompressor", () => {
     expect(result).toContain("SYSTEM_HEAD");
     expect(result).toContain("SYSTEM_TAIL");
     expect(result).toContain("user: USER TURN 1: short");
+  });
+
+  describe("the current turn's attachments", () => {
+    const attachments = [
+      { name: "chart.png", mime: "image/png", contentString: "data:..." },
+    ];
+
+    it("are kept when history and system are compressed", async () => {
+      const rawHistory = [1, 2].map((n) => makeHistoryRecord(n, { size: 100 }));
+      const promptArgs = {
+        systemPrompt: tokensOfText("SYSTEM", 800),
+        userPrompt: "USER TURN 3: what is in this chart?",
+        contextTexts: [],
+        chatHistory: [],
+        attachments,
+      };
+      const llm = makeLLM({
+        window: 100, // guaranteed overflow
+        limits: { history: 450, system: 300, user: 100_000 },
+      });
+
+      const result = await messageStringCompressor(llm, promptArgs, rawHistory);
+
+      expect(result).toContain(CANNONBALL_MARKER);
+      expect(result).toContain("[attachment: chart.png]");
+    });
+
+    it("are kept when an oversized user prompt hijacks the prompt", async () => {
+      const promptArgs = {
+        systemPrompt: "SYSTEM_SENTINEL you are helpful",
+        userPrompt: tokensOfText("HUGE", 4000),
+        contextTexts: [],
+        chatHistory: [],
+        attachments,
+      };
+      const llm = makeLLM({
+        window: 3000,
+        limits: { history: 450, system: 450, user: 2100 },
+      });
+
+      const result = await messageStringCompressor(llm, promptArgs, []);
+
+      expect(result).not.toContain("SYSTEM_SENTINEL");
+      expect(result).toContain("[attachment: chart.png]");
+    });
   });
 });
