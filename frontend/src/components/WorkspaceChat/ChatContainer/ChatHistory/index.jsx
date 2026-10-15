@@ -271,8 +271,7 @@ function buildMessages({
 }) {
   // Which position in the question index each user turn occupies, so the
   // rendered question can be measured by the rail. With the index switched off
-  // no anchor is rendered at all, leaving the transcript byte-identical to the
-  // markup shipped before the rail existed.
+  // no anchor is rendered.
   const questionOrders = questionIndexEnabled
     ? new Map(
         buildQuestionIndex(history).map((item) => [
