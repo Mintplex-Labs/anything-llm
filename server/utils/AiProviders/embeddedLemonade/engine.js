@@ -20,9 +20,9 @@ const {
  * - Pins the llama.cpp release lemond downloads for its cpu/vulkan backends.
  * - Spawns lemond on 127.0.0.1 only - it is never exposed outside the container.
  *
- * lemond manages its own llama.cpp backends: on first model load it downloads the best one it can use into its
- * cache - CUDA for NVIDIA GPUs (lemonade-sdk builds per GPU architecture), Vulkan for AMD/Intel GPUs, otherwise CPU.
- * EMBEDDED_LEMONADE_LLAMACPP_BACKEND forces a backend.
+ * lemond manages its own llama.cpp backends: on first model load it downloads the one it picked into its cache -
+ * Vulkan for AMD/Intel GPUs, otherwise CPU. Its pick never downloads CUDA, so when it reports an NVIDIA GPU we select
+ * CUDA (lemonade-sdk builds per GPU architecture). EMBEDDED_LEMONADE_LLAMACPP_BACKEND forces a backend.
  */
 class EmbeddedLemonadeEngine {
   /** @type {import("child_process").ChildProcess|null} */
@@ -146,6 +146,7 @@ class EmbeddedLemonadeEngine {
       this.#setStatus("starting", "Starting the local LLM engine...");
       for (let attempt = 0; attempt < 60; attempt++) {
         if (await this.isRunning()) {
+          await this.#preferCuda();
           this.#setStatus("ready");
           return true;
         }
@@ -264,6 +265,37 @@ class EmbeddedLemonadeEngine {
     else delete config.llamacpp.backend;
 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  }
+
+  /**
+   * lemond's "auto" llama.cpp backend only picks CUDA once CUDA is already installed - otherwise it picks Vulkan, which
+   * in a container without NVIDIA's Vulkan driver (eg: Docker Desktop) runs on Mesa's CPU renderer. So when lemond
+   * sees an NVIDIA GPU that CUDA supports, select CUDA so the first model load downloads it.
+   * Skipped when EMBEDDED_LEMONADE_LLAMACPP_BACKEND forces a backend. Never throws - lemond keeps its own pick.
+   */
+  static async #preferCuda() {
+    if (process.env.EMBEDDED_LEMONADE_LLAMACPP_BACKEND) return;
+    try {
+      const info = await fetch(`${this.baseUrl}/api/v1/system-info`).then(
+        (res) => res.json()
+      );
+      const hasNvidiaGpu = !!info?.devices?.nvidia_gpu?.some(
+        (gpu) => gpu.available
+      );
+      const cudaState = info?.recipes?.llamacpp?.backends?.cuda?.state;
+      if (!hasNvidiaGpu || !["installed", "installable"].includes(cudaState))
+        return;
+
+      const response = await fetch(`${this.baseUrl}/internal/set`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ llamacpp: { backend: "cuda" } }),
+      });
+      if (!response.ok) throw new Error(`lemond returned ${response.status}`);
+      this.log("NVIDIA GPU found - using the CUDA llama.cpp backend.");
+    } catch (e) {
+      this.log(`Could not select the CUDA backend: ${e.message}`);
+    }
   }
 
   /** Points lemond's cpu/vulkan llama.cpp downloads at our pinned release. */

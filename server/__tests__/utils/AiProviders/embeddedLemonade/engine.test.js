@@ -151,6 +151,89 @@ describe("EmbeddedLemonadeEngine boot", () => {
   });
 });
 
+describe("EmbeddedLemonadeEngine CUDA selection", () => {
+  // These lemonds are running - wait for them to exit so their exit log lands while console.log is still mocked.
+  afterEach(() => EmbeddedLemonadeEngine.stop());
+
+  /**
+   * Boots a lemond that comes online and answers system-info with the given devices and llama.cpp CUDA state.
+   * @returns {Promise<object[]>} the bodies sent to /internal/set
+   */
+  async function bootWithSystemInfo({ nvidiaGpus, cudaState }) {
+    installLemond("#!/bin/sh\nsleep 30\n", 0o755);
+    const booting = EmbeddedLemonadeEngine.bootOrContinue();
+    while (!EmbeddedLemonadeEngine.process)
+      await new Promise((r) => setTimeout(r, 10));
+
+    const sets = [];
+    global.fetch = jest.fn(async (url, options) => {
+      if (url.endsWith("/api/v1/system-info"))
+        return {
+          ok: true,
+          json: async () => ({
+            devices: { nvidia_gpu: nvidiaGpus },
+            recipes: {
+              llamacpp: { backends: { cuda: { state: cudaState } } },
+            },
+          }),
+        };
+      if (url.endsWith("/internal/set")) sets.push(JSON.parse(options.body));
+      return { ok: true };
+    });
+    await expect(booting).resolves.toBe(true);
+    return sets;
+  }
+
+  it.each(["installable", "installed"])(
+    "selects CUDA when lemond sees an NVIDIA GPU and CUDA is %s",
+    async (cudaState) => {
+      const sets = await bootWithSystemInfo({
+        nvidiaGpus: [{ available: true, name: "NVIDIA GeForce RTX 4070" }],
+        cudaState,
+      });
+      expect(sets).toEqual([{ llamacpp: { backend: "cuda" } }]);
+    }
+  );
+
+  it("leaves lemond's pick alone without an NVIDIA GPU", async () => {
+    const sets = await bootWithSystemInfo({
+      nvidiaGpus: [],
+      cudaState: "installable",
+    });
+    expect(sets).toEqual([]);
+  });
+
+  it("leaves lemond's pick alone when CUDA does not support the GPU", async () => {
+    const sets = await bootWithSystemInfo({
+      nvidiaGpus: [{ available: true, name: "NVIDIA GeForce GTX 1080" }],
+      cudaState: "unsupported",
+    });
+    expect(sets).toEqual([]);
+  });
+
+  it("does not override EMBEDDED_LEMONADE_LLAMACPP_BACKEND", async () => {
+    process.env.EMBEDDED_LEMONADE_LLAMACPP_BACKEND = "vulkan";
+    const sets = await bootWithSystemInfo({
+      nvidiaGpus: [{ available: true, name: "NVIDIA GeForce RTX 4070" }],
+      cudaState: "installable",
+    });
+    expect(sets).toEqual([]);
+  });
+
+  it("still boots when system-info cannot be read", async () => {
+    installLemond("#!/bin/sh\nsleep 30\n", 0o755);
+    const booting = EmbeddedLemonadeEngine.bootOrContinue();
+    while (!EmbeddedLemonadeEngine.process)
+      await new Promise((r) => setTimeout(r, 10));
+    global.fetch = jest.fn(async (url) => {
+      if (url.endsWith("/api/v1/system-info")) throw new Error("boom");
+      return { ok: true };
+    });
+    await expect(booting).resolves.toBe(true);
+    expect(EmbeddedLemonadeEngine.status.state).toBe("ready");
+  });
+});
+
 describe("EmbeddedLemonadeEngine stop", () => {
   it("is a no-op when lemond is not running", async () => {
     await expect(EmbeddedLemonadeEngine.stop()).resolves.toBeUndefined();
