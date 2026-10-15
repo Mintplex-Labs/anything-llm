@@ -265,7 +265,9 @@ function AdvancedSettings({ settings }) {
           name="EmbeddedLemonadeTokenLimit"
           className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Auto"
-          min={1}
+          // No native min/step: this field can be collapsed out of view, where the browser would block the save
+          // without being able to show why. The server validates it and the save shows the error.
+          step="any"
           value={maxTokens}
           onChange={(e) => setMaxTokens(e.target.value)}
           onScroll={(e) => e.target.blur()}
@@ -283,14 +285,20 @@ function EngineStatus() {
 
   useEffect(() => {
     let timer = null;
+    // A status request can still be in flight on unmount - it must not schedule another poll.
+    let active = true;
     async function poll() {
       const next = await EmbeddedLemonadeUtils.status();
+      if (!active) return;
       setStatus(next);
       if (next && !["ready", "error"].includes(next.state))
         timer = setTimeout(poll, 2000);
     }
     poll();
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   if (!status || status.state === "ready" || status.state === "idle")
@@ -328,7 +336,12 @@ function DownloadStatus({ download }) {
       </p>
       <button
         type="button"
-        onClick={() => EmbeddedLemonadeUtils.cancelDownload()}
+        onClick={async () => {
+          if (!(await EmbeddedLemonadeUtils.cancelDownload()))
+            showToast("Could not cancel the download.", "error", {
+              clear: true,
+            });
+        }}
         className="border-none transition-all duration-300 px-2 py-1 rounded-lg text-white text-sm hover:bg-red-500"
       >
         Cancel

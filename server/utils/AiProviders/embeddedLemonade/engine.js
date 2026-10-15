@@ -30,6 +30,8 @@ class EmbeddedLemonadeEngine {
   static #pending = null;
   /** @type {Promise<void>|null} The stop in flight, so a boot waits for it instead of racing it. */
   static #stopping = null;
+  /** @type {string|null} Why the last spawned lemond could not start (eg: EACCES on a noexec volume). */
+  static #spawnError = null;
   /** @type {{state: 'idle'|'installing'|'starting'|'ready'|'error', message: string|null, progress: number|null}} */
   static status = { state: "idle", message: null, progress: null };
 
@@ -93,7 +95,10 @@ class EmbeddedLemonadeEngine {
           this.#setStatus("ready");
           return true;
         }
-        if (!this.process) break; // exited during startup
+        if (!this.process)
+          throw new Error(
+            this.#spawnError ?? "lemond exited while starting up."
+          );
         await new Promise((r) => setTimeout(r, 500));
       }
       throw new Error("lemond did not come online after starting.");
@@ -237,7 +242,16 @@ class EmbeddedLemonadeEngine {
       { stdio: ["ignore", "pipe", "pipe"], detached: true }
     );
     this.process = child;
+    this.#spawnError = null;
     this.log(`lemond started on port ${port()}. PID ${child.pid}.`);
+
+    // Without a listener a failed spawn (missing or non-executable binary) is an uncaught error that exits the server.
+    child.on("error", (error) => {
+      this.log(`lemond could not be started: ${error.message}`);
+      if (this.process !== child) return;
+      this.#spawnError = `The local LLM engine could not be started: ${error.message}`;
+      this.process = null;
+    });
 
     if (process.env.NODE_ENV === "development") {
       child.stdout.on("data", (d) => this.log(`[stdout] ${d}`));

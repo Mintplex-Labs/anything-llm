@@ -375,51 +375,44 @@ class EmbeddedLemonadeLLM {
   /**
    * Loads a model with our context window unless it is already loaded with it.
    * @param {string} model
-   * @returns {Promise<boolean>}
+   * @returns {Promise<void>}
+   * @throws {Error} lemond's reason when the model cannot be loaded (eg: out of memory, not downloaded)
    */
   static async loadModel(model) {
-    try {
-      await EmbeddedLemonadeLLM.cacheContextWindow(model);
-      const desiredCtxSize = Number(
-        EmbeddedLemonadeLLM.promptWindowLimit(model)
-      );
-      const loaded = await EmbeddedLemonadeLLM.getCurrentlyLoadedModels().catch(
-        () => []
-      );
-      if (
-        loaded.find((m) => m.model_name === model)?.ctx_size === desiredCtxSize
-      )
-        return true;
+    await EmbeddedLemonadeLLM.cacheContextWindow(model);
+    const desiredCtxSize = Number(EmbeddedLemonadeLLM.promptWindowLimit(model));
+    const loaded = await EmbeddedLemonadeLLM.getCurrentlyLoadedModels().catch(
+      () => []
+    );
+    if (loaded.find((m) => m.model_name === model)?.ctx_size === desiredCtxSize)
+      return;
 
-      EmbeddedLemonadeLLM.slog(
-        `Loading model ${model} with context size ${desiredCtxSize}`
-      );
-      // The first load of a backend downloads llama.cpp, so this can take a while.
-      const response = await fetch(
-        `${EmbeddedLemonadeLLM.openaiBasePath()}/load`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model_name: String(model),
-            ctx_size: desiredCtxSize,
-          }),
-        }
-      );
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || data?.status !== "success")
-        throw new Error(
-          data?.error?.message ||
-            data?.message ||
-            data?.error ||
-            response.statusText
-        );
-      EmbeddedLemonadeLLM.slog(`Model ${model} loaded successfully`);
-      return true;
-    } catch (error) {
-      EmbeddedLemonadeLLM.slog(`Error loading model ${model}:`, error.message);
-      return false;
+    EmbeddedLemonadeLLM.slog(
+      `Loading model ${model} with context size ${desiredCtxSize}`
+    );
+    // The first load of a backend downloads llama.cpp, so this can take a while.
+    const response = await fetch(
+      `${EmbeddedLemonadeLLM.openaiBasePath()}/load`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model_name: String(model),
+          ctx_size: desiredCtxSize,
+        }),
+      }
+    );
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data?.status !== "success") {
+      const reason =
+        data?.error?.message ||
+        data?.message ||
+        data?.error ||
+        response.statusText;
+      EmbeddedLemonadeLLM.slog(`Error loading model ${model}:`, reason);
+      throw new Error(`Could not load ${model}: ${reason}`);
     }
+    EmbeddedLemonadeLLM.slog(`Model ${model} loaded successfully`);
   }
 
   /**
@@ -657,7 +650,7 @@ class EmbeddedLemonadeLLM {
 
     const mmprojFiles = info.mmproj_files ?? [];
     const mmproj =
-      mmprojFiles.find((f) => /f16/i.test(f)) ?? mmprojFiles[0] ?? null;
+      mmprojFiles.find((f) => /(?<!b)f16/i.test(f)) ?? mmprojFiles[0] ?? null;
     const checkpoint = quant ? `${repo}:${quant}` : repo;
     return {
       model_name: `user.${modelIdForCheckpoint(checkpoint)}`,

@@ -45,8 +45,13 @@ const EmbeddedLemonadeUtils = {
           body: JSON.stringify({ modelName }),
         }
       );
-      if (!response.ok)
-        throw new Error("Error downloading model: " + response.statusText);
+      if (!response.ok) {
+        // eg: 409 when another model is already downloading.
+        const { error } = await response.json().catch(() => ({}));
+        throw new Error(
+          error || "Error downloading model: " + response.statusText
+        );
+      }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");

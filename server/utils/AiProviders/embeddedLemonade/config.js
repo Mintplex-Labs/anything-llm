@@ -109,15 +109,41 @@ function paths() {
   };
 }
 
+/**
+ * updateENV check for the model preference. The options form always submits this key, so an empty value means
+ * Built-in was saved without a model picked or downloaded.
+ * @param {string} input
+ * @returns {string|null}
+ */
+function modelSelected(input = "") {
+  return String(input ?? "").trim()
+    ? null
+    : "Select or download a model for the Built-in LLM first.";
+}
+
+/**
+ * updateENV check for the context window. Empty is valid and means the model's own context window (see
+ * promptWindowLimit), otherwise it must be a whole number of tokens.
+ * @param {string} input
+ * @returns {string|null}
+ */
+function validTokenLimit(input = "") {
+  if (String(input ?? "").trim() === "") return null;
+  const value = Number(input);
+  return Number.isInteger(value) && value > 0
+    ? null
+    : "Context window must be a whole number greater than zero.";
+}
+
 /** ENV keys this provider adds to updateENV's KEY_MAPPING. */
 const ENV_KEYS = {
   EmbeddedLemonadeModelPref: {
     envKey: "EMBEDDED_LEMONADE_MODEL_PREF",
-    checks: [],
+    checks: [modelSelected],
   },
   EmbeddedLemonadeTokenLimit: {
     envKey: "EMBEDDED_LEMONADE_MODEL_TOKEN_LIMIT",
-    checks: [],
+    checks: [validTokenLimit],
   },
 };
 
@@ -162,6 +188,8 @@ module.exports = {
   port,
   paths,
   ENV_KEYS,
+  modelSelected,
+  validTokenLimit,
   settings,
   manageEngineOnProviderChange,
 };

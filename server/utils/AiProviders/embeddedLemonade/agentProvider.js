@@ -19,6 +19,8 @@ const { PROVIDER, isEnabled } = require("./config");
  */
 class EmbeddedLemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
+  /** The raw response behind the text #handleFunctionCallChat last returned, for watchTokenLimit. */
+  #lastChatResponse = null;
 
   /**
    * @param {{model?: string, reasoningEffort?: string|null}} config
@@ -85,7 +87,23 @@ class EmbeddedLemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
     this.preloaded = true;
   }
 
+  /**
+   * #handleFunctionCallChat returns only the message text, since UnTooled.functionCall parses that callback's
+   * result as JSON - so UnTooled.complete hands watchTokenLimit a string. Check the response the text came from.
+   * @template T
+   * @param {T} streamOrResponse
+   * @returns {T}
+   */
+  watchTokenLimit(streamOrResponse) {
+    if (typeof streamOrResponse !== "string" || !this.#lastChatResponse)
+      return Provider.prototype.watchTokenLimit.call(this, streamOrResponse);
+    Provider.prototype.watchTokenLimit.call(this, this.#lastChatResponse);
+    this.#lastChatResponse = null;
+    return streamOrResponse;
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
+    this.#lastChatResponse = null;
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -98,6 +116,7 @@ class EmbeddedLemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
           throw new Error("Embedded Lemonade chat: No results!");
         if (result.choices.length === 0)
           throw new Error("Embedded Lemonade chat: No results length!");
+        this.#lastChatResponse = result;
         return result.choices[0].message.content;
       })
       .catch((_) => {

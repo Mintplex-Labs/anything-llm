@@ -6,7 +6,7 @@ const {
 const { reqBody } = require("../../http");
 const { isEnabled } = require("./config");
 
-/** The download in flight, so it can be cancelled. Downloads run one at a time. */
+/** The download in flight, so it can be cancelled. Downloads run one at a time - a second request is refused. */
 let activeDownload = null;
 
 function writeEvent(response, event, data) {
@@ -52,6 +52,12 @@ function embeddedLemonadeEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       const { modelName } = reqBody(request);
+      if (activeDownload)
+        return response.status(409).json({
+          error:
+            "Another model is already downloading. Wait for it to finish or cancel it.",
+        });
+
       response.writeHead(200, {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
@@ -59,7 +65,6 @@ function embeddedLemonadeEndpoints(app) {
       });
 
       const controller = new AbortController();
-      activeDownload?.abort();
       activeDownload = controller;
       // lemond reports progress thousands of times per second - only forward whole-percent and file changes.
       let lastProgress = null;
