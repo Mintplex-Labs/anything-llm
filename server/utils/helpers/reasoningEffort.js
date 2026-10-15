@@ -86,7 +86,9 @@ function modelsDevReasoningCapabilities(provider, model) {
     levels.add("on");
     levels.add("off");
   }
-  if (provider === "gemini" && options.budget) {
+  // Budget levels only apply to budget-only models (eg: 2.5) - a model that
+  // lists levels offers just those, since newer models reject a budget.
+  if (provider === "gemini" && options.budget && !options.effortValues.length) {
     for (const level of Object.keys(GEMINI_THINKING_BUDGETS)) levels.add(level);
     // A thinking toggle alongside a budget means a zero budget is allowed.
     if (options.toggle) levels.add("off");
@@ -105,7 +107,7 @@ function modelsDevReasoningCapabilities(provider, model) {
 function geminiThinkingConfig(effort, model) {
   const { effortValues = [], budget = null } =
     modelsDevOptions("gemini", model) ?? {};
-  if (!budget || effortValues.includes(effort))
+  if (!budget || effortValues.length > 0)
     return { thinking_level: effort, include_thoughts: true };
   if (effort === "off") return { thinking_budget: 0 };
 

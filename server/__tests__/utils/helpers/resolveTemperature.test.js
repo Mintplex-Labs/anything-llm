@@ -101,6 +101,8 @@ describe("resolveTemperature", () => {
       )
     ).toBe(0.7);
     expect(resolveTemperature("vertex", null, 0.7)).toBeUndefined();
+    expect(resolveTemperature("vertex", undefined, 0.7)).toBeUndefined();
+    expect(resolveTemperature("vertex", "", 0.7)).toBeUndefined();
   });
 });
 
