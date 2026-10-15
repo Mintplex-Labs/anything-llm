@@ -67,6 +67,10 @@ const MODELS_DEV = {
       { type: "budget_tokens", min: 0, max: 24576 },
     ],
     "gemini-small-budget": [{ type: "budget_tokens", min: 2048, max: 4096 }],
+    "gemini-level-and-budget": [
+      { type: "effort", values: ["low", "high"] },
+      { type: "budget_tokens", min: 128, max: 32768 },
+    ],
     "gemma-4-31b-it": [{ type: "toggle" }],
   },
   deepseek: {
@@ -366,6 +370,12 @@ describe("reasoningParams", () => {
       "high",
       "gemini-small-budget",
       thinkingConfig({ thinking_budget: 4096, include_thoughts: true }),
+    ],
+    [
+      "gemini",
+      "high",
+      "gemini-level-and-budget",
+      thinkingConfig({ thinking_level: "high", include_thoughts: true }),
     ],
     ["ollama", "on", null, { think: true }],
     ["ollama", "off", null, { think: false }],

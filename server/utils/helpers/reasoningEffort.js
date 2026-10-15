@@ -98,10 +98,15 @@ function modelsDevReasoningCapabilities(provider, model) {
   return { reasoning: reasoningOptions.length > 0, reasoningOptions };
 }
 
-/** The Gemini `thinking_config` for an effort, shaped by the model's options. */
+/**
+ * The Gemini `thinking_config` for an effort, shaped by the model's options.
+ * Levels are sent whenever the model lists them - newer models reject a budget.
+ */
 function geminiThinkingConfig(effort, model) {
-  const { budget = null } = modelsDevOptions("gemini", model) ?? {};
-  if (!budget) return { thinking_level: effort, include_thoughts: true };
+  const { effortValues = [], budget = null } =
+    modelsDevOptions("gemini", model) ?? {};
+  if (!budget || effortValues.includes(effort))
+    return { thinking_level: effort, include_thoughts: true };
   if (effort === "off") return { thinking_budget: 0 };
 
   const min = Number.isFinite(budget.min) ? budget.min : 0;

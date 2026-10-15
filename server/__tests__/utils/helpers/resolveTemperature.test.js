@@ -5,9 +5,9 @@ const {
   resolveProviderConnector,
 } = require("../../../utils/helpers");
 
-// Only OpenAI, Azure, Anthropic, and Bedrock define a `modelSupportsTemperature`
-// guard. Every other provider takes the same parse-or-undefined path, so one
-// unguarded provider is enough to cover all of them.
+// Only OpenAI, Azure, Anthropic, Bedrock, Gemini, and Vertex define a
+// `modelSupportsTemperature` guard. Every other provider takes the same
+// parse-or-undefined path, so one unguarded provider is enough to cover all of them.
 
 describe("resolveTemperature", () => {
   const originalAzureModelType = process.env.AZURE_OPENAI_MODEL_TYPE;
@@ -77,6 +77,30 @@ describe("resolveTemperature", () => {
     expect(resolveTemperature("azure", "my-deployment", 0.7)).toBeUndefined();
     process.env.AZURE_OPENAI_MODEL_TYPE = "default";
     expect(resolveTemperature("azure", "my-deployment", 0.7)).toBe(0.7);
+  });
+
+  test("omits temperature for every Gemini model", () => {
+    expect(
+      resolveTemperature("gemini", "gemini-3.6-flash", 0.7)
+    ).toBeUndefined();
+    expect(resolveTemperature("gemini", "gemini-2.5-flash", 0)).toBeUndefined();
+  });
+
+  test("omits temperature for Vertex Google models only", () => {
+    expect(
+      resolveTemperature("vertex", "gemini-2.5-flash", 0.7)
+    ).toBeUndefined();
+    expect(
+      resolveTemperature("vertex", "google/gemini-3.6-flash", 0.7)
+    ).toBeUndefined();
+    expect(
+      resolveTemperature(
+        "vertex",
+        "meta/llama-4-maverick-17b-128e-instruct-maas",
+        0.7
+      )
+    ).toBe(0.7);
+    expect(resolveTemperature("vertex", null, 0.7)).toBeUndefined();
   });
 });
 
