@@ -92,7 +92,7 @@ class TokenManager {
     if (Array.isArray(input)) {
       const perMessageFactorTokens = input.length * 3;
       const tokensFromContent = input.reduce(
-        (a, b) => a + this.#countFromContent(b.content),
+        (a, b) => a + this.countFromContent(b.content),
         0
       );
       const diffCoefficient = 5;
@@ -108,7 +108,7 @@ class TokenManager {
    * @param {string | object[]} content
    * @returns {number}
    */
-  #countFromContent(content) {
+  countFromContent(content) {
     if (!Array.isArray(content)) return this.countFromString(content);
     return content.reduce((a, part) => a + this.countFromString(part?.text), 0);
   }
