@@ -258,7 +258,7 @@ services:
 | ENV | Default | Description |
 | --- | --- | --- |
 | `ENABLE_BUILT_IN_LLM` | _unset_ | Set to `true` to turn on the built-in engine. |
-| `EMBEDDED_LEMONADE_LLAMACPP_BACKEND` | `auto` | Force a llama.cpp backend: `cuda`, `vulkan` or `cpu`. |
+| `EMBEDDED_LEMONADE_LLAMACPP_BACKEND` | `auto` | Force a llama.cpp backend: `cuda`, `vulkan` or `cpu`. Leave it unset unless the wrong backend is picked. |
 | `EMBEDDED_LEMONADE_REGISTRY` | `auto` | Where models download from: `auto` (Hugging Face, falling back to ModelScope), `huggingface` or `modelscope`. |
 | `EMBEDDED_LEMONADE_PORT` | `13355` | Port the engine listens on inside the container. Only change it if something else in the container uses it. |
 
@@ -269,14 +269,16 @@ hardware can handle it.
 
 ### Checking that your GPU is used
 
-After your first chat, check where the model is loaded:
+After your first chat, check which llama.cpp backend the model is loaded with:
 
 ```shell
-docker exec <container> node -e 'fetch("http://127.0.0.1:13355/api/v1/health").then(r=>r.json()).then(h=>console.log(h.all_models_loaded))'
+docker exec <container> node -e 'fetch("http://127.0.0.1:13355/api/v1/health").then(r=>r.json()).then(h=>h.all_models_loaded.forEach(m=>console.log(m.model_name, m.recipe_options?.llamacpp_backend)))'
 ```
 
-`device: 'gpu'` means the GPU is used. If it says `cpu`, check `--gpus all` for NVIDIA, or the
-`--device`/`--group-add` flags for AMD and Intel.
+NVIDIA GPUs should say `cuda` - if not, check `--gpus all` (CUDA needs a Turing / RTX 20 series GPU or newer), or
+force it with `-e EMBEDDED_LEMONADE_LLAMACPP_BACKEND=cuda`. AMD and Intel GPUs say `vulkan`, but Vulkan also runs on
+the CPU when the container cannot open the GPU, so check the `--device`/`--group-add` flags. The `device` field of the
+health output says `gpu` for any Vulkan backend, so it does not tell you whether the GPU is used.
 
 ## About UID and GID in the ENV
 
