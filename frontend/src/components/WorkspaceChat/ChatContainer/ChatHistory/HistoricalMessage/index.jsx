@@ -52,6 +52,7 @@ const HistoricalMessage = ({
   metrics = {},
   outputs = [],
   clarifyingQuestions = [],
+  questionIndex = undefined,
 }) => {
   // Freeze uuid on first render. User messages arrive without a uuid and this value
   // is used as the wrapper div's `key` — a default param fallback would regenerate
@@ -111,6 +112,9 @@ const HistoricalMessage = ({
     return (
       <div
         key={uuid}
+        // Position of this question in the right-side question index, which
+        // reads it to know where the question sits inside the thread.
+        data-question-index={questionIndex}
         onAnimationEnd={onEndAnimation}
         className={`${isDeleted ? "animate-remove" : ""} flex justify-end w-full group`}
       >
@@ -223,11 +227,13 @@ export default memo(
   // - the lastMessage status is the same (regen icon)
   // - the chatID matches between renders. (feedback icons)
   // - the metrics are the same (metrics are updated in real time)
+  // - the question index position is the same (it moves when a turn is removed)
   (prevProps, nextProps) => {
     return (
       prevProps.message === nextProps.message &&
       prevProps.isLastMessage === nextProps.isLastMessage &&
       prevProps.chatId === nextProps.chatId &&
+      prevProps.questionIndex === nextProps.questionIndex &&
       JSON.stringify(prevProps.metrics) === JSON.stringify(nextProps.metrics) &&
       JSON.stringify(prevProps.sources) === JSON.stringify(nextProps.sources) &&
       JSON.stringify(prevProps.clarifyingQuestions) ===

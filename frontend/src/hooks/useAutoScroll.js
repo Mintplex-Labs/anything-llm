@@ -17,7 +17,7 @@ import Appearance from "@/models/appearance";
  * sending a new prompt, or clicking the scroll-to-bottom button.
  *
  * @param {Array} history - The chat history (drives follow re-engage on send)
- * @param {React.Ref} imperativeRef - Forwarded ref exposing scrollToTop/scrollToBottom
+ * @param {React.Ref} imperativeRef - Forwarded ref exposing scrollToTop/scrollToBottom/scrollToOffset
  */
 export default function useAutoScroll(history, imperativeRef) {
   const disabled = Appearance.get("disableAutoScroll");
@@ -140,6 +140,13 @@ export default function useAutoScroll(history, imperativeRef) {
       },
       scrollToBottom() {
         scrollToBottom(true);
+      },
+      // Jumping to an earlier message means leaving the live edge of the
+      // thread, so follow disengages before the scroll animates - otherwise a
+      // run still streaming would keep pinning the view back to the bottom.
+      scrollToOffset(top) {
+        followRef.current = false;
+        chatHistoryRef.current?.scrollTo({ top, behavior: "smooth" });
       },
     }),
     [scrollToBottom]

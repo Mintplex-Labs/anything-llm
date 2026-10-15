@@ -19,6 +19,12 @@ import { THREAD_FORK_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadC
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import useAutoScroll from "@/hooks/useAutoScroll";
+import useQuestionIndex from "@/hooks/useQuestionIndex";
+import QuestionIndex from "./QuestionIndex";
+import {
+  buildQuestionIndex,
+  isQuestionIndexEnabled,
+} from "@/utils/chat/questionIndex";
 import {
   ThoughtExpansionProvider,
   THOUGHT_REGEX_OPEN,
@@ -40,6 +46,25 @@ export default forwardRef(function (
 ) {
   const { chatHistoryRef, isAtBottom, scrollToBottom, scrollHandlers } =
     useAutoScroll(history, ref);
+  // The question index owns the rail on the right edge of the thread: it
+  // measures where each user question sits so a click can jump to it. It is
+  // gated by a single switch (see isQuestionIndexEnabled) so it can be turned
+  // off from one place without touching anything else in the chat.
+  const questionIndexEnabled = isQuestionIndexEnabled();
+  const scrollToOffset = useCallback(
+    (top) => ref?.current?.scrollToOffset(top),
+    [ref]
+  );
+  const {
+    items: questionItems,
+    currentIndex: currentQuestionIndex,
+    jumpTo: jumpToQuestion,
+  } = useQuestionIndex(
+    history,
+    chatHistoryRef,
+    scrollToOffset,
+    questionIndexEnabled
+  );
   const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const { showing, hideModal } = useManageWorkspaceModal();
@@ -138,6 +163,7 @@ export default forwardRef(function (
         saveEditedMessage,
         forkThread,
         websocket,
+        questionIndexEnabled,
       }),
     [
       workspace,
@@ -146,6 +172,7 @@ export default forwardRef(function (
       saveEditedMessage,
       forkThread,
       websocket,
+      questionIndexEnabled,
     ]
   );
   // A chain stays animated while the run feeding it is still live: an open
@@ -195,6 +222,12 @@ export default forwardRef(function (
             />
           )}
         </div>
+        <QuestionIndex
+          items={questionItems}
+          currentIndex={currentQuestionIndex}
+          onJump={jumpToQuestion}
+          enabled={questionIndexEnabled}
+        />
         {!isAtBottom && (
           <div className="absolute bottom-40 right-10 z-50 cursor-pointer animate-pulse">
             <div className="flex flex-col items-center">
@@ -234,7 +267,21 @@ function buildMessages({
   saveEditedMessage,
   forkThread,
   websocket,
+  questionIndexEnabled = true,
 }) {
+  // Which position in the question index each user turn occupies, so the
+  // rendered question can be measured by the rail. With the index switched off
+  // no anchor is rendered at all, leaving the transcript byte-identical to the
+  // markup shipped before the rail existed.
+  const questionOrders = questionIndexEnabled
+    ? new Map(
+        buildQuestionIndex(history).map((item) => [
+          item.messageIndex,
+          item.order,
+        ])
+      )
+    : new Map();
+
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
       index === history.length - 1 && props.role === "assistant";
@@ -354,6 +401,8 @@ function buildMessages({
             metrics={props.metrics}
             outputs={props.outputs}
             clarifyingQuestions={props.clarifyingQuestions}
+            // Measurement anchor for the right-side question index.
+            questionIndex={questionOrders.get(index)}
           />
         );
       }
