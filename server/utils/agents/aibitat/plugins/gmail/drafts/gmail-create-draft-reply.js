@@ -150,6 +150,10 @@ module.exports.GmailCreateDraftReply = {
                   payload: {
                     threadId,
                     replyAll,
+                    body,
+                    ...(cc ? { cc } : {}),
+                    ...(bcc ? { bcc } : {}),
+                    ...(htmlBody ? { htmlBody } : {}),
                     attachmentCount: preparedAttachments.length,
                   },
                   description: `Create Gmail draft reply to thread "${threadId}"${replyAll ? " (reply all)" : ""}${attachmentNote}`,
