@@ -5,6 +5,10 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
+    postUpdate: [
+      require("../AiProviders/embeddedLemonade/config")
+        .manageEngineOnProviderChange,
+    ],
   },
   // Model Router Settings
   ModelRouterId: {
@@ -1044,6 +1048,9 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Embedded Lemonade Options
+  ...require("../AiProviders/embeddedLemonade/config").ENV_KEYS,
+
   // Lemonade Options
   LemonadeLLMBasePath: {
     envKey: "LEMONADE_LLM_BASE_PATH",
@@ -1249,6 +1256,7 @@ function supportedLLM(input = "") {
     "privatemode",
     "sambanova",
     "lemonade",
+    ...require("../AiProviders/embeddedLemonade/config").supportedProviders(),
     "minimax",
     "cerebras",
     "omlx",

@@ -1571,6 +1571,13 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           model: config.model,
           reasoningEffort,
         });
+      case "embedded_lemonade": {
+        const EmbeddedLemonadeProvider = require("../../AiProviders/embeddedLemonade/agentProvider");
+        return new EmbeddedLemonadeProvider({
+          model: config.model,
+          reasoningEffort,
+        });
+      }
       case "omlx":
         return new Providers.OMLXProvider({ model: config.model });
       case "minimax":
