@@ -284,6 +284,34 @@ describe("messageArrayCompressor", () => {
     expect(tm.countFromString(result[0].content)).toBeLessThan(3000);
   });
 
+  it("cannonballs the text of an oversized prompt with an image and keeps the image", async () => {
+    const image = {
+      type: "image_url",
+      image_url: { url: "data:image/png;base64,AAAA" },
+    };
+    const prompt = `HEAD_SENTINEL ${tokensOfText("", 2000)} MIDDLE_SENTINEL ${tokensOfText("", 2000)} TAIL_SENTINEL`;
+    const messages = [
+      systemMsg(),
+      userMsg([{ type: "text", text: prompt }, image]),
+    ];
+    const llm = {
+      model: "gpt-4o",
+      promptWindowLimit: () => 3000,
+      limits: { history: 450, system: 450, user: 2100 },
+    };
+
+    const result = await messageArrayCompressor(llm, messages, []);
+
+    expect(result).toHaveLength(1);
+    const [text, keptImage] = result[0].content;
+    expect(keptImage).toBe(image);
+    expect(text.text).toContain(CANNONBALL_MARKER);
+    expect(text.text).toContain("HEAD_SENTINEL");
+    expect(text.text).toContain("TAIL_SENTINEL");
+    expect(text.text).not.toContain("MIDDLE_SENTINEL");
+    expect(tm.countFromContent(result[0].content)).toBeLessThan(3000);
+  });
+
   it("keeps the most recent history pairs, in chronological order, when over the window", async () => {
     const rawHistory = [1, 2, 3, 4, 5, 6].map((n) =>
       makeHistoryRecord(n, { size: 100 })
@@ -535,6 +563,27 @@ describe("messageArrayCompressor", () => {
     expect(tm.countFromString(system.content)).toBeLessThan(
       tm.countFromString(messages[0]?.content || context)
     );
+  });
+
+  it("counts the text of a prompt with an image when it decides to compress", async () => {
+    const rawHistory = [1, 2, 3].map((n) =>
+      makeHistoryRecord(n, { size: 100 })
+    );
+    const content = [
+      { type: "text", text: tokensOfText("USER TURN 4:", 2000) },
+      { type: "image_url", image_url: { url: "data:image/png;base64,AAAA" } },
+    ];
+    const messages = buildMessages(rawHistory, content);
+    const llm = {
+      model: "gpt-4o",
+      promptWindowLimit: () => 4000,
+      limits: { history: 400, system: 10_000, user: 10_000 },
+    };
+
+    const result = await messageArrayCompressor(llm, messages, rawHistory);
+
+    expect(turnsIn(result.slice(0, -1))).toEqual(["user:3", "assistant:3"]);
+    expect(result.at(-1).content).toBe(content);
   });
 
   describe("a system prompt whose text contains another `Context:`", () => {

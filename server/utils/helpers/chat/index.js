@@ -58,7 +58,7 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
 
   const system = messages.shift();
   const user = messages.pop();
-  const userPromptSize = tokenManager.countFromString(user.content);
+  const userPromptSize = tokenManager.countFromContent(user.content);
 
   // User prompt is the main focus here - we we prioritize it and allow
   // it to highjack the entire conversation thread. We are going to
@@ -354,6 +354,25 @@ function cannonball({
 }) {
   if (!input || !targetTokenSize) return input;
   const tokenManager = tiktokenInstance || new TokenManager();
+
+  // Messages with attachments carry an array of content parts. Truncate the
+  // text parts and keep every other part, such as images, as is.
+  if (Array.isArray(input)) {
+    return input.map((part) =>
+      typeof part?.text === "string"
+        ? {
+            ...part,
+            text: cannonball({
+              input: part.text,
+              targetTokenSize,
+              tiktokenInstance: tokenManager,
+              ellipsesStr,
+            }),
+          }
+        : part
+    );
+  }
+
   const truncText = ellipsesStr || "\n\n--prompt truncated for brevity--\n\n";
   const initialInputSize = tokenManager.countFromString(input);
   if (initialInputSize < targetTokenSize) return input;
