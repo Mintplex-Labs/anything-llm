@@ -345,9 +345,13 @@ describe("GitLabRepoLoader request urls", () => {
     );
   });
 
-  test.each(["feature/#42-login", "fix/a&b", "release+1"])(
-    "file requests send the whole branch name %s as the ref",
-    async (branch) => {
+  test.each([
+    ["feature/#42-login", "feature/%2342-login"],
+    ["fix/a&b", "fix/a%26b"],
+    ["release+1", "release%2B1"],
+  ])(
+    "file requests and links keep the whole branch name %s",
+    async (branch, linkRef) => {
       const fetchMock = mockGitlabApi({
         branches: [{ name: "main" }, { name: branch }],
         tree: [{ type: "blob", path: "README.md" }],
@@ -366,6 +370,9 @@ describe("GitLabRepoLoader request urls", () => {
         .filter(({ pathname }) => pathname.endsWith("/raw"))
         .map(({ searchParams }) => searchParams.get("ref"));
       expect(fileRefs).toEqual([branch]);
+      expect(docs[0].metadata.url).toBe(
+        `https://gitlab.com/acme/widgets/-/blob/${linkRef}/README.md`
+      );
     }
   );
 });

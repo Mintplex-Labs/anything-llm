@@ -160,7 +160,10 @@ class GitLabRepoLoader {
         pageContent: file.content,
         metadata: {
           source: file.path,
-          url: `${this.repo}/-/blob/${this.branch}/${file.path}`,
+          url: `${this.repo}/-/blob/${this.branch
+            .split("/")
+            .map(encodeURIComponent)
+            .join("/")}/${file.path}`,
         },
       });
     }
