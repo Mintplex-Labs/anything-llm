@@ -10,6 +10,7 @@ const {
 const { reasoningParams } = require("../../helpers/reasoningEffort");
 const { RetryError } = require("../../agents/aibitat/error.js");
 const { EmbeddedLemonadeLLM } = require("./index.js");
+const { EmbeddedLemonadeEngine } = require("./engine");
 const { PROVIDER, isEnabled } = require("./config");
 
 /**
@@ -82,7 +83,7 @@ class EmbeddedLemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async preloadModel() {
     if (this.preloaded) return;
-    await EmbeddedLemonadeLLM.bootOrContinue();
+    await EmbeddedLemonadeEngine.ensureRunning();
     await EmbeddedLemonadeLLM.loadModel(this.model);
     this.preloaded = true;
   }

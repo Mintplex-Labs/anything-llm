@@ -188,6 +188,31 @@ describe("loadModel", () => {
       `Could not load m: ${reason}`
     );
   });
+
+  it("says lemond crashed when it stops while loading, with its last error", async () => {
+    mockLemond({
+      "GET /models/m": () => json({}),
+      "GET /health": () => json({ all_models_loaded: [] }),
+    });
+    jest.spyOn(EmbeddedLemonadeEngine, "isRunning").mockResolvedValue(false);
+    jest
+      .spyOn(EmbeddedLemonadeEngine, "failureReason")
+      .mockReturnValue("cudaMalloc failed: out of memory");
+    await expect(EmbeddedLemonadeLLM.loadModel("m")).rejects.toThrow(
+      "Could not load m: The built-in LLM engine stopped unexpectedly: cudaMalloc failed: out of memory"
+    );
+  });
+
+  it("keeps the connection error when lemond is still running", async () => {
+    mockLemond({
+      "GET /models/m": () => json({}),
+      "GET /health": () => json({ all_models_loaded: [] }),
+    });
+    jest.spyOn(EmbeddedLemonadeEngine, "isRunning").mockResolvedValue(true);
+    await expect(EmbeddedLemonadeLLM.loadModel("m")).rejects.toThrow(
+      "Could not load m: fetch failed (POST /load)"
+    );
+  });
 });
 
 describe("chat completions", () => {
@@ -206,11 +231,45 @@ describe("chat completions", () => {
     );
   });
 
-  it("reports an engine that will not start", async () => {
+  it("reports why the engine will not start", async () => {
+    mockLemond({});
     EmbeddedLemonadeEngine.bootOrContinue.mockResolvedValue(false);
+    jest.replaceProperty(EmbeddedLemonadeEngine, "status", {
+      state: "error",
+      message:
+        "lemond exited while starting up: error while loading libvulkan.so.1",
+      progress: null,
+    });
     const llm = new EmbeddedLemonadeLLM(null, "m");
+    const expected =
+      "The built-in LLM engine could not be started: lemond exited while starting up: error while loading libvulkan.so.1";
+    await expect(llm.getChatCompletion([])).rejects.toThrow(expected);
+    await expect(llm.streamGetChatCompletion([])).rejects.toThrow(expected);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("explains a chat whose connection drops because lemond crashed", async () => {
+    mockLemond({
+      "GET /models/m": () => json({}),
+      "GET /health": () => json({ all_models_loaded: [] }),
+      "POST /load": () => json({ status: "success" }),
+    });
+    jest.spyOn(EmbeddedLemonadeEngine, "isRunning").mockResolvedValue(false);
+    jest
+      .spyOn(EmbeddedLemonadeEngine, "failureReason")
+      .mockReturnValue("ggml_cuda_init: failed to initialize CUDA");
+    const llm = new EmbeddedLemonadeLLM(null, "m");
+    llm.client = {
+      chat: {
+        completions: {
+          create: async () => {
+            throw new TypeError("fetch failed");
+          },
+        },
+      },
+    };
     await expect(llm.getChatCompletion([])).rejects.toThrow(
-      "The embedded LLM engine could not be reached or is not responding."
+      "The built-in LLM engine stopped unexpectedly: ggml_cuda_init: failed to initialize CUDA"
     );
   });
 
@@ -474,10 +533,15 @@ describe("pullModel", () => {
     );
   });
 
-  it("fails when the engine will not start", async () => {
+  it("fails with why the engine will not start", async () => {
     EmbeddedLemonadeEngine.bootOrContinue.mockResolvedValue(false);
+    jest.replaceProperty(EmbeddedLemonadeEngine, "status", {
+      state: "error",
+      message: "Download of https://cdn.example/lemond.tar.gz failed: 404",
+      progress: null,
+    });
     await expect(EmbeddedLemonadeLLM.pullModel("owner/Repo")).rejects.toThrow(
-      "The embedded LLM engine could not be started."
+      "The built-in LLM engine could not be started: Download of https://cdn.example/lemond.tar.gz failed: 404"
     );
   });
 });

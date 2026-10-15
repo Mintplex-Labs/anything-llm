@@ -33,6 +33,10 @@ class EmbeddedLemonadeEngine {
   static #stopping = null;
   /** @type {string|null} Why the last spawned lemond could not start (eg: EACCES on a noexec volume). */
   static #spawnError = null;
+  /** @type {string[]} The last lines lemond and llama-server wrote, so a failure can say why it happened. */
+  static #recentOutput = [];
+  /** @type {Promise<void>|null} Resolves once the spawned lemond's output streams have closed. */
+  static #outputClosed = null;
   /** @type {{state: 'idle'|'installing'|'starting'|'ready'|'error', message: string|null, progress: number|null}} */
   static status = { state: "idle", message: null, progress: null };
 
@@ -43,6 +47,50 @@ class EmbeddedLemonadeEngine {
   /** One line of lemond or llama-server output, tagged so it can be filtered with `grep '\[lemond\]'`. */
   static #logEngine(line) {
     console.log(`\x1b[35m[lemond]\x1b[0m ${line}`);
+    this.#recentOutput.push(line.trim());
+    if (this.#recentOutput.length > 50) this.#recentOutput.shift();
+  }
+
+  /**
+   * The reason lemond or llama-server gave for its last failure: the error lines among its recent output, otherwise
+   * its last line. llama.cpp ends a failed load with a generic line (eg: "exiting due to model loading error") after
+   * the line that says why, so error lines are preferred over the last line.
+   * @returns {string|null}
+   */
+  static failureReason() {
+    const errors = this.#recentOutput.filter((line) =>
+      /error|fail|out of memory|abort|not found|denied/i.test(line)
+    );
+    if (errors.length) return errors.slice(-3).join(" | ");
+    return this.#recentOutput.at(-1) ?? null;
+  }
+
+  /**
+   * Boots the engine, throwing why it could not start (eg: the download failed, lemond crashed) instead of a generic
+   * error, so chats, agents and downloads can show it.
+   * @returns {Promise<void>}
+   */
+  static async ensureRunning() {
+    if (await this.bootOrContinue()) return;
+    if (!isEnabled())
+      throw new Error("The built-in LLM engine is not enabled.");
+    throw new Error(
+      `The built-in LLM engine could not be started: ${this.status.message ?? "unknown error"}`
+    );
+  }
+
+  /**
+   * Explains a request to lemond that failed without a response (eg: the connection was refused or reset).
+   * When lemond is no longer running, it crashed - its output says why.
+   * @param {Error} error - the fetch error
+   * @returns {Promise<Error>}
+   */
+  static async connectionError(error) {
+    if (await this.isRunning()) return error;
+    const reason = this.failureReason();
+    return new Error(
+      `The built-in LLM engine stopped unexpectedly${reason ? `: ${reason}` : "."} Check the container logs for [lemond] lines.`
+    );
   }
 
   static #setStatus(state, message = null, progress = null) {
@@ -101,10 +149,18 @@ class EmbeddedLemonadeEngine {
           this.#setStatus("ready");
           return true;
         }
-        if (!this.process)
+        if (!this.process) {
+          if (this.#spawnError) throw new Error(this.#spawnError);
+          // exit can fire before the last output is read - wait for it, but not forever.
+          await Promise.race([
+            this.#outputClosed,
+            new Promise((r) => setTimeout(r, 1_000)),
+          ]);
+          const reason = this.failureReason();
           throw new Error(
-            this.#spawnError ?? "lemond exited while starting up."
+            `lemond exited while starting up${reason ? `: ${reason}` : "."}`
           );
+        }
         await new Promise((r) => setTimeout(r, 500));
       }
       throw new Error("lemond did not come online after starting.");
@@ -249,6 +305,8 @@ class EmbeddedLemonadeEngine {
     );
     this.process = child;
     this.#spawnError = null;
+    this.#recentOutput = [];
+    this.#outputClosed = new Promise((resolve) => child.once("close", resolve));
     this.log(`lemond started on port ${port()}. PID ${child.pid}.`);
 
     // Without a listener a failed spawn (missing or non-executable binary) is an uncaught error that exits the server.

@@ -101,8 +101,7 @@ class EmbeddedLemonadeLLM {
    */
   static bootingFetch(model = null) {
     return async (input, init = {}) => {
-      if (!(await EmbeddedLemonadeLLM.bootOrContinue()))
-        throw new Error("The built-in LLM engine could not be started.");
+      await EmbeddedLemonadeEngine.ensureRunning();
       if (model) await EmbeddedLemonadeLLM.loadModel(model);
       return await fetch(input, init);
     };
@@ -231,11 +230,9 @@ class EmbeddedLemonadeLLM {
     return textResponse;
   }
 
-  #error(e) {
+  async #error(e) {
     if (e?.message?.includes("fetch failed") || e?.code === "ECONNREFUSED")
-      return new Error(
-        "The embedded LLM engine could not be reached or is not responding. Check the container logs for more information."
-      );
+      return await EmbeddedLemonadeEngine.connectionError(e);
     return e;
   }
 
@@ -244,8 +241,7 @@ class EmbeddedLemonadeLLM {
    * instance instead of lemond reloading it with its own defaults.
    */
   async #prepare() {
-    if (!(await EmbeddedLemonadeLLM.bootOrContinue()))
-      throw this.#error(new Error("fetch failed"));
+    await EmbeddedLemonadeEngine.ensureRunning();
     await EmbeddedLemonadeLLM.loadModel(this.model);
   }
 
@@ -261,8 +257,8 @@ class EmbeddedLemonadeLLM {
         ...temperatureParam(temperature),
         ...reasoningParams("lemonade", reasoningEffort, this.model),
       })
-    ).catch((e) => {
-      throw this.#error(e);
+    ).catch(async (e) => {
+      throw await this.#error(e);
     });
 
     if (!result.output?.choices?.length) return null;
@@ -298,8 +294,8 @@ class EmbeddedLemonadeLLM {
       runPromptTokenCalculation: true,
       modelTag: this.model,
       provider: this.className,
-    }).catch((e) => {
-      throw this.#error(e);
+    }).catch(async (e) => {
+      throw await this.#error(e);
     });
   }
 
@@ -401,7 +397,10 @@ class EmbeddedLemonadeLLM {
           ctx_size: desiredCtxSize,
         }),
       }
-    );
+    ).catch(async (e) => {
+      const error = await EmbeddedLemonadeEngine.connectionError(e);
+      throw new Error(`Could not load ${model}: ${error.message}`);
+    });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || data?.status !== "success") {
       const reason =
@@ -507,8 +506,7 @@ class EmbeddedLemonadeLLM {
    * @returns {Promise<{modelId: string}>} The lemond id of the downloaded model.
    */
   static async pullModel(modelId, { onProgress = null, signal = null } = {}) {
-    if (!(await EmbeddedLemonadeLLM.bootOrContinue()))
-      throw new Error("The embedded LLM engine could not be started.");
+    await EmbeddedLemonadeEngine.ensureRunning();
 
     const registries = EmbeddedLemonadeLLM.registriesToTry();
     let definition = { model_name: modelId };
