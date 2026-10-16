@@ -269,6 +269,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin"],
             },
+            {
+              btnText: t("settings.model-pricing"),
+              href: paths.settings.modelPricing(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option

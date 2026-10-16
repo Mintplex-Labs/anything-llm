@@ -14,6 +14,14 @@ const { toNonNegativeNumber } = require("../numbers");
  */
 
 /**
+ * @typedef {Object} PricingOverride - admin-defined USD per 1,000,000 tokens
+ * @property {string} provider - AnythingLLM provider slug
+ * @property {string|null} model - model id, null applies to every model of the provider
+ * @property {number} input - cost per 1M prompt tokens
+ * @property {number} output - cost per 1M completion tokens
+ */
+
+/**
  * @typedef {Object} CostBreakdown
  * @property {number} inputCost - USD cost of the prompt tokens
  * @property {number} outputCost - USD cost of the completion tokens
@@ -34,7 +42,7 @@ const FREE_PROVIDERS = [
 
 /**
  * Providers explicitly excluded from both FREE_PROVIDERS and PROVIDER_ID_MAP.
- * These degrade to null (cost fields omitted) — not forgotten, just unsupported:
+ * These record zero cost unless an admin pricing override exists — not forgotten, just unsupported:
  *  - generic-openai, litellm: proxies to arbitrary backends, no way to determine cost
  *  - apipie, cometapi, ppio, sambanova, giteeai, privatemode: cloud aggregators with costs but no models.dev listing
  *  - nvidia-nim: self-hosted NIM, model set is user-defined and unaccounted for
@@ -66,6 +74,7 @@ const PROVIDER_ID_MAP = {
   cerebras: "cerebras",
 };
 
+const MAX_OVERRIDES = 500;
 const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24 * 3; // 3 days
 const REMOTE_URL = "https://models.dev/api.json";
 const FETCH_TIMEOUT_MS = 5000;
@@ -92,6 +101,44 @@ const CACHE_FILES = {
     return path.resolve(cacheDir(), "model-reasoning.json");
   },
 };
+
+// Overrides live on disk (not in memory or the DB) so scheduled jobs running
+// in worker threads see the same prices the admin saved in the main process.
+function overridesFile() {
+  return path.resolve(cacheDir(), "overrides.json");
+}
+
+/** @returns {CostBreakdown} */
+function zeroCost() {
+  return { inputCost: 0, outputCost: 0, totalCost: 0 };
+}
+
+/**
+ * Drops malformed entries and dedupes by provider + model (last one wins).
+ * @param {unknown} overrides
+ * @returns {PricingOverride[]}
+ */
+function sanitizeOverrides(overrides) {
+  if (!Array.isArray(overrides)) return [];
+  const byKey = new Map();
+  for (const entry of overrides) {
+    if (!entry || typeof entry !== "object") continue;
+    const provider =
+      typeof entry.provider === "string" ? entry.provider.trim() : "";
+    if (!provider) continue;
+    const model =
+      typeof entry.model === "string" && entry.model.trim()
+        ? entry.model.trim()
+        : null;
+    byKey.set(`${provider}:${model?.toLowerCase() ?? ""}`, {
+      provider,
+      model,
+      input: toNonNegativeNumber(entry.input),
+      output: toNonNegativeNumber(entry.output),
+    });
+  }
+  return Array.from(byKey.values()).slice(0, MAX_OVERRIDES);
+}
 
 /**
  * Extracts only cost data from the full models.dev API response.
@@ -168,6 +215,8 @@ class ModelPricing {
   #lowercaseIndexes = {};
   /** @type {Record<string, Record<string, string>>} - lazy bedrock normalization index per provider */
   #normalizedIndexes = {};
+  /** @type {{mtimeMs: number, overrides: PricingOverride[]}|null} - overrides file contents keyed to its mtime */
+  #overridesCache = null;
 
   constructor() {
     if (ModelPricing.instance) return ModelPricing.instance;
@@ -342,15 +391,64 @@ class ModelPricing {
   }
 
   /**
-   * @param {string|null} providerSlug - AnythingLLM provider slug
-   * @param {string|null} model - model id used for the completion
-   * @param {{prompt_tokens?: number, completion_tokens?: number}} usage
-   * @returns {CostBreakdown|null} null means "unknown" - callers should omit cost fields, not show zero
+   * Admin pricing overrides, read from disk and memoized until the file changes.
+   * @returns {PricingOverride[]}
    */
-  getCostBreakdown(providerSlug = null, model = null, usage = {}) {
-    if (!providerSlug) return null;
-    if (FREE_PROVIDERS.includes(providerSlug))
-      return { inputCost: 0, outputCost: 0, totalCost: 0 };
+  getOverrides() {
+    try {
+      const { mtimeMs } = fs.statSync(overridesFile());
+      if (this.#overridesCache?.mtimeMs !== mtimeMs) {
+        this.#overridesCache = {
+          mtimeMs,
+          overrides: sanitizeOverrides(
+            JSON.parse(fs.readFileSync(overridesFile(), "utf8"))
+          ),
+        };
+      }
+      return this.#overridesCache.overrides.map((o) => ({ ...o }));
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Replaces the admin pricing overrides.
+   * @param {unknown} overrides - list of {@link PricingOverride}, malformed entries are dropped
+   * @returns {PricingOverride[]} the overrides that were saved
+   */
+  setOverrides(overrides = []) {
+    const sanitized = sanitizeOverrides(overrides);
+    fs.writeFileSync(overridesFile(), JSON.stringify(sanitized));
+    this.#overridesCache = null;
+    return sanitized;
+  }
+
+  /**
+   * An exact (case-insensitive) model override wins over a provider-wide one.
+   * @returns {PricingOverride|null}
+   */
+  #findOverride(providerSlug, model) {
+    const overrides = this.getOverrides().filter(
+      (o) => o.provider === providerSlug
+    );
+    const modelId = typeof model === "string" ? model.toLowerCase() : null;
+    return (
+      overrides.find((o) => modelId && o.model?.toLowerCase() === modelId) ??
+      overrides.find((o) => o.model === null) ??
+      null
+    );
+  }
+
+  /**
+   * Per-1M-token USD rates for a completion: admin override first, then
+   * models.dev. Null means the rates are unknown.
+   * @returns {{input: number, output: number}|null}
+   */
+  #findRates(providerSlug, model, promptTokens) {
+    if (!providerSlug || typeof providerSlug !== "string") return null;
+    const override = this.#findOverride(providerSlug, model);
+    if (override) return override;
+    if (FREE_PROVIDERS.includes(providerSlug)) return null;
 
     const providerId = PROVIDER_ID_MAP[providerSlug];
     if (!providerId || !model || typeof model !== "string" || !this.#pricing)
@@ -363,11 +461,20 @@ class ModelPricing {
       model
     );
     if (!cost) return null;
+    return this.#resolveRates(cost, promptTokens);
+  }
 
+  /**
+   * @param {string|null} providerSlug - AnythingLLM provider slug
+   * @param {string|null} model - model id used for the completion
+   * @param {{prompt_tokens?: number, completion_tokens?: number}} usage
+   * @returns {CostBreakdown} unknown pricing is recorded as zero cost
+   */
+  getCostBreakdown(providerSlug = null, model = null, usage = {}) {
     const promptTokens = toNonNegativeNumber(usage?.prompt_tokens);
     const completionTokens = toNonNegativeNumber(usage?.completion_tokens);
-    const rates = this.#resolveRates(cost, promptTokens);
-    if (!rates) return null;
+    const rates = this.#findRates(providerSlug, model, promptTokens);
+    if (!rates) return zeroCost();
 
     const inputCost = parseFloat(
       ((promptTokens / 1_000_000) * rates.input).toFixed(10)
@@ -404,7 +511,7 @@ const MODEL_PRICING = new ModelPricing();
 
 /**
  * Enriches a metrics object with inputCost, outputCost, and totalCost (USD).
- * Returns the original metrics unchanged when pricing is unavailable.
+ * Unknown pricing is recorded as zero cost.
  * @param {Object} metrics - must contain `prompt_tokens` and `completion_tokens`
  * @param {Object} opts
  * @param {string|null} opts.provider - AnythingLLM provider slug
@@ -426,7 +533,7 @@ function addCostToMetrics(
       completion_tokens: metrics.completion_tokens,
     }
   );
-  return breakdown ? { ...metrics, ...breakdown } : metrics;
+  return { ...metrics, ...breakdown };
 }
 
 /**

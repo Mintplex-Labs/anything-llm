@@ -23,6 +23,7 @@ export default function LLMProviderModelPicker({
   description = "",
   defaultProvider = "",
   defaultModel = "",
+  anyModelLabel = null,
 }) {
   const { t } = useTranslation();
   const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
@@ -175,10 +176,11 @@ export default function LLMProviderModelPicker({
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
               className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5"
-              required
+              required={!anyModelLabel}
             >
               <option value="">
-                {t("model-router.provider-picker.select-model")}
+                {anyModelLabel ??
+                  t("model-router.provider-picker.select-model")}
               </option>
               {downloadedModels.length > 0 && (
                 <optgroup label="Downloaded models">
@@ -205,12 +207,13 @@ export default function LLMProviderModelPicker({
               onChange={(e) => setSelectedModel(e.target.value)}
               placeholder={
                 selectedProvider
-                  ? t("model-router.provider-picker.enter-model")
+                  ? (anyModelLabel ??
+                    t("model-router.provider-picker.enter-model"))
                   : t("model-router.provider-picker.select-provider-first")
               }
               disabled={!selectedProvider}
               className="bg-zinc-800 light:bg-white light:border light:border-slate-300 text-white light:text-slate-700 placeholder:text-zinc-400 light:placeholder:text-slate-400 text-sm rounded-[8px] outline-none block w-full h-8 px-3.5 disabled:opacity-50"
-              required
+              required={!anyModelLabel}
             />
           )}
         </div>

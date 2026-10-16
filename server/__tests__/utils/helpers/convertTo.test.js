@@ -14,6 +14,15 @@ const { EmbedConfig } = require("../../../models/embedConfig");
 
 const mockWorkspace = { id: 1, openAiPrompt: "Test OpenAI Prompt" };
 
+const emptyMetricsFields = {
+  prompt_tokens: null,
+  completion_tokens: null,
+  input_cost: null,
+  output_cost: null,
+  total_cost: null,
+  currency: null,
+};
+
 const mockChat = (withImages = false) => {
   return {
     id: 1,
@@ -69,6 +78,7 @@ describe("prepareChatsForExport", () => {
       prompt: chatExample.prompt,
       response: responseJson.text,
       sent_at: chatExample.createdAt,
+      ...emptyMetricsFields,
       rating: chatExample.feedbackScore ? "GOOD" : "BAD",
       username: chatExample.user.username,
       workspace: chatExample.workspace.name,
@@ -88,6 +98,7 @@ describe("prepareChatsForExport", () => {
       prompt: chatExample.prompt,
       response: responseJson.text,
       sent_at: chatExample.createdAt,
+      ...emptyMetricsFields,
       rating: chatExample.feedbackScore ? "GOOD" : "BAD",
       username: chatExample.user.username,
       workspace: chatExample.workspace.name,
@@ -117,10 +128,37 @@ describe("prepareChatsForExport", () => {
       prompt: chatExample.prompt,
       response: responseJson.text,
       sent_at: chatExample.createdAt,
+      ...emptyMetricsFields,
       rating: chatExample.feedbackScore ? "GOOD" : "BAD",
       username: chatExample.user.username,
       workspace: chatExample.workspace.name,
     }]);
+  });
+
+  test("should export token counts and USD costs for chats with cost metrics", async () => {
+    const chatExample = mockChat();
+    chatExample.response = JSON.stringify({
+      text: "Test response",
+      sources: [],
+      metrics: {
+        prompt_tokens: 1000,
+        completion_tokens: 500,
+        inputCost: 0.0025,
+        outputCost: 0.005,
+        totalCost: 0.0075,
+      },
+    });
+    WorkspaceChats.whereWithData.mockResolvedValue([chatExample]);
+    const [result] = await prepareChatsForExport("csv", "workspace");
+
+    expect(result).toMatchObject({
+      prompt_tokens: 1000,
+      completion_tokens: 500,
+      input_cost: 0.0025,
+      output_cost: 0.005,
+      total_cost: 0.0075,
+      currency: "USD",
+    });
   });
 
   test("should return prepared data in jsonAlpaca format for workspace chat type", async () => {

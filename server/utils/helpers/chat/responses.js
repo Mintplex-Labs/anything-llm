@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { isAbortError } = require("../abortSignals");
 const { safeJsonParse } = require("../../http");
+const { convertResponseCosts } = require("../currencyExchange");
 
 /**
  * Extract reasoning content from a message or delta, checking all known field names.
@@ -350,7 +351,10 @@ function writeResponseChunk(response, data) {
   // Writing then is a no-op at best and an ERR_STREAM_WRITE_AFTER_END at worst,
   // so chunks queued after the socket closed are dropped instead.
   if (response.writableEnded || response.destroyed) return;
-  response.write(`data: ${safeJSONStringify(data)}\n\n`);
+  // Set by the costCurrency middleware on developer API chat routes.
+  const currency = response.locals?.costCurrency;
+  const payload = currency ? convertResponseCosts(data, currency) : data;
+  response.write(`data: ${safeJSONStringify(payload)}\n\n`);
   return;
 }
 

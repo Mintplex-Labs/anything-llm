@@ -476,6 +476,7 @@ function adminEndpoints(app) {
         if (user?.role === ROLES.manager) {
           const managerAllowedFields = [
             "custom_app_name",
+            "display_currency",
             "footer_data",
             "support_email",
             "meta_page_title",
