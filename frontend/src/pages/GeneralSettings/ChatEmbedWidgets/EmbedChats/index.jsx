@@ -9,6 +9,7 @@ import { CaretDown, Download } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { saveAs } from "file-saver";
 import System from "@/models/system";
+import useCurrency from "@/hooks/useCurrency";
 
 const exportOptions = {
   csv: {
@@ -55,9 +56,10 @@ export default function EmbedChatsView() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const { currency } = useCurrency();
 
   const handleDumpChats = async (exportType) => {
-    const chats = await System.exportChats(exportType, "embed");
+    const chats = await System.exportChats(exportType, "embed", currency);
     if (!!chats) {
       const { name, mimeType, fileExtension, filenameFunc } =
         exportOptions[exportType];
