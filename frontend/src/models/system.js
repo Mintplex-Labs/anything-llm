@@ -77,6 +77,25 @@ const System = {
       });
   },
   /**
+   * Fetches the price models.dev lists for a model.
+   * @param {string} provider - AnythingLLM provider slug
+   * @param {string} model - model id
+   * @returns {Promise<{input: number, output: number}|null>} USD per 1M tokens, null when unknown
+   */
+  modelPricingListed: async function (provider, model) {
+    const params = new URLSearchParams({ provider, model });
+    return await fetch(`${API_BASE}/system/model-pricing-listed?${params}`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch listed model price.");
+        return res.json();
+      })
+      .then((res) => res.price ?? null)
+      .catch(() => null);
+  },
+  /**
    * Replaces the admin-defined model pricing overrides.
    * @param {ModelPricingOverride[]} overrides
    * @returns {Promise<{success: boolean, overrides?: ModelPricingOverride[], error?: string}>}

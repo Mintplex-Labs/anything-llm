@@ -975,6 +975,22 @@ function systemEndpoints(app) {
     }
   );
 
+  app.get(
+    "/system/model-pricing-listed",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { provider = null, model = null } = request.query;
+        return response
+          .status(200)
+          .json({ price: MODEL_PRICING.getListedRates(provider, model) });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
   app.post(
     "/system/model-pricing-overrides",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],

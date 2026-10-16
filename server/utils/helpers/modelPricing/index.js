@@ -448,11 +448,24 @@ class ModelPricing {
     if (!providerSlug || typeof providerSlug !== "string") return null;
     const override = this.#findOverride(providerSlug, model);
     if (override) return override;
+    return this.getListedRates(providerSlug, model, promptTokens);
+  }
+
+  /**
+   * Per-1M-token USD rates models.dev lists for a model, ignoring admin overrides.
+   * @param {string|null} providerSlug - AnythingLLM provider slug
+   * @param {string|null} model - model id
+   * @param {number} [promptTokens] - selects long-context tier rates when large enough
+   * @returns {{input: number, output: number}|null} null when the price is unknown
+   */
+  getListedRates(providerSlug = null, model = null, promptTokens = 0) {
+    if (typeof providerSlug !== "string" || typeof model !== "string")
+      return null;
     if (FREE_PROVIDERS.includes(providerSlug)) return null;
+    if (!Object.hasOwn(PROVIDER_ID_MAP, providerSlug)) return null;
 
     const providerId = PROVIDER_ID_MAP[providerSlug];
-    if (!providerId || !model || typeof model !== "string" || !this.#pricing)
-      return null;
+    if (!model || !this.#pricing) return null;
 
     const cost = this.#findModelEntry(
       "pricing",

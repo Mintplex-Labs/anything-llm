@@ -1024,6 +1024,7 @@ const TRANSLATIONS = {
       "input-hint": "USD per 1 million prompt tokens.",
       "output-label": "Output price",
       "output-hint": "USD per 1 million completion tokens.",
+      "listed-note": "Filled in with the public price from models.dev.",
       "provider-required": "A provider is required.",
       cancel: "Cancel",
       create: "Add price",

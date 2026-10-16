@@ -779,6 +779,18 @@ describe("ModelPricing", () => {
       ]);
     });
 
+    it("are ignored by the listed models.dev rates", () => {
+      pricing.setOverrides([
+        { provider: "openai", model: "gpt-4o", input: 1, output: 1 },
+      ]);
+      expect(pricing.getListedRates("openai", "gpt-4o")).toEqual({
+        input: 2.5,
+        output: 10,
+      });
+      expect(pricing.getListedRates("ollama", "llama3")).toBeNull();
+      expect(pricing.getListedRates("openai", null)).toBeNull();
+    });
+
     it("reads no overrides from a corrupt file", () => {
       fs.writeFileSync(
         path.join(tempDir, "models", "pricing", "overrides.json"),

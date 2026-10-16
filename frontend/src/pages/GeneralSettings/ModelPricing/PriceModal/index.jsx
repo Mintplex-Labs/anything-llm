@@ -12,6 +12,8 @@ import Modal, {
 } from "@/components/lib/Modal";
 import LLMProviderModelPicker from "@/pages/GeneralSettings/ModelRouters/LLMProviderModelPicker";
 
+const EMPTY_PRICE = { input: "", output: "", listed: false };
+
 /**
  * @param {Object} props
  * @param {boolean} props.isOpen
@@ -29,13 +31,59 @@ export default function PriceModal({
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [systemSettings, setSystemSettings] = useState(null);
+  const [selection, setSelection] = useState({ provider: "", model: "" });
+  const [price, setPrice] = useState(EMPTY_PRICE);
   const isEdit = !!override;
 
   useEffect(() => {
     if (!isOpen) return;
     setError(null);
+    setPrice(
+      isEdit
+        ? { input: override.input, output: override.output, listed: false }
+        : EMPTY_PRICE
+    );
     if (!isEdit) System.keys().then((settings) => setSystemSettings(settings));
   }, [isOpen, isEdit]);
+
+  // Fill in the models.dev price for the selected model, and clear a
+  // previously filled price when the new selection has none.
+  useEffect(() => {
+    if (!isOpen) return;
+    const { provider, model } = selection;
+    if (
+      isEdit &&
+      provider === override.provider &&
+      model === (override.model ?? "")
+    ) {
+      const saved = {
+        input: override.input,
+        output: override.output,
+        listed: false,
+      };
+      setPrice((current) => (current.listed ? saved : current));
+      return;
+    }
+
+    let cancelled = false;
+    const lookup =
+      provider && model
+        ? System.modelPricingListed(provider, model)
+        : Promise.resolve(null);
+    lookup.then((listed) => {
+      if (cancelled) return;
+      if (listed) return setPrice({ ...listed, listed: true });
+      setPrice((current) => (current.listed ? EMPTY_PRICE : current));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selection]);
+
+  function handlePriceChange(e) {
+    const { name, value } = e.target;
+    setPrice((current) => ({ ...current, [name]: value, listed: false }));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -73,6 +121,7 @@ export default function PriceModal({
             label={t("model-pricing.modal.model-label")}
             description={t("model-pricing.modal.model-description")}
             anyModelLabel={t("model-pricing.all-models")}
+            onSelectionChange={setSelection}
             defaultProvider={override?.provider ?? systemSettings?.LLMProvider}
             defaultModel={
               isEdit ? (override.model ?? "") : systemSettings?.LLMModel
@@ -87,7 +136,8 @@ export default function PriceModal({
             min={0}
             step="any"
             placeholder="0.00"
-            defaultValue={override?.input ?? ""}
+            value={price.input}
+            onChange={handlePriceChange}
             required
           />
           <ModalInput
@@ -99,9 +149,15 @@ export default function PriceModal({
             min={0}
             step="any"
             placeholder="0.00"
-            defaultValue={override?.output ?? ""}
+            value={price.output}
+            onChange={handlePriceChange}
             required
           />
+          {price.listed && (
+            <p className="text-xs leading-4 text-zinc-400 light:text-slate-500">
+              {t("model-pricing.modal.listed-note")}
+            </p>
+          )}
           {error && (
             <p className="text-xs leading-4 text-red-400 light:text-red-600">
               {error}
