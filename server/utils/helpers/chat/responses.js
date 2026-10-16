@@ -301,6 +301,12 @@ function convertToPromptHistory(history = []) {
       continue;
     }
 
+    // A prompt that never got a response (failed or abandoned) stays visible
+    // in the thread but is left out of the history sent to the LLM - some
+    // providers (ex: Bedrock) reject a blank assistant message, which would
+    // break every later chat in the thread.
+    if (!data.text) continue;
+
     // If the agent saved one or more clarifying-question surveys on this
     // record, append them to the assistant content so future LLM turns
     // (agent or normal chat) can recall what the user answered.

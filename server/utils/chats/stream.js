@@ -270,6 +270,16 @@ async function streamChatWithWorkspace(
     return;
   }
 
+  // Save the prompt before calling the LLM so it stays in the thread even if
+  // the response fails or the user leaves before it finishes.
+  const { chat } = await WorkspaceChats.new({
+    workspaceId: workspace.id,
+    prompt: message,
+    response: { text: "", sources: [], type: chatMode, attachments },
+    threadId: thread?.id || null,
+    user,
+  });
+
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   // Reuse the system prompt from routing pre-fetch when available.
@@ -339,7 +349,7 @@ async function streamChatWithWorkspace(
   }
 
   if (completeText?.length > 0) {
-    const { chat } = await WorkspaceChats.new({
+    await WorkspaceChats.upsert(chat.id, {
       workspaceId: workspace.id,
       prompt: message,
       response: {
@@ -351,6 +361,7 @@ async function streamChatWithWorkspace(
       },
       threadId: thread?.id || null,
       user,
+      include: true,
     });
 
     writeResponseChunk(response, {
