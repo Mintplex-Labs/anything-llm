@@ -24,6 +24,7 @@ export default function LLMProviderModelPicker({
   defaultProvider = "",
   defaultModel = "",
   anyModelLabel = null,
+  onSelectionChange = null,
 }) {
   const { t } = useTranslation();
   const [selectedProvider, setSelectedProvider] = useState(defaultProvider);
@@ -41,6 +42,10 @@ export default function LLMProviderModelPicker({
   useEffect(() => {
     if (defaultModel && !selectedModel) setSelectedModel(defaultModel);
   }, [defaultModel]);
+
+  useEffect(() => {
+    onSelectionChange?.({ provider: selectedProvider, model: selectedModel });
+  }, [selectedProvider, selectedModel]);
 
   const availableProviders = withEmbeddedLemonade(
     AVAILABLE_LLM_PROVIDERS,
