@@ -1,6 +1,13 @@
 const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
+const { v4: uuidv4 } = require("uuid");
+const { setTimeout: delay } = require("node:timers/promises");
+
+const CHAT_QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000;
+// Abandoned reservations are ignored after one quota window. Normal requests
+// release their reservation in finally; this expiry is the crash-recovery path.
+const CHAT_QUOTA_RESERVATION_TTL_MS = CHAT_QUOTA_WINDOW_MS;
 
 /**
  * @typedef {Object} User
@@ -366,15 +373,118 @@ const User = {
     if (!user || user.dailyMessageLimit === null || user.role === ROLES.admin)
       return true;
 
-    const { WorkspaceChats } = require("./workspaceChats");
-    const currentChatCount = await WorkspaceChats.count({
-      user_id: user.id,
-      createdAt: {
-        gte: new Date(new Date() - 24 * 60 * 60 * 1000), // 24 hours
+    const since = new Date(Date.now() - CHAT_QUOTA_WINDOW_MS);
+    const currentChatCount = await prisma.workspace_chats.count({
+      where: {
+        user_id: user.id,
+        createdAt: {
+          gte: since,
+        },
+      },
+    });
+    const activeReservationCount = await prisma.chat_quota_reservations.count({
+      where: {
+        user_id: user.id,
+        expiresAt: { gt: new Date() },
       },
     });
 
-    return currentChatCount < user.dailyMessageLimit;
+    return currentChatCount + activeReservationCount < user.dailyMessageLimit;
+  },
+
+  /**
+   * Atomically claim one daily chat slot using the shared Prisma database.
+   * The reservation and quota check share a serializable transaction, so
+   * concurrent requests on separate application replicas cannot claim the
+   * same remaining slot.
+   *
+   * @param {User} user
+   * @returns {Promise<{allowed: boolean, reservationId: string|null}>}
+   */
+  reserveChatQuota: async function (user) {
+    const { ROLES } = require("../utils/middleware/multiUserProtected");
+    if (!user || user.dailyMessageLimit === null || user.role === ROLES.admin)
+      return { allowed: true, reservationId: null };
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const now = new Date();
+      const since = new Date(now.getTime() - CHAT_QUOTA_WINDOW_MS);
+      const reservationId = uuidv4();
+      try {
+        return await prisma.$transaction(
+          async (tx) => {
+            // Keep reservation creation and the quota check in one
+            // serializable transaction so concurrent app replicas cannot
+            // claim the same remaining slot.
+            await tx.chat_quota_reservations.deleteMany({
+              where: {
+                user_id: Number(user.id),
+                expiresAt: { lte: now },
+              },
+            });
+            await tx.chat_quota_reservations.create({
+              data: {
+                id: reservationId,
+                user_id: Number(user.id),
+                expiresAt: new Date(
+                  now.getTime() + CHAT_QUOTA_RESERVATION_TTL_MS
+                ),
+              },
+            });
+
+            const [currentChatCount, activeReservationCount] =
+              await Promise.all([
+                tx.workspace_chats.count({
+                  where: {
+                    user_id: Number(user.id),
+                    createdAt: { gte: since },
+                  },
+                }),
+                tx.chat_quota_reservations.count({
+                  where: {
+                    user_id: Number(user.id),
+                    expiresAt: { gt: now },
+                  },
+                }),
+              ]);
+
+            if (
+              currentChatCount + activeReservationCount >
+              user.dailyMessageLimit
+            ) {
+              await tx.chat_quota_reservations.deleteMany({
+                where: { id: reservationId },
+              });
+              return { allowed: false, reservationId: null };
+            }
+
+            return { allowed: true, reservationId };
+          },
+          { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+        );
+      } catch (error) {
+        // PostgreSQL reports serialization conflicts as P2034. SQLite can
+        // instead report writer contention as P1008 or an un-coded connector
+        // timeout (Prisma 5.3). Retry the entire rolled-back transaction, never
+        // bypass the quota check when the shared database is unavailable.
+        const retryable =
+          ["P2034", "P1008"].includes(error.code) ||
+          /database is locked|Timed out during query execution/i.test(
+            error.message
+          );
+        if (!retryable || attempt === 2) throw error;
+        await delay(25 * 2 ** attempt + Math.floor(Math.random() * 25));
+      }
+    }
+
+    return { allowed: false, reservationId: null };
+  },
+
+  releaseChatQuotaReservation: async function (reservationId = null) {
+    if (!reservationId) return;
+    await prisma.chat_quota_reservations.deleteMany({
+      where: { id: String(reservationId) },
+    });
   },
 };
 

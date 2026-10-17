@@ -489,11 +489,14 @@ function workspaceEndpoints(app) {
         // This works for both workspace and threads.
         // we simplify this by just looking at workspace<>user overlap
         // since they are all on the same table.
-        await WorkspaceChats.delete({
+        const deleteClause = {
           id: { in: chatIds.map((id) => Number(id)) },
           user_id: user?.id ?? null,
           workspaceId: workspace.id,
-        });
+        };
+        if (multiUserMode(response))
+          await WorkspaceChats.markThreadHistoryInvalidV2(deleteClause);
+        else await WorkspaceChats.delete(deleteClause);
 
         response.sendStatus(200).end();
       } catch (e) {
@@ -512,12 +515,15 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
-        await WorkspaceChats.delete({
+        const deleteClause = {
           workspaceId: workspace.id,
           thread_id: null,
           user_id: user?.id,
           id: { gte: Number(startingId) },
-        });
+        };
+        if (multiUserMode(response))
+          await WorkspaceChats.markThreadHistoryInvalidV2(deleteClause);
+        else await WorkspaceChats.delete(deleteClause);
 
         response.sendStatus(200).end();
       } catch (e) {

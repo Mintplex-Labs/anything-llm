@@ -72,6 +72,7 @@ model users {
   bio                          String?                       @default("")
   web_push_subscription_config String?
   workspace_chats              workspace_chats[]
+  chat_quota_reservations      chat_quota_reservations[]
   workspace_users              workspace_users[]
   embed_configs                embed_configs[]
   embed_chats                  embed_chats[]
@@ -195,18 +196,30 @@ model workspace_chats {
   users           users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
+// Shared database leases coordinate daily quota checks across app replicas.
+model chat_quota_reservations {
+  id        String   @id
+  user_id   Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([user_id, expiresAt])
+}
+
 model workspace_agent_invocations {
-  id            Int        @id @default(autoincrement())
-  uuid          String     @unique
-  prompt        String // Contains agent invocation to parse + option additional text for seed.
-  closed        Boolean    @default(false)
-  user_id       Int?
-  thread_id     Int? // No relation to prevent whole table migration
-  workspace_id  Int
-  createdAt     DateTime   @default(now())
-  lastUpdatedAt DateTime   @default(now())
-  user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                   Int        @id @default(autoincrement())
+  uuid                 String     @unique
+  prompt               String // Contains agent invocation to parse + option additional text for seed.
+  closed               Boolean    @default(false)
+  user_id              Int?
+  thread_id            Int? // No relation to prevent whole table migration
+  workspace_id         Int
+  quota_reservation_id String?
+  createdAt            DateTime   @default(now())
+  lastUpdatedAt        DateTime   @default(now())
+  user                 users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace            workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([uuid])
 }

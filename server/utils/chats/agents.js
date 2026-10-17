@@ -62,6 +62,7 @@ async function grepAgents({
   thread = null,
   attachments = [],
   reasoningEffort = null,
+  quotaReservationId = null,
 }) {
   let nativeToolingEnabled = false;
 
@@ -77,6 +78,7 @@ async function grepAgents({
       workspace: workspace,
       user: user,
       thread: thread,
+      quotaReservationId,
     });
 
     if (!newInvocation) {

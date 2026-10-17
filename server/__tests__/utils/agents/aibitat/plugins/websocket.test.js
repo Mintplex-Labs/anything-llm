@@ -5,10 +5,18 @@ jest.mock("../../../../../models/telemetry", () => ({
 jest.mock("../../../../../models/systemSettings", () => ({
   SystemSettings: { isMultiUserMode: jest.fn().mockResolvedValue(false) },
 }));
+jest.mock("../../../../../models/user", () => ({
+  User: {
+    get: jest.fn(),
+    reserveChatQuota: jest.fn(),
+    releaseChatQuotaReservation: jest.fn(),
+  },
+}));
 
 const {
   websocket,
 } = require("../../../../../utils/agents/aibitat/plugins/websocket.js");
+const { User } = require("../../../../../models/user");
 
 const SOCKET_TIMEOUT_MS = 300 * 1_000;
 const MALFORMED_TEXT_FRAMES = [
@@ -55,6 +63,63 @@ function awaitFeedback(socket) {
     });
   return { pending, settled };
 }
+
+describe("websocket follow-up chat quota", () => {
+  beforeEach(() => {
+    User.get.mockResolvedValue({
+      id: 1,
+      dailyMessageLimit: 1,
+      role: "default",
+    });
+    User.reserveChatQuota.mockResolvedValue({
+      allowed: true,
+      reservationId: "followup",
+    });
+    User.releaseChatQuotaReservation.mockResolvedValue();
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  function followup(feedback = "hello") {
+    const { socket, aibitat } = setupPlugin();
+    aibitat.handlerProps = { invocation: { user_id: 1 } };
+    aibitat.continue = jest.fn().mockResolvedValue();
+    socket.askForFeedback = jest
+      .fn()
+      .mockResolvedValue({ feedback, attachments: [] });
+    const resume = () =>
+      aibitat.onInterrupt.mock.calls[0][0]({ from: "USER", to: "agent" });
+    return { socket, aibitat, resume };
+  }
+
+  it("rejects a continuation when the daily quota is exhausted", async () => {
+    const { socket, aibitat, resume } = followup();
+    User.reserveChatQuota.mockResolvedValue({
+      allowed: false,
+      reservationId: null,
+    });
+    await resume();
+    expect(aibitat.continue).not.toHaveBeenCalled();
+    expect(socket.close).toHaveBeenCalled();
+  });
+
+  it("releases the reservation if continuation fails before persistence", async () => {
+    const { aibitat, resume } = followup();
+    aibitat.continue.mockRejectedValue(new Error("model unavailable"));
+    await resume();
+    expect(User.releaseChatQuotaReservation).toHaveBeenCalledWith("followup");
+  });
+
+  it("also reserves for whitespace if it is passed to the model", async () => {
+    const { aibitat, resume } = followup(" ");
+    await resume();
+    expect(User.reserveChatQuota).toHaveBeenCalledTimes(1);
+    expect(aibitat.continue).toHaveBeenCalledWith(" ", []);
+  });
+});
 
 describe("websocket plugin handleFeedback", () => {
   beforeEach(() => jest.useFakeTimers());
