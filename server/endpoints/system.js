@@ -53,6 +53,12 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
 const { exportChatsAsType } = require("../utils/helpers/chat/convertTo");
+const { MODEL_PRICING } = require("../utils/helpers/modelPricing");
+const {
+  CURRENCY_EXCHANGE,
+  SUPPORTED_CURRENCIES,
+  resolveCurrency,
+} = require("../utils/helpers/currencyExchange");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
@@ -925,6 +931,83 @@ function systemEndpoints(app) {
     }
   );
 
+  /**
+   * Returns the instance display currency, the currencies it can be set to,
+   * and the cached USD exchange rates used to render stored USD costs.
+   * `currency` is null when the admin has not picked one (the frontend then
+   * infers it from the browser locale) and `rates` is null when no rates have
+   * ever been fetched (eg: air-gapped install) - the frontend then shows USD.
+   */
+  app.get(
+    "/system/exchange-rates",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const [setting, rates] = await Promise.all([
+          SystemSettings.get({ label: "display_currency" }),
+          CURRENCY_EXCHANGE.getRates(),
+        ]);
+        return response.status(200).json({
+          base: "USD",
+          currency: setting?.value || null,
+          currencies: SUPPORTED_CURRENCIES,
+          rates,
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
+  app.get(
+    "/system/model-pricing-overrides",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_request, response) => {
+      try {
+        return response
+          .status(200)
+          .json({ overrides: MODEL_PRICING.getOverrides() });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
+  app.get(
+    "/system/model-pricing-listed",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { provider = null, model = null } = request.query;
+        return response
+          .status(200)
+          .json({ price: MODEL_PRICING.getListedRates(provider, model) });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
+  app.post(
+    "/system/model-pricing-overrides",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { overrides = [] } = reqBody(request);
+        return response.status(200).json({
+          success: true,
+          overrides: MODEL_PRICING.setOverrides(overrides),
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(500).json({ success: false, error: e.message });
+      }
+    }
+  );
+
   app.delete(
     "/system/remove-pfp",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
@@ -1231,8 +1314,16 @@ function systemEndpoints(app) {
     ],
     async (request, response) => {
       try {
-        const { type = "jsonl", chatType = "workspace" } = request.query;
-        const { contentType, data } = await exportChatsAsType(type, chatType);
+        const {
+          type = "jsonl",
+          chatType = "workspace",
+          currency = null,
+        } = request.query;
+        const { contentType, data } = await exportChatsAsType(
+          type,
+          chatType,
+          resolveCurrency(currency)
+        );
         await EventLogs.logEvent(
           "exported_chats",
           {

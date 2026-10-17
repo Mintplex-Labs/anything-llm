@@ -242,23 +242,22 @@ describe("Provider cost accumulation", () => {
     expect(totals.totalCost).toBe(11);
   });
 
-  test("cost fields stay absent when pricing is unknown", () => {
-    jest.spyOn(MODEL_PRICING, "getCostBreakdown").mockReturnValue(null);
-
+  test("unknown pricing records zero cost", () => {
     const provider = new TestProvider();
+    provider.providerSlug = null;
     provider.resetUsage();
     provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
 
-    expect(provider.getUsage()).not.toHaveProperty("totalCost");
-    expect(provider.getCumulativeUsage()).not.toHaveProperty("totalCost");
+    expect(provider.getUsage().totalCost).toBe(0);
+    expect(provider.getCumulativeUsage().totalCost).toBe(0);
   });
 
-  test("a partially priceable run sums only the priced calls", () => {
+  test("a partially priceable run sums the priced calls", () => {
     jest
       .spyOn(MODEL_PRICING, "getCostBreakdown")
       .mockImplementation((_slug, model) =>
         model === "unknown-model"
-          ? null
+          ? { inputCost: 0, outputCost: 0, totalCost: 0 }
           : { inputCost: 1, outputCost: 2, totalCost: 3 }
       );
 
@@ -272,8 +271,8 @@ describe("Provider cost accumulation", () => {
     provider.resetUsage();
     provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
 
-    // The unpriced call contributes nothing, but the priced call's cost survives.
-    expect(provider.getUsage()).not.toHaveProperty("totalCost");
+    // The unpriced call contributes zero, but the priced call's cost survives.
+    expect(provider.getUsage().totalCost).toBe(0);
     expect(provider.getCumulativeUsage().totalCost).toBe(3);
   });
 });

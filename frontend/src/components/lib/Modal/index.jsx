@@ -143,6 +143,13 @@ export function ModalFooter({ children, className = "" }) {
 const FIELD_BASE =
   "w-full text-sm rounded-lg outline-none bg-zinc-800 border border-zinc-800 text-zinc-100 placeholder:text-zinc-400 light:bg-white light:border-slate-300 light:text-slate-900 light:placeholder:text-slate-400 focus:border-sky-500 light:focus:border-sky-500 disabled:opacity-50 disabled:cursor-not-allowed";
 
+// With a leading prefix the wrapper draws the field box, so the prefix sits in
+// the flow and can be any width (eg: "$", "kr", "CHF").
+const LEADING_FIELD_BOX =
+  "rounded-lg bg-zinc-800 border border-zinc-800 light:bg-white light:border-slate-300 focus-within:border-sky-500 light:focus-within:border-sky-500 has-[:disabled]:opacity-50";
+const LEADING_FIELD_INPUT =
+  "flex-1 min-w-0 h-8 pl-1.5 pr-3.5 text-sm bg-transparent border-none outline-none text-zinc-100 placeholder:text-zinc-400 light:text-slate-900 light:placeholder:text-slate-400 disabled:cursor-not-allowed";
+
 /**
  * Field label matching the Figma input label (Medium 14).
  *
@@ -204,6 +211,9 @@ export function ModalInput({
   ...props
 }) {
   const inputId = id || name;
+  const inputClassName = leading
+    ? `${LEADING_FIELD_INPUT} ${className}`
+    : `${FIELD_BASE} h-[34px] px-3.5 ${className}`;
   return (
     <div className="flex flex-col gap-y-1.5 w-full">
       {label && (
@@ -211,9 +221,11 @@ export function ModalInput({
           {label}
         </ModalLabel>
       )}
-      <div className="relative flex items-center w-full">
+      <div
+        className={`relative flex items-center w-full ${leading ? LEADING_FIELD_BOX : ""}`}
+      >
         {leading && (
-          <span className="absolute left-3.5 text-sm text-zinc-400 light:text-slate-500 pointer-events-none">
+          <span className="shrink-0 pl-3.5 text-sm text-zinc-400 light:text-slate-500 pointer-events-none">
             {leading}
           </span>
         )}
@@ -221,14 +233,14 @@ export function ModalInput({
           <PasswordInput
             id={inputId}
             name={name}
-            className={`${FIELD_BASE} h-[34px] px-3.5 ${leading ? "pl-7" : ""} ${className}`}
+            className={inputClassName}
             {...props}
           />
         ) : (
           <input
             id={inputId}
             name={name}
-            className={`${FIELD_BASE} h-[34px] px-3.5 ${leading ? "pl-7" : ""} ${className}`}
+            className={inputClassName}
             {...props}
           />
         )}

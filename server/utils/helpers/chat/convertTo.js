@@ -7,6 +7,10 @@ const { Workspace } = require("../../../models/workspace");
 const { EmbedConfig } = require("../../../models/embedConfig");
 const { safeJsonParse } = require("../../http");
 const { SystemSettings } = require("../../../models/systemSettings");
+const {
+  CURRENCY_EXCHANGE,
+  convertMetricsCost,
+} = require("../currencyExchange");
 
 async function convertToCSV(preparedData) {
   const headers = new Set(["id", "workspace", "prompt", "response", "sent_at"]);
@@ -44,7 +48,11 @@ async function convertToJSONL(workspaceChatsMap) {
     .join("\n");
 }
 
-async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
+async function prepareChatsForExport(
+  format = "jsonl",
+  chatType = "workspace",
+  currency = "USD"
+) {
   if (!exportMap.hasOwnProperty(format))
     throw new Error(`Invalid export type: ${format}`);
 
@@ -74,6 +82,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
         prompt: chat.prompt,
         response: responseJson.text,
         sent_at: chat.createdAt,
+        ...metricsExportFields(responseJson.metrics, currency),
         // Only add attachments to the json format since we cannot arrange attachments in csv format
         ...(format === "json"
           ? {
@@ -238,14 +247,39 @@ function escapeCsv(str) {
   return `"${str.replace(/"/g, '""').replace(/\n/g, " ")}"`;
 }
 
-async function exportChatsAsType(format = "jsonl", chatType = "workspace") {
+async function exportChatsAsType(
+  format = "jsonl",
+  chatType = "workspace",
+  currency = "USD"
+) {
   const { contentType, func } = exportMap.hasOwnProperty(format)
     ? exportMap[format]
     : exportMap.jsonl;
-  const chats = await prepareChatsForExport(format, chatType);
+  if (currency !== "USD") await CURRENCY_EXCHANGE.getRates();
+  const chats = await prepareChatsForExport(format, chatType, currency);
   return {
     contentType,
     data: await func(chats),
+  };
+}
+
+/**
+ * Token and cost columns for an exported chat. Costs are stored in USD and
+ * converted into the export currency. Chats recorded before cost tracking
+ * existed export empty cost columns.
+ * @param {Object} [metrics] - the chat's response metrics
+ * @param {string} currency - supported currency code
+ * @returns {{prompt_tokens: number|null, completion_tokens: number|null, input_cost: number|null, output_cost: number|null, total_cost: number|null, currency: string|null}}
+ */
+function metricsExportFields(metrics, currency = "USD") {
+  const converted = convertMetricsCost(metrics ?? {}, currency);
+  return {
+    prompt_tokens: metrics?.prompt_tokens ?? null,
+    completion_tokens: metrics?.completion_tokens ?? null,
+    input_cost: converted.inputCost ?? null,
+    output_cost: converted.outputCost ?? null,
+    total_cost: converted.totalCost ?? null,
+    currency: converted.currency ?? null,
   };
 }
 
