@@ -2,6 +2,7 @@ const { Prisma } = require("@prisma/client");
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 const { v4: uuidv4 } = require("uuid");
+const { setTimeout: delay } = require("node:timers/promises");
 
 const CHAT_QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000;
 // Abandoned reservations are ignored after one quota window. Normal requests
@@ -405,9 +406,9 @@ const User = {
     if (!user || user.dailyMessageLimit === null || user.role === ROLES.admin)
       return { allowed: true, reservationId: null };
 
-    const now = new Date();
-    const since = new Date(now.getTime() - CHAT_QUOTA_WINDOW_MS);
     for (let attempt = 0; attempt < 3; attempt++) {
+      const now = new Date();
+      const since = new Date(now.getTime() - CHAT_QUOTA_WINDOW_MS);
       const reservationId = uuidv4();
       try {
         return await prisma.$transaction(
@@ -462,7 +463,17 @@ const User = {
           { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
         );
       } catch (error) {
-        if (error.code !== "P2034" || attempt === 2) throw error;
+        // PostgreSQL reports serialization conflicts as P2034. SQLite can
+        // instead report writer contention as P1008 or an un-coded connector
+        // timeout (Prisma 5.3). Retry the entire rolled-back transaction, never
+        // bypass the quota check when the shared database is unavailable.
+        const retryable =
+          ["P2034", "P1008"].includes(error.code) ||
+          /database is locked|Timed out during query execution/i.test(
+            error.message
+          );
+        if (!retryable || attempt === 2) throw error;
+        await delay(25 * 2 ** attempt + Math.floor(Math.random() * 25));
       }
     }
 

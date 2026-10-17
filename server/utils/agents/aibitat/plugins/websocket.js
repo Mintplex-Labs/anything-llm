@@ -461,9 +461,11 @@ const websocket = {
             // An agent session can accept additional user messages over the
             // same WebSocket. Reserve each non-empty follow-up before sending
             // it back to the model, just like the initial HTTP chat request.
-            if (String(feedback || "").trim()) {
+            if (feedback) {
               const userId = aibitat.handlerProps?.invocation?.user_id;
-              const user = userId ? await User.get({ id: Number(userId) }) : null;
+              const user = userId
+                ? await User.get({ id: Number(userId) })
+                : null;
               if (userId && !user)
                 throw new Error("Could not load the user chat quota.");
 
@@ -504,7 +506,10 @@ const websocket = {
               aibitat._chatQuotaReservationId = null;
               await User.releaseChatQuotaReservation(quotaReservationId).catch(
                 (error) =>
-                  console.error("Failed to release chat quota reservation", error)
+                  console.error(
+                    "Failed to release chat quota reservation",
+                    error
+                  )
               );
             }
           }

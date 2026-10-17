@@ -21,42 +21,51 @@ const chatHistory = {
         });
 
         // pre-register a workspace chat ID to secure it in the DB
-        aibitat.onMessage(async (message) => {
+        aibitat.onMessage((message) => {
           if (message.from !== "USER") return;
 
-          /**
-           * If we don't have a tracked chat ID, we need to create a new one so we can upsert the response later.
-           * Normally, if this was a totally fresh chat from the user, we can assume that the message from the socket is
-           * the message we want to store for the prompt. However, if this is a regeneration of a previous message and that message
-           * called tools the history could include intermediate messages so need to search backwards to find the most recent user message
-           * as that is actually the prompt.
-           */
-          if (!aibitat.trackedChatId) {
-            let userMessage = message.content;
-            if (userMessage.startsWith("@agent:")) {
-              const lastUserMsgIndex = aibitat._chats.findLastIndex(
-                (c) => c.from === "USER" && !c.content.startsWith("@agent:")
-              );
+          // EventEmitter does not await async listeners. start()/continue()
+          // await this promise before invoking the model so a fast failure or
+          // disconnect cannot release quota before its durable usage exists.
+          aibitat._pendingChatRegistration = (async () => {
+            /**
+             * If we don't have a tracked chat ID, we need to create a new one so we can upsert the response later.
+             * Normally, if this was a totally fresh chat from the user, we can assume that the message from the socket is
+             * the message we want to store for the prompt. However, if this is a regeneration of a previous message and that message
+             * called tools the history could include intermediate messages so need to search backwards to find the most recent user message
+             * as that is actually the prompt.
+             */
+            if (!aibitat.trackedChatId) {
+              let userMessage = message.content;
+              if (userMessage.startsWith("@agent:")) {
+                const lastUserMsgIndex = aibitat._chats.findLastIndex(
+                  (c) => c.from === "USER" && !c.content.startsWith("@agent:")
+                );
 
-              // When regenerating a message, we need to use the last user message as the prompt.
-              // Also prune the chats array to only include the messages before target prompt to re-run
-              // or else tool call results from the previous run will be included in the history and the model will not re-call tools
-              // that previously worked for the to-be-regenerated prompt.
-              if (lastUserMsgIndex !== -1) {
-                userMessage = aibitat._chats[lastUserMsgIndex].content;
-                aibitat._chats = aibitat._chats.slice(0, lastUserMsgIndex + 1);
+                // When regenerating a message, we need to use the last user message as the prompt.
+                // Also prune the chats array to only include the messages before target prompt to re-run
+                // or else tool call results from the previous run will be included in the history and the model will not re-call tools
+                // that previously worked for the to-be-regenerated prompt.
+                if (lastUserMsgIndex !== -1) {
+                  userMessage = aibitat._chats[lastUserMsgIndex].content;
+                  aibitat._chats = aibitat._chats.slice(
+                    0,
+                    lastUserMsgIndex + 1
+                  );
+                }
               }
-            }
 
-            const { chat } = await WorkspaceChats.new({
-              workspaceId: Number(aibitat.handlerProps.invocation.workspace_id),
-              user: { id: aibitat.handlerProps.invocation.user_id || null },
-              threadId: aibitat.handlerProps.invocation.thread_id || null,
-              include: false,
-              prompt: userMessage,
-              response: {},
-            });
-            if (chat) {
+              const { chat } = await WorkspaceChats.new({
+                workspaceId: Number(
+                  aibitat.handlerProps.invocation.workspace_id
+                ),
+                user: { id: aibitat.handlerProps.invocation.user_id || null },
+                threadId: aibitat.handlerProps.invocation.thread_id || null,
+                include: false,
+                prompt: userMessage,
+                response: {},
+              });
+              if (!chat) throw new Error("Could not record chat usage.");
               aibitat.registerChatId(chat.id);
               const reservationId =
                 aibitat._chatQuotaReservationId ||
@@ -67,7 +76,7 @@ const chatHistory = {
                   aibitat._chatQuotaReservationId = null;
               }
             }
-          }
+          })();
         });
 
         aibitat.onMessage(async () => {

@@ -37,8 +37,9 @@ jest.mock("../../utils/prisma", () => {
 
   const prisma = {
     workspace_chats: {
-      count: jest.fn(async ({ where = {} } = {}) =>
-        state.chats.filter((row) => matches(row, where)).length
+      count: jest.fn(
+        async ({ where = {} } = {}) =>
+          state.chats.filter((row) => matches(row, where)).length
       ),
     },
     chat_quota_reservations: {
@@ -47,8 +48,9 @@ jest.mock("../../utils/prisma", () => {
         state.reservations.push(row);
         return row;
       }),
-      count: jest.fn(async ({ where = {} } = {}) =>
-        state.reservations.filter((row) => matches(row, where)).length
+      count: jest.fn(
+        async ({ where = {} } = {}) =>
+          state.reservations.filter((row) => matches(row, where)).length
       ),
       deleteMany: jest.fn(async ({ where = {} } = {}) => {
         const remaining = state.reservations.filter(
@@ -131,19 +133,64 @@ describe("shared daily chat quota reservations", () => {
       User.reserveChatQuota(user),
     ]);
 
-    expect(reservations.filter((reservation) => reservation.allowed)).toHaveLength(
-      1
-    );
+    expect(
+      reservations.filter((reservation) => reservation.allowed)
+    ).toHaveLength(1);
     expect(prisma.__reservations()).toHaveLength(1);
   });
 
   test("does not reserve quota for admins or users without a limit", async () => {
     expect(
-      await User.reserveChatQuota({ id: 1, role: "admin", dailyMessageLimit: 1 })
+      await User.reserveChatQuota({
+        id: 1,
+        role: "admin",
+        dailyMessageLimit: 1,
+      })
     ).toEqual({ allowed: true, reservationId: null });
     expect(
-      await User.reserveChatQuota({ id: 2, role: "default", dailyMessageLimit: null })
+      await User.reserveChatQuota({
+        id: 2,
+        role: "default",
+        dailyMessageLimit: null,
+      })
     ).toEqual({ allowed: true, reservationId: null });
     expect(prisma.chat_quota_reservations.create).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    { code: "P2034", message: "Transaction write conflict" },
+    { code: "P1008", message: "Operation timed out" },
+    { message: "ConnectionError(Timed out during query execution.)" },
+  ])("retries a rolled-back database conflict: $message", async (error) => {
+    prisma.$transaction.mockRejectedValueOnce(error);
+    const reservation = await User.reserveChatQuota({
+      id: 12,
+      role: "default",
+      dailyMessageLimit: 1,
+    });
+    expect(reservation.allowed).toBe(true);
+    expect(prisma.$transaction).toHaveBeenCalledTimes(2);
+    expect(prisma.__reservations()).toHaveLength(1);
+  });
+
+  test("propagates database failures instead of granting an untracked slot", async () => {
+    prisma.$transaction.mockRejectedValueOnce(new Error("database offline"));
+    await expect(
+      User.reserveChatQuota({ id: 12, role: "default", dailyMessageLimit: 1 })
+    ).rejects.toThrow("database offline");
+    expect(prisma.__reservations()).toHaveLength(0);
+  });
+
+  test("stops retrying if the database stays locked", async () => {
+    const error = Object.assign(new Error("write conflict"), { code: "P2034" });
+    prisma.$transaction
+      .mockRejectedValueOnce(error)
+      .mockRejectedValueOnce(error)
+      .mockRejectedValueOnce(error);
+    await expect(
+      User.reserveChatQuota({ id: 12, role: "default", dailyMessageLimit: 1 })
+    ).rejects.toThrow("write conflict");
+    expect(prisma.$transaction).toHaveBeenCalledTimes(3);
+    expect(prisma.__reservations()).toHaveLength(0);
   });
 });

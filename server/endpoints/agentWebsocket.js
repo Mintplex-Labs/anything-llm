@@ -48,11 +48,16 @@ function agentWebsocket(app) {
         // The chat-history plugin normally releases this after it has
         // pre-registered a durable chat row. If the socket closes first, the
         // reservation has no row to hand off to and must be released here.
-        User.releaseChatQuotaReservation(
-          agentHandler.invocation?.quota_reservation_id
-        ).catch((error) =>
-          console.error("Failed to release chat quota reservation", error)
-        );
+        Promise.resolve(agentHandler.aibitat?._pendingChatRegistration)
+          .catch(() => {})
+          .then(() =>
+            User.releaseChatQuotaReservation(
+              agentHandler.invocation?.quota_reservation_id
+            )
+          )
+          .catch((error) =>
+            console.error("Failed to release chat quota reservation", error)
+          );
         return;
       });
 

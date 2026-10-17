@@ -586,6 +586,7 @@ class AIbitat {
   async start(message) {
     // register the message in the chat history
     this.newMessage(message);
+    await this._pendingChatRegistration;
     this.emitter.emit("start", message, this);
 
     // ask the node to reply
@@ -1365,6 +1366,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
 
       // register the message in the chat history
       this.newMessage(message);
+      await this._pendingChatRegistration;
 
       // ask the node to reply
       await this.chat({
