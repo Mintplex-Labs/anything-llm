@@ -29,7 +29,8 @@ async function streamChatWithWorkspace(
   user = null,
   thread = null,
   attachments = [],
-  sessionReasoningEffort = null
+  sessionReasoningEffort = null,
+  quotaReservationId = null
 ) {
   const uuid = uuidv4();
   // Routed workspaces show no reasoning controls, so a stored effort is
@@ -61,8 +62,10 @@ async function streamChatWithWorkspace(
     thread,
     attachments,
     reasoningEffort: sessionReasoningEffort,
+    quotaReservationId,
   });
-  if (isAgentChat) return;
+  if (isAgentChat)
+    return { quotaReservationTransferred: Boolean(quotaReservationId) };
 
   const {
     connector: LLMConnector,

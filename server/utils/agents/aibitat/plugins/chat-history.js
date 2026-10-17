@@ -1,5 +1,6 @@
 const { WorkspaceChats } = require("../../../../models/workspaceChats");
 const { WorkspaceThread } = require("../../../../models/workspaceThread");
+const { User } = require("../../../../models/user");
 
 /**
  * Plugin to save chat history to AnythingLLM DB.
@@ -55,7 +56,17 @@ const chatHistory = {
               prompt: userMessage,
               response: {},
             });
-            if (chat) aibitat.registerChatId(chat.id);
+            if (chat) {
+              aibitat.registerChatId(chat.id);
+              const reservationId =
+                aibitat._chatQuotaReservationId ||
+                aibitat.handlerProps.invocation.quota_reservation_id;
+              if (reservationId) {
+                await User.releaseChatQuotaReservation(reservationId);
+                if (aibitat._chatQuotaReservationId === reservationId)
+                  aibitat._chatQuotaReservationId = null;
+              }
+            }
           }
         });
 

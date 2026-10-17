@@ -100,7 +100,10 @@ function workspaceThreadEndpoints(app) {
     async (_, response) => {
       try {
         const thread = response.locals.thread;
-        await WorkspaceThread.delete({ id: thread.id });
+        await WorkspaceThread.delete(
+          { id: thread.id },
+          { preserveChatHistory: multiUserMode(response) }
+        );
         response.sendStatus(200).end();
       } catch (e) {
         console.error(e.message, e);
@@ -119,11 +122,14 @@ function workspaceThreadEndpoints(app) {
 
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
-        await WorkspaceThread.delete({
-          slug: { in: slugs },
-          user_id: user?.id ?? null,
-          workspace_id: workspace.id,
-        });
+        await WorkspaceThread.delete(
+          {
+            slug: { in: slugs },
+            user_id: user?.id ?? null,
+            workspace_id: workspace.id,
+          },
+          { preserveChatHistory: multiUserMode(response) }
+        );
         response.sendStatus(200).end();
       } catch (e) {
         console.error(e.message, e);
@@ -201,12 +207,15 @@ function workspaceThreadEndpoints(app) {
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        await WorkspaceChats.delete({
+        const deleteClause = {
           workspaceId: Number(workspace.id),
           thread_id: Number(thread.id),
           user_id: user?.id,
           id: { gte: Number(startingId) },
-        });
+        };
+        if (multiUserMode(response))
+          await WorkspaceChats.markThreadHistoryInvalidV2(deleteClause);
+        else await WorkspaceChats.delete(deleteClause);
 
         response.sendStatus(200).end();
       } catch (e) {

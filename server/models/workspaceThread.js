@@ -89,7 +89,7 @@ const WorkspaceThread = {
     }
   },
 
-  delete: async function (clause = {}) {
+  delete: async function (clause = {}, { preserveChatHistory = false } = {}) {
     try {
       const { WorkspaceChats } = require("./workspaceChats");
       // thread_id has no FK relation so chats don't cascade-delete with the thread.
@@ -97,10 +97,14 @@ const WorkspaceThread = {
         where: clause,
         select: { id: true },
       });
-      if (threads.length > 0)
-        await WorkspaceChats.delete({
+      if (threads.length > 0) {
+        const chatClause = {
           thread_id: { in: threads.map((thread) => thread.id) },
-        });
+        };
+        if (preserveChatHistory)
+          await WorkspaceChats.markThreadHistoryInvalidV2(chatClause);
+        else await WorkspaceChats.delete(chatClause);
+      }
 
       await prisma.workspace_threads.deleteMany({
         where: clause,

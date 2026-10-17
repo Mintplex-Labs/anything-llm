@@ -17,6 +17,26 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const { User } = require("../models/user");
 const { getModelTag } = require("./utils");
 
+function setStreamHeaders(response) {
+  response.setHeader("Cache-Control", "no-cache");
+  response.setHeader("Content-Type", "text/event-stream");
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Connection", "keep-alive");
+}
+
+function writeQuotaExceeded(response, user) {
+  setStreamHeaders(response);
+  writeResponseChunk(response, {
+    id: uuidv4(),
+    type: "abort",
+    textResponse: null,
+    sources: [],
+    close: true,
+    error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
+  });
+  response.end();
+}
+
 function chatEndpoints(app) {
   if (!app) return;
 
@@ -24,6 +44,7 @@ function chatEndpoints(app) {
     "/workspace/:slug/stream-chat",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
+      let quotaReservationId = null;
       try {
         const user = await userFromSession(request, response);
         const {
@@ -45,25 +66,19 @@ function chatEndpoints(app) {
           return;
         }
 
-        response.setHeader("Cache-Control", "no-cache");
-        response.setHeader("Content-Type", "text/event-stream");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Connection", "keep-alive");
-        response.flushHeaders();
-
-        if (multiUserMode(response) && !(await User.canSendChat(user))) {
-          writeResponseChunk(response, {
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
-          });
+        const quota = multiUserMode(response)
+          ? await User.reserveChatQuota(user)
+          : { allowed: true, reservationId: null };
+        if (!quota.allowed) {
+          writeQuotaExceeded(response, user);
           return;
         }
+        quotaReservationId = quota.reservationId;
 
-        await streamChatWithWorkspace(
+        setStreamHeaders(response);
+        response.flushHeaders();
+
+        const streamResult = await streamChatWithWorkspace(
           response,
           workspace,
           message,
@@ -71,8 +86,11 @@ function chatEndpoints(app) {
           user,
           null,
           attachments,
-          typeof reasoningEffort === "string" ? reasoningEffort : null
+          typeof reasoningEffort === "string" ? reasoningEffort : null,
+          quotaReservationId
         );
+        if (streamResult?.quotaReservationTransferred)
+          quotaReservationId = null;
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -94,6 +112,7 @@ function chatEndpoints(app) {
         response.end();
       } catch (e) {
         console.error(e);
+        if (!response.headersSent) setStreamHeaders(response);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",
@@ -103,6 +122,13 @@ function chatEndpoints(app) {
           error: e.message,
         });
         response.end();
+      } finally {
+        if (quotaReservationId) {
+          await User.releaseChatQuotaReservation(quotaReservationId).catch(
+            (error) =>
+              console.error("Failed to release chat quota reservation", error)
+          );
+        }
       }
     }
   );
@@ -115,6 +141,7 @@ function chatEndpoints(app) {
       validWorkspaceAndThreadSlug,
     ],
     async (request, response) => {
+      let quotaReservationId = null;
       try {
         const user = await userFromSession(request, response);
         const {
@@ -137,25 +164,19 @@ function chatEndpoints(app) {
           return;
         }
 
-        response.setHeader("Cache-Control", "no-cache");
-        response.setHeader("Content-Type", "text/event-stream");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Connection", "keep-alive");
-        response.flushHeaders();
-
-        if (multiUserMode(response) && !(await User.canSendChat(user))) {
-          writeResponseChunk(response, {
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
-          });
+        const quota = multiUserMode(response)
+          ? await User.reserveChatQuota(user)
+          : { allowed: true, reservationId: null };
+        if (!quota.allowed) {
+          writeQuotaExceeded(response, user);
           return;
         }
+        quotaReservationId = quota.reservationId;
 
-        await streamChatWithWorkspace(
+        setStreamHeaders(response);
+        response.flushHeaders();
+
+        const streamResult = await streamChatWithWorkspace(
           response,
           workspace,
           message,
@@ -163,8 +184,11 @@ function chatEndpoints(app) {
           user,
           thread,
           attachments,
-          typeof reasoningEffort === "string" ? reasoningEffort : null
+          typeof reasoningEffort === "string" ? reasoningEffort : null,
+          quotaReservationId
         );
+        if (streamResult?.quotaReservationTransferred)
+          quotaReservationId = null;
 
         // If thread was renamed emit event to frontend via special `action` response.
         await WorkspaceThread.autoRenameThread({
@@ -205,6 +229,7 @@ function chatEndpoints(app) {
         response.end();
       } catch (e) {
         console.error(e);
+        if (!response.headersSent) setStreamHeaders(response);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",
@@ -214,6 +239,13 @@ function chatEndpoints(app) {
           error: e.message,
         });
         response.end();
+      } finally {
+        if (quotaReservationId) {
+          await User.releaseChatQuotaReservation(quotaReservationId).catch(
+            (error) =>
+              console.error("Failed to release chat quota reservation", error)
+          );
+        }
       }
     }
   );

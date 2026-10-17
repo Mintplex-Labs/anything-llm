@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 const { skillIsAutoApproved } = require("../../../helpers/agents");
 const { ROLES } = require("../../../middleware/multiUserProtected");
+const { User } = require("../../../../models/user");
 
 /**
  * Toggling an agent's tools mid-session is an admin-only action, mirroring the
@@ -455,11 +456,58 @@ const websocket = {
             return;
           }
 
-          // The chat session's reasoning effort can change between messages -
-          // apply it before the agent's next turn.
-          if (reasoningEffort !== undefined)
-            await aibitat.updateReasoningEffort?.(reasoningEffort);
-          await aibitat.continue(feedback, attachments);
+          let quotaReservationId = null;
+          try {
+            // An agent session can accept additional user messages over the
+            // same WebSocket. Reserve each non-empty follow-up before sending
+            // it back to the model, just like the initial HTTP chat request.
+            if (String(feedback || "").trim()) {
+              const userId = aibitat.handlerProps?.invocation?.user_id;
+              const user = userId ? await User.get({ id: Number(userId) }) : null;
+              if (userId && !user)
+                throw new Error("Could not load the user chat quota.");
+
+              const quota = await User.reserveChatQuota(user);
+              if (!quota.allowed) {
+                socket.send(
+                  JSON.stringify({
+                    type: "wssFailure",
+                    content: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
+                  })
+                );
+                socket.close();
+                return;
+              }
+              quotaReservationId = quota.reservationId;
+              aibitat._chatQuotaReservationId = quotaReservationId;
+            }
+
+            // The chat session's reasoning effort can change between messages -
+            // apply it before the agent's next turn.
+            if (reasoningEffort !== undefined)
+              await aibitat.updateReasoningEffort?.(reasoningEffort);
+            await aibitat.continue(feedback, attachments);
+          } catch (error) {
+            console.error("Agent chat continuation failed", error);
+            socket.send(
+              JSON.stringify({
+                type: "wssFailure",
+                content: error.message,
+              })
+            );
+            socket.close();
+          } finally {
+            if (
+              quotaReservationId &&
+              aibitat._chatQuotaReservationId === quotaReservationId
+            ) {
+              aibitat._chatQuotaReservationId = null;
+              await User.releaseChatQuotaReservation(quotaReservationId).catch(
+                (error) =>
+                  console.error("Failed to release chat quota reservation", error)
+              );
+            }
+          }
         });
 
         /**

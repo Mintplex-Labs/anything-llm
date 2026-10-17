@@ -3,6 +3,7 @@ const {
   WorkspaceAgentInvocation,
 } = require("../models/workspaceAgentInvocation");
 const { AgentHandler } = require("../utils/agents");
+const { User } = require("../models/user");
 const {
   WEBSOCKET_BAIL_COMMANDS,
 } = require("../utils/agents/aibitat/plugins/websocket");
@@ -26,8 +27,9 @@ function agentWebsocket(app) {
   if (!app) return;
 
   app.ws("/agent-invocation/:uuid", async function (socket, request) {
+    let agentHandler = null;
     try {
-      const agentHandler = await new AgentHandler({
+      agentHandler = await new AgentHandler({
         uuid: String(request.params.uuid),
       }).init();
 
@@ -43,6 +45,14 @@ function agentWebsocket(app) {
         agentHandler.aibitat?.abort();
         agentHandler.closeAlert();
         WorkspaceAgentInvocation.close(String(request.params.uuid));
+        // The chat-history plugin normally releases this after it has
+        // pre-registered a durable chat row. If the socket closes first, the
+        // reservation has no row to hand off to and must be released here.
+        User.releaseChatQuotaReservation(
+          agentHandler.invocation?.quota_reservation_id
+        ).catch((error) =>
+          console.error("Failed to release chat quota reservation", error)
+        );
         return;
       });
 
@@ -67,6 +77,16 @@ function agentWebsocket(app) {
       await agentHandler.startAgentCluster();
     } catch (e) {
       console.error(e.message, e);
+      const invocation =
+        agentHandler?.invocation ||
+        (await WorkspaceAgentInvocation.get({
+          uuid: String(request.params.uuid),
+        }));
+      await User.releaseChatQuotaReservation(
+        invocation?.quota_reservation_id
+      ).catch((error) =>
+        console.error("Failed to release chat quota reservation", error)
+      );
       socket?.send(JSON.stringify({ type: "wssFailure", content: e.message }));
       socket?.close();
     }
