@@ -144,6 +144,28 @@ export function formatCost(usd, { currency = "USD", rate = 1 } = {}) {
       maximumFractionDigits: maxDigits,
     }).format(value);
   } catch {
-    return `$${value.toFixed(maxDigits)}`;
+    return `${value.toFixed(maxDigits)} ${currency}`;
+  }
+}
+
+/**
+ * Returns the short symbol of a currency in the user's language, falling back
+ * to the code itself.
+ * @param {string} code - ISO 4217 currency code (eg: "EUR")
+ * @returns {string} eg: "$", "€", "kr"
+ */
+export function currencySymbol(code) {
+  try {
+    return (
+      new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: code,
+        currencyDisplay: "narrowSymbol",
+      })
+        .formatToParts(0)
+        .find((part) => part.type === "currency")?.value ?? code
+    );
+  } catch {
+    return code;
   }
 }

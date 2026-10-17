@@ -1021,9 +1021,9 @@ const TRANSLATIONS = {
       "model-description":
         "Leave the model as All models to price every model of the provider.",
       "input-label": "Input price",
-      "input-hint": "USD per 1 million prompt tokens.",
+      "input-hint": "{{currency}} per 1 million prompt tokens.",
       "output-label": "Output price",
-      "output-hint": "USD per 1 million completion tokens.",
+      "output-hint": "{{currency}} per 1 million completion tokens.",
       "listed-note": "Filled in with the public price from models.dev.",
       "provider-required": "A provider is required.",
       cancel: "Cancel",

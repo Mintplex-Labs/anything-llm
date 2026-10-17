@@ -7,7 +7,7 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import System from "@/models/system";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
-import { formatCost } from "@/utils/currency";
+import useCurrency from "@/hooks/useCurrency";
 import PriceModal from "./PriceModal";
 
 const GRID_COLUMNS = "grid-cols-[2fr_2fr_1fr_1fr_88px]";
@@ -145,6 +145,7 @@ function AddPriceButton({ visible = true, onClick }) {
 
 function PriceList({ loading, overrides, onCreate, onEdit, onDelete }) {
   const { t } = useTranslation();
+  const { formatCost } = useCurrency();
   if (loading)
     return (
       <div className="flex items-center justify-center py-20">
@@ -186,13 +187,14 @@ function PriceList({ loading, overrides, onCreate, onEdit, onDelete }) {
           onEdit={() => onEdit(index)}
           onDelete={() => onDelete(index)}
           showDivider={index < overrides.length - 1}
+          formatCost={formatCost}
         />
       ))}
     </div>
   );
 }
 
-function PriceRow({ override, onEdit, onDelete, showDivider }) {
+function PriceRow({ override, onEdit, onDelete, showDivider, formatCost }) {
   const { t } = useTranslation();
   return (
     <>

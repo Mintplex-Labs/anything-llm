@@ -11,6 +11,8 @@ import Modal, {
   ModalInput,
 } from "@/components/lib/Modal";
 import LLMProviderModelPicker from "@/pages/GeneralSettings/ModelRouters/LLMProviderModelPicker";
+import useCurrency from "@/hooks/useCurrency";
+import { currencySymbol } from "@/utils/currency";
 
 const EMPTY_PRICE = { input: "", output: "", listed: false };
 
@@ -28,6 +30,7 @@ export default function PriceModal({
   onSave,
 }) {
   const { t } = useTranslation();
+  const { currency, rate } = useCurrency();
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [systemSettings, setSystemSettings] = useState(null);
@@ -38,13 +41,9 @@ export default function PriceModal({
   useEffect(() => {
     if (!isOpen) return;
     setError(null);
-    setPrice(
-      isEdit
-        ? { input: override.input, output: override.output, listed: false }
-        : EMPTY_PRICE
-    );
+    setPrice(isEdit ? displayPrice(override, rate) : EMPTY_PRICE);
     if (!isEdit) System.keys().then((settings) => setSystemSettings(settings));
-  }, [isOpen, isEdit]);
+  }, [isOpen, isEdit, rate]);
 
   // Fill in the models.dev price for the selected model, and clear a
   // previously filled price when the new selection has none.
@@ -56,11 +55,7 @@ export default function PriceModal({
       provider === override.provider &&
       model === (override.model ?? "")
     ) {
-      const saved = {
-        input: override.input,
-        output: override.output,
-        listed: false,
-      };
+      const saved = displayPrice(override, rate);
       setPrice((current) => (current.listed ? saved : current));
       return;
     }
@@ -72,13 +67,14 @@ export default function PriceModal({
         : Promise.resolve(null);
     lookup.then((listed) => {
       if (cancelled) return;
-      if (listed) return setPrice({ ...listed, listed: true });
+      if (listed)
+        return setPrice({ ...displayPrice(listed, rate), listed: true });
       setPrice((current) => (current.listed ? EMPTY_PRICE : current));
     });
     return () => {
       cancelled = true;
     };
-  }, [selection]);
+  }, [selection, rate]);
 
   function handlePriceChange(e) {
     const { name, value } = e.target;
@@ -95,8 +91,8 @@ export default function PriceModal({
     const { success, error: apiError } = await onSave({
       provider,
       model: String(form.get("model") ?? "").trim() || null,
-      input: Number(form.get("input")),
-      output: Number(form.get("output")),
+      input: Number(form.get("input")) / rate,
+      output: Number(form.get("output")) / rate,
     });
     setSaving(false);
     if (!success) return setError(apiError || t("model-pricing.modal.error"));
@@ -129,10 +125,10 @@ export default function PriceModal({
           />
           <ModalInput
             label={t("model-pricing.modal.input-label")}
-            hint={t("model-pricing.modal.input-hint")}
+            hint={t("model-pricing.modal.input-hint", { currency })}
             type="number"
             name="input"
-            leading="$"
+            leading={currencySymbol(currency)}
             min={0}
             step="any"
             placeholder="0.00"
@@ -142,10 +138,10 @@ export default function PriceModal({
           />
           <ModalInput
             label={t("model-pricing.modal.output-label")}
-            hint={t("model-pricing.modal.output-hint")}
+            hint={t("model-pricing.modal.output-hint", { currency })}
             type="number"
             name="output"
-            leading="$"
+            leading={currencySymbol(currency)}
             min={0}
             step="any"
             placeholder="0.00"
@@ -175,6 +171,20 @@ export default function PriceModal({
       </form>
     </Modal>
   );
+}
+
+/**
+ * Converts a stored USD price into the display currency for the inputs.
+ * @param {{input: number, output: number}} price - USD per 1M tokens
+ * @param {number} rate - display currency units per USD
+ * @returns {{input: number, output: number, listed: false}}
+ */
+function displayPrice(price, rate) {
+  return {
+    input: Number((price.input * rate).toFixed(6)),
+    output: Number((price.output * rate).toFixed(6)),
+    listed: false,
+  };
 }
 
 function SubmitLabel({ saving, isEdit }) {
