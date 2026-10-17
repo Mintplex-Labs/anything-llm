@@ -1,4 +1,4 @@
-import { useMemo, useCallback, forwardRef } from "react";
+import { useMemo, useCallback, forwardRef, useEffect, useState } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -26,6 +26,9 @@ import {
   THOUGHT_REGEX_COMPLETE,
 } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
+import { ASSISTANT_MESSAGE_COMPLETE_EVENT } from "@/components/contexts/TTSProvider";
+import renderMarkdown from "@/utils/chat/markdown";
+import DOMPurify from "@/utils/chat/purify";
 
 export default forwardRef(function (
   {
@@ -45,6 +48,7 @@ export default forwardRef(function (
   const { showing, hideModal } = useManageWorkspaceModal();
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
+  const completedReplyAnnouncement = useCompletedReplyAnnouncement(history);
 
   const saveEditedMessage = useCallback(
     async ({
@@ -177,6 +181,14 @@ export default forwardRef(function (
   return (
     <MessageActionsProvider>
       <ThoughtExpansionProvider>
+        {/*
+          Announces a reply once it has finished streaming. The region stays
+          mounted so that screen readers are already watching it when the text
+          arrives.
+        */}
+        <div className="sr-only" role="status">
+          {completedReplyAnnouncement}
+        </div>
         <div
           className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
           id="chat-history"
@@ -413,4 +425,65 @@ function splitAssistantThought(props) {
     (props.outputs?.length ?? 0) > 0 ||
     (props.clarifyingQuestions?.length ?? 0) > 0;
   return { thought, hasVisible };
+}
+
+/**
+ * A reply that finishes streaming gives a screen reader user no signal, and
+ * its text is never read out unless they go looking for it. When a reply
+ * completes, this returns its visible text once, for a polite live region.
+ *
+ * Skipped when TTS auto-play is on, because that already speaks the reply and
+ * the two would talk over each other.
+ * @param {Object[]} history - the chat history being rendered
+ * @returns {string} the text to announce, or an empty string
+ */
+function useCompletedReplyAnnouncement(history) {
+  const [completedChatId, setCompletedChatId] = useState(null);
+  const [announcement, setAnnouncement] = useState("");
+
+  useEffect(() => {
+    function handleComplete(event) {
+      const chatId = event.detail?.chatId;
+      if (!chatId || Appearance.get("autoPlayAssistantTtsResponse")) return;
+      // Empty the region first so a reply identical to the last one is
+      // still announced.
+      setAnnouncement("");
+      setCompletedChatId(chatId);
+    }
+    window.addEventListener(ASSISTANT_MESSAGE_COMPLETE_EVENT, handleComplete);
+    return () =>
+      window.removeEventListener(
+        ASSISTANT_MESSAGE_COMPLETE_EVENT,
+        handleComplete
+      );
+  }, []);
+
+  // The event fires before the finished message reaches history, so wait for
+  // the render that carries it.
+  useEffect(() => {
+    if (!completedChatId) return;
+    const message = history.find(
+      (msg) => msg.role === "assistant" && msg.chatId === completedChatId
+    );
+    if (!message) return;
+    setCompletedChatId(null);
+    setAnnouncement(replyToPlainText(message.content));
+  }, [history, completedChatId]);
+
+  return announcement;
+}
+
+/**
+ * Reduces a reply to the text a sighted user sees: no thought segment, and no
+ * markdown syntax for the screen reader to spell out.
+ * @param {string} content - the raw assistant message
+ * @returns {string}
+ */
+function replyToPlainText(content) {
+  if (typeof content !== "string") return "";
+  const visible = content.replace(THOUGHT_REGEX_COMPLETE, "");
+  const html = DOMPurify.sanitize(renderMarkdown(visible));
+  const text =
+    new DOMParser().parseFromString(html, "text/html").body.textContent ?? "";
+  return text.replace(/\s+/g, " ").trim();
 }
