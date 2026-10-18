@@ -30,6 +30,7 @@ class Tab extends EventEmitter {
     this.closed = false;
     this.history = null;
     this.world = null;
+    this.windowFitted = false;
     /** Cross-origin frame targets attached below the page: CDP session -> {frameId, parent} */
     this.frameTargets = new Map();
     this.loading = new Set();
@@ -214,10 +215,39 @@ class Tab extends EventEmitter {
         this.send("Page.screencastFrameAck", {
           sessionId: params.sessionId,
         }).catch(() => {});
-        this.emit("frame", params.data);
+        // Only frames of the whole viewport: the card maps clicks onto it, so a cropped or
+        // rescaled frame would put them in the wrong place.
+        if (this.#fitsViewport(params.metadata))
+          this.emit("frame", params.data);
         break;
     }
     this.emit("cdp", method, params, isPage ? "" : sessionId);
+  }
+
+  /**
+   * The screencast records the headless window, not the emulated viewport, and the window's view
+   * is smaller than its size (by 16x138 on Windows). Grow the window once by what is missing.
+   */
+  #fitsViewport({ deviceWidth, deviceHeight, pageScaleFactor = 1 } = {}) {
+    const missingWidth = Math.round(VIEWPORT.width - deviceWidth);
+    const missingHeight = Math.round(VIEWPORT.height - deviceHeight);
+    if (!missingWidth && !missingHeight && pageScaleFactor === 1) return true;
+    if ((missingWidth > 0 || missingHeight > 0) && !this.windowFitted) {
+      this.windowFitted = true;
+      this.connection
+        .send("Browser.getWindowForTarget", { targetId: this.targetId })
+        .then(({ windowId, bounds }) =>
+          this.connection.send("Browser.setWindowBounds", {
+            windowId,
+            bounds: {
+              width: bounds.width + Math.max(0, missingWidth),
+              height: bounds.height + Math.max(0, missingHeight),
+            },
+          })
+        )
+        .catch(() => {});
+    }
+    return false;
   }
 
   #onBrowserEvent(method, params) {

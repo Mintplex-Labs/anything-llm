@@ -19,6 +19,8 @@ class BrowserDriver {
   /** @type {Map<string, {session: BrowserSession, touched: number, watchers: Set<Function>, stopFrames: Function|null}>} */
   static #sessions = new Map();
   static #reaper = null;
+  /** Cards that asked to watch before their session started: sessionId -> listeners */
+  static #earlyWatchers = new Map();
 
   static log(text, ...args) {
     console.log(`\x1b[36m[BrowserUse]\x1b[0m ${text}`, ...args);
@@ -67,12 +69,16 @@ class BrowserDriver {
       Chromium.release();
       throw error;
     }
-    BrowserDriver.#sessions.set(sessionId, {
+    const entry = {
       session,
       touched: Date.now(),
       watchers: new Set(),
       stopFrames: null,
-    });
+    };
+    BrowserDriver.#sessions.set(sessionId, entry);
+    for (const listener of BrowserDriver.#earlyWatchers.get(sessionId) || [])
+      BrowserDriver.#addWatcher(entry, listener);
+    BrowserDriver.#earlyWatchers.delete(sessionId);
     BrowserDriver.#startReaper();
     BrowserDriver.log(`Started session ${sessionId}`);
     const result = startUrl
@@ -108,17 +114,28 @@ class BrowserDriver {
    */
   static watch(sessionId, listener) {
     const entry = BrowserDriver.#sessions.get(sessionId);
-    if (!entry) return () => {};
+    // The card shows up before the browser has started - hold on to it until it has.
+    if (!entry) {
+      const early = BrowserDriver.#earlyWatchers.get(sessionId) || new Set();
+      BrowserDriver.#earlyWatchers.set(sessionId, early.add(listener));
+    } else BrowserDriver.#addWatcher(entry, listener);
+    return () => {
+      const early = BrowserDriver.#earlyWatchers.get(sessionId);
+      early?.delete(listener);
+      if (early && !early.size) BrowserDriver.#earlyWatchers.delete(sessionId);
+      const current = BrowserDriver.#sessions.get(sessionId);
+      if (!current?.watchers.delete(listener)) return;
+      if (current.watchers.size || !current.stopFrames) return;
+      current.stopFrames();
+      current.stopFrames = null;
+    };
+  }
+
+  static #addWatcher(entry, listener) {
     entry.watchers.add(listener);
     if (!entry.stopFrames) entry.stopFrames = BrowserDriver.#stream(entry);
     // The screencast only sends a frame on repaint - start the viewer off with the current picture.
     entry.session.currentFrame().then((frame) => frame && listener(frame));
-    return () => {
-      entry.watchers.delete(listener);
-      if (entry.watchers.size || !entry.stopFrames) return;
-      entry.stopFrames();
-      entry.stopFrames = null;
-    };
   }
 
   static #stream(entry) {
