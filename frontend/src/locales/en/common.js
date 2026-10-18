@@ -351,6 +351,12 @@ const TRANSLATIONS = {
       wait: "-- waiting for models --",
     },
     skill: {
+      browserUse: {
+        title: "Browser Use",
+        description:
+          "Let the agent use a real web browser to get things done on websites - searching, clicking, filling in forms and comparing results. The browser runs on this AnythingLLM server, starts signed out of every site and is thrown away when the session ends. Sessions stream into the chat so you can watch, stop or take control at any time. Downloads are always blocked. Only available in the chat window.",
+      },
+
       rag: {
         title: "RAG & long-term memory",
         description:
@@ -1851,6 +1857,64 @@ const TRANSLATIONS = {
       },
     },
   },
+  browserUse: {
+    card: {
+      browsing: "Browsing the web",
+      needsHelp: "Your browser agent needs help",
+      starting: "Starting the browser…",
+      stop: "Stop",
+      stopping: "Stopping…",
+      takeOver: "Take control",
+      releaseControl: "Done",
+      controlHint: "You are in control - click, scroll and type in the view",
+      replyPlaceholder: "Reply, or take control to help and then continue",
+      signInHint:
+        "Signing in? Use Take control to sign in yourself - never share passwords or codes in the chat.",
+      continue: "Continue",
+      replySent: "Sent - waiting for the agent…",
+      viewSession: "View session",
+      usage: "{{steps}} steps · {{tokens}} tokens",
+      moreSites: "+{{count}}",
+    },
+    status: {
+      done: "Browser session finished",
+      incomplete: "Browser session could not finish",
+      stopped: "Browser session stopped",
+      failed: "Browser session failed",
+      ended: "Browser session ended",
+      interrupted: "Browser session interrupted",
+      running: "Browser session running",
+      "needs-help": "Browser session waiting for help",
+    },
+    trace: {
+      title: "Browser session",
+      missing: "This session's history is no longer available.",
+      noSite: "Browser",
+      tokens: "{{tokens}} tokens",
+      sent: "Sent to the site:",
+      seconds: "{{count}}s",
+      minutes: "{{count}}m",
+    },
+    history: {
+      title: "Session history",
+      description:
+        "Every browser session the agent ran, with the sites it visited and each step it took.",
+      empty: "No browser sessions yet.",
+      clear: "Clear history",
+      clearConfirm: "Delete the history of every browser session?",
+      delete: "Delete session",
+      deleteConfirm: "Delete the history of this browser session?",
+      deleteFailed: "Could not delete the session history.",
+      clearFailed: "Could not clear the session history.",
+    },
+    resume: {
+      continued: "Continued from a saved session",
+      continuedFrom: "Continued from: {{task}}",
+      earlierSession: "an earlier session",
+      savedAt: "Saved to continue from",
+    },
+  },
+
   scheduledJobs: {
     title: "Scheduled Jobs",
     enableNotifications: "Enable browser notifications for job results",

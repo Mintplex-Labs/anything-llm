@@ -2,6 +2,7 @@ import { memo } from "react";
 import FileDownloadCard from "../../FileDownloadCard";
 import ImageGenerationCard from "../../ImageGenerationCard";
 import ScheduledJobCreatedCard from "../../ScheduledJobCreatedCard";
+import BrowserUseSession from "../../BrowserUseSession";
 
 function HistoricalOutputs({ outputs = [] }) {
   if (!outputs || outputs.length === 0) return null;
@@ -15,6 +16,8 @@ function HistoricalOutputs({ outputs = [] }) {
           return <ImageGenerationCard key={key} props={cardProps} />;
         if (output.type === "scheduledJobCreated")
           return <ScheduledJobCreatedCard key={key} props={cardProps} />;
+        if (output.type === "browserUseSession")
+          return <BrowserUseSession key={key} content={output.payload} />;
         return <FileDownloadCard key={key} props={cardProps} />;
       })}
     </div>

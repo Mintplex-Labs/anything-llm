@@ -25,7 +25,8 @@ const AGENT_AWAITING_USER_EVENTS = [
 // of these can arrive after the execution loop already finished (e.g.
 // rename_thread fires once the async chat save + thread auto-rename complete),
 // so they must not re-show the stop generation button.
-const AGENT_PASSIVE_EVENTS = ["rename_thread"];
+// browserUseFrame: live view frames of a browser-use session, sent while its card watches.
+const AGENT_PASSIVE_EVENTS = ["rename_thread", "browserUseFrame"];
 const AGENT_PASSIVE_STREAM_EVENTS = [
   "chatId",
   "usageMetrics",
@@ -75,6 +76,7 @@ const handledEvents = [
   "rechartVisualize",
   "toolApprovalRequest",
   "clarificationRequest",
+  "browserUseSession",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -356,6 +358,39 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           role: "assistant",
           sources: [],
           closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  // A browser-use session sends its full state on every update - upsert one card per session.
+  if (data.type === "browserUseSession") {
+    const { sessionId } = data.content;
+    if (!sessionId) return;
+    return setChatHistory((prev) => {
+      const index = prev.findIndex(
+        (msg) =>
+          msg.type === "browserUseSession" &&
+          msg.content?.sessionId === sessionId
+      );
+      if (index !== -1) {
+        const next = [...prev];
+        next[index] = { ...next[index], content: data.content };
+        return next;
+      }
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "browserUseSession",
+          uuid: `browser-use-${sessionId}`,
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: false,
           error: null,
           animate: false,
           pending: false,

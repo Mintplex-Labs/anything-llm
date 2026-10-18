@@ -10,7 +10,16 @@
           "input": 2.5,
           "output": 10
         },
-        "reasoning": false
+        "reasoning": false,
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        }
       },
       "gpt-4o-mini": {
         "id": "gpt-4o-mini",
@@ -19,6 +28,14 @@
           "input": 0.15,
           "output": 0.6,
           "cache_read": 0.075
+        },
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
         }
       },
       "gpt-oss-free": {
@@ -174,6 +191,16 @@
         "cost": {
           "input": 3,
           "output": 15
+        },
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
         }
       },
       "eu.anthropic.claude-sonnet-4-5-20250929-v1:0": {

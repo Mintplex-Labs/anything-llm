@@ -7,6 +7,7 @@ import CreateFileSkillPanel from "./CreateFileSkillPanel";
 import GMailSkillPanel from "./GMailSkillPanel";
 import GoogleCalendarSkillPanel from "./GoogleCalendarSkillPanel";
 import OutlookSkillPanel from "./OutlookSkillPanel";
+import BrowserUseSkillPanel from "./BrowserUseSkillPanel";
 import {
   Brain,
   File,
@@ -16,6 +17,7 @@ import {
   FilePlus,
   CalendarCheck,
   ImageSquare,
+  Globe,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -119,6 +121,13 @@ export const getConfigurableSkills = (
       image: GenerateImageImage,
     },
   }),
+  "browser-use": {
+    title: t("agent.skill.browserUse.title"),
+    description: t("agent.skill.browserUse.description"),
+    component: BrowserUseSkillPanel,
+    skill: "browser-use",
+    icon: Globe,
+  },
   "sql-agent": {
     title: t("agent.skill.sql.title"),
     description: t("agent.skill.sql.description"),

@@ -461,6 +461,71 @@ describe("ModelPricing", () => {
     });
   });
 
+  describe("supportsVision", () => {
+    async function loaded() {
+      mockFetchWith(okResponse(FIXTURE));
+      const pricing = freshInstance();
+      await flushRefresh();
+      return pricing;
+    }
+
+    it("reports whether models.dev lists image input for a model", async () => {
+      const pricing = await loaded();
+      expect(pricing.supportsVision("openai", "gpt-4o")).toBe(true);
+      expect(pricing.supportsVision("openai", "GPT-4O")).toBe(true);
+      expect(pricing.supportsVision("openai", "gpt-4o-mini")).toBe(false);
+    });
+
+    it("matches Bedrock ids with region and version stripped", async () => {
+      const pricing = await loaded();
+      expect(
+        pricing.supportsVision(
+          "bedrock",
+          "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+        )
+      ).toBe(true);
+    });
+
+    it.each([
+      ["a model without modality data", "openai", "gpt-Reasoner"],
+      ["an unlisted model", "openai", "gpt-made-up"],
+      ["a provider models.dev does not map", "ollama", "llava"],
+      ["no model", "openai", null],
+    ])("returns null (unknown) for %s", async (_label, provider, model) => {
+      const pricing = await loaded();
+      expect(pricing.supportsVision(provider, model)).toBeNull();
+    });
+
+    it("writes the vision cache alongside the pricing cache", async () => {
+      await loaded();
+      const cached = JSON.parse(
+        fs.readFileSync(
+          path.join(tempDir, "models", "pricing", "model-vision.json"),
+          "utf8"
+        )
+      );
+      expect(cached.openai).toEqual({ "gpt-4o": true, "gpt-4o-mini": false });
+    });
+
+    it("does a full GET when a fresh pricing cache has no vision cache", async () => {
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+      fs.rmSync(path.join(tempDir, "models", "pricing", "model-vision.json"));
+
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
+      expect(pricing.supportsVision("openai", "gpt-4o")).toBe(true);
+    });
+  });
+
   describe("getCostBreakdown", () => {
     let pricing;
 
