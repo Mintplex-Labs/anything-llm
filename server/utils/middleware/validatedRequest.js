@@ -55,9 +55,19 @@ async function validatedRequest(request, response, next) {
   // be unsafe. As a consequence, existing JWTs with invalid `p` values that do not match the regex
   // in ln:44 will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
   // This kind of methodology only applies to single-user password mode.
+  // A `p` with the right shape that was encrypted under a previous SIG_KEY/SIG_SALT
+  // does not decrypt (null). Treat it like an expired token instead of handing null to bcrypt.
+  const decryptedPassword = EncryptionMgr.decrypt(p);
+  if (!decryptedPassword) {
+    response.status(401).json({
+      error: "Token expired or failed validation.",
+    });
+    return;
+  }
+
   if (
     !bcrypt.compareSync(
-      EncryptionMgr.decrypt(p),
+      decryptedPassword,
       bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
     )
   ) {
