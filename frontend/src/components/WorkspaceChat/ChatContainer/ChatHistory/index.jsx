@@ -27,7 +27,8 @@ import {
 } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
 import { ASSISTANT_MESSAGE_COMPLETE_EVENT } from "@/components/contexts/TTSProvider";
-import messageToSpeech from "@/utils/chat/messageToSpeech";
+import renderMarkdown from "@/utils/chat/markdown";
+import DOMPurify from "@/utils/chat/purify";
 
 export default forwardRef(function (
   {
@@ -466,8 +467,23 @@ function useCompletedReplyAnnouncement(history) {
     );
     if (!message) return;
     setCompletedChatId(null);
-    setAnnouncement(messageToSpeech(message.content));
+    setAnnouncement(replyToPlainText(message.content));
   }, [history, completedChatId]);
 
   return announcement;
+}
+
+/**
+ * Reduces a reply to the text a sighted user sees: no thought segment, and no
+ * markdown syntax for the screen reader to spell out.
+ * @param {string} content - the raw assistant message
+ * @returns {string}
+ */
+function replyToPlainText(content) {
+  if (typeof content !== "string") return "";
+  const visible = content.replace(THOUGHT_REGEX_COMPLETE, "");
+  const html = DOMPurify.sanitize(renderMarkdown(visible));
+  const text =
+    new DOMParser().parseFromString(html, "text/html").body.textContent ?? "";
+  return text.replace(/\s+/g, " ").trim();
 }
