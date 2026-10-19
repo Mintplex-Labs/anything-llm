@@ -51,6 +51,9 @@ function isKnownTextMime(filepath) {
     const type = mime.split("/")[0];
     if (mimeLib.nonTextTypes.includes(type))
       return { valid: false, reason: "non_text_mime" };
+    // Other MIME families include binary formats with no converter, so inspect
+    // their bytes instead of trusting the extension alone.
+    if (type !== "text") return { valid: false, reason: "generic" };
     return { valid: true, reason: "valid_mime" };
   } catch {
     return { valid: false, reason: "generic" };
@@ -69,6 +72,13 @@ function parseableAsText(filepath) {
     const buffer = Buffer.alloc(1024); // Read first 1KB of the file synchronously
     const bytesRead = fs.readSync(fd, buffer, 0, 1024, 0);
     fs.closeSync(fd);
+
+    // asTxt decodes UTF-16 text with a byte-order mark despite its NUL bytes.
+    const isUtf16 =
+      bytesRead > 1 &&
+      ((buffer[0] === 0xff && buffer[1] === 0xfe) ||
+        (buffer[0] === 0xfe && buffer[1] === 0xff));
+    if (isUtf16) return true;
 
     const content = buffer.subarray(0, bytesRead).toString("utf8");
     const nullCount = (content.match(/\0/g) || []).length;
