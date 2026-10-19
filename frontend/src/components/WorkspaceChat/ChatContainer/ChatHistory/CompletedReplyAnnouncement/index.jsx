@@ -1,9 +1,25 @@
 import { useEffect, useState } from "react";
 import Appearance from "@/models/appearance";
 import { ASSISTANT_MESSAGE_COMPLETE_EVENT } from "@/components/contexts/TTSProvider";
-import { THOUGHT_REGEX_COMPLETE } from "@/components/WorkspaceChat/ChatContainer/ChatHistory/ThoughtContainer";
+import { THOUGHT_REGEX_COMPLETE } from "../ThoughtContainer";
 import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "@/utils/chat/purify";
+
+/**
+ * Polite live region that announces each reply once it has finished
+ * streaming. The region stays mounted so that screen readers are already
+ * watching it when the text arrives.
+ * @param {Object} props
+ * @param {Object[]} props.history - the chat history being rendered
+ */
+export default function CompletedReplyAnnouncement({ history }) {
+  const announcement = useCompletedReplyAnnouncement(history);
+  return (
+    <div className="sr-only" role="status">
+      {announcement}
+    </div>
+  );
+}
 
 /**
  * Returns the visible text of each reply once it finishes streaming, for a
@@ -15,7 +31,7 @@ import DOMPurify from "@/utils/chat/purify";
  * @param {Object[]} history - the chat history being rendered
  * @returns {string} the text to announce, or an empty string
  */
-export default function useCompletedReplyAnnouncement(history) {
+function useCompletedReplyAnnouncement(history) {
   const [completedChatId, setCompletedChatId] = useState(null);
   const [announcement, setAnnouncement] = useState("");
 
