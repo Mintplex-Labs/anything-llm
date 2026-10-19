@@ -425,7 +425,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { token, newPassword, confirmPassword } = reqBody(request);
-        const { success, message, error } = await resetPassword(
+        const { success, message } = await resetPassword(
           token,
           newPassword,
           confirmPassword
@@ -434,7 +434,7 @@ function systemEndpoints(app) {
         if (success) {
           response.status(200).json({ success, message });
         } else {
-          response.status(400).json({ success, error });
+          response.status(400).json({ success, message });
         }
       } catch (error) {
         console.error("Error resetting password:", error);
