@@ -618,8 +618,8 @@ class FilesystemManager {
     const formattedDiff = `${"`".repeat(numBackticks)}diff\n${diffResult}${"`".repeat(numBackticks)}\n\n`;
 
     if (!dryRun) {
-      // Edits are matched against LF text, so write the file back with its
-      // own line ending instead of converting every line of a CRLF file to LF.
+      // Edits are matched against LF-normalized text; restore the file's
+      // predominant line ending so untouched lines keep their bytes.
       await this.#atomicWrite(
         filePath,
         lineEnding === "\n"
