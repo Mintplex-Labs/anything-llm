@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { isAbortError } = require("../abortSignals");
+const { safeJsonParse } = require("../../http");
 
 /**
  * Extract reasoning content from a message or delta, checking all known field names.
@@ -198,7 +199,7 @@ function convertToChatHistory(history = []) {
   const formattedHistory = [];
   for (const record of history) {
     const { prompt, response, createdAt, feedbackScore = null, id } = record;
-    const data = JSON.parse(response);
+    const data = safeJsonParse(response, {});
 
     // In the event that a bad response was stored - we should skip its entire record
     // because it was likely an error and cannot be used in chats and will fail to render on UI.
@@ -207,7 +208,7 @@ function convertToChatHistory(history = []) {
         `[convertToChatHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
       );
       continue;
-    } else if (typeof data.text !== "string") {
+    } else if (typeof data?.text !== "string") {
       console.log(
         `[convertToChatHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
       );
@@ -284,7 +285,7 @@ function convertToPromptHistory(history = []) {
   const formattedHistory = [];
   for (const record of history) {
     const { prompt, response } = record;
-    const data = JSON.parse(response);
+    const data = safeJsonParse(response, {});
 
     // In the event that a bad response was stored - we should skip its entire record
     // because it was likely an error and cannot be used in chats and will fail to render on UI.
@@ -293,7 +294,7 @@ function convertToPromptHistory(history = []) {
         `[convertToPromptHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
       );
       continue;
-    } else if (typeof data.text !== "string") {
+    } else if (typeof data?.text !== "string") {
       console.log(
         `[convertToPromptHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
       );

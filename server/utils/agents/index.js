@@ -283,6 +283,13 @@ class AgentHandler {
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
         break;
+      case "embedded_lemonade":
+        // lemond is booted on demand by the provider - it only has to be enabled on this instance.
+        if (!require("../AiProviders/embeddedLemonade/config").isEnabled())
+          throw new Error(
+            "The built-in LLM engine is not enabled. Set ENABLE_BUILT_IN_LLM=true when starting the AnythingLLM Docker container."
+          );
+        break;
       case "omlx":
         if (!process.env.OMLX_LLM_BASE_PATH)
           throw new Error("OMLX base path must be provided to use agents.");
@@ -392,6 +399,8 @@ class AgentHandler {
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "embedded_lemonade":
+        return process.env.EMBEDDED_LEMONADE_MODEL_PREF ?? null;
       case "omlx":
         return process.env.OMLX_LLM_MODEL_PREF ?? null;
       case "minimax":

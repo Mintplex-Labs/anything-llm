@@ -174,6 +174,11 @@ module.exports.GmailSendEmail = {
                   payload: {
                     to,
                     subject,
+                    body,
+                    ...(cc ? { cc } : {}),
+                    ...(bcc ? { bcc } : {}),
+                    ...(htmlBody ? { htmlBody } : {}),
+                    ...(replyTo ? { replyTo } : {}),
                     attachmentCount: preparedAttachments.length,
                   },
                   description: `Send email to "${to}" with subject "${subject}"${attachmentNote} - This will send immediately`,

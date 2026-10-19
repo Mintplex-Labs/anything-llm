@@ -58,7 +58,7 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
 
   const system = messages.shift();
   const user = messages.pop();
-  const userPromptSize = tokenManager.countFromString(user.content);
+  const userPromptSize = tokenManager.countFromContent(user.content);
 
   // User prompt is the main focus here - we we prioritize it and allow
   // it to highjack the entire conversation thread. We are going to
@@ -130,9 +130,15 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
   const compressedHistory = new Promise((resolve) => {
     const eligibleHistoryItems = [];
     var historyTokenCount = 0;
+    var pairIndex = 0;
 
-    for (const [i, history] of rawHistory.reverse().entries()) {
-      const [user, assistant] = convertToPromptHistory([history]);
+    for (const history of rawHistory.reverse()) {
+      const converted = convertToPromptHistory([history]);
+      // convertToPromptHistory skips records with a non-string prompt or text.
+      if (converted.length !== 2) continue;
+      const [user, assistant] = converted;
+      // Count only usable pairs so a skipped record can't take a "most recent 3" slot.
+      const i = pairIndex++;
       const [userTokens, assistantTokens] = [
         tokenManager.countFromString(user.content),
         tokenManager.countFromString(assistant.content),
@@ -236,6 +242,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
         targetTokenSize: llm.promptWindowLimit() * 0.8,
         tiktokenInstance: tokenManager,
       }),
+      attachments: promptArgs.attachments,
     });
   }
 
@@ -263,9 +270,15 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
   const compressedHistory = new Promise((resolve) => {
     const eligibleHistoryItems = [];
     var historyTokenCount = 0;
+    var pairIndex = 0;
 
-    for (const [i, history] of rawHistory.reverse().entries()) {
-      const [user, assistant] = convertToPromptHistory([history]);
+    for (const history of rawHistory.reverse()) {
+      const converted = convertToPromptHistory([history]);
+      // convertToPromptHistory skips records with a non-string prompt or text.
+      if (converted.length !== 2) continue;
+      const [user, assistant] = converted;
+      // Count only usable pairs so a skipped record can't take a "most recent 3" slot.
+      const i = pairIndex++;
       const [userTokens, assistantTokens] = [
         tokenManager.countFromString(user.content),
         tokenManager.countFromString(assistant.content),
@@ -327,6 +340,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
     contextTexts: promptArgs?.contextTexts || [],
     chatHistory: cHistory,
     userPrompt: cPrompt,
+    attachments: promptArgs.attachments,
   });
 }
 
@@ -340,6 +354,25 @@ function cannonball({
 }) {
   if (!input || !targetTokenSize) return input;
   const tokenManager = tiktokenInstance || new TokenManager();
+
+  // Messages with attachments carry an array of content parts. Truncate the
+  // text parts and keep every other part, such as images, as is.
+  if (Array.isArray(input)) {
+    return input.map((part) =>
+      typeof part?.text === "string"
+        ? {
+            ...part,
+            text: cannonball({
+              input: part.text,
+              targetTokenSize,
+              tiktokenInstance: tokenManager,
+              ellipsesStr,
+            }),
+          }
+        : part
+    );
+  }
+
   const truncText = ellipsesStr || "\n\n--prompt truncated for brevity--\n\n";
   const initialInputSize = tokenManager.countFromString(input);
   if (initialInputSize < targetTokenSize) return input;

@@ -86,6 +86,11 @@ function utilEndpoints(app) {
   const { lemonadeUtilsEndpoints } = require("./utils/lemonadeUtilsEndpoints");
   lemonadeUtilsEndpoints(app);
 
+  const {
+    embeddedLemonadeEndpoints,
+  } = require("../utils/AiProviders/embeddedLemonade/endpoints");
+  embeddedLemonadeEndpoints(app);
+
   const { foundryUtilsEndpoints } = require("./utils/foundryUtilsEndpoints");
   foundryUtilsEndpoints(app);
 }
@@ -233,6 +238,9 @@ function getModelTag() {
       break;
     case "lemonade":
       model = process.env.LEMONADE_LLM_MODEL_PREF;
+      break;
+    case "embedded_lemonade":
+      model = process.env.EMBEDDED_LEMONADE_MODEL_PREF;
       break;
     case "minimax":
       model = process.env.MINIMAX_MODEL_PREF;

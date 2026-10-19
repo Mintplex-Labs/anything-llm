@@ -561,6 +561,19 @@ class Provider {
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
+      case "embedded_lemonade": {
+        const {
+          EmbeddedLemonadeLLM,
+        } = require("../../../AiProviders/embeddedLemonade");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: EmbeddedLemonadeLLM.openaiBasePath(),
+            fetch: EmbeddedLemonadeLLM.bootingFetch(config?.model),
+          },
+          apiKey: "not-used",
+          ...config,
+        });
+      }
       case "omlx":
         return new ChatOpenAI({
           configuration: {
