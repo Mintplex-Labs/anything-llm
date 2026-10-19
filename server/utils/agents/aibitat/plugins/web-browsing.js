@@ -997,18 +997,19 @@ const webBrowsing = {
             })
               .then((res) => {
                 if (res.ok) return res.json();
-                throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ url: searchURL.toString() })}`
-                );
+                throw new Error(`${res.status} - ${res.statusText}`);
               })
               .then((data) => {
                 return { response: data, error: null };
               })
               .catch((e) => {
                 this.super.handlerProps.log(
-                  `SearXNG Search Error: ${e.message}`
+                  `SearXNG Search Error: ${e.message}. url: ${searchURL.toString()}`
                 );
-                return { response: null, error: e.message };
+                return {
+                  response: null,
+                  error: `${e.message}. params: ${JSON.stringify({ q: query })}`,
+                };
               });
             if (error)
               return `There was an error searching for content. ${error}`;
