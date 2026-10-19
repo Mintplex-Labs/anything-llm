@@ -201,7 +201,9 @@ function workspaceThreadEndpoints(app) {
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        await WorkspaceChats.delete({
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           workspaceId: Number(workspace.id),
           thread_id: Number(thread.id),
           user_id: user?.id,

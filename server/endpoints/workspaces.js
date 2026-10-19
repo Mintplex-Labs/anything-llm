@@ -489,7 +489,9 @@ function workspaceEndpoints(app) {
         // This works for both workspace and threads.
         // we simplify this by just looking at workspace<>user overlap
         // since they are all on the same table.
-        await WorkspaceChats.delete({
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           id: { in: chatIds.map((id) => Number(id)) },
           user_id: user?.id ?? null,
           workspaceId: workspace.id,
@@ -512,7 +514,9 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
-        await WorkspaceChats.delete({
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           workspaceId: workspace.id,
           thread_id: null,
           user_id: user?.id,
