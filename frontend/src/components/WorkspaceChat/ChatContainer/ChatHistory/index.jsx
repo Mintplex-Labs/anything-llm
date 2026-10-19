@@ -428,9 +428,9 @@ function splitAssistantThought(props) {
 }
 
 /**
- * A reply that finishes streaming gives a screen reader user no signal, and
- * its text is never read out unless they go looking for it. When a reply
- * completes, this returns its visible text once, for a polite live region.
+ * Returns the visible text of each reply once it finishes streaming, for a
+ * polite live region, so screen reader users hear the reply without having
+ * to navigate to it.
  *
  * Skipped when TTS auto-play is on, because that already speaks the reply and
  * the two would talk over each other.
