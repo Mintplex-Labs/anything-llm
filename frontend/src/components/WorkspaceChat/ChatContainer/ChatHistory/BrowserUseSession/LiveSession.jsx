@@ -41,6 +41,7 @@ export default function LiveSession({ session, websocket }) {
       </div>
       <LiveView
         frameSrc={frame ? `data:image/jpeg;base64,${frame}` : null}
+        starting={!hostOf(session.step?.url)}
         controlling={inControl}
         onInput={(input) => send("input", { input })}
       />

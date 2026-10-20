@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Globe } from "@phosphor-icons/react";
+import { Globe, CircleNotch } from "@phosphor-icons/react";
 import BrowserUse from "@/models/browserUse";
 
 // Throttle for mouse moves; still enough for a drag to follow.
@@ -9,9 +9,15 @@ const MOVE_INTERVAL_MS = 50;
 /**
  * The live picture of the browser. While in control, mouse, scroll and keys are forwarded, with
  * positions as fractions of the view so the card's size never matters.
- * @param {{frameSrc: string|null, controlling: boolean, onInput: (input: Object) => void}} props
+ * @param {{frameSrc: string|null, starting?: boolean, controlling: boolean, onInput: (input: Object) => void}} props
+ *   starting: the browser has no page yet - its frames are only the blank start page
  */
-export default function LiveView({ frameSrc, controlling, onInput }) {
+export default function LiveView({
+  frameSrc,
+  starting = false,
+  controlling,
+  onInput,
+}) {
   const { t } = useTranslation();
   const ref = useRef(null);
   const pressed = useRef(false);
@@ -80,7 +86,18 @@ export default function LiveView({ frameSrc, controlling, onInput }) {
       className={`relative w-full aspect-[16/10] bg-zinc-950 light:bg-slate-200 outline-none ${controlling ? "cursor-pointer touch-none select-none ring-2 ring-inset ring-amber-400" : ""}`}
     >
       {/* object-fill: clicks go back as fractions of the view, so the picture must cover it exactly. */}
-      {frameSrc ? (
+      {starting ? (
+        <div className="w-full h-full flex flex-col items-center justify-center gap-y-3">
+          <CircleNotch
+            size={28}
+            weight="bold"
+            className="text-zinc-400 light:text-slate-500 animate-spin"
+          />
+          <p className="text-sm text-zinc-400 light:text-slate-500">
+            {t("browserUse.card.starting")}
+          </p>
+        </div>
+      ) : frameSrc ? (
         <img
           src={frameSrc}
           alt=""
