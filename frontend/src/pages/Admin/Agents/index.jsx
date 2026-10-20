@@ -5,6 +5,7 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import MCPServers from "@/models/mcpServers";
+import BrowserUse from "@/models/browserUse";
 import showToast from "@/utils/toast";
 import {
   CaretLeft,
@@ -69,11 +70,13 @@ export default function AdminAgents() {
     useState(false);
   const [createFilesAgentAvailable, setCreateFilesAgentAvailable] =
     useState(false);
+  const [browserUseAvailable, setBrowserUseAvailable] = useState(false);
 
   const defaultSkills = getDefaultSkills(t);
   const allConfigurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
     createFilesAgentAvailable,
+    browserUseAvailable,
   });
   const allAppIntegrationSkills = getAppIntegrationSkills(t);
 
@@ -118,6 +121,7 @@ export default function AdminAgents() {
         flowsRes,
         fsAgentAvailable,
         createFilesAvailable,
+        browserUseIsAvailable,
       ] = await Promise.all([
         System.keys(),
         Admin.systemPreferencesByFields([
@@ -129,6 +133,7 @@ export default function AdminAgents() {
         AgentFlows.listFlows(),
         System.isFileSystemAgentAvailable(),
         System.isCreateFilesAgentAvailable(),
+        BrowserUse.isAvailable(),
       ]);
 
       const { flows = [] } = flowsRes;
@@ -142,6 +147,7 @@ export default function AdminAgents() {
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
+      setBrowserUseAvailable(browserUseIsAvailable);
       setLoading(false);
     }
     fetchSettings();

@@ -73,6 +73,8 @@ export const getDefaultSkills = (t) => ({
  * @param {boolean} options.imageGenerationAvailable - Whether an image generation provider is
  * configured. Only the in-chat skills menu passes this - the admin page always lists the skill so
  * it can be enabled before a provider is set up.
+ * @param {boolean} options.browserUseAvailable - Whether this server can run Browser Use (never on a
+ * bare-metal production install).
  * @returns {object} The configurable skills.
  */
 export const getConfigurableSkills = (
@@ -81,6 +83,7 @@ export const getConfigurableSkills = (
     fileSystemAgentAvailable = true,
     createFilesAgentAvailable = true,
     imageGenerationAvailable = true,
+    browserUseAvailable = true,
   } = {}
 ) => ({
   ...(fileSystemAgentAvailable && {
@@ -121,13 +124,15 @@ export const getConfigurableSkills = (
       image: GenerateImageImage,
     },
   }),
-  "browser-use": {
-    title: t("agent.skill.browserUse.title"),
-    description: t("agent.skill.browserUse.description"),
-    component: BrowserUseSkillPanel,
-    skill: "browser-use",
-    icon: Globe,
-  },
+  ...(browserUseAvailable && {
+    "browser-use": {
+      title: t("agent.skill.browserUse.title"),
+      description: t("agent.skill.browserUse.description"),
+      component: BrowserUseSkillPanel,
+      skill: "browser-use",
+      icon: Globe,
+    },
+  }),
   "sql-agent": {
     title: t("agent.skill.sql.title"),
     description: t("agent.skill.sql.description"),

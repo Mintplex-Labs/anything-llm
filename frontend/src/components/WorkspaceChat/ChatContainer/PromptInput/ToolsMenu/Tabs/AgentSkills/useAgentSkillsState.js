@@ -4,6 +4,7 @@ import System from "@/models/system";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
 import MCPServers from "@/models/mcpServers";
+import BrowserUse from "@/models/browserUse";
 import { getSubSkillPreferenceKeys } from "./skillRegistry";
 import useSubSkillPreferences from "./useSubSkillPreferences";
 import { toggleAgentSessionTool } from "@/utils/chat/agent";
@@ -18,6 +19,7 @@ export default function useAgentSkillsState(defaultSkills) {
     useState(false);
   const [imageGenerationAvailable, setImageGenerationAvailable] =
     useState(false);
+  const [browserUseAvailable, setBrowserUseAvailable] = useState(false);
   const [isMultiUser, setIsMultiUser] = useState(false);
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
@@ -45,6 +47,7 @@ export default function useAgentSkillsState(defaultSkills) {
         fsAgentAvailable,
         multiUserMode,
         imageGenAvailable,
+        browserUseIsAvailable,
       ] = await Promise.all([
         Admin.systemPreferencesByFields([
           "disabled_agent_skills",
@@ -56,6 +59,7 @@ export default function useAgentSkillsState(defaultSkills) {
         System.isFileSystemAgentAvailable(),
         System.isMultiUserMode(),
         System.isImageGenerationAvailable(),
+        BrowserUse.isAvailable(),
       ]);
 
       if (prefs?.settings) {
@@ -67,6 +71,7 @@ export default function useAgentSkillsState(defaultSkills) {
       if (flowsRes?.flows) setFlows(flowsRes.flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setImageGenerationAvailable(imageGenAvailable);
+      setBrowserUseAvailable(browserUseIsAvailable);
       setIsMultiUser(!!multiUserMode);
     } catch (e) {
       console.error(e);
@@ -182,6 +187,7 @@ export default function useAgentSkillsState(defaultSkills) {
     // State
     fileSystemAgentAvailable,
     imageGenerationAvailable,
+    browserUseAvailable,
     isMultiUser,
     disabledDefaults,
     enabledConfigurable,

@@ -8,11 +8,20 @@ const { Chromium } = require("./driver/chromium");
  */
 class BrowserBridge {
   /**
-   * Browser use needs a Chromium it can run sandboxed - the Docker image has one for the
-   * collector's web scraper.
+   * Browser use runs a browser on the server, so a production server only offers it inside the
+   * Docker image - never on a bare-metal install. Development runs it anywhere.
+   */
+  static get runtimeAllowed() {
+    if (process.env.NODE_ENV !== "production") return true;
+    return process.env.ANYTHING_LLM_RUNTIME === "docker";
+  }
+
+  /**
+   * Browser use needs an allowed runtime and a Chromium it can run sandboxed - the Docker image
+   * has one for the collector's web scraper.
    */
   static get available() {
-    return Chromium.available;
+    return BrowserBridge.runtimeAllowed && Chromium.available;
   }
 
   /**

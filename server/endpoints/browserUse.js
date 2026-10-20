@@ -14,6 +14,9 @@ const {
 const {
   BrowserProfiles,
 } = require("../utils/agents/aibitat/plugins/browser-use/driver/profiles");
+const {
+  BrowserBridge,
+} = require("../utils/agents/aibitat/plugins/browser-use/bridge");
 
 /** DISABLE_VIEW_CHAT_HISTORY hides chat history from admins - other people's browser sessions too. */
 function historyHidden() {
@@ -34,6 +37,16 @@ async function usernames(ids = []) {
 function browserUseEndpoints(app) {
   if (!app) return;
   const adminOnly = [validatedRequest, flexUserRoleValid([ROLES.admin])];
+
+  // The skill is hidden wherever it could never run: a bare-metal production install, no Chromium,
+  // or a server running as root.
+  app.get(
+    "/browser-use/is-available",
+    [validatedRequest],
+    async (_request, response) => {
+      response.status(200).json({ available: BrowserBridge.available });
+    }
+  );
 
   app.get("/browser-use/traces", adminOnly, async (_request, response) => {
     try {
