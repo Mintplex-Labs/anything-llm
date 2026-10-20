@@ -14,8 +14,7 @@ const THUMBNAIL_TTL_MS = 3 * 24 * 60 * 60_000;
 // Steps carry base64 thumbnails, so a running session writes its trace at most this often (see saveSoon).
 const SAVE_THROTTLE_MS = 2_000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-// Words that only say "the earlier session" ("continue the last one") - they name no session.
-// Stemmed like the query (see taskTerms).
+// Words that only mean "the earlier session" and name none. Stemmed like the query (see taskTerms).
 const GENERIC_RESUME_WORDS = new Set(
   taskTerms(
     "last latest previous prior earlier recent before session sessions browser same again continue resume one tab page window left off"
@@ -79,9 +78,7 @@ const GENERIC_RESUME_WORDS = new Set(
 const pending = new Map();
 
 /**
- * On-device history of every browser session the agent ran, so the user can
- * always review which sites it visited and what it did there.
- *
+ * History of every browser session the agent ran: which sites it visited and what it did.
  * Each session is `<id>.json` (the full trace) plus `<id>.meta.json` (the summary without steps),
  * so listing and pruning never parse the thumbnails.
  */
@@ -193,12 +190,10 @@ const BrowserTraces = {
   },
 
   /**
-   * The earlier session a new run should continue. Only sessions with a saved resume point count.
-   * Scopes, in order: the same thread, the same workspace, anywhere. A query that only says "the
-   * last one" (or nothing) takes the most recent session of the first scope that has any. Otherwise
-   * the session must share at least half of the query's words with its task, result, sites or last
-   * page; the best match of the first scope with one wins, the most recent on a tie.
-   * Only the same user's sessions are ever candidates (userId is null in single-user mode).
+   * The earlier session a new run should continue: only this user's sessions with a resume point.
+   * Scopes, in order: same thread, same workspace, anywhere. A generic query ("the last one") takes
+   * the newest session of the first non-empty scope; otherwise the best match sharing at least half
+   * the query's words wins, newest on a tie.
    * @param {{query?: string, workspaceSlug?: string|null, threadSlug?: string|null, userId?: number|null}} opts
    * @returns {BrowserTraceSummary|null} null when nothing matches - the run starts fresh
    */
@@ -251,7 +246,7 @@ const BrowserTraces = {
   },
 
   /**
-   * Delete every session a user ran - their history goes with them when the user is deleted.
+   * Delete every session a user ran.
    * @param {number} userId
    */
   deleteForUser(userId) {
@@ -262,8 +257,8 @@ const BrowserTraces = {
   },
 
   /**
-   * Drop the screenshots from every session last written more than `maxAgeMs` ago. The steps,
-   * sites and result are kept. Run by the cleanup-browser-traces background job.
+   * Drop the screenshots (only) from sessions last written over `maxAgeMs` ago.
+   * Run by the cleanup-browser-traces job.
    * @param {number} [maxAgeMs]
    * @returns {number} how many traces had screenshots removed
    */

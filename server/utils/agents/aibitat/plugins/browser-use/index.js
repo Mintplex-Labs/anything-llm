@@ -6,12 +6,10 @@ const { BrowserProfiles } = require("./driver/profiles");
 const { BrowserTraces } = require("./traces");
 
 /**
- * Browser Use - hands a task to a browser sub-agent that operates a headless Chromium on the
- * server and streams the session into the chat card. Sessions run on the user's own saved browser
- * profile, so their sign-ins carry over, or incognito in a throwaway browser (see driver/).
+ * Browser Use - hands a task to a browser sub-agent driving a headless Chromium on the server,
+ * on the user's saved profile (sign-ins carry over) or incognito (see driver/).
  *
- * Only offered in the main chat UI: it needs a live websocket for the session card, the stop
- * button, help requests and a person who can take control in the card. API, Telegram and
+ * Only offered in the main chat UI: the session card needs a live websocket. API, Telegram and
  * scheduled jobs never see the tool.
  */
 const browserUse = {
@@ -130,7 +128,7 @@ const browserUse = {
             const stopListening = listenToCard(aibitat, agent);
             try {
               const result = await agent.run();
-              // Persist the (collapsed) session card with the chat so it survives reloads.
+              // Saved with the chat so the card survives reloads.
               aibitat._pendingOutputs ??= [];
               aibitat._pendingOutputs.push({
                 type: "browserUseSession",
@@ -256,9 +254,7 @@ function userTurn(aibitat) {
 }
 
 /**
- * The session card's messages over the chat's agent socket: stop, a reply to a help request, and
- * the live view - frames go to this chat only while the card watches, and the person helping can
- * drive the browser from it (sign in, solve a check).
+ * The session card's control messages: stop, help replies, live view and the helper's input.
  * @returns {() => void} stop listening
  */
 function listenToCard(aibitat, agent) {

@@ -9,12 +9,11 @@ const IDLE_TIMEOUT_MS = 30 * 60_000;
 const SLOW_START_LOG_MS = 15_000;
 
 /**
- * The browser side of the browser-use agent skill, running in the server process. Each person has
- * their own headless Chromium on their saved profile, and a separate one for incognito sessions
- * (see chromium.js and profiles.js), so no one's browsing touches anyone else's.
+ * The server-side browser for browser-use. Each person has their own headless Chromium on their
+ * saved profile, plus a separate one for incognito (see chromium.js and profiles.js).
  *
- * It answers the agent's requests (see bridge.js), and adds what the chat card needs to show the
- * session and hand control to a person: live frames (watch) and their clicks and keys (input).
+ * Answers the agent's requests (see bridge.js), plus live frames (watch) and a person's input for
+ * the chat card.
  */
 class BrowserDriver {
   /** @type {Map<string, {session: BrowserSession, profile: string, touched: number, watchers: Set<Function>, stopFrames: Function|null}>} */
@@ -160,8 +159,7 @@ class BrowserDriver {
   }
 
   /**
-   * Wipe a saved profile: end its sessions, shut its browser down and delete its folder. The
-   * user's next session starts a new, empty profile.
+   * Wipe a saved profile: end its sessions, shut its browser down and delete its folder.
    * @param {string} key
    */
   static async deleteProfile(key) {
@@ -175,7 +173,7 @@ class BrowserDriver {
   }
 
   /**
-   * A user was deleted - their saved profile goes with them, and their incognito browser is closed.
+   * Delete a user's saved profile and close their incognito browser.
    * @param {number} userId
    */
   static async deleteUserProfile(userId) {

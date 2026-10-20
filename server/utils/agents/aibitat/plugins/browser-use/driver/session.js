@@ -18,10 +18,8 @@ const { isCloudMetadataUrl } = require("./cloudMetadata");
  */
 
 /**
- * One agent browsing session: a browser tab on the user's saved profile (or an incognito one),
- * driven with trusted input and read through the isolated-world page script. Ported from the desktop app's
- * electron/main/utils/BrowserUse/session.ts - same page representation, same actions,
- * same outcomes - over a headless Chromium instead of an Electron window.
+ * One agent browsing session over headless Chromium. Mirrors the desktop app's
+ * electron/main/utils/BrowserUse/session.ts - same page representation, actions and outcomes.
  */
 
 const MAX_NOTICES = 20;
@@ -83,7 +81,6 @@ class BrowserSession {
     /** Words of the task (stems) - long navigation lists keep the links that mention them. */
     this.terms = terms;
     this.notices = [];
-    /** What the page sent to its site during the current action. */
     this.sentLog = new SentLog(() => this.tab.url);
     /** Isolated world execution contexts of cross-origin frames, by `${session}|${frameId}`. */
     this.worlds = new Map();
@@ -143,11 +140,9 @@ class BrowserSession {
   /////////////////////////////
 
   /**
-   * Input from the person helping in the chat card. Coordinates are fractions (0-1) of the
-   * live view, so the card's size does not matter. Events apply strictly in order - a press
-   * must land before its release, however quickly they arrive.
-   * down / move / up are the mouse as the person moves it, so they can press and hold
-   * ("press and hold" checks) or drag (sliders).
+   * Input from the person helping in the chat card. Coordinates are fractions (0-1) of the live
+   * view. Events apply strictly in order so a press always lands before its release (press-and-hold
+   * checks, sliders).
    * @param {{type: "click"|"down"|"move"|"up"|"scroll"|"key"|"text", x?: number, y?: number, deltaY?: number, key?: string, text?: string}} event
    */
   userInput(event = {}) {
@@ -163,7 +158,6 @@ class BrowserSession {
     this.userInputAt = Date.now();
     const at = (fraction, size) =>
       Math.round(Math.min(Math.max(Number(fraction) || 0, 0), 1) * size);
-    // The card shows the latest frame, so its size is the page's.
     const x = at(event.x, this.tab.viewport.width);
     const y = at(event.y, this.tab.viewport.height);
     switch (event.type) {
@@ -256,9 +250,8 @@ class BrowserSession {
   }
 
   /**
-   * Cross-origin frames worth reading, largest first, with their place in the viewport. The main frame's
-   * page script walks same-origin iframes itself; anything with another origin than the frame it would be
-   * reached from is read on its own. Cross-site frames live in other renderers (their own CDP sessions).
+   * Cross-origin frames worth reading, largest first, with their place in the viewport. The page
+   * script walks same-origin iframes itself; cross-site frames live in other renderers (own CDP sessions).
    */
   async #foreignFrames() {
     const found = [];
@@ -286,7 +279,7 @@ class BrowserSession {
     const visible = [];
     for (const frame of found.slice(0, 30)) {
       const box = await this.#frameBox(frame, true).catch(() => null);
-      // Tracking pixels and frames far outside the part of the page the snapshot covers are skipped.
+      // Skip tracking pixels and frames far outside what the snapshot covers.
       if (!box || box.w < 24 || box.h < 24) continue;
       if (
         box.x + box.w <= 0 ||
@@ -445,8 +438,7 @@ class BrowserSession {
     let blocker = snap.blocker || null;
     let more = snap.truncated + snap.belowFold;
 
-    // Cross-origin frames (embedded checkouts, sign-in and consent frames) are numbered after the page's
-    // own items and listed where they sit on the page.
+    // Cross-origin frames are numbered after the page's own items and listed where they sit on the page.
     const frames = await this.#foreignFrames().catch(() => []);
     const budget = Math.max(
       400,
@@ -561,9 +553,8 @@ class BrowserSession {
   /////////////////////////////
 
   /**
-   * Run one agent action and return its outcome with the fresh page state. Actions run one at a time:
-   * a request the agent already gave up on can still be running, and actions share the network log,
-   * the notices and the element refs.
+   * Run one agent action and return its outcome with the fresh page state. Serialized: an abandoned
+   * request can still be running, and actions share the network log, notices and element refs.
    * @returns {Promise<ActionResult>}
    */
   run(tool, args = {}) {
@@ -808,7 +799,6 @@ class BrowserSession {
           );
           if (found.error) throw new Error(found.error);
           if (!found.count) {
-            // Not an error: the agent learns the text is not on this page without paging through it.
             outcome = `"${query}" is not on this page. Try other words, or look elsewhere.`;
             readText = "";
             break;

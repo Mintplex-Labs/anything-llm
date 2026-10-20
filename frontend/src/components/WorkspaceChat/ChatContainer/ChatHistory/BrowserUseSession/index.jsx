@@ -13,8 +13,7 @@ function BrowserUseSession({ content = {}, websocket = null }) {
   const active = LIVE_STATUSES.includes(content.status);
   if (active && websocket?.readyState === WebSocket.OPEN)
     return <LiveSession session={content} websocket={websocket} />;
-  // Still running when its agent session went away (socket closed, app reloaded
-  // mid-session) - it never reached a conclusion.
+  // Still "running" but its agent session went away (socket closed, reload) - it never concluded.
   return <ConcludedSession session={content} interrupted={active} />;
 }
 

@@ -9,9 +9,7 @@ import Toggle from "@/components/lib/Toggle";
 import useUser from "@/hooks/useUser";
 import SessionHistory from "./SessionHistory";
 import Profiles from "./Profiles";
-
-// What browsing from a server can and can't do (bot walls, cloud IPs), and who is responsible.
-const DOCS_URL = "https://docs.anythingllm.com/agent/usage/browser-use/docker";
+import paths from "@/utils/paths";
 
 /**
  * Agent skill panel for Browser Use: the toggle, the history of every session the agent ran
@@ -46,7 +44,7 @@ export default function BrowserUseSkillPanel({
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
           {description}{" "}
           <a
-            href={DOCS_URL}
+            href={paths.documentation.browserUseDocker()}
             target="_blank"
             rel="noreferrer"
             className="underline hover:text-cta-button"
@@ -60,7 +58,6 @@ export default function BrowserUseSkillPanel({
   );
 }
 
-// Styled like the File System skill panel's tabs in the desktop app, so both platforms match.
 const TABS = [
   { name: "sessions", Icon: ClockCounterClockwise },
   { name: "profiles", Icon: UserCircle },
@@ -70,7 +67,7 @@ function Tabs() {
   const { t } = useTranslation();
   const { user } = useUser();
   const [tab, setTab] = useState("sessions");
-  // Single-user mode (no signed-in user) has just the one profile - nothing to manage per user.
+  // Single-user mode has just the one shared profile.
   if (!user) return <SessionHistory />;
   return (
     <div className="flex flex-col gap-y-2">

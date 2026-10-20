@@ -1,25 +1,20 @@
 /**
- * The in-page half of the browser driver. It is evaluated in an isolated JS world
- * (see Tab#evaluate) so page scripts can neither see nor tamper with it, and
- * element references live in memory instead of DOM attributes.
- *
- * The page is represented to the LLM as a flat, token-light list (ported from the
- * Open Computer harvest):
+ * The in-page half of the browser driver, evaluated in an isolated JS world (see Tab#evaluate)
+ * so pages can neither see nor tamper with it; element refs live in memory, not DOM attributes.
+ * The page becomes a flat, token-light list:
  *   [n] tag (state) "label" -> href     interactive elements, used by click/type/select
  *   [Tn] text...                        text blocks, readable in full with read_page
  *
- * Kept as a plain string so no bundler transform can inject helpers into it.
+ * A plain string so no bundler transform can inject helpers into it. Keep identical to the
+ * desktop app's electron/main/utils/BrowserUse/pageScript.ts.
  */
-// Kept identical to the desktop app (electron/main/utils/BrowserUse/pageScript.ts) so both agents see pages the same way.
 const PAGE_SCRIPT = String.raw`
 if (!window.__bu) window.__bu = (function () {
   var refs = [];
   var textRefs = [];
-  // Links left out of the page state (long navigation lists, see snapshot). They keep their ids so
-  // read_page can list them and click still works.
+  // Links collapsed out of the page state keep their ids so read_page and click still work.
   var hiddenLinks = [];
-  // A frame snapshotted on its own (a cross-origin iframe) numbers its items after the ones before it,
-  // so ids stay unique across the whole page state.
+  // A cross-origin frame snapshotted on its own numbers after the items before it, keeping ids unique.
   var idBase = 0, textBase = 0;
   var INTERACTIVE_TAGS = { A: 1, BUTTON: 1, INPUT: 1, SELECT: 1, TEXTAREA: 1, SUMMARY: 1 };
   var INTERACTIVE_ROLES = { button: 1, link: 1, menuitem: 1, menuitemcheckbox: 1, menuitemradio: 1, tab: 1, checkbox: 1, radio: 1, switch: 1, option: 1, combobox: 1, textbox: 1, searchbox: 1, slider: 1, spinbutton: 1, treeitem: 1 };
@@ -73,9 +68,8 @@ if (!window.__bu) window.__bu = (function () {
     return true;
   }
 
-  // Styled buttons often lay a transparent native control over their visible label - every Amazon
-  // button ("Add to cart") is an opacity .01 input on top of a span. Those are real, clickable buttons.
-  // Transparent text fields are not included: invisible fields are usually bot traps.
+  // Styled buttons often lay a transparent native control over their label (Amazon's "Add to cart"
+  // is an opacity .01 input). Transparent text fields are excluded: they are usually bot traps.
   function transparentControl(el, r) {
     var t = el.tagName;
     if (!(t === 'BUTTON' || t === 'A' || (t === 'INPUT' && /^(submit|button|image|reset|checkbox|radio|file)$/i.test(el.type)))) return false;
@@ -219,9 +213,8 @@ if (!window.__bu) window.__bu = (function () {
     return false;
   }
 
-  // Sign-in walls, bot checks and verification codes. One field on a page proves nothing (a header
-  // login box on an article), so several signals are scored. A confident wall makes the server pause
-  // and ask the user; a weaker match only tells the model the form is there.
+  // Sign-in walls, bot checks and verification codes. One field proves nothing (a header login box),
+  // so signals are scored: a confident wall pauses to ask the user, a weak match only informs the model.
   // Returns null or { kind: 'login'|'captcha'|'verification', wall: boolean, score: number }.
   var LOGIN_PATH = /(^|[\/_-])(log-?in|sign-?in|sign_in|auth|authenticate|sso|oauth2?|authorize|session\/new|ap\/signin)([\/_.?-]|$)/i;
   var LOGIN_HOST = /^(accounts?|login|auth|signin|sso|id|idp|identity)\./i;
@@ -369,9 +362,8 @@ if (!window.__bu) window.__bu = (function () {
     return { kind: 'login', wall: score >= 4, score: score };
   }
 
-  // Text worth a [Tn] line. Short paragraphs and list items are mostly noise ("Menu", "New"), but not
-  // when they hold a number: a price ("£47.82") or a count is often the answer. Table cells and
-  // definition values are kept at any length - they merge into their row.
+  // Text worth a [Tn] line. Short text is mostly noise ("Menu"), unless it holds a number (a price is
+  // often the answer). Table cells and definition values are kept at any length - they merge into their row.
   var CELL_TAGS = { TD: 1, TH: 1, DD: 1, DT: 1 };
   function keepText(el, text) {
     if (!/[\p{L}\p{N}]/u.test(text)) return false;
@@ -394,9 +386,8 @@ if (!window.__bu) window.__bu = (function () {
     return true;
   }
 
-  // Repeated blocks - product cards, result rows, table rows: an element with at least one sibling of
-  // the same tag and class. Text is only merged within one block, and blocks are listed one at a time,
-  // so a price or a button stays next to the product it belongs to.
+  // Repeated blocks (cards, result rows): an element with a sibling of the same tag and class. Text
+  // merges only within a block, so a price or button stays next to its product.
   var CARD_TAGS = { LI: 1, ARTICLE: 1, TR: 1, DIV: 1, SECTION: 1, FIGURE: 1 };
   var CARD_ROLES = { listitem: 1, row: 1, article: 1 };
   function isRepeated(el, cache) {
@@ -469,8 +460,7 @@ if (!window.__bu) window.__bu = (function () {
     refs = []; textRefs = []; hiddenLinks = [];
     idBase = opts.idBase || 0; textBase = opts.textBase || 0;
     var items = []; // { y, x, el, text?, tag, state, label, href }
-    // Controls of the page's top bar that scrolled out above the snapshot - the cart, the menu, the
-    // search box must stay reachable from anywhere on a long page.
+    // Top-bar controls scrolled out above the snapshot (cart, menu, search) stay reachable.
     var header = [];
     var below = 0, seen = new Set();
 
@@ -600,9 +590,8 @@ if (!window.__bu) window.__bu = (function () {
       if (last) last.after = '(' + (links.length - shown) + ' more links in this list - read_page lists them with ids)';
     });
 
-    // Items are numbered and emitted in that order. Text of one block on the same row merges into one
-    // line so related facts stay together ("United · 7:05 AM · $238"). The char budget truncates from
-    // the bottom of the page.
+    // Text of one block on the same row merges into one line ("United · 7:05 AM · $238"). The char
+    // budget truncates from the bottom of the page.
     var lines = [], lineY = [], used = 0, dropped = 0, prev = null;
     if (header.length) {
       var parts = header.map(function (h) {
@@ -803,8 +792,8 @@ if (!window.__bu) window.__bu = (function () {
     return document.hasFocus() && isEditable(focusedElement());
   }
 
-  // Signature of the page, to tell when an action changed nothing. The text is hashed too: a button
-  // that turns from "Add to cart" into "Remove" can leave the markup the same size.
+  // Signature of the page, to tell when an action changed nothing. Text is hashed too: "Add to cart"
+  // -> "Remove" can leave the markup the same size.
   function fingerprint() {
     var active = focusedElement();
     var text = document.body ? document.body.innerText || '' : '';
@@ -813,9 +802,8 @@ if (!window.__bu) window.__bu = (function () {
     return location.href + '|' + domSize() + '|' + hash + '|' + (active ? active.tagName + (active.id || '') : '');
   }
 
-  // What an element says and its state, to report how a click changed it ("now reads "Remove"").
-  // Frameworks often swap the clicked button for a new element; then the control now at the click
-  // point (x, y in this frame's viewport) stands in for it.
+  // An element's label and state, to report how a click changed it. Frameworks often swap the clicked
+  // button for a new element, so the control now at (x, y) in this frame stands in for it.
   function elementState(id, x, y) {
     var el = ref(id);
     if (!el || !el.isConnected) {
@@ -905,7 +893,6 @@ if (!window.__bu) window.__bu = (function () {
       shown.push(snippets[k].text);
       used += snippets[k].text.length;
     }
-    // Scroll the first match into view so the next page state shows its elements.
     var first = words[0];
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     var node;
@@ -932,10 +919,9 @@ if (!window.__bu) window.__bu = (function () {
 `;
 
 /**
- * Turns passkeys (WebAuthn) off before any page script runs. Chromium hands passkey requests to the OS,
- * which on Windows pops a Windows Hello / "Windows Security" passkey dialog over the app - sites like
- * Google, GitHub, Microsoft and LinkedIn ask on page load. Requests fail fast with the standard
- * NotAllowedError and the browser reports no passkey support, so sites fall back to passwords.
+ * Turns passkeys (WebAuthn) off before any page script runs. Chromium hands passkey requests to the
+ * OS, which on Windows pops a Windows Hello dialog on sites that ask on load (Google, GitHub).
+ * Requests fail with NotAllowedError and no passkey support is reported, so sites fall back to passwords.
  */
 const PASSKEY_BLOCK_SCRIPT = String.raw`
 (function () {

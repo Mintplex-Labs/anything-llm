@@ -11,13 +11,9 @@ const PROFILE_KEY = /^(default|user-\d+)$/;
 const INCOGNITO_PREFIX = "incognito-";
 
 /**
- * Saved browser profiles: one Chromium user-data folder per person, so their sign-ins carry over
- * between sessions. Single-user mode has one profile ("default"). In multi-user mode every user
- * has their own ("user-<id>") and the default one is never used - it is deleted when multi-user
- * mode is turned on.
- *
- * A profile key with the incognito prefix ("incognito-user-3") is that person's private browser:
- * a separate, throwaway browser that never touches their saved profile.
+ * Saved browser profiles: one Chromium user-data folder per person, so sign-ins carry over.
+ * Single-user mode uses "default"; multi-user mode gives each user "user-<id>" and deletes
+ * "default" when turned on. "incognito-<key>" is that person's throwaway browser.
  */
 const BrowserProfiles = {
   /**

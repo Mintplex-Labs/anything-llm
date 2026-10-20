@@ -10,17 +10,14 @@ const notLooking = () =>
   document.visibilityState === "hidden" || !document.hasFocus();
 
 /**
- * A browser notification when the agent asks for help while this tab is not in front, since a
- * session can run long and then wait up to 15 minutes. Clicking it brings back this tab and the
- * card - the session lives on this tab's socket, so a new tab would not reach it.
- *
- * Permission is first asked when the first help request arrives, never before. Browsers that only
- * ask on a click (Firefox, Safari) get asked on the person's first click in the card instead.
+ * A browser notification when the agent asks for help while this tab is not in front. Clicking it
+ * focuses this tab, not a new one - the session lives on this tab's socket.
+ * Permission is asked on the first help request; Firefox/Safari only allow it on a click in the card.
  * @param {Object} session - the live session snapshot
  * @param {string} cardId - id of the card element to scroll to
  * @returns {() => void} call from a click in the card, to ask where asking needs one
  */
-export default function useHelpNotification(session, cardId) {
+export default function useBrowserUseHelpNotification(session, cardId) {
   const { t } = useTranslation();
   const needsHelp = session.status === "needs-help";
   const shown = useRef(null);

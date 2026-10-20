@@ -1,14 +1,10 @@
 const { BrowserDriver } = require("./driver");
 const { BrowserTraces } = require("./traces");
 
-/**
- * What the rest of the server tells Browser Use about, so each caller is one line that never throws
- * (see endpoints/admin.js, endpoints/api/admin and endpoints/system.js).
- */
+/** Hooks the rest of the server calls - each is one line that never throws. */
 const BrowserUseLifecycle = {
   /**
-   * A user was deleted: their saved browser profile, their incognito browser and their session
-   * history all go with them.
+   * Removes a deleted user's saved profile, incognito browser and session history.
    * @param {number} userId
    */
   async userDeleted(userId) {

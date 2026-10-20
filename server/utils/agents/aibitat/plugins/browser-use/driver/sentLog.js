@@ -17,9 +17,8 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  */
 
 /**
- * What the page sent to its own site while one agent action ran: write requests (POST, PUT, PATCH,
- * DELETE) and websocket messages, metadata only. It is the agent's ground truth for "was it posted /
- * sent / ordered" - a click on "Post" that sent nothing did not post anything.
+ * Write requests and websocket messages the page sent to its own site during one action (metadata
+ * only). The agent's ground truth for "was it posted / sent / ordered".
  */
 class SentLog {
   /** @param {() => string} pageUrl - the tab's current URL; only requests to its site count */

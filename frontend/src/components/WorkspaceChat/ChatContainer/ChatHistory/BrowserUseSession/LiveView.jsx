@@ -3,14 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Globe } from "@phosphor-icons/react";
 import BrowserUse from "@/models/browserUse";
 
-// Mouse moves sent to the browser while the person has control - enough for a drag to follow.
+// Throttle for mouse moves; still enough for a drag to follow.
 const MOVE_INTERVAL_MS = 50;
 
 /**
- * The live picture of the browser. While the person has control, their mouse, scrolls and keys
- * go to the browser: positions as fractions of the view (the card's size never matters), typed
- * characters as text and everything else as key presses. The mouse goes as press, moves and
- * release, so they can press and hold or drag, not only click.
+ * The live picture of the browser. While in control, mouse, scroll and keys are forwarded, with
+ * positions as fractions of the view so the card's size never matters.
  * @param {{frameSrc: string|null, controlling: boolean, onInput: (input: Object) => void}} props
  */
 export default function LiveView({ frameSrc, controlling, onInput }) {
@@ -81,8 +79,7 @@ export default function LiveView({ frameSrc, controlling, onInput }) {
       {...handlers}
       className={`relative w-full aspect-[16/10] bg-zinc-950 light:bg-slate-200 outline-none ${controlling ? "cursor-pointer touch-none select-none ring-2 ring-inset ring-amber-400" : ""}`}
     >
-      {/* Stretched to fill the view: the page's size varies a little, and clicks go back as
-          fractions of the view, so the picture must cover it exactly. */}
+      {/* object-fill: clicks go back as fractions of the view, so the picture must cover it exactly. */}
       {frameSrc ? (
         <img
           src={frameSrc}
@@ -105,9 +102,8 @@ export default function LiveView({ frameSrc, controlling, onInput }) {
 }
 
 /**
- * The latest frame (base64 jpeg) of a running session's live view. The server only streams
- * frames while a card watches, so the card says so over the agent socket while it is mounted;
- * the server starts it off with the current picture.
+ * The latest frame (base64 jpeg) of a running session. The server only streams frames while a
+ * card watches, so this registers as a watcher while mounted.
  */
 export function useLiveFrame(sessionId, websocket) {
   // Tagged with its session so a frame never outlives a change of sessionId.

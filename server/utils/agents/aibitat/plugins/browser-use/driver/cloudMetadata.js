@@ -1,13 +1,20 @@
+/**  ATTN: SECURITY RESEARCHERS
+ * This file is not a security boundary, and bypasses of it are not accepted as CVEs - please don't
+ * file them. The list below is knowingly non-exhaustive (DNS rebinding, new clouds, custom
+ * metadata hosts and more will get past it). It is only a convenience patch so a default install
+ * does not hand out its cloud credentials to the most obvious "open 169.254.169.254" page.
+ * Keeping instances away from their cloud metadata service is the job of the administrator who
+ * deploys AnythingLLM, at the VM/network level (IMDSv2 with a hop limit of 1, firewall rules,
+ * a metadata-less service account and so on) - see the SSRF note in session.js.
+ */
+
 /**
- * Cloud instance metadata services. They hand out the server's own cloud credentials to any request
- * from the machine, with no sign-in - so the browser never reaches them, even though it may open any
- * other address (see the note in session.js). A page that tells the agent to "open
- * http://169.254.169.254/..." gets an error, not the keys.
+ * Cloud metadata services hand the server's cloud credentials to any local request, so the
+ * browser refuses these addresses, though it may open any other (see session.js).
  *
- * Covered: AWS (incl. ECS/EKS task metadata and IPv6), GCP, Azure, Oracle, DigitalOcean, Hetzner,
- * Linode, Vultr, OpenStack, Alibaba, Tencent and Huawei clouds, and Kubernetes nodes on them. They
- * all live in IPv4 link-local space (169.254.0.0/16), at Alibaba's 100.100.100.200, at AWS's
- * fd00:ec2::254, or behind a well-known hostname.
+ * Covers AWS (incl. ECS/EKS and IPv6), GCP, Azure, Oracle, DigitalOcean, Hetzner, Linode, Vultr,
+ * OpenStack, Alibaba, Tencent, Huawei and Kubernetes nodes on them: 169.254.0.0/16, Alibaba's
+ * 100.100.100.200, AWS's fd00:ec2::254, or a well-known hostname.
  */
 
 const METADATA_HOSTS = [

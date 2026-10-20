@@ -16,7 +16,7 @@ import BrowserUse from "@/models/browserUse";
 import showToast from "@/utils/toast";
 import TraceModal from "@/components/WorkspaceChat/ChatContainer/ChatHistory/BrowserUseSession/TraceModal";
 import Favicon from "@/components/WorkspaceChat/ChatContainer/ChatHistory/BrowserUseSession/Favicon";
-import { formatTokens } from "@/components/WorkspaceChat/ChatContainer/ChatHistory/BrowserUseSession/utils";
+import { nFormatter } from "@/utils/numbers";
 import Section, { EmptyState } from "./Section";
 
 const STATUS_ICONS = {
@@ -158,7 +158,7 @@ function SessionRow({ trace, onOpen, onDelete }) {
           <span>
             {t("browserUse.card.usage", {
               steps: trace.stepCount,
-              tokens: formatTokens(trace.tokens?.total),
+              tokens: nFormatter(trace.tokens?.total || 0),
             })}
           </span>
         </div>

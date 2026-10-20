@@ -3,8 +3,7 @@
  * Descriptions are intentionally short - this has to work for small local models.
  */
 
-// Tool schemas are re-sent on every step, so they stay as lean as possible ($schema, extra keywords
-// and long descriptions cost tokens on every call).
+// Schemas are re-sent on every step, so they stay lean - every keyword costs tokens each call.
 const schema = (properties = {}, required = []) => ({
   type: "object",
   properties,
@@ -16,7 +15,7 @@ const id = (what) => ({
   description: `[n] id of the ${what}.`,
 });
 
-/** Actions executed by the Electron browser (see electron/main/utils/BrowserUse/session.ts). */
+/** Actions run in the browser (see bridge.js). */
 const BROWSER_TOOLS = [
   {
     name: "navigate",

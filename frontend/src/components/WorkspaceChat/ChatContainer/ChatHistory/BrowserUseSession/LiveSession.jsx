@@ -8,7 +8,7 @@ import UsageLabel from "./UsageLabel";
 import Favicon from "./Favicon";
 import LiveView, { useLiveFrame } from "./LiveView";
 import HelpRequest from "./HelpRequest";
-import useHelpNotification from "./useHelpNotification";
+import useBrowserUseHelpNotification from "@/hooks/useBrowserUseHelpNotification";
 import { ACK_TIMEOUT_MS, hostOf } from "./utils";
 
 /**
@@ -19,8 +19,7 @@ import { ACK_TIMEOUT_MS, hostOf } from "./utils";
 export default function LiveSession({ session, websocket }) {
   const frame = useLiveFrame(session.sessionId, websocket);
   const needsHelp = session.status === "needs-help";
-  // The person can only drive the browser while the agent asks for help - taking
-  // over mid-step would leave the agent not knowing what page it is on.
+  // Control only while the agent asks for help - mid-step it would lose track of the page.
   const [controlling, setControlling] = useState(false);
   useEffect(() => {
     if (!needsHelp) setControlling(false);
@@ -29,7 +28,10 @@ export default function LiveSession({ session, websocket }) {
   const send = (action, data) =>
     BrowserUse.control(websocket, session.sessionId, action, data);
   const cardId = `browser-use-${session.sessionId}`;
-  const askNotificationPermission = useHelpNotification(session, cardId);
+  const askNotificationPermission = useBrowserUseHelpNotification(
+    session,
+    cardId
+  );
 
   return (
     <CardShell id={cardId}>
@@ -43,7 +45,7 @@ export default function LiveSession({ session, websocket }) {
         onInput={(input) => send("input", { input })}
       />
       {needsHelp ? (
-        // Browsers that only ask for notification permission on a click ask on this one.
+        // Firefox/Safari only ask for notification permission on a click.
         <div onPointerDownCapture={askNotificationPermission}>
           <HelpRequest
             session={session}
@@ -91,8 +93,7 @@ function NeedsHelpTitle() {
 }
 
 /**
- * Styled after the chat's own stop button: a rounded square in a circle. Once pressed it stays
- * "Stopping" until the session's status changes, or until the server never answers.
+ * Stays "Stopping" until the session's status changes or the ack times out.
  * @param {{session: Object, onStop: () => boolean}} props - onStop: whether the stop was sent
  */
 function StopButton({ session, onStop }) {

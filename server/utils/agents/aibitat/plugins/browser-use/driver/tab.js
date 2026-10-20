@@ -6,12 +6,11 @@ const {
   isCloudMetadataIp,
 } = require("./cloudMetadata");
 
-// The size the page's window aims for. The headless window reserves a varying strip for browser
-// UI, so the page may end up a little off - `tab.viewport` is always the size it really has.
+// A target, not a guarantee: headless reserves a varying strip for browser UI, so `tab.viewport`
+// holds the real size.
 const VIEWPORT = { width: 1280, height: 800 };
-// Nobody is at the browser to answer a permission prompt - headless Chrome would leave it pending
-// forever. Every powerful feature is denied outright instead. Names the running Chrome does not
-// know are skipped.
+// Headless Chrome leaves permission prompts pending forever, so these are denied outright.
+// Names the running Chrome does not know are skipped.
 const DENIED_PERMISSIONS = [
   "accelerometer",
   "ambient-light-sensor",
@@ -41,14 +40,11 @@ const DENIED_PERMISSIONS = [
   "system-wake-lock",
   "window-management",
 ];
-// The page script runs in its own JS world - pages can neither see nor tamper with it.
 const WORLD = "anythingllm-browser-use";
 
 /**
- * One session's page, driven over CDP: a tab in the saved profile's browser (its cookies and
- * storage), or for an incognito session a tab in its own browser context (fresh cookies and
- * storage, thrown away with the tab). Everything the session needs from the browser goes
- * through here; the agent-facing logic lives in session.js.
+ * One session's page, driven over CDP: a tab in the saved profile, or for an incognito session
+ * a tab in its own throwaway browser context. Agent-facing logic lives in session.js.
  *
  * Events:
  *   "cdp" (method, params, sessionId) - every CDP event of the page ("" ) and of the cross-origin
@@ -148,11 +144,9 @@ class Tab extends EventEmitter {
   }
 
   /**
-   * Grow the window so the page gets about VIEWPORT: the headless window's view is smaller than
-   * the window by a strip that varies (77 or 119px in Docker, more on Windows). The viewport is
-   * never emulated instead - an emulated size that differs from the window makes the screencast and
-   * screenshots come out tiled, cropped or half-painted. Whatever size the page ends up with is
-   * what everything uses (see viewport).
+   * Grow the window so the page gets about VIEWPORT; the headless view is smaller than the window
+   * by a varying strip (77 or 119px in Docker, more on Windows). Never emulate the viewport instead:
+   * a size that differs from the window makes screencasts and screenshots tiled, cropped or half-painted.
    */
   async #sizeWindow() {
     const { windowId } = await this.connection.send(
@@ -203,14 +197,12 @@ class Tab extends EventEmitter {
       send("Page.addScriptToEvaluateOnNewDocument", {
         source: PASSKEY_BLOCK_SCRIPT,
       }),
-      // A file picker has no one to answer it.
+      // Nobody can answer a file or device picker - they are intercepted and cancelled (see #route).
       send("Page.setInterceptFileChooserDialog", { enabled: true }),
-      // Nor does a USB / Bluetooth / serial / HID device picker - they are cancelled (see #route).
       send("DeviceAccess.enable").catch(() => {}),
-      // Network events tell the agent when the page actually sent something (a post, a message).
       send("Network.enable", { maxPostDataSize: 4096 }).catch(() => {}),
-      // Requests to cloud metadata services - navigations, redirects and subresources alike - are
-      // paused and failed (see #onRequestPaused). Nothing else is paused.
+      // Cloud metadata requests (navigations, redirects, subresources) are paused and failed in
+      // #onRequestPaused. Nothing else is paused.
       send("Fetch.enable", {
         patterns: BLOCKED_URL_PATTERNS.map((urlPattern) => ({
           urlPattern,
@@ -331,8 +323,7 @@ class Tab extends EventEmitter {
         this.#onRequestPaused(params, sessionId);
         break;
       case "Network.responseReceived":
-        // A hostname that resolves to a metadata address gets past the URL patterns - the page it
-        // served is thrown away before the agent can read it.
+        // A hostname resolving to a metadata address slips past the URL patterns - drop its page.
         if (
           params.type === "Document" &&
           isCloudMetadataIp(params.response?.remoteIPAddress)
@@ -349,7 +340,7 @@ class Tab extends EventEmitter {
         this.send("Page.screencastFrameAck", {
           sessionId: params.sessionId,
         }).catch(() => {});
-        // The frame is the page as it is - its size is the page's size (clicks are mapped on it).
+        // Clicks from the chat card are mapped onto this frame, so its size is the viewport.
         if (params.metadata?.deviceWidth && params.metadata?.deviceHeight)
           this.viewport = {
             width: Math.round(params.metadata.deviceWidth),
@@ -366,9 +357,9 @@ class Tab extends EventEmitter {
       if (params.targetInfo.targetId === this.targetId)
         this.title = params.targetInfo.title;
     } else if (method === "Target.targetCreated") {
-      // A popup the page opened (window.open, target=_blank) - Page.windowOpen already loaded it here.
+      // A popup - Page.windowOpen already loaded it in this tab. Sessions on a saved profile share
+      // its context, so only close what this tab opened.
       const info = params.targetInfo;
-      // Sessions on a saved profile share its context, so only close what this tab opened.
       const ours = this.contextId
         ? info.browserContextId === this.contextId
         : info.openerId === this.targetId;
@@ -625,8 +616,7 @@ class Tab extends EventEmitter {
    */
   async capture({ width = VIEWPORT.width, quality = 60 } = {}) {
     try {
-      // A clip is in page coordinates, so it has to start where the page is scrolled to - at 0,0 a
-      // scrolled page captures the unpainted top of the document (a blank image).
+      // The clip is in page coordinates - at 0,0 a scrolled page captures a blank, unpainted top.
       const view = await this.#measureViewport();
       const { data } = await this.send("Page.captureScreenshot", {
         format: "jpeg",
@@ -652,8 +642,8 @@ class Tab extends EventEmitter {
         ? {
             format: "jpeg",
             quality: 60,
-            // Caps, not a size: a page that came out a little taller than VIEWPORT must not be
-            // scaled down (and letterboxed), so the height cap is deliberately generous.
+            // Caps, not a size: the generous height cap keeps a slightly tall page from being
+            // scaled down and letterboxed.
             maxWidth: VIEWPORT.width,
             maxHeight: VIEWPORT.width,
           }

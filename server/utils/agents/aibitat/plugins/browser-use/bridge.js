@@ -2,10 +2,9 @@ const { BrowserDriver } = require("./driver");
 const { Chromium } = require("./driver/chromium");
 
 /**
- * The browser agent's only way to the browser - the one file that knows where the browser runs.
- * The desktop app has its own bridge.js that talks to the Electron main process; here the browser
- * runs in the server process (see driver/), so requests are plain calls - with the same timeout,
- * so a hung page never stalls the agent forever.
+ * The browser agent's only path to the browser. The desktop app has its own bridge.js that talks
+ * to the Electron main process; here the browser runs in-process (see driver/), so requests are
+ * plain calls with a timeout so a hung page never stalls the agent.
  *
  * Requests (see BrowserDriver#request):
  *   start     - open a session on a profile: {sessionId, profile, maxChars, startUrl, terms}
@@ -15,13 +14,10 @@ const { Chromium } = require("./driver/chromium");
  *   hide      - the help request was answered: {sessionId}
  */
 class BrowserBridge {
-  /** How a person gets their hands on the browser - part of what the agent asks when it needs help. */
+  /** Part of what the agent says when it asks for help. */
   static TAKE_CONTROL_HINT = 'Click "Take control" in the session card';
 
-  /**
-   * Browser use runs a browser on the server, so a production server only offers it inside the
-   * Docker image - never on a bare-metal install. Development runs it anywhere.
-   */
+  /** A production server only runs the browser inside the Docker image, never on bare metal. */
   static get runtimeAllowed() {
     if (process.env.NODE_ENV !== "production") return true;
     return process.env.ANYTHING_LLM_RUNTIME === "docker";

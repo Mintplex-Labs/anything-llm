@@ -1,7 +1,4 @@
-/**
- * Key presses for the browser: turns what the agent (press_key) or the person in the chat card
- * asks for - "Enter", "Control+A", "shift + tab", "k" - into trusted CDP key events.
- */
+/** Turns "Enter", "Control+A", "shift + tab", "k" into trusted CDP key events. */
 
 // CDP key definitions. `text` makes Chromium send a char/keypress event too.
 const NAMED_KEYS = {
@@ -51,7 +48,6 @@ const MODIFIERS = {
   win: META,
   windows: META,
   shift: SHIFT,
-  // "the platform's shortcut key"
   mod: IS_MAC ? META : CONTROL,
   cmdorctrl: IS_MAC ? META : CONTROL,
   commandorcontrol: IS_MAC ? META : CONTROL,

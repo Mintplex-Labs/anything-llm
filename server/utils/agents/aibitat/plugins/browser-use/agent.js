@@ -29,38 +29,28 @@ const PLACEHOLDER_TEXT = [
 ];
 // A cycle of 1-3 actions repeated this many times in a row counts as a loop.
 const LOOP_REPEATS = 3;
-// Giving up. A step makes progress when it shows the agent something it has not seen this session:
-// a new page, new page content or a new note. After STALL_WARN steps in a row without progress the
-// agent is warned; at STALL_LIMIT the session ends and hands back to the user with what it found.
+// Steps in a row that showed nothing new (page, content or note): warn, then end the session.
 const STALL_WARN = 5;
 const STALL_LIMIT = 8;
-// Hard budget for one session (prompt + completion, all calls). Past it the agent wraps up.
+// All calls, prompt + completion.
 const MAX_SESSION_TOKENS = 200_000;
-// Drift: new pages keep coming but nothing on them relates to the task (clicking around a site's
-// menus). It triggers a progress check (see #checkpoint) and, if it keeps up, ends the session.
+// Drift: new pages keep coming but none relate to the task. Triggers a progress check, then ends.
 const DRIFT_CHECK = 4;
 const DRIFT_LIMIT = 12;
-// Progress checks: one short call that asks the model, outside the action loop, whether the agent is
-// on track. Run when drifting, after leaving the most useful page, and every CHECK_EVERY steps.
 const CHECK_EVERY = 10;
 const MAX_CHECKPOINTS = 4;
 // Ids in a URL path (product 695807, ASIN B0CHX1W1XY) cannot be guessed - see #madeUpUrl.
 const ID_TOKEN = /\d{5,}|\b(?=[A-Z0-9]*\d)(?=[A-Z0-9]*[A-Z])[A-Z0-9]{8,12}\b/g;
 
-// Page digests: the few lines of each visited page that look relevant to the task, so leaving a page
-// does not erase what was on it. Purely lexical - no extra model calls.
+// Page digests (see #digest): task-relevant lines kept per visited page, purely lexical.
 const DIGEST_LINES = 5;
 const DIGEST_PAGES = 6;
-// Text lines of a page kept across scroll positions for the final answer (see #rememberText).
 const PAGE_TEXT_CHARS = 4_000;
-// `done` goes through one final-answer call (see #finalAnswer). It may send the agent back to work
-// this many times - small models love to stop after the first site.
+// How often #finalAnswer may send the agent back to work - small models stop after the first site.
 const MAX_DONE_CHECKS = 2;
 
-// Screenshots are a last resort for vision models, not an every-step habit.
 const MAX_SCREENSHOTS = 3;
 
-// What a resume point keeps of a session (see #saveResumePoint).
 const RESUME_NOTES = 10;
 const RESUME_PROGRESS = 5;
 const RESUME_LINES = 3;
@@ -73,10 +63,7 @@ const BLOCKER_RESOLVED = {
   verification: "entered the verification code",
 };
 
-/**
- * What the user is asked when the agent hits a sign-in wall, bot check or verification step. How
- * they reach the browser depends on where it runs, so the bridge words that part.
- */
+/** What the user is asked at a sign-in wall, bot check or verification step. */
 const BLOCKER_QUESTIONS = {
   login: (site) =>
     `${site} is asking you to sign in. ${BrowserBridge.TAKE_CONTROL_HINT}, sign in, then press Continue - or reply with how you would like me to proceed.`,
@@ -97,11 +84,8 @@ const BLOCKER_QUESTIONS = {
 /**
  * The browser sub-agent. It runs its own tool loop with the workspace's agent model and drives
  * the browser through BrowserBridge, so it never knows where that browser runs.
- *
- * Token efficiency (this has to work on small models):
- *  - the page is a flat [n]/[Tn] list sized to the model's context window,
- *  - only the LATEST page state is kept in context; older steps collapse to one line,
- *  - screenshots are opt-in for vision models only: a few per session, and only the latest is sent.
+ * Built for small models: only the latest page state is kept in full, older steps collapse to one
+ * line, and screenshots are rare and vision-only.
  */
 class BrowserAgent {
   /**
@@ -155,15 +139,13 @@ class BrowserAgent {
     this.pendingReply = null;
     // "host:kind" walls the user already helped with - never pause twice for the same one.
     this.acknowledged = new Set();
-    // Blocker on the latest page, and notes carried across context resets (see #resetContext).
     this.lastBlocker = null;
+    // Notes carried across context resets (see #resetContext).
     this.progress = [];
     this.loopWarnings = 0;
-    // "url|top" / "url|bottom" ends of pages the agent already scrolled into (see #execute).
+    // "url|top" / "url|bottom" ends of pages the agent already scrolled into.
     this.edges = new Set();
-    // Every text line seen per page, across scroll positions - for the final answer (see #pageText).
     this.pageLines = new Map();
-    // Progress tracking for giving up (see #madeProgress).
     this.seenLines = new Set();
     this.seenUrls = new Set();
     this.stall = 0;
@@ -173,17 +155,13 @@ class BrowserAgent {
     this.checkpoints = 0;
     this.lastCheckpoint = 0;
     this.wentBack = false;
-    // One-line plan from the latest progress check - shown next to the task on every turn.
+    // One-line plan from the latest progress check.
     this.plan = null;
-    // Words of the task that make a page line relevant (see #terms).
     this.taskTerms = taskTerms(task);
-    // Ids seen on pages, in the task or the start URL - a URL may only use these (see #madeUpUrl).
+    // A navigated URL may only use ids seen here (see #madeUpUrl).
     this.seenIds = new Set(`${task} ${startUrl || ""}`.match(ID_TOKEN) || []);
-    // Facts the agent saved via the `note` field of its actions - shown on every turn.
     this.notes = [];
-    // Facts already recorded in notes (see #newFacts).
     this.noteFacts = new Set();
-    // How often each address was opened with navigate (see #execute).
     this.opens = new Map();
     /** @type {Map<string, {url: string, title: string, lines: Array<{line: string, score: number, matched: boolean}>, score: number, relevant: number}>} page -> key lines (see #digest) */
     this.visited = new Map();
@@ -288,8 +266,8 @@ class BrowserAgent {
       (typeof provider === "string" &&
         Provider.contextLimit(provider, model)) ||
       8_000;
-    // ~15% of the context window per page state (4 chars/token), bounded for tiny and huge windows.
-    // Capped at ~1.5k tokens: on-screen content comes first, and read_page/scroll get the rest.
+    // ~15% of the context window per page state (4 chars/token), capped at ~1.5k tokens -
+    // read_page/scroll get the rest.
     this.maxChars = Math.min(
       Math.max(Math.round(this.contextLimit * 0.6), 3_000),
       6_000
@@ -410,8 +388,7 @@ class BrowserAgent {
       if (this.#checkpointDue(step) && (await this.#checkpoint(step))) return;
     }
 
-    // Out of steps - give the model one last chance to report what it found (budget allowing;
-    // the final answer below is always written).
+    // Out of steps: one last done call if budget allows; the final answer is always written.
     let call = null;
     if (!this.#overBudget()) {
       this.#pushNudge(
@@ -646,7 +623,6 @@ class BrowserAgent {
     const loop = moved || firstEdge ? null : this.#loopOf(call);
     if (loop && this.loopWarnings++ === 0)
       full += `\n\nSTOP: you are repeating the same actions in a loop (${loop}) and it is not working. Try a completely different approach - a different element, a direct URL, or a keyboard key. If you are stuck, call ask_user.`;
-    // Still looping after being told to stop: give up instead of burning steps.
     else if (loop && this.loopWarnings > 1)
       this.giveUpReason = `I kept repeating the same actions (${loop}) without getting anywhere`;
 
@@ -677,11 +653,9 @@ class BrowserAgent {
   }
 
   /**
-   * What a step showed the agent that it had not seen this session. `fresh`: a new URL or new page
-   * lines (element ids and digits are ignored, so re-numbering, counters and scroll offsets do not
-   * count). `relevant`: one of those new lines mentions the task (see #terms) - new pages that have
-   * nothing to do with the task are drift, not progress. A failed action never counts, but what it
-   * showed is still remembered.
+   * What a step showed that was not seen this session. `fresh`: a new URL or new page lines (ids and
+   * digits ignored, so renumbering and counters do not count). `relevant`: a new line mentions the task.
+   * A failed action never counts, but what it showed is still remembered.
    */
   #madeProgress(result) {
     let fresh = false,
@@ -772,8 +746,7 @@ class BrowserAgent {
   }
 
   /**
-   * Reflection outside the action loop: one short call with the task, what was collected and the
-   * last few steps, asking whether to keep going, answer now, go back to the most useful page, or
+   * One short call outside the action loop: keep going, answer now, go back to the best page, or
    * give up. Small models judge this far better as its own question than while picking clicks.
    * @returns {Promise<boolean>} whether the session ended
    */
@@ -814,7 +787,7 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
       if (response?.stopped) return true;
       this.#trackUsage(before, messages, response, Date.now() - startedAt);
       const parsed = parseVerdict(response?.textResponse);
-      if (!parsed) return false; // no usable verdict - carry on as before
+      if (!parsed) return false;
       ({ verdict, reason } = parsed);
     } catch (error) {
       this.log("Progress check failed:", error.message);
@@ -1055,9 +1028,8 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
   /////////////////////////////
 
   /**
-   * After the user signs in (or otherwise drives the browser) the site usually looks completely
-   * different, so the step history is worse than useless. Start over from the task with a short
-   * note of what already happened and the page as it is now.
+   * After the user signs in or drives the browser the step history is stale. Start over from the
+   * task with a short note of what happened and the current page.
    */
   #resetContext({ blocker, tookOver, reply, page }) {
     const before = this.trace.steps
@@ -1186,9 +1158,8 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
   }
 
   /**
-   * Keep the lines of a page that look relevant to the task: task words (not the site's own name),
-   * prices and numbers, and the line right after a match (labels are often followed by their value).
-   * Kept per page, so the useful page of a site is not replaced by the next one on the same site.
+   * Keep the lines of a page that look relevant to the task: task words, prices, and the line right
+   * after a match (labels are often followed by their value).
    */
   #digest(result) {
     const url = String(result?.page?.url || "").split("#")[0];
@@ -1223,7 +1194,6 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
       score: 0,
     };
     page.title = clip(result.page.title || page.title, 60);
-    // Scrolling and reading the same page adds to what it already had.
     const merged = new Map(page.lines.map((entry) => [entry.line, entry]));
     for (const entry of scored)
       if (entry.score >= 1.5 && !merged.has(entry.line))
@@ -1235,7 +1205,6 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
     page.relevant = page.lines.filter((entry) => entry.matched).length;
     if (!page.lines.length) return;
     this.visited.set(url, page);
-    // Over the limit: forget the least useful page, never the current one.
     while (this.visited.size > DIGEST_PAGES) {
       const worst = [...this.visited.values()]
         .filter((p) => p.url !== url)
@@ -1287,9 +1256,8 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
   }
 
   /**
-   * Turn the agent's `done` into the final answer with one short call over everything it collected
-   * (notes and page digests), since small models write `done` from the last page only.
-   * It can also send the agent back to work when part of the task is clearly missing.
+   * Write the final answer from everything collected, since small models write `done` from the last
+   * page only. Can send the agent back to work when part of the task is missing.
    * @param {string} draft - the result the agent passed to done
    * @param {{canContinue: boolean, context?: string|null}} options - context: why the answer is
    *   written now (a give-up or a progress check) when the agent did not call done itself
@@ -1587,7 +1555,7 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
       title: page.title || null,
       favicon: page.favicon || null,
       thumbnail: result.thumbnail || null,
-      // What the page sent to the site during this step (metadata only, recorded by the driver).
+      // Metadata only, recorded by the driver.
       sent:
         Array.isArray(result.sent) && result.sent.length
           ? result.sent.slice(0, 5).map(({ label, method, status, ok }) => ({

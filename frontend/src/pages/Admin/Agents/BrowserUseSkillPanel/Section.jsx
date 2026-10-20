@@ -19,7 +19,7 @@ export default function Section({
   );
 }
 
-/** A list with nothing in it yet: a centered icon and message in a rounded, shaded box. */
+/** Placeholder for a list with nothing in it yet. */
 export function EmptyState({ Icon, text }) {
   return (
     <div className="flex flex-col items-center justify-center gap-y-2 px-4 py-8 rounded-lg bg-theme-bg-primary light:bg-theme-settings-input-bg text-center">

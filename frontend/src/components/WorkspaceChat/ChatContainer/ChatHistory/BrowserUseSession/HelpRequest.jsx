@@ -21,8 +21,7 @@ export default function HelpRequest({
 }) {
   const { t } = useTranslation();
   const [reply, setReply] = useState("");
-  // The snapshot the reply was sent against - every session update is a new
-  // snapshot, so the "sent" state clears as soon as the agent reacts.
+  // Every session update is a new snapshot, so "sent" clears as soon as the agent reacts.
   const [sentFor, setSentFor] = useState(null);
   const sent = sentFor === session;
 

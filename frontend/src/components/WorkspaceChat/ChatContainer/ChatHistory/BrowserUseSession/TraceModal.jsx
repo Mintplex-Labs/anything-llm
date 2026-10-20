@@ -14,15 +14,13 @@ import BrowserUse from "@/models/browserUse";
 import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "@/utils/chat/purify";
 import Favicon from "./Favicon";
-import { formatTokens } from "./utils";
+import { nFormatter } from "@/utils/numbers";
 
-// How long each screenshot shows when a site's replay plays.
 const REPLAY_FRAME_MS = 700;
 
 /**
- * Full history of one browser-use session: the result, then every step grouped by the site it
- * happened on. Each site has one screenshot that replays its steps - screenshots are deleted after
- * a few days, so the steps themselves never depend on them.
+ * Full history of one browser-use session, steps grouped by site. Screenshots are deleted after a
+ * few days, so the steps never depend on them.
  * @param {{traceId: string, onClose: () => void}} props
  */
 export default function TraceModal({ traceId, onClose }) {
@@ -206,7 +204,6 @@ function Collapsible({
 }
 
 /**
- * Every site the session visited, in order. Each shows its replay beside its steps.
  * @param {{steps: Object[]}} props
  */
 function SiteList({ steps }) {
@@ -368,7 +365,9 @@ function traceSubtitle(trace, t) {
       (seconds < 60
         ? t("browserUse.trace.seconds", { count: seconds })
         : t("browserUse.trace.minutes", { count: Math.round(seconds / 60) })),
-    t("browserUse.trace.tokens", { tokens: formatTokens(trace.tokens?.total) }),
+    t("browserUse.trace.tokens", {
+      tokens: nFormatter(trace.tokens?.total || 0),
+    }),
     trace.model,
   ]
     .filter(Boolean)
