@@ -8,10 +8,15 @@ import {
   StopCircle,
   XCircle,
   LinkSimple,
+  UserCircle,
+  Detective,
+  ClockCounterClockwise,
+  EyeSlash,
 } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import BrowserUse from "@/models/browserUse";
 import showToast from "@/utils/toast";
+import useUser from "@/hooks/useUser";
 import TraceModal, {
   Favicon,
   formatTokens,
@@ -22,8 +27,8 @@ function confirmAction(message) {
 }
 
 /**
- * Agent skill panel for Browser Use: the toggle and the history of every
- * session the agent ran. Sessions are anonymous, so there are no profiles to manage.
+ * Agent skill panel for Browser Use: the toggle, the history of every session the agent ran
+ * (every user's, unless DISABLE_VIEW_CHAT_HISTORY hides them) and the users' saved browser profiles.
  */
 export default function BrowserUseSkillPanel({
   title,
@@ -53,15 +58,53 @@ export default function BrowserUseSkillPanel({
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
           {description}
         </p>
-        <SessionHistory />
+        <Tabs />
       </div>
+    </div>
+  );
+}
+
+// Styled like the File System skill panel's tabs in the desktop app, so both platforms match.
+const TABS = [
+  { name: "sessions", Icon: ClockCounterClockwise },
+  { name: "profiles", Icon: UserCircle },
+];
+
+function Tabs() {
+  const { t } = useTranslation();
+  const { user } = useUser();
+  const [tab, setTab] = useState("sessions");
+  // Single-user mode (no signed-in user) has just the one profile - nothing to manage per user.
+  if (!user) return <SessionHistory />;
+  return (
+    <div className="flex flex-col gap-y-2">
+      <div role="tablist" className="flex border-none w-full">
+        {TABS.map(({ name, Icon }) => (
+          <button
+            key={name}
+            type="button"
+            role="tab"
+            aria-selected={tab === name}
+            onClick={() => setTab(name)}
+            className={`w-full hover:bg-sky-500/10 light:hover:bg-sky-400/10 rounded-t-lg border-none flex items-center justify-center gap-x-1.5 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              tab === name
+                ? "border-sky-400 text-sky-500"
+                : "border-transparent text-theme-text-secondary hover:text-theme-text-primary"
+            }`}
+          >
+            <Icon size={16} weight="bold" />
+            {t(`browserUse.tabs.${name}`)}
+          </button>
+        ))}
+      </div>
+      {tab === "sessions" ? <SessionHistory /> : <Profiles />}
     </div>
   );
 }
 
 function Section({ title, description, children, action = null }) {
   return (
-    <div className="flex flex-col gap-y-2 pt-4 border-t border-theme-sidebar-border">
+    <div className="flex flex-col gap-y-2 pt-2">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-theme-text-primary">{title}</p>
         {action}
@@ -70,6 +113,16 @@ function Section({ title, description, children, action = null }) {
         <p className="text-xs text-theme-text-secondary">{description}</p>
       )}
       {children}
+    </div>
+  );
+}
+
+/** A list with nothing in it yet: a centered icon and message in a rounded, shaded box. */
+function EmptyState({ Icon, text }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-y-2 px-4 py-8 rounded-lg bg-theme-bg-primary light:bg-theme-settings-input-bg text-center">
+      <Icon size={28} className="text-theme-text-secondary opacity-60" />
+      <p className="text-sm text-theme-text-secondary">{text}</p>
     </div>
   );
 }
@@ -84,9 +137,17 @@ const STATUS_ICONS = {
 function SessionHistory() {
   const { t } = useTranslation();
   const [traces, setTraces] = useState(null);
+  const [hidden, setHidden] = useState(false);
   const [openId, setOpenId] = useState(null);
 
-  const load = useCallback(() => BrowserUse.traces().then(setTraces), []);
+  const load = useCallback(
+    () =>
+      BrowserUse.traces().then((result) => {
+        setTraces(result.traces);
+        setHidden(result.hidden);
+      }),
+    []
+  );
   useEffect(() => {
     load();
   }, [load]);
@@ -124,11 +185,12 @@ function SessionHistory() {
         )
       }
     >
-      {traces?.length === 0 && (
-        <p className="text-xs text-theme-text-secondary">
-          {t("browserUse.history.empty")}
-        </p>
-      )}
+      {traces?.length === 0 &&
+        (hidden ? (
+          <EmptyState Icon={EyeSlash} text={t("browserUse.history.hidden")} />
+        ) : (
+          <EmptyState Icon={Globe} text={t("browserUse.history.empty")} />
+        ))}
       <div className="flex flex-col max-h-[360px] overflow-y-auto">
         {(traces || []).map((trace) => {
           const [Icon, color] = STATUS_ICONS[trace.status] || [
@@ -146,7 +208,7 @@ function SessionHistory() {
                 e.target === e.currentTarget &&
                 setOpenId(trace.id)
               }
-              className="group flex items-center gap-x-3 px-2 py-2 rounded-lg cursor-pointer hover:bg-theme-bg-primary"
+              className="group flex items-center gap-x-3 px-2 py-2 rounded-lg cursor-pointer hover:bg-theme-bg-primary light:hover:bg-theme-settings-input-bg"
             >
               <Icon
                 size={18}
@@ -158,6 +220,24 @@ function SessionHistory() {
                   {trace.task}
                 </p>
                 <div className="flex items-center gap-x-2 text-[11px] text-theme-text-secondary">
+                  {trace.userId !== null && trace.userId !== undefined && (
+                    <span className="flex items-center gap-x-1 flex-shrink-0">
+                      <UserCircle size={12} />
+                      {trace.username ||
+                        t("browserUse.profiles.deletedUser", {
+                          id: trace.userId,
+                        })}
+                    </span>
+                  )}
+                  {trace.resume?.profile?.ephemeral && (
+                    <span
+                      className="flex items-center flex-shrink-0"
+                      title={t("browserUse.history.incognito")}
+                      aria-label={t("browserUse.history.incognito")}
+                    >
+                      <Detective size={12} />
+                    </span>
+                  )}
                   <span>{new Date(trace.startedAt).toLocaleString()}</span>
                   {trace.resumedFrom && (
                     <span
@@ -172,7 +252,12 @@ function SessionHistory() {
                   )}
                   <span className="flex items-center gap-x-1">
                     {(trace.sites || []).slice(0, 5).map((site) => (
-                      <Favicon key={site.host} src={site.favicon} size={12} />
+                      <Favicon
+                        key={site.host}
+                        src={site.favicon}
+                        host={site.host}
+                        size={12}
+                      />
                     ))}
                   </span>
                   <span>
@@ -199,6 +284,97 @@ function SessionHistory() {
       {openId && (
         <TraceModal traceId={openId} onClose={() => setOpenId(null)} />
       )}
+    </Section>
+  );
+}
+
+function formatBytes(bytes = 0) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  if (bytes < 1024 * 1024 * 1024)
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  return `${(bytes / 1024 / 1024 / 1024).toFixed(1)} GB`;
+}
+
+/**
+ * Every saved browser profile (one per user, or the one shared profile in single-user mode).
+ * Deleting one wipes its sign-ins; the user's next session starts a new, empty profile.
+ */
+function Profiles() {
+  const { t } = useTranslation();
+  const [profiles, setProfiles] = useState(null);
+
+  const load = useCallback(() => BrowserUse.profiles().then(setProfiles), []);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const remove = async (profile) => {
+    if (!confirmAction(t("browserUse.profiles.deleteConfirm"))) return;
+    if (!(await BrowserUse.deleteProfile(profile.key)))
+      showToast(t("browserUse.profiles.deleteFailed"), "error", {
+        clear: true,
+      });
+    load();
+  };
+
+  const ownerOf = (profile) => {
+    if (profile.userId === null) return t("browserUse.profiles.shared");
+    return (
+      profile.username ||
+      t("browserUse.profiles.deletedUser", { id: profile.userId })
+    );
+  };
+
+  return (
+    <Section
+      title={t("browserUse.profiles.title")}
+      description={t("browserUse.profiles.description")}
+    >
+      {profiles?.length === 0 && (
+        <EmptyState Icon={UserCircle} text={t("browserUse.profiles.empty")} />
+      )}
+      <div className="flex flex-col max-h-[360px] overflow-y-auto">
+        {(profiles || []).map((profile) => (
+          <div
+            key={profile.key}
+            className="group flex items-center gap-x-3 px-2 py-2 rounded-lg hover:bg-theme-bg-primary light:hover:bg-theme-settings-input-bg"
+          >
+            <UserCircle
+              size={18}
+              className="text-theme-text-secondary flex-shrink-0"
+            />
+            <div className="flex flex-col min-w-0 flex-1">
+              <p className="text-sm text-theme-text-primary truncate">
+                {ownerOf(profile)}
+              </p>
+              <div className="flex items-center gap-x-2 text-[11px] text-theme-text-secondary">
+                <span>{formatBytes(profile.size)}</span>
+                {profile.lastUsedAt && (
+                  <span>
+                    {t("browserUse.profiles.lastUsed", {
+                      date: new Date(profile.lastUsedAt).toLocaleString(),
+                    })}
+                  </span>
+                )}
+                {profile.inUse && (
+                  <span className="text-sky-400">
+                    {t("browserUse.profiles.inUse")}
+                  </span>
+                )}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => remove(profile)}
+              aria-label={t("browserUse.profiles.delete")}
+              title={t("browserUse.profiles.delete")}
+              className="border-none opacity-0 group-hover:opacity-100 focus:opacity-100 text-theme-text-secondary hover:text-red-400 flex-shrink-0"
+            >
+              <Trash size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
     </Section>
   );
 }

@@ -1,22 +1,21 @@
 const { Chromium } = require("./chromium");
+const { BrowserProfiles } = require("./profiles");
 const { BrowserSession } = require("./session");
 
 const FRAME_INTERVAL_MS = 250;
 // Sessions are closed by the agent when it finishes; this only catches ones it never got to close.
 const IDLE_TIMEOUT_MS = 30 * 60_000;
-// Every session is a fresh, signed-out browser - nothing is kept between sessions.
-const ANONYMOUS_PROFILE = { id: null, name: "Anonymous", ephemeral: true };
-
 /**
- * The browser side of the browser-use agent skill, running in the server process: a headless
- * Chromium shared by all sessions, one isolated browser context per session.
+ * The browser side of the browser-use agent skill, running in the server process. Each person has
+ * their own headless Chromium on their saved profile, and a separate one for incognito sessions
+ * (see chromium.js and profiles.js), so no one's browsing touches anyone else's.
  *
  * It answers the same requests the desktop app's Electron driver does (see bridge.js), and adds
  * what the chat card needs to show the session and hand control to a person: live frames
  * (watch) and their clicks and keys (input).
  */
 class BrowserDriver {
-  /** @type {Map<string, {session: BrowserSession, touched: number, watchers: Set<Function>, stopFrames: Function|null}>} */
+  /** @type {Map<string, {session: BrowserSession, profile: string, touched: number, watchers: Set<Function>, stopFrames: Function|null}>} */
   static #sessions = new Map();
   static #reaper = null;
   /** Cards that asked to watch before their session started: sessionId -> listeners */
@@ -27,13 +26,11 @@ class BrowserDriver {
   }
 
   /**
-   * @param {string} action - start | act | close | hide | attention | profiles
+   * @param {string} action - start | act | close | hide | attention
    * @param {Object} params
    */
   static async request(action, { sessionId, ...params } = {}) {
     switch (action) {
-      case "profiles":
-        return [ANONYMOUS_PROFILE];
       case "start":
         return await BrowserDriver.#start(sessionId, params);
       case "act":
@@ -54,23 +51,34 @@ class BrowserDriver {
     }
   }
 
-  static async #start(sessionId, { maxChars, startUrl, terms }) {
+  /**
+   * @param {string} sessionId
+   * @param {{profile: string, maxChars: number, startUrl: string|null, terms: string[]}} params
+   *   profile - the profile key the plugin chose for the user (see profiles.js)
+   */
+  static async #start(sessionId, { profile, maxChars, startUrl, terms }) {
+    const parsed = BrowserProfiles.parse(profile);
+    if (!parsed) throw new Error(`"${profile}" is not a browser profile.`);
     BrowserDriver.close(sessionId);
-    const connection = await Chromium.acquire();
+    const connection = await Chromium.acquire(profile, {
+      profileDir: parsed.incognito ? null : BrowserProfiles.dirFor(profile),
+    });
     let session;
     try {
       session = await BrowserSession.create({
         id: sessionId,
         connection,
+        isolated: parsed.incognito,
         maxChars,
         terms,
       });
     } catch (error) {
-      Chromium.release();
+      Chromium.release(profile);
       throw error;
     }
     const entry = {
       session,
+      profile,
       touched: Date.now(),
       watchers: new Set(),
       stopFrames: null,
@@ -80,11 +88,18 @@ class BrowserDriver {
       BrowserDriver.#addWatcher(entry, listener);
     BrowserDriver.#earlyWatchers.delete(sessionId);
     BrowserDriver.#startReaper();
-    BrowserDriver.log(`Started session ${sessionId}`);
+    BrowserDriver.log(`Started session ${sessionId} on ${profile}`);
     const result = startUrl
       ? await session.run("navigate", { url: startUrl })
       : null;
-    return { profile: ANONYMOUS_PROFILE, result };
+    return {
+      profile: {
+        id: profile,
+        name: parsed.incognito ? "Incognito" : "Saved profile",
+        ephemeral: parsed.incognito,
+      },
+      result,
+    };
   }
 
   static #get(sessionId) {
@@ -101,8 +116,46 @@ class BrowserDriver {
     entry.stopFrames?.();
     entry.watchers.clear();
     entry.session.close();
-    Chromium.release();
+    Chromium.release(entry.profile);
     BrowserDriver.log(`Closed session ${sessionId}`);
+  }
+
+  /** @param {string} key - a saved profile's key */
+  static profileInUse(key) {
+    return Chromium.isRunning(key);
+  }
+
+  /**
+   * Wipe a saved profile: end its sessions, shut its browser down and delete its folder. The
+   * user's next session starts a new, empty profile.
+   * @param {string} key
+   */
+  static async deleteProfile(key) {
+    if (!BrowserProfiles.dirFor(key)) return false;
+    for (const [id, entry] of BrowserDriver.#sessions)
+      if (entry.profile === key) BrowserDriver.close(id);
+    await Chromium.shutdown(key);
+    BrowserProfiles.removeDir(key);
+    BrowserDriver.log(`Deleted browser profile ${key}`);
+    return true;
+  }
+
+  /**
+   * A user was deleted - their saved profile goes with them, and their incognito browser is closed.
+   * @param {number} userId
+   */
+  static async deleteUserProfile(userId) {
+    const key = BrowserProfiles.keyFor(userId);
+    const incognito = BrowserProfiles.incognitoKeyFor(key);
+    for (const [id, entry] of BrowserDriver.#sessions)
+      if (entry.profile === incognito) BrowserDriver.close(id);
+    await Chromium.shutdown(incognito);
+    return await BrowserDriver.deleteProfile(key);
+  }
+
+  /** Multi-user mode was turned on - nobody may use the single-user profile any more. */
+  static async deleteSingleUserProfile() {
+    return await BrowserDriver.deleteUserProfile(null);
   }
 
   /**

@@ -354,7 +354,7 @@ const TRANSLATIONS = {
       browserUse: {
         title: "Browser Use",
         description:
-          "Let the agent use a real web browser to get things done on websites - searching, clicking, filling in forms and comparing results. The browser runs on this AnythingLLM server, starts signed out of every site and is thrown away when the session ends. Sessions stream into the chat so you can watch, stop or take control at any time. Downloads are always blocked. Only available in the chat window.",
+          "Let the agent use a real web browser to get things done on websites - searching, clicking, filling in forms and comparing results. The browser runs on this AnythingLLM server. Each user has their own saved browser profile, so sites they sign in to stay signed in for their later sessions; ask for incognito browsing to use a fresh browser that keeps nothing. Sessions stream into the chat so you can watch, stop or take control at any time. Downloads are always blocked. Only available in the chat window.",
       },
 
       rag: {
@@ -1874,6 +1874,8 @@ const TRANSLATIONS = {
       replySent: "Sent - waiting for the agent…",
       viewSession: "View session",
       usage: "{{steps}} steps · {{tokens}} tokens",
+      metricsAlways: "Click to always show usage",
+      metricsOnHover: "Click to only show usage when hovering",
       moreSites: "+{{count}}",
     },
     status: {
@@ -1892,6 +1894,11 @@ const TRANSLATIONS = {
       noSite: "Browser",
       tokens: "{{tokens}} tokens",
       sent: "Sent to the site:",
+      showMore: "Expand to see more",
+      showLess: "Collapse",
+      showAllSteps: "Expand to see all {{count}} steps",
+      replay: "Replay the steps on this site",
+      stop: "Stop the replay",
       seconds: "{{count}}s",
       minutes: "{{count}}m",
     },
@@ -1899,13 +1906,34 @@ const TRANSLATIONS = {
       title: "Session history",
       description:
         "Every browser session the agent ran, with the sites it visited and each step it took.",
-      empty: "No browser sessions yet.",
+      empty: "No sessions yet",
       clear: "Clear history",
       clearConfirm: "Delete the history of every browser session?",
       delete: "Delete session",
       deleteConfirm: "Delete the history of this browser session?",
       deleteFailed: "Could not delete the session history.",
       clearFailed: "Could not clear the session history.",
+      hidden:
+        "Session history is hidden because viewing chat history is disabled on this instance.",
+      incognito: "Incognito session",
+    },
+    tabs: {
+      sessions: "Sessions",
+      profiles: "Profiles",
+    },
+    profiles: {
+      title: "Saved browser profiles",
+      description:
+        "Each user's browser keeps its sign-ins and cookies here between sessions. Deleting a profile signs that user out of every site; their next session starts a new, empty one.",
+      empty: "No saved profiles yet",
+      shared: "This instance's profile",
+      deletedUser: "Deleted user (#{{id}})",
+      lastUsed: "Last used {{date}}",
+      inUse: "Browser open",
+      delete: "Delete profile",
+      deleteConfirm:
+        "Delete this browser profile? The user will be signed out of every site, and any session running on it will end.",
+      deleteFailed: "Could not delete the browser profile.",
     },
     resume: {
       continued: "Continued from a saved session",

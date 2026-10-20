@@ -75,6 +75,9 @@ const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { isReservedCommand } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
+const {
+  BrowserDriver,
+} = require("../utils/agents/aibitat/plugins/browser-use/driver");
 const { Memory } = require("../models/memory");
 const { dummyHashCompare } = require("../utils/helpers/dummyHashCompare");
 
@@ -695,6 +698,7 @@ function systemEndpoints(app) {
         await MobileDevice.migrateDevicesToMultiUser(user.id);
         await SlashCommandPresets.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
+        await BrowserDriver.deleteSingleUserProfile().catch(() => {});
         await updateENV(
           {
             JWTSecret: process.env.JWT_SECRET || v4(),

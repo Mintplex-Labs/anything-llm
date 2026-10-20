@@ -59,19 +59,15 @@ function fakeAibitat(provider) {
 }
 
 /** Bridge stub: `start` opens on its startUrl, `act` runs through `onAct`. */
-function stubBridge({ onAct = () => null, startError = null } = {}) {
+function stubBridge({ onAct = () => null } = {}) {
   const requests = [];
   jest
     .spyOn(BrowserBridge, "request")
     .mockImplementation(async (action, params) => {
       requests.push({ action, ...params });
       if (action === "start") {
-        if (startError && params.profile) throw new Error(startError);
         return {
-          profile: {
-            name: params.profile ? "Work" : "Default",
-            id: params.profile || "default",
-          },
+          profile: { name: "Saved profile", id: params.profile },
           result: params.startUrl ? page(params.startUrl, "Cart") : null,
         };
       }
@@ -108,7 +104,7 @@ describe("BrowserAgent resume points", () => {
     const agent = new BrowserAgent({
       aibitat: fakeAibitat(provider),
       task: "Add AirPods to my Amazon cart",
-      profile: null,
+      profile: "default",
       startUrl: CART,
       threadSlug: "t1",
     });
@@ -120,7 +116,7 @@ describe("BrowserAgent resume points", () => {
     expect(trace.resume).toMatchObject({
       url: CART,
       title: "Cart",
-      profile: { name: "Default", id: "default" },
+      profile: { name: "Saved profile", id: "default" },
       notes: ["Cart has AirPods"],
     });
     expect(trace.resume.summary).toMatch(/Removed the AirPods/);
@@ -157,7 +153,7 @@ describe("BrowserAgent resume points", () => {
       resume: {
         url: CART,
         title: "Amazon.com Shopping Cart",
-        profile: { name: "Work", id: "work-id" },
+        profile: { name: "Saved profile", id: "user-9" },
         summary: "Added AirPods Pro 2 to the cart.",
         notes: ["AirPods Pro 2 - $189"],
         progress: [],
@@ -172,7 +168,7 @@ describe("BrowserAgent resume points", () => {
       },
     };
 
-    it("reopens the saved page on the saved profile, with the earlier context", async () => {
+    it("reopens the saved page on the profile it was given (never the trace's), with the earlier context", async () => {
       const requests = stubBridge({
         onAct: ({ args }) => page(args.url, "AirPods Pro 2"),
       });
@@ -188,7 +184,7 @@ describe("BrowserAgent resume points", () => {
       const agent = new BrowserAgent({
         aibitat: fakeAibitat(provider),
         task: "Remove the AirPods from my cart",
-        profile: null,
+        profile: "user-3",
         // Same site as the saved page - the saved page wins.
         startUrl: "https://www.amazon.com/",
         resumeFrom: earlier,
@@ -197,7 +193,7 @@ describe("BrowserAgent resume points", () => {
       await agent.run();
 
       const start = requests.find((r) => r.action === "start");
-      expect(start).toMatchObject({ profile: "work-id", startUrl: CART });
+      expect(start).toMatchObject({ profile: "user-3", startUrl: CART });
       expect(start.resumeFrom).toBeUndefined();
       const intro = provider.seen[0][1].content;
       expect(intro).toMatch(/Continuing from a saved browser session/);
@@ -213,7 +209,7 @@ describe("BrowserAgent resume points", () => {
       expect(trace).toMatchObject({
         resumedFrom: earlier.id,
         resumedFromTask: earlier.task,
-        profile: "Work",
+        profile: "Saved profile",
       });
       expect(trace.steps[0].action).toBe("resume");
       expect(agent.snapshot.resumedFrom).toEqual({
@@ -222,24 +218,21 @@ describe("BrowserAgent resume points", () => {
       });
     });
 
-    it("opens an explicit start_url on another site, and falls back to Default when the profile is gone", async () => {
-      const requests = stubBridge({
-        startError: 'There is no browser profile named "work-id".',
-      });
+    it("opens an explicit start_url on another site", async () => {
+      const requests = stubBridge();
       const agent = new BrowserAgent({
         aibitat: fakeAibitat(
           fakeProvider([{ id: "1", name: "done", arguments: {} }])
         ),
         task: "Look up AirPods reviews",
-        profile: null,
+        profile: "default",
         startUrl: "https://www.rtings.com/",
         resumeFrom: earlier,
       });
       await agent.run();
       const starts = requests.filter((r) => r.action === "start");
-      expect(starts.map((s) => s.profile)).toEqual(["work-id", null]);
-      expect(starts[1].startUrl).toBe("https://www.rtings.com/");
-      expect(BrowserTraces.get(agent.id).profile).toBe("Default");
+      expect(starts.map((s) => s.profile)).toEqual(["default"]);
+      expect(starts[0].startUrl).toBe("https://www.rtings.com/");
     });
 
     it("says it started fresh when nothing matched", async () => {

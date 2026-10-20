@@ -1,5 +1,5 @@
 const { BrowserDriver } = require("./driver");
-const { findChromium } = require("./driver/chromium");
+const { Chromium } = require("./driver/chromium");
 
 /**
  * The agent loop's way to the browser. In the desktop app this is a channel to the Electron main
@@ -7,9 +7,12 @@ const { findChromium } = require("./driver/chromium");
  * with the same timeout, so a hung page never stalls the agent forever.
  */
 class BrowserBridge {
-  /** Browser use needs a Chromium - the Docker image has one for the collector's web scraper. */
+  /**
+   * Browser use needs a Chromium it can run sandboxed - the Docker image has one for the
+   * collector's web scraper.
+   */
   static get available() {
-    return !!findChromium();
+    return Chromium.available;
   }
 
   /**

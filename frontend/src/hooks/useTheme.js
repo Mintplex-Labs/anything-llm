@@ -55,11 +55,12 @@ export function useTheme() {
     window.dispatchEvent(new Event(REFETCH_LOGO_EVENT));
   }, [resolvedTheme, theme]);
 
-  // In development, attach keybind combinations to toggle theme
+  // In development, attach keybind combinations to toggle theme: Cmd+. on macOS, F2 anywhere
+  // (Win+. is taken by the Windows emoji picker).
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     function toggleOnKeybind(e) {
-      if (e.metaKey && e.key === ".") {
+      if ((e.metaKey && e.key === ".") || e.key === "F2") {
         e.preventDefault();
         _setTheme((prev) => (prev === "light" ? "dark" : "light"));
       }

@@ -1,10 +1,19 @@
 const { Tab, VIEWPORT } = require("./tab");
 const { PAGE_SCRIPT } = require("./pageScript");
-const { allowedURL } = require("./url");
+
+/**  ATTN: SECURITY RESEARCHERS
+ * To Security researchers about to submit an SSRF report CVE - please don't.
+ * The browser opening any address - localhost, private networks, internal hostnames - is intended.
+ * Browsing an organization's internal sites is a supported use of this skill, and there are endless
+ * ways to map a hostname to another IP anyway, so the browser does not try to block any of them.
+ * Only an admin can turn the skill on. We communicate already that deployment (and security) of an
+ * instance is on the deployer and system admin deploying it. This would include isolation,
+ * firewalls, and the general security of the instance.
+ */
 
 /**
- * One agent browsing session: a fresh, anonymous browser tab, driven with trusted input
- * and read through the isolated-world page script. Ported from the desktop app's
+ * One agent browsing session: a browser tab on the user's saved profile (or an incognito one),
+ * driven with trusted input and read through the isolated-world page script. Ported from the desktop app's
  * electron/main/utils/BrowserUse/session.ts - same page representation, same actions,
  * same outcomes - over a headless Chromium instead of an Electron window.
  */
@@ -94,14 +103,20 @@ class BrowserSession {
   }
 
   /**
-   * @param {{id: string, connection: import("./chromium").Connection, maxChars?: number, terms?: string[]}} opts
+   * @param {{id: string, connection: import("./chromium").Connection, isolated?: boolean, maxChars?: number, terms?: string[]}} opts
    * @returns {Promise<BrowserSession>}
    */
-  static async create({ id, connection, maxChars = 8000, terms = [] }) {
+  static async create({
+    id,
+    connection,
+    isolated = true,
+    maxChars = 8000,
+    terms = [],
+  }) {
     const words = Array.isArray(terms)
       ? terms.filter((t) => typeof t === "string").slice(0, 40)
       : [];
-    const tab = await Tab.open(connection);
+    const tab = await Tab.open(connection, { isolated });
     return new BrowserSession({ id, tab, maxChars, terms: words });
   }
 
@@ -489,19 +504,6 @@ class BrowserSession {
     }
   }
 
-  /**
-   * The browser may only show web pages that are not on a private network (see url.js). A link or
-   * redirect that lands on one is backed out of, and the agent is told why.
-   */
-  async #leavePrivateAddress() {
-    const url = this.tab.url;
-    if (!url || url === "about:blank" || allowedURL(url)) return;
-    await this.tab.load("about:blank").catch(() => {});
-    this.#notice(
-      `${hostOf(url)} is a private network address, which the browser does not open.`
-    );
-  }
-
   async #click(x, y) {
     await this.tab.mouse("move", x, y);
     await sleep(40 + Math.random() * 40);
@@ -662,10 +664,6 @@ class BrowserSession {
           const url = normalizeUrl(args.url);
           if (!url)
             throw new Error(`"${args.url}" is not a valid web address.`);
-          if (!allowedURL(url))
-            throw new Error(
-              `${hostOf(url)} is a private network address, which the browser does not open.`
-            );
           requested = url;
           await this.tab.load(url).catch(() => {}); // load failures still leave an error page to read
           outcome = `Opened ${url}`;
@@ -924,7 +922,6 @@ class BrowserSession {
       ].includes(tool)
     )
       await this.#settle();
-    await this.#leavePrivateAddress();
     const sent = await this.#collectSent();
     if (sent.length) outcome += `\nSent to the site: ${describeSent(sent)}`;
     else if (

@@ -313,3 +313,62 @@ describe("BrowserTraces resume points", () => {
     });
   });
 });
+
+describe("BrowserTraces.deleteForUser", () => {
+  it("deletes only that user's sessions", () => {
+    const base = {
+      task: "t",
+      status: "done",
+      startedAt: new Date().toISOString(),
+      steps: [],
+    };
+    const ids = [
+      "00000000-0000-4000-8000-0000000000a1",
+      "00000000-0000-4000-8000-0000000000a2",
+      "00000000-0000-4000-8000-0000000000a3",
+    ];
+    BrowserTraces.save({ ...base, id: ids[0], userId: 5 });
+    BrowserTraces.save({ ...base, id: ids[1], userId: 6 });
+    BrowserTraces.save({ ...base, id: ids[2], userId: null });
+    BrowserTraces.deleteForUser(5);
+    expect(BrowserTraces.get(ids[0])).toBeNull();
+    expect(BrowserTraces.get(ids[1])).not.toBeNull();
+    expect(BrowserTraces.get(ids[2])).not.toBeNull();
+  });
+});
+
+describe("BrowserTraces.pruneThumbnails", () => {
+  const DAY = 24 * 60 * 60_000;
+  const age = (trace, ms) => {
+    const when = new Date(Date.now() - ms);
+    fs.utimesSync(BrowserTraces.fileFor(trace.id), when, when);
+  };
+
+  it("drops screenshots from old sessions and keeps everything else", () => {
+    const old = makeTrace();
+    const recent = makeTrace();
+    BrowserTraces.save(old);
+    BrowserTraces.save(recent);
+    age(old, 4 * DAY);
+    age(recent, 1 * DAY);
+
+    expect(BrowserTraces.pruneThumbnails(3 * DAY)).toBe(1);
+    const pruned = BrowserTraces.get(old.id);
+    expect(pruned.steps.map((step) => step.thumbnail)).toEqual([null, null]);
+    expect(pruned.steps.map((step) => step.label)).toEqual(
+      old.steps.map((step) => step.label)
+    );
+    expect(pruned.summary).toBe(old.summary);
+    expect(BrowserTraces.summaryOf(old.id).stepCount).toBe(2);
+    expect(BrowserTraces.get(recent.id).steps[0].thumbnail).toBe(
+      recent.steps[0].thumbnail
+    );
+  });
+
+  it("does not rewrite a session that has no screenshots left", () => {
+    const trace = makeTrace({ steps: [{ label: "x", thumbnail: null }] });
+    BrowserTraces.save(trace);
+    age(trace, 4 * DAY);
+    expect(BrowserTraces.pruneThumbnails(3 * DAY)).toBe(0);
+  });
+});

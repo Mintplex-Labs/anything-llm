@@ -2,12 +2,13 @@ const { safeJsonParse } = require("../../../../http");
 const { BrowserAgent } = require("./agent");
 const { BrowserBridge } = require("./bridge");
 const { BrowserDriver } = require("./driver");
+const { BrowserProfiles } = require("./driver/profiles");
 const { BrowserTraces } = require("./traces");
 
 /**
  * Browser Use - hands a task to a browser sub-agent that operates a headless Chromium on the
- * server and streams the session into the chat card. Every session is a fresh, signed-out
- * browser that is thrown away when the session ends (see driver/).
+ * server and streams the session into the chat card. Sessions run on the user's own saved browser
+ * profile, so their sign-ins carry over, or incognito in a throwaway browser (see driver/).
  *
  * Only offered in the main chat UI: it needs a live websocket for the session card, the stop
  * button, help requests and a person who can take control in the card. API, Telegram and
@@ -27,7 +28,7 @@ const browserUse = {
           super: aibitat,
           name: this.name,
           description:
-            "A real web browser for going through websites: anything needing clicks, scrolling, forms, filters or comparing several pages (shops, travel sites, web apps, long lists). It starts signed out of every site; if a site needs the user to sign in, the browser agent asks them to do it in the session card. Not for reading one URL (use web-scraping) or looking things up (use web-browsing). Sessions are saved: pass resume for follow-ups.",
+            "A real web browser for going through websites: anything needing clicks, scrolling, forms, filters or comparing several pages (shops, travel sites, web apps, long lists). It uses the user's own browser, so sites they signed in to before stay signed in; if a site needs them to sign in, the browser agent asks them to do it in the session card. Set incognito for private browsing. Not for reading one URL (use web-scraping) or looking things up (use web-browsing). Sessions are saved: pass resume for follow-ups.",
           examples: [
             {
               prompt: "Find me some cheap flights to SFO this week",
@@ -70,13 +71,26 @@ const browserUse = {
                 description:
                   'Continue a saved session: "last" or words naming it (e.g. "amazon cart"). Use for any follow-up on what the browser did.',
               },
+              incognito: {
+                type: "boolean",
+                description:
+                  "true only when the user asks for private, incognito or anonymous browsing: a signed-out browser that keeps nothing.",
+              },
             },
             required: ["task"],
             additionalProperties: false,
           },
-          handler: async function ({ task, start_url = null, resume = null }) {
+          handler: async function ({
+            task,
+            start_url = null,
+            resume = null,
+            incognito = null,
+          }) {
             if (!task) return "No task was given to the browser agent.";
             const aibitat = this.super;
+            const owner = await profileOwner(aibitat);
+            if (!owner)
+              return "The browser agent needs a signed-in user to run.";
             // Web tool calls later in this turn are the model's own follow-up, never a misroute.
             ranInTurn.set(aibitat, userTurn(aibitat));
             const { path, workspaceSlug, threadSlug } =
@@ -92,10 +106,18 @@ const browserUse = {
                   userId: aibitat.handlerProps?.invocation?.user_id ?? null,
                 })
               : null;
+            // Never taken from the trace: the profile is always this user's own. A follow-up stays
+            // incognito (or not) like the session it continues, unless the model said otherwise.
+            const useIncognito =
+              incognito === null || incognito === undefined
+                ? !!found?.resume?.profile?.ephemeral
+                : incognito === true || incognito === "true";
             const agent = new BrowserAgent({
               aibitat,
               task,
-              profile: null,
+              profile: useIncognito
+                ? BrowserProfiles.incognitoKeyFor(owner)
+                : owner,
               startUrl: start_url,
               attentionPath: path,
               threadSlug,
@@ -288,6 +310,19 @@ function isMainChatSession(aibitat) {
 }
 
 /**
+ * Whose saved browser profile the session uses: the user's own in multi-user mode, the one shared
+ * profile in single-user mode.
+ * @returns {Promise<string|null>} profile key, or null when there is no user to tie it to
+ */
+async function profileOwner(aibitat) {
+  const { SystemSettings } = require("../../../../../models/systemSettings");
+  const userId = aibitat.handlerProps?.invocation?.user_id ?? null;
+  if (!(await SystemSettings.isMultiUserMode()))
+    return BrowserProfiles.keyFor(null);
+  return userId === null ? null : BrowserProfiles.keyFor(userId);
+}
+
+/**
  * The chat that started the session: its in-app path (so a help notification can bring the user
  * back) and its workspace and thread (so a follow-up resumes this chat's sessions first).
  * @returns {Promise<{path: string|null, workspaceSlug: string|null, threadSlug: string|null}>}
@@ -308,4 +343,14 @@ async function chatContext(aibitat) {
   };
 }
 
-module.exports = { browserUse };
+/**
+ * A user was deleted: their saved browser profile, their incognito browser and their session
+ * history all go with them.
+ * @param {number} userId
+ */
+async function forgetBrowserUser(userId) {
+  await BrowserDriver.deleteUserProfile(userId);
+  BrowserTraces.deleteForUser(userId);
+}
+
+module.exports = { browserUse, forgetBrowserUser };

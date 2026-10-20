@@ -6,13 +6,17 @@ import { baseHeaders } from "@/utils/request";
  * the chat's agent websocket (stop, reply, the live view and taking control).
  */
 const BrowserUse = {
+  /**
+   * Every user's sessions, for admins. `hidden` when DISABLE_VIEW_CHAT_HISTORY hides them.
+   * @returns {Promise<{traces: Object[], hidden: boolean}>}
+   */
   traces: async function () {
     return await fetch(`${API_BASE}/browser-use/traces`, {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
-      .then((res) => res.traces || [])
-      .catch(() => []);
+      .then((res) => ({ traces: res.traces || [], hidden: !!res.hidden }))
+      .catch(() => ({ traces: [], hidden: false }));
   },
 
   trace: async function (id) {
@@ -38,6 +42,26 @@ const BrowserUse = {
       method: "DELETE",
       headers: baseHeaders(),
     })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
+
+  /** Saved browser profiles (one per user, or one in single-user mode). */
+  profiles: async function () {
+    return await fetch(`${API_BASE}/browser-use/profiles`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res.profiles || [])
+      .catch(() => []);
+  },
+
+  /** Wipe a saved profile's sign-ins and cookies. */
+  deleteProfile: async function (key) {
+    return await fetch(
+      `${API_BASE}/browser-use/profiles/${encodeURIComponent(key)}`,
+      { method: "DELETE", headers: baseHeaders() }
+    )
       .then((res) => res.ok)
       .catch(() => false);
   },

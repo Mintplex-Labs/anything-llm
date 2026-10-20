@@ -23,6 +23,11 @@ jest.mock(
   () => ({ BrowserBridge: { available: true, request: jest.fn() } })
 );
 
+// Single-user mode: every session uses the one saved profile.
+jest.mock("../../../../../../models/systemSettings", () => ({
+  SystemSettings: { isMultiUserMode: async () => false },
+}));
+
 const {
   browserUse,
 } = require("../../../../../../utils/agents/aibitat/plugins/browser-use/index.js");

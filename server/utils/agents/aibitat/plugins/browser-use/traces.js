@@ -8,6 +8,9 @@ const tracesPath =
     : path.resolve(process.env.STORAGE_DIR, `browser-use/traces`);
 
 const MAX_TRACES = 200;
+// Screenshots are only there to review a recent session, and they are nearly all of a trace's size.
+// A background job drops them once a session is this old (see pruneThumbnails).
+const THUMBNAIL_TTL_MS = 3 * 24 * 60 * 60_000;
 // Steps carry base64 thumbnails, so a running session writes its trace at most this often (see saveSoon).
 const SAVE_THROTTLE_MS = 2_000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -245,6 +248,42 @@ const BrowserTraces = {
       if (best) return best;
     }
     return null;
+  },
+
+  /**
+   * Delete every session a user ran - their history goes with them when the user is deleted.
+   * @param {number} userId
+   */
+  deleteForUser(userId) {
+    if (userId === null || userId === undefined) return;
+    this.list()
+      .filter((trace) => trace.userId === Number(userId))
+      .forEach((trace) => this.delete(trace.id));
+  },
+
+  /**
+   * Drop the screenshots from every session last written more than `maxAgeMs` ago. The steps,
+   * sites and result are kept. Run by the cleanup-browser-traces background job.
+   * @param {number} [maxAgeMs]
+   * @returns {number} how many traces had screenshots removed
+   */
+  pruneThumbnails(maxAgeMs = THUMBNAIL_TTL_MS) {
+    if (!fs.existsSync(tracesPath)) return 0;
+    const cutoff = Date.now() - maxAgeMs;
+    let pruned = 0;
+    for (const name of fs.readdirSync(tracesPath)) {
+      if (!name.endsWith(".json") || name.endsWith(".meta.json")) continue;
+      try {
+        // Checked before parsing: a session still being written is never old enough.
+        if (fs.statSync(path.join(tracesPath, name)).mtimeMs > cutoff) continue;
+        const trace = this.get(name.replace(/\.json$/, ""));
+        if (!trace?.steps?.some((step) => step.thumbnail)) continue;
+        trace.steps = trace.steps.map((step) => ({ ...step, thumbnail: null }));
+        this.save(trace);
+        pruned++;
+      } catch {}
+    }
+    return pruned;
   },
 
   /** Keep the history from growing forever. */

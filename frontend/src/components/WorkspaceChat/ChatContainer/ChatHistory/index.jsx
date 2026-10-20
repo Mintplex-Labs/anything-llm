@@ -8,6 +8,7 @@ import FileDownloadCard from "./FileDownloadCard";
 import ImageGenerationPending from "./ImageGenerationPending";
 import ScheduledJobCreatedCard from "./ScheduledJobCreatedCard";
 import BrowserUseSession from "./BrowserUseSession";
+import BrowserUseSessionDemo from "./BrowserUseSession/Demo";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -190,6 +191,7 @@ export default forwardRef(function (
             {compiledHistory.map((item, index) =>
               Array.isArray(item) ? renderStatusResponse(item, index) : item
             )}
+            <BrowserUseSessionDemo />
           </div>
           {showing && (
             <ManageWorkspace

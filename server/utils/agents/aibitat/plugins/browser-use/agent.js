@@ -105,7 +105,7 @@ class BrowserAgent {
    * @param {Object} opts
    * @param {import("../../index.js")} opts.aibitat - parent AIbitat instance
    * @param {string} opts.task
-   * @param {string|null} opts.profile
+   * @param {string} opts.profile - browser profile key, chosen for the user by the plugin
    * @param {string|null} opts.startUrl
    * @param {string|null} opts.attentionPath - in-app path to the chat for notifications
    * @param {string|null} [opts.threadSlug] - thread the chat runs in (null for the default chat)
@@ -131,10 +131,7 @@ class BrowserAgent {
     this.resumeFrom = resumeFrom?.resume ? resumeFrom : null;
     this.resumeQuery = resumeQuery || null;
     const resume = this.resumeFrom?.resume || null;
-    // An explicit profile wins; a resumed session keeps its own (by id, so a rename does not matter).
-    this.explicitProfile = !!profile;
-    this.profileRequest =
-      profile || resume?.profile?.id || resume?.profile?.name || null;
+    this.profileRequest = profile;
     // A resumed run reopens the page the earlier session ended on - unless the model asked for
     // another site. Windows are never kept between runs; the profile keeps the cookies.
     const savedUrl = resume?.url || resume?.pages?.[0]?.url || null;
@@ -196,7 +193,7 @@ class BrowserAgent {
     this.trace = {
       id: this.id,
       task,
-      profile: profile || resume?.profile?.name || "Default",
+      profile: profile,
       status: "running",
       summary: null,
       workspace: aibitat.handlerProps?.invocation?.workspace
@@ -316,21 +313,7 @@ class BrowserAgent {
   }
 
   async #startBrowser() {
-    let started;
-    try {
-      started = await this.#requestStart(this.profileRequest);
-    } catch (error) {
-      // The resumed session's profile may have been deleted since - carry on in Default.
-      if (
-        this.stopReason ||
-        this.explicitProfile ||
-        !this.resumeFrom ||
-        !/no browser profile/i.test(error.message)
-      )
-        throw error;
-      this.log(`${error.message} Continuing on the Default profile.`);
-      started = await this.#requestStart(null);
-    }
+    const started = await this.#requestStart(this.profileRequest);
     if (this.stopReason) return;
     this.browserStarted = true;
     const { profile, result } = started;

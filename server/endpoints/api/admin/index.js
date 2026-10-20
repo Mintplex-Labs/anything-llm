@@ -8,6 +8,9 @@ const { WorkspaceUser } = require("../../../models/workspaceUsers");
 const { canModifyAdmin } = require("../../../utils/helpers/admin");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  forgetBrowserUser,
+} = require("../../../utils/agents/aibitat/plugins/browser-use");
 
 function apiAdminEndpoints(app) {
   if (!app) return;
@@ -256,6 +259,7 @@ function apiAdminEndpoints(app) {
         const { id } = request.params;
         const user = await User.get({ id: Number(id) });
         await User.delete({ id: user.id });
+        await forgetBrowserUser(user.id).catch(() => {});
         await EventLogs.logEvent("api_user_deleted", {
           userName: user.username,
         });

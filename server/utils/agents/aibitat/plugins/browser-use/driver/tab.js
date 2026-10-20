@@ -2,12 +2,45 @@ const { EventEmitter } = require("events");
 const { PASSKEY_BLOCK_SCRIPT } = require("./pageScript");
 
 const VIEWPORT = { width: 1280, height: 800 };
+// Nobody is at the browser to answer a permission prompt - headless Chrome would leave it pending
+// forever. Every powerful feature is denied outright instead. Names the running Chrome does not
+// know are skipped.
+const DENIED_PERMISSIONS = [
+  "accelerometer",
+  "ambient-light-sensor",
+  "background-fetch",
+  "background-sync",
+  "camera",
+  "captured-surface-control",
+  "clipboard-read",
+  "clipboard-write",
+  "display-capture",
+  "geolocation",
+  "gyroscope",
+  "idle-detection",
+  "keyboard-lock",
+  "local-fonts",
+  "magnetometer",
+  "microphone",
+  "midi",
+  "nfc",
+  "notifications",
+  "payment-handler",
+  "periodic-background-sync",
+  "pointer-lock",
+  "protected-media-identifier",
+  "screen-wake-lock",
+  "speaker-selection",
+  "system-wake-lock",
+  "window-management",
+];
 // The page script runs in its own JS world - pages can neither see nor tamper with it.
 const WORLD = "anythingllm-browser-use";
 
 /**
- * One session's page: a tab in its own browser context (fresh cookies and storage, like an
- * incognito window), driven over CDP. Everything the session needs from the browser goes
+ * One session's page, driven over CDP: a tab in the saved profile's browser (its cookies and
+ * storage), or for an incognito session a tab in its own browser context (fresh cookies and
+ * storage, thrown away with the tab). Everything the session needs from the browser goes
  * through here; the agent-facing logic lives in session.js.
  *
  * Events:
@@ -42,12 +75,13 @@ class Tab extends EventEmitter {
 
   /**
    * @param {import("./chromium").Connection} connection
+   * @param {{isolated?: boolean}} opts - isolated: open in a fresh browser context of its own
    * @returns {Promise<Tab>}
    */
-  static async open(connection) {
+  static async open(connection, { isolated = true } = {}) {
     const tab = new Tab(connection);
     try {
-      await tab.#init();
+      await tab.#init(isolated);
       return tab;
     } catch (error) {
       await tab.close();
@@ -55,21 +89,34 @@ class Tab extends EventEmitter {
     }
   }
 
-  async #init() {
+  async #init(isolated) {
     const send = (method, params) => this.connection.send(method, params);
-    ({ browserContextId: this.contextId } = await send(
-      "Target.createBrowserContext",
-      { disposeOnDetach: true }
-    ));
+    if (isolated)
+      ({ browserContextId: this.contextId } = await send(
+        "Target.createBrowserContext",
+        { disposeOnDetach: true }
+      ));
+    const context = this.contextId ? { browserContextId: this.contextId } : {};
     // Files are never downloaded; the event still lets the agent know one was blocked.
     await send("Browser.setDownloadBehavior", {
       behavior: "deny",
-      browserContextId: this.contextId,
+      ...context,
       eventsEnabled: true,
     }).catch(() => {});
+    await Promise.all(
+      DENIED_PERMISSIONS.map((name) =>
+        send("Browser.setPermission", {
+          permission: { name },
+          setting: "denied",
+          ...context,
+        }).catch(() => {})
+      )
+    );
+    // Popups the page opens are reported (see #onBrowserEvent) so they can be closed.
+    await send("Target.setDiscoverTargets", { discover: true }).catch(() => {});
     ({ targetId: this.targetId } = await send("Target.createTarget", {
       url: "about:blank",
-      browserContextId: this.contextId,
+      ...context,
     }));
     ({ sessionId: this.session } = await send("Target.attachToTarget", {
       targetId: this.targetId,
@@ -107,6 +154,8 @@ class Tab extends EventEmitter {
       }),
       // A file picker has no one to answer it.
       send("Page.setInterceptFileChooserDialog", { enabled: true }),
+      // Nor does a USB / Bluetooth / serial / HID device picker - they are cancelled (see #route).
+      send("DeviceAccess.enable").catch(() => {}),
       // Network events tell the agent when the page actually sent something (a post, a message).
       send("Network.enable", { maxPostDataSize: 4096 }).catch(() => {}),
       // Sites see a regular Chrome, client hints included - not "HeadlessChrome".
@@ -195,6 +244,15 @@ class Tab extends EventEmitter {
       case "Page.javascriptDialogOpening":
         this.#onDialog(params, sessionId);
         break;
+      case "DeviceAccess.deviceRequestPrompted":
+        this.connection
+          .send("DeviceAccess.cancelPrompt", { id: params.id }, sessionId)
+          .catch(() => {});
+        this.emit(
+          "notice",
+          "The page asked to connect to a device (USB, Bluetooth or similar). That is not allowed, so it was refused."
+        );
+        break;
       case "Page.windowOpen":
         // Popups load in this tab - there is one page per session.
         if (/^https?:/i.test(params.url)) this.load(params.url).catch(() => {});
@@ -257,9 +315,15 @@ class Tab extends EventEmitter {
     } else if (method === "Target.targetCreated") {
       // A popup the page opened (window.open, target=_blank) - Page.windowOpen already loaded it here.
       const info = params.targetInfo;
+      // Sessions on a saved profile share its context, so only close what this tab opened.
+      const ours = this.contextId
+        ? info.browserContextId === this.contextId
+        : info.openerId === this.targetId;
+      // Until createTarget returns, the only new page is this tab itself - never close that.
       if (
         info.type === "page" &&
-        info.browserContextId === this.contextId &&
+        ours &&
+        this.targetId &&
         info.targetId !== this.targetId
       )
         this.connection
@@ -489,10 +553,20 @@ class Tab extends EventEmitter {
    */
   async capture({ width = VIEWPORT.width, quality = 60 } = {}) {
     try {
+      // A clip is in page coordinates, so it has to start where the page is scrolled to - at 0,0 a
+      // scrolled page captures the unpainted top of the document (a blank image).
+      const { cssVisualViewport: viewport } = await this.send(
+        "Page.getLayoutMetrics"
+      ).catch(() => ({}));
       const { data } = await this.send("Page.captureScreenshot", {
         format: "jpeg",
         quality,
-        clip: { x: 0, y: 0, ...VIEWPORT, scale: width / VIEWPORT.width },
+        clip: {
+          x: viewport?.pageX || 0,
+          y: viewport?.pageY || 0,
+          ...VIEWPORT,
+          scale: width / VIEWPORT.width,
+        },
       });
       return data || null;
     } catch {
@@ -524,6 +598,10 @@ class Tab extends EventEmitter {
         .send("Target.disposeBrowserContext", {
           browserContextId: this.contextId,
         })
+        .catch(() => {});
+    else if (this.targetId)
+      await this.connection
+        .send("Target.closeTarget", { targetId: this.targetId })
         .catch(() => {});
   }
 }
