@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const Provider = require("../../providers/ai-provider");
 const { safeJsonParse } = require("../../../../http");
+const { combineAbortSignals } = require("../../../../helpers/abortSignals");
 const { MODEL_PRICING } = require("../../../../helpers/modelPricing");
 const { BrowserBridge } = require("./bridge");
 const { BrowserTraces, sitesOf } = require("./traces");
@@ -169,6 +170,7 @@ class BrowserAgent {
     this.currentUrl = null;
     this.doneChecks = 0;
     this.stopped = new Promise((resolve) => (this.resolveStopped = resolve));
+    this.abortController = new AbortController();
 
     const { defaultProvider = {} } = aibitat;
     this.trace = {
@@ -242,6 +244,7 @@ class BrowserAgent {
     this.stopReason = reason;
     this.pendingReply?.(null);
     this.resolveStopped({ stopped: true });
+    this.abortController.abort();
   }
 
   /** The user answered an ask_user request from the chat UI. */
@@ -259,6 +262,15 @@ class BrowserAgent {
       ...aibitat.defaultProvider,
     });
     this.provider.attachHandlerProps?.(aibitat.handlerProps);
+    // Stopping the session cancels the model request in flight, so it stops generating (and
+    // billing). Only on a provider built for this session - a shared instance is the parent's.
+    if (typeof aibitat.defaultProvider?.provider === "string")
+      this.provider.attachAbortSignal?.(
+        combineAbortSignals([
+          aibitat.abortController?.signal,
+          this.abortController.signal,
+        ])
+      );
     this.native = (await this.provider.supportsNativeToolCalling?.()) !== false;
 
     const { provider, model } = aibitat.defaultProvider || {};
