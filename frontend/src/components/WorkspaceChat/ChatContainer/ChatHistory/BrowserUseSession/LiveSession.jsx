@@ -8,6 +8,7 @@ import UsageLabel from "./UsageLabel";
 import Favicon from "./Favicon";
 import LiveView, { useLiveFrame } from "./LiveView";
 import HelpRequest from "./HelpRequest";
+import useHelpNotification from "./useHelpNotification";
 import { ACK_TIMEOUT_MS, hostOf } from "./utils";
 
 /**
@@ -27,9 +28,11 @@ export default function LiveSession({ session, websocket }) {
   const inControl = needsHelp && controlling;
   const send = (action, data) =>
     BrowserUse.control(websocket, session.sessionId, action, data);
+  const cardId = `browser-use-${session.sessionId}`;
+  const askNotificationPermission = useHelpNotification(session, cardId);
 
   return (
-    <CardShell>
+    <CardShell id={cardId}>
       <div className="flex items-center justify-between gap-x-3 px-3 py-2">
         {needsHelp ? <NeedsHelpTitle /> : <SiteTitle step={session.step} />}
         <StopButton session={session} onStop={() => send("stop")} />
@@ -40,13 +43,16 @@ export default function LiveSession({ session, websocket }) {
         onInput={(input) => send("input", { input })}
       />
       {needsHelp ? (
-        <HelpRequest
-          session={session}
-          controlling={inControl}
-          onToggleControl={() => setControlling((on) => !on)}
-          onReply={(text) => send("reply", { text })}
-          onSent={() => setControlling(false)}
-        />
+        // Browsers that only ask for notification permission on a click ask on this one.
+        <div onPointerDownCapture={askNotificationPermission}>
+          <HelpRequest
+            session={session}
+            controlling={inControl}
+            onToggleControl={() => setControlling((on) => !on)}
+            onReply={(text) => send("reply", { text })}
+            onSent={() => setControlling(false)}
+          />
+        </div>
       ) : (
         <CurrentStep session={session} />
       )}
