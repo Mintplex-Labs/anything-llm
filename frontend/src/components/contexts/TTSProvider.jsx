@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import System from "@/models/system";
 import Appearance from "@/models/appearance";
 
-const ASSISTANT_MESSAGE_COMPLETE_EVENT = "ASSISTANT_MESSAGE_COMPLETE_EVENT";
+export const ASSISTANT_MESSAGE_COMPLETE_EVENT =
+  "ASSISTANT_MESSAGE_COMPLETE_EVENT";
 const TTSProviderContext = createContext();
 
 /**
