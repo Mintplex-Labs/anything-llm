@@ -12,11 +12,12 @@ import {
   PaperPlaneRight,
   CircleNotch,
   ChartBar,
+  ClockCounterClockwise,
 } from "@phosphor-icons/react";
 import BrowserUse from "@/models/browserUse";
 import { useModal } from "@/hooks/useModal";
 import { useMetricsVisibility } from "../HistoricalMessage/Actions/RenderMetrics";
-import TraceModal, { ContinuedFrom, Favicon, formatTokens } from "./TraceModal";
+import TraceModal, { Favicon, formatTokens } from "./TraceModal";
 
 const LIVE_STATUSES = ["running", "needs-help"];
 // A stop or reply the server never acknowledges must not leave the controls disabled forever.
@@ -77,14 +78,7 @@ function LiveSession({ session, websocket }) {
  * @param {{session: Object, frameSrc: string|null, stopping: boolean, onStop: () => void,
  *   onInput: (input: Object) => void, onReply: (text: string) => boolean}} props
  */
-export function LiveCard({
-  session,
-  frameSrc,
-  stopping,
-  onStop,
-  onInput,
-  onReply,
-}) {
+function LiveCard({ session, frameSrc, stopping, onStop, onInput, onReply }) {
   const needsHelp = session.status === "needs-help";
   // The person can only drive the browser while the agent asks for help - taking
   // over mid-step would leave the agent not knowing what page it is on.
@@ -100,8 +94,6 @@ export function LiveCard({
         {needsHelp ? <NeedsHelpTitle /> : <SiteTitle step={session.step} />}
         <StopButton stopping={stopping} onStop={onStop} />
       </div>
-      <ResumedFrom resumedFrom={session.resumedFrom} className="px-3 pb-2" />
-
       <LiveView frameSrc={frameSrc} controlling={inControl} onInput={onInput} />
 
       {needsHelp ? (
@@ -444,27 +436,11 @@ function ConcludedSession({ session, interrupted = false }) {
             <ArrowRight size={16} weight="bold" />
           </div>
         </button>
-        <ResumedFrom
-          resumedFrom={session.resumedFrom}
-          className="px-2 pb-2 pl-[68px]"
-        />
       </CardShell>
       {isOpen && (
         <TraceModal traceId={session.sessionId} onClose={closeModal} />
       )}
     </>
-  );
-}
-
-/** "Continued from: <earlier task>" - opens the earlier session's trace. */
-function ResumedFrom({ resumedFrom, className = "" }) {
-  const { isOpen, openModal, closeModal } = useModal();
-  if (!resumedFrom?.id) return null;
-  return (
-    <div className={`flex min-w-0 ${className}`}>
-      <ContinuedFrom task={resumedFrom.task} onOpen={openModal} />
-      {isOpen && <TraceModal traceId={resumedFrom.id} onClose={closeModal} />}
-    </div>
   );
 }
 
@@ -478,15 +454,23 @@ function CardShell({ children }) {
   );
 }
 
+/** "12 steps · 81k tokens", plus " · Continued from a previous session" for a resumed one. */
 function UsageLabel({ session }) {
   const { t } = useTranslation();
   const tokens = session.tokens || {};
   return (
-    <span className="text-xs text-zinc-400 light:text-slate-500 whitespace-nowrap">
+    <span className="flex items-center gap-x-1 text-xs text-zinc-400 light:text-slate-500 whitespace-nowrap">
       {t("browserUse.card.usage", {
         steps: session.stepCount || 0,
         tokens: `${tokens.estimated ? "~" : ""}${formatTokens(tokens.total || 0)}`,
       })}
+      {session.resumedFrom?.id && (
+        <>
+          <span>·</span>
+          <ClockCounterClockwise size={12} className="flex-shrink-0" />
+          <span>{t("browserUse.resume.continuedFromPrevious")}</span>
+        </>
+      )}
     </span>
   );
 }

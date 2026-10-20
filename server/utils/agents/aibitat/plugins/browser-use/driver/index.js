@@ -5,6 +5,7 @@ const { BrowserSession } = require("./session");
 const FRAME_INTERVAL_MS = 250;
 // Sessions are closed by the agent when it finishes; this only catches ones it never got to close.
 const IDLE_TIMEOUT_MS = 30 * 60_000;
+const SLOW_START_LOG_MS = 15_000;
 /**
  * The browser side of the browser-use agent skill, running in the server process. Each person has
  * their own headless Chromium on their saved profile, and a separate one for incognito sessions
@@ -20,6 +21,9 @@ class BrowserDriver {
   static #reaper = null;
   /** Cards that asked to watch before their session started: sessionId -> listeners */
   static #earlyWatchers = new Map();
+  /** Sessions still starting, and those of them closed meanwhile (the agent gave up waiting). */
+  static #starting = new Set();
+  static #cancelled = new Set();
 
   static log(text, ...args) {
     console.log(`\x1b[36m[BrowserUse]\x1b[0m ${text}`, ...args);
@@ -56,13 +60,42 @@ class BrowserDriver {
    * @param {{profile: string, maxChars: number, startUrl: string|null, terms: string[]}} params
    *   profile - the profile key the plugin chose for the user (see profiles.js)
    */
-  static async #start(sessionId, { profile, maxChars, startUrl, terms }) {
+  static async #start(sessionId, params) {
+    BrowserDriver.close(sessionId);
+    BrowserDriver.#starting.add(sessionId);
+    // A start that hangs says where, so the log explains a "did not respond to start".
+    const phase = { now: "launching the browser" };
+    const slow = setInterval(
+      () =>
+        BrowserDriver.log(
+          `Session ${sessionId} is still starting: ${phase.now}`
+        ),
+      SLOW_START_LOG_MS
+    );
+    slow.unref?.();
+    try {
+      return await BrowserDriver.#open(sessionId, params, phase);
+    } finally {
+      clearInterval(slow);
+      BrowserDriver.#starting.delete(sessionId);
+      BrowserDriver.#cancelled.delete(sessionId);
+    }
+  }
+
+  /** A start that was closed while in flight closes what it opened, rather than leaving it behind. */
+  static #abandoned(sessionId) {
+    if (!BrowserDriver.#cancelled.has(sessionId)) return;
+    BrowserDriver.close(sessionId);
+    throw new Error("The browser session was closed while it was starting.");
+  }
+
+  static async #open(sessionId, { profile, maxChars, startUrl, terms }, phase) {
     const parsed = BrowserProfiles.parse(profile);
     if (!parsed) throw new Error(`"${profile}" is not a browser profile.`);
-    BrowserDriver.close(sessionId);
     const connection = await Chromium.acquire(profile, {
       profileDir: parsed.incognito ? null : BrowserProfiles.dirFor(profile),
     });
+    phase.now = "opening a tab";
     let session;
     try {
       session = await BrowserSession.create({
@@ -89,9 +122,12 @@ class BrowserDriver {
     BrowserDriver.#earlyWatchers.delete(sessionId);
     BrowserDriver.#startReaper();
     BrowserDriver.log(`Started session ${sessionId} on ${profile}`);
+    BrowserDriver.#abandoned(sessionId);
+    phase.now = `loading ${startUrl}`;
     const result = startUrl
       ? await session.run("navigate", { url: startUrl })
       : null;
+    BrowserDriver.#abandoned(sessionId);
     return {
       profile: {
         id: profile,
@@ -110,6 +146,8 @@ class BrowserDriver {
   }
 
   static close(sessionId) {
+    if (BrowserDriver.#starting.has(sessionId))
+      BrowserDriver.#cancelled.add(sessionId);
     const entry = BrowserDriver.#sessions.get(sessionId);
     if (!entry) return;
     BrowserDriver.#sessions.delete(sessionId);
@@ -118,11 +156,6 @@ class BrowserDriver {
     entry.session.close();
     Chromium.release(entry.profile);
     BrowserDriver.log(`Closed session ${sessionId}`);
-  }
-
-  /** @param {string} key - a saved profile's key */
-  static profileInUse(key) {
-    return Chromium.isRunning(key);
   }
 
   /**

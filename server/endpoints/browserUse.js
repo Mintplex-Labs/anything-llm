@@ -88,13 +88,12 @@ function browserUseEndpoints(app) {
 
   app.get("/browser-use/profiles", adminOnly, async (_request, response) => {
     try {
-      const profiles = await BrowserProfiles.list();
+      const profiles = BrowserProfiles.list();
       const names = await usernames(profiles.map((profile) => profile.userId));
       response.status(200).json({
         profiles: profiles.map((profile) => ({
           ...profile,
           username: names.get(profile.userId) ?? null,
-          inUse: BrowserDriver.profileInUse(profile.key),
         })),
       });
     } catch (e) {

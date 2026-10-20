@@ -354,7 +354,7 @@ const TRANSLATIONS = {
       browserUse: {
         title: "Browser Use",
         description:
-          "Let the agent use a real web browser to get things done on websites - searching, clicking, filling in forms and comparing results. The browser runs on this AnythingLLM server. Each user has their own saved browser profile, so sites they sign in to stay signed in for their later sessions; ask for incognito browsing to use a fresh browser that keeps nothing. Sessions stream into the chat so you can watch, stop or take control at any time. Downloads are always blocked. Only available in the chat window.",
+          "Let your agent use a real web browser to get things done. In multi-user mode, each user gets their own browser profile.",
       },
 
       rag: {
@@ -1858,6 +1858,7 @@ const TRANSLATIONS = {
     },
   },
   browserUse: {
+    limitations: "Read its limitations and warnings before use.",
     card: {
       browsing: "Browsing the web",
       needsHelp: "Your browser agent needs help",
@@ -1928,17 +1929,13 @@ const TRANSLATIONS = {
       empty: "No saved profiles yet",
       shared: "This instance's profile",
       deletedUser: "Deleted user (#{{id}})",
-      lastUsed: "Last used {{date}}",
-      inUse: "Browser open",
       delete: "Delete profile",
       deleteConfirm:
         "Delete this browser profile? The user will be signed out of every site, and any session running on it will end.",
       deleteFailed: "Could not delete the browser profile.",
     },
     resume: {
-      continued: "Continued from a saved session",
-      continuedFrom: "Continued from: {{task}}",
-      earlierSession: "an earlier session",
+      continuedFromPrevious: "Continued from a previous session",
       savedAt: "Saved to continue from",
     },
   },

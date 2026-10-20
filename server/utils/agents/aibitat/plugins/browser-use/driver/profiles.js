@@ -63,25 +63,14 @@ const BrowserProfiles = {
 
   /**
    * Every saved profile on disk.
-   * @returns {Promise<Array<{key: string, userId: number|null, size: number, lastUsedAt: string|null}>>}
+   * @returns {Array<{key: string, userId: number|null}>}
    */
-  async list() {
+  list() {
     if (!fs.existsSync(profilesPath)) return [];
-    const profiles = [];
-    for (const key of fs.readdirSync(profilesPath)) {
-      const dir = this.dirFor(key);
-      if (!dir) continue;
-      const { size, lastUsed } = await folderStats(dir);
-      profiles.push({
-        key,
-        userId: this.userIdOf(key),
-        size,
-        lastUsedAt: lastUsed ? new Date(lastUsed).toISOString() : null,
-      });
-    }
-    return profiles.sort((a, b) =>
-      String(b.lastUsedAt || "").localeCompare(String(a.lastUsedAt || ""))
-    );
+    return fs
+      .readdirSync(profilesPath)
+      .filter((key) => this.dirFor(key))
+      .map((key) => ({ key, userId: this.userIdOf(key) }));
   },
 
   /** Delete a profile's folder. The browser using it must already be shut down. */
@@ -91,29 +80,5 @@ const BrowserProfiles = {
       fs.rmSync(dir, { recursive: true, force: true });
   },
 };
-
-/** Total size of a folder and the newest modification time in it. */
-async function folderStats(dir) {
-  let size = 0;
-  let lastUsed = 0;
-  const walk = async (folder) => {
-    const entries = await fs.promises
-      .readdir(folder, { withFileTypes: true })
-      .catch(() => []);
-    for (const entry of entries) {
-      const full = path.join(folder, entry.name);
-      if (entry.isDirectory()) {
-        await walk(full);
-        continue;
-      }
-      const stat = await fs.promises.lstat(full).catch(() => null);
-      if (!stat) continue;
-      size += stat.size;
-      lastUsed = Math.max(lastUsed, stat.mtimeMs);
-    }
-  };
-  await walk(dir);
-  return { size, lastUsed };
-}
 
 module.exports = { BrowserProfiles };

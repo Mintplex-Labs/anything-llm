@@ -7,10 +7,9 @@ import {
   WarningCircle,
   StopCircle,
   XCircle,
-  LinkSimple,
+  ClockCounterClockwise,
   UserCircle,
   Detective,
-  ClockCounterClockwise,
   EyeSlash,
 } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
@@ -21,6 +20,9 @@ import TraceModal, {
   Favicon,
   formatTokens,
 } from "@/components/WorkspaceChat/ChatContainer/ChatHistory/BrowserUseSession/TraceModal";
+
+// What browsing from a server can and can't do (bot walls, cloud IPs), and who is responsible.
+const DOCS_URL = "https://docs.anythingllm.com/agent/usage/browser-use/docker";
 
 function confirmAction(message) {
   return window.confirm(message);
@@ -38,6 +40,7 @@ export default function BrowserUseSkillPanel({
   enabled = false,
   disabled = false,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[560px]">
@@ -56,7 +59,15 @@ export default function BrowserUseSkillPanel({
           />
         </div>
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium">
-          {description}
+          {description}{" "}
+          <a
+            href={DOCS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="underline hover:text-cta-button"
+          >
+            {t("browserUse.limitations")}
+          </a>
         </p>
         <Tabs />
       </div>
@@ -242,12 +253,10 @@ function SessionHistory() {
                   {trace.resumedFrom && (
                     <span
                       className="flex items-center flex-shrink-0"
-                      title={t("browserUse.resume.continuedFrom", {
-                        task: trace.resumedFromTask || "",
-                      })}
-                      aria-label={t("browserUse.resume.continued")}
+                      title={t("browserUse.resume.continuedFromPrevious")}
+                      aria-label={t("browserUse.resume.continuedFromPrevious")}
                     >
-                      <LinkSimple size={12} weight="bold" />
+                      <ClockCounterClockwise size={12} />
                     </span>
                   )}
                   <span className="flex items-center gap-x-1">
@@ -286,13 +295,6 @@ function SessionHistory() {
       )}
     </Section>
   );
-}
-
-function formatBytes(bytes = 0) {
-  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-  if (bytes < 1024 * 1024 * 1024)
-    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-  return `${(bytes / 1024 / 1024 / 1024).toFixed(1)} GB`;
 }
 
 /**
@@ -343,26 +345,9 @@ function Profiles() {
               size={18}
               className="text-theme-text-secondary flex-shrink-0"
             />
-            <div className="flex flex-col min-w-0 flex-1">
-              <p className="text-sm text-theme-text-primary truncate">
-                {ownerOf(profile)}
-              </p>
-              <div className="flex items-center gap-x-2 text-[11px] text-theme-text-secondary">
-                <span>{formatBytes(profile.size)}</span>
-                {profile.lastUsedAt && (
-                  <span>
-                    {t("browserUse.profiles.lastUsed", {
-                      date: new Date(profile.lastUsedAt).toLocaleString(),
-                    })}
-                  </span>
-                )}
-                {profile.inUse && (
-                  <span className="text-sky-400">
-                    {t("browserUse.profiles.inUse")}
-                  </span>
-                )}
-              </div>
-            </div>
+            <p className="flex-1 min-w-0 text-sm text-theme-text-primary truncate">
+              {ownerOf(profile)}
+            </p>
             <button
               type="button"
               onClick={() => remove(profile)}

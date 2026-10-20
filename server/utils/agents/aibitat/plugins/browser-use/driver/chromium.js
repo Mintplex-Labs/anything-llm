@@ -143,11 +143,6 @@ class Chromium {
     return !!findChromium() && process.getuid?.() !== 0;
   }
 
-  /** @param {string} key */
-  static isRunning(key) {
-    return !!Chromium.#browsers.get(key)?.connection;
-  }
-
   /**
    * @param {string} key - profile key
    * @param {{profileDir?: string|null}} opts - the saved profile's folder; none for incognito
