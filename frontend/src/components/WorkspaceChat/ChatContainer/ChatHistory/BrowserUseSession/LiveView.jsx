@@ -81,12 +81,14 @@ export default function LiveView({ frameSrc, controlling, onInput }) {
       {...handlers}
       className={`relative w-full aspect-[16/10] bg-zinc-950 light:bg-slate-200 outline-none ${controlling ? "cursor-pointer touch-none select-none ring-2 ring-inset ring-amber-400" : ""}`}
     >
+      {/* Stretched to fill the view: the page's size varies a little, and clicks go back as
+          fractions of the view, so the picture must cover it exactly. */}
       {frameSrc ? (
         <img
           src={frameSrc}
           alt=""
           draggable={false}
-          className="w-full h-full object-contain select-none"
+          className="w-full h-full object-fill select-none"
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center">

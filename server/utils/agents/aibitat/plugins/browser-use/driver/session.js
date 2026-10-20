@@ -1,4 +1,4 @@
-const { Tab, VIEWPORT } = require("./tab");
+const { Tab } = require("./tab");
 const { PAGE_SCRIPT } = require("./pageScript");
 const { SentLog } = require("./sentLog");
 const { keyEvents } = require("./keys");
@@ -163,8 +163,9 @@ class BrowserSession {
     this.userInputAt = Date.now();
     const at = (fraction, size) =>
       Math.round(Math.min(Math.max(Number(fraction) || 0, 0), 1) * size);
-    const x = at(event.x, VIEWPORT.width);
-    const y = at(event.y, VIEWPORT.height);
+    // The card shows the latest frame, so its size is the page's.
+    const x = at(event.x, this.tab.viewport.width);
+    const y = at(event.y, this.tab.viewport.height);
     switch (event.type) {
       case "click":
         return await this.#click(x, y);
@@ -208,8 +209,7 @@ class BrowserSession {
   /** A current picture for a card that starts watching (the screencast only sends frames on repaint). */
   async currentFrame() {
     this.lastFrame =
-      (await this.tab.capture({ width: VIEWPORT.width, quality: 60 })) ||
-      this.lastFrame;
+      (await this.tab.capture({ quality: 60 })) || this.lastFrame;
     return this.lastFrame;
   }
 
@@ -290,9 +290,9 @@ class BrowserSession {
       if (!box || box.w < 24 || box.h < 24) continue;
       if (
         box.x + box.w <= 0 ||
-        box.x >= VIEWPORT.width ||
-        box.y + box.h < -0.25 * VIEWPORT.height ||
-        box.y > 2.5 * VIEWPORT.height
+        box.x >= this.tab.viewport.width ||
+        box.y + box.h < -0.25 * this.tab.viewport.height ||
+        box.y > 2.5 * this.tab.viewport.height
       )
         continue;
       visible.push({ ...frame, box });
@@ -396,7 +396,8 @@ class BrowserSession {
     const box = await this.#frameBox(frame).catch(() => null);
     const x = Math.round((box?.x ?? NaN) + target.x);
     const y = Math.round((box?.y ?? NaN) + target.y);
-    if (!(x >= 0 && y >= 0 && x <= VIEWPORT.width && y <= VIEWPORT.height))
+    const { width, height } = this.tab.viewport;
+    if (!(x >= 0 && y >= 0 && x <= width && y <= height))
       return {
         error: `[${id}] is hidden off-screen, so it cannot be clicked. Use a visible element from the latest page state.`,
       };
@@ -477,7 +478,11 @@ class BrowserSession {
           y: frame.box.y,
           lines: [`(embedded frame from ${frame.host}:)`, ...sub.lines],
         });
-      blocker = pickBlocker(blocker, sub.blocker, viewportShare(frame.box));
+      blocker = pickBlocker(
+        blocker,
+        sub.blocker,
+        viewportShare(frame.box, this.tab.viewport)
+      );
     }
     blocks.sort((a, b) => a.y - b.y);
     const body = [];
@@ -948,16 +953,16 @@ function pickBlocker(current, inFrame, share) {
   return current || candidate;
 }
 
-function viewportShare(box) {
+function viewportShare(box, viewport) {
   const w = Math.max(
     0,
-    Math.min(box.x + box.w, VIEWPORT.width) - Math.max(box.x, 0)
+    Math.min(box.x + box.w, viewport.width) - Math.max(box.x, 0)
   );
   const h = Math.max(
     0,
-    Math.min(box.y + box.h, VIEWPORT.height) - Math.max(box.y, 0)
+    Math.min(box.y + box.h, viewport.height) - Math.max(box.y, 0)
   );
-  return (w * h) / (VIEWPORT.width * VIEWPORT.height);
+  return (w * h) / (viewport.width * viewport.height);
 }
 
 function parseUrl(url) {

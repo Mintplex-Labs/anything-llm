@@ -6,6 +6,8 @@ const {
   isCloudMetadataIp,
 } = require("./cloudMetadata");
 
+// The size the page's window aims for. The headless window reserves a varying strip for browser
+// UI, so the page may end up a little off - `tab.viewport` is always the size it really has.
 const VIEWPORT = { width: 1280, height: 800 };
 // Nobody is at the browser to answer a permission prompt - headless Chrome would leave it pending
 // forever. Every powerful feature is denied outright instead. Names the running Chrome does not
@@ -67,8 +69,9 @@ class Tab extends EventEmitter {
     this.title = "";
     this.closed = false;
     this.history = null;
+    /** The page's visible size, as the latest frame or measurement reported it. */
+    this.viewport = { ...VIEWPORT };
     this.world = null;
-    this.windowFitted = false;
     /** Cross-origin frame targets attached below the page: CDP session -> {frameId, parent} */
     this.frameTargets = new Map();
     this.loading = new Set();
@@ -131,11 +134,7 @@ class Tab extends EventEmitter {
     const { userAgent, product } = await send("Browser.getVersion");
     this.userAgent = userAgent.replace(/HeadlessChrome/g, "Chrome");
     this.chromeVersion = product.split("/")[1] || "0.0.0.0";
-    await this.send("Emulation.setDeviceMetricsOverride", {
-      ...VIEWPORT,
-      deviceScaleFactor: 1,
-      mobile: false,
-    });
+    await this.#sizeWindow();
     await this.send("Emulation.setFocusEmulationEnabled", { enabled: true });
     await this.#setupTarget(this.session);
     // Cross-origin iframes run in their own renderer, a separate CDP target that page-level setup
@@ -146,6 +145,53 @@ class Tab extends EventEmitter {
       flatten: true,
     });
     this.#refreshHistory();
+  }
+
+  /**
+   * Grow the window so the page gets about VIEWPORT: the headless window's view is smaller than
+   * the window by a strip that varies (77 or 119px in Docker, more on Windows). The viewport is
+   * never emulated instead - an emulated size that differs from the window makes the screencast and
+   * screenshots come out tiled, cropped or half-painted. Whatever size the page ends up with is
+   * what everything uses (see viewport).
+   */
+  async #sizeWindow() {
+    const { windowId } = await this.connection.send(
+      "Browser.getWindowForTarget",
+      { targetId: this.targetId }
+    );
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { width, height } = await this.#measureViewport();
+      if (width === VIEWPORT.width && height === VIEWPORT.height) return;
+      const { bounds } = await this.connection.send("Browser.getWindowBounds", {
+        windowId,
+      });
+      await this.connection.send("Browser.setWindowBounds", {
+        windowId,
+        bounds: {
+          width: bounds.width + VIEWPORT.width - width,
+          height: bounds.height + VIEWPORT.height - height,
+        },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+    await this.#measureViewport();
+  }
+
+  /** The page's visible size and scroll position, from the browser itself. */
+  async #measureViewport() {
+    const { cssVisualViewport: view } = await this.send(
+      "Page.getLayoutMetrics"
+    ).catch(() => ({}));
+    if (view?.clientWidth && view?.clientHeight)
+      this.viewport = {
+        width: Math.round(view.clientWidth),
+        height: Math.round(view.clientHeight),
+      };
+    return {
+      ...this.viewport,
+      pageX: view?.pageX || 0,
+      pageY: view?.pageY || 0,
+    };
   }
 
   /** Per-target setup, for the page itself and for every cross-origin frame. */
@@ -303,39 +349,16 @@ class Tab extends EventEmitter {
         this.send("Page.screencastFrameAck", {
           sessionId: params.sessionId,
         }).catch(() => {});
-        // Only frames of the whole viewport: the card maps clicks onto it, so a cropped or
-        // rescaled frame would put them in the wrong place.
-        if (this.#fitsViewport(params.metadata))
-          this.emit("frame", params.data);
+        // The frame is the page as it is - its size is the page's size (clicks are mapped on it).
+        if (params.metadata?.deviceWidth && params.metadata?.deviceHeight)
+          this.viewport = {
+            width: Math.round(params.metadata.deviceWidth),
+            height: Math.round(params.metadata.deviceHeight),
+          };
+        this.emit("frame", params.data);
         break;
     }
     this.emit("cdp", method, params, isPage ? "" : sessionId);
-  }
-
-  /**
-   * The screencast records the headless window, not the emulated viewport, and the window's view
-   * is smaller than its size (by 16x138 on Windows). Grow the window once by what is missing.
-   */
-  #fitsViewport({ deviceWidth, deviceHeight, pageScaleFactor = 1 } = {}) {
-    const missingWidth = Math.round(VIEWPORT.width - deviceWidth);
-    const missingHeight = Math.round(VIEWPORT.height - deviceHeight);
-    if (!missingWidth && !missingHeight && pageScaleFactor === 1) return true;
-    if ((missingWidth > 0 || missingHeight > 0) && !this.windowFitted) {
-      this.windowFitted = true;
-      this.connection
-        .send("Browser.getWindowForTarget", { targetId: this.targetId })
-        .then(({ windowId, bounds }) =>
-          this.connection.send("Browser.setWindowBounds", {
-            windowId,
-            bounds: {
-              width: bounds.width + Math.max(0, missingWidth),
-              height: bounds.height + Math.max(0, missingHeight),
-            },
-          })
-        )
-        .catch(() => {});
-    }
-    return false;
   }
 
   #onBrowserEvent(method, params) {
@@ -604,17 +627,16 @@ class Tab extends EventEmitter {
     try {
       // A clip is in page coordinates, so it has to start where the page is scrolled to - at 0,0 a
       // scrolled page captures the unpainted top of the document (a blank image).
-      const { cssVisualViewport: viewport } = await this.send(
-        "Page.getLayoutMetrics"
-      ).catch(() => ({}));
+      const view = await this.#measureViewport();
       const { data } = await this.send("Page.captureScreenshot", {
         format: "jpeg",
         quality,
         clip: {
-          x: viewport?.pageX || 0,
-          y: viewport?.pageY || 0,
-          ...VIEWPORT,
-          scale: width / VIEWPORT.width,
+          x: view.pageX,
+          y: view.pageY,
+          width: view.width,
+          height: view.height,
+          scale: width / view.width,
         },
       });
       return data || null;
@@ -631,7 +653,7 @@ class Tab extends EventEmitter {
             format: "jpeg",
             quality: 60,
             maxWidth: VIEWPORT.width,
-            maxHeight: VIEWPORT.height,
+            maxHeight: VIEWPORT.width,
           }
         : {}
     ).catch(() => {});
@@ -655,4 +677,4 @@ class Tab extends EventEmitter {
   }
 }
 
-module.exports = { Tab, VIEWPORT };
+module.exports = { Tab };
