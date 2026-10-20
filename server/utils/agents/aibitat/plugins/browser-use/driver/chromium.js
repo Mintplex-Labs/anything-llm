@@ -71,13 +71,21 @@ class Connection extends EventEmitter {
         } catch {}
       }
     });
-    proc.on("exit", () => {
-      this.closed = true;
-      for (const { reject, method } of this.callbacks.values())
-        reject(new Error(`The browser closed (${method}).`));
-      this.callbacks.clear();
-      this.emit("closed");
-    });
+    // A browser that dies (most often: it can't start its sandbox) resets the pipes, and a failed
+    // spawn never exits. Unhandled, either error would crash the whole server.
+    for (const stream of [proc.stdio[2], proc.stdio[3], proc.stdio[4]])
+      stream?.on("error", () => {});
+    proc.on("error", () => this.#gone());
+    proc.on("exit", () => this.#gone());
+  }
+
+  #gone() {
+    if (this.closed) return;
+    this.closed = true;
+    for (const { reject, method } of this.callbacks.values())
+      reject(new Error(`The browser closed (${method}).`));
+    this.callbacks.clear();
+    this.emit("closed");
   }
 
   #dispatch(message) {
