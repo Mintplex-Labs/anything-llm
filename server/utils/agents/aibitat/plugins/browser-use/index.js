@@ -1,13 +1,12 @@
 const { safeJsonParse } = require("../../../../http");
 const { BrowserAgent } = require("./agent");
 const { BrowserBridge } = require("./bridge");
-const { BrowserDriver } = require("./driver");
-const { BrowserProfiles } = require("./driver/profiles");
 const { BrowserTraces } = require("./traces");
 
 /**
- * Browser Use - hands a task to a browser sub-agent driving a headless Chromium on the server,
- * on the user's saved profile (sign-ins carry over) or incognito (see driver/).
+ * Browser Use - hands a task to a browser sub-agent, on the user's saved profile (sign-ins carry
+ * over) or incognito. Where the browser runs is bridge.js's business; this file is the same in the
+ * server and the desktop app.
  *
  * Only offered in the main chat UI: the session card needs a live websocket. API, Telegram and
  * scheduled jobs never see the tool.
@@ -113,9 +112,9 @@ const browserUse = {
             const agent = new BrowserAgent({
               aibitat,
               task,
-              profile: useIncognito
-                ? BrowserProfiles.incognitoKeyFor(owner)
-                : owner,
+              profile: BrowserBridge.profileKey(owner.userId, {
+                incognito: useIncognito,
+              }),
               startUrl: start_url,
               attentionPath: path,
               threadSlug,
@@ -262,7 +261,7 @@ function listenToCard(aibitat, agent) {
   const watch = (watching) => {
     stopWatching?.();
     stopWatching = watching
-      ? BrowserDriver.watch(agent.id, (frame) =>
+      ? BrowserBridge.watch(agent.id, (frame) =>
           aibitat.socket?.send("browserUseFrame", {
             sessionId: agent.id,
             frame,
@@ -287,7 +286,7 @@ function listenToCard(aibitat, agent) {
       // release always goes through, so handing control back never leaves the button held down.
       case "input":
         if (agent.trace.status === "needs-help" || data.input?.type === "up")
-          BrowserDriver.input(agent.id, data.input);
+          BrowserBridge.input(agent.id, data.input);
         return true;
       case "reply":
         if (agent.reply(data.text)) return true;
@@ -314,20 +313,19 @@ function isMainChatSession(aibitat) {
   const { invocation } = aibitat.handlerProps || {};
   if (!invocation?.uuid) return false;
   if (typeof aibitat.onControlMessage !== "function") return false;
-  return BrowserBridge.available;
+  return BrowserBridge.offeredIn(aibitat);
 }
 
 /**
  * Whose saved browser profile the session uses: the user's own in multi-user mode, the one shared
  * profile in single-user mode.
- * @returns {Promise<string|null>} profile key, or null when there is no user to tie it to
+ * @returns {Promise<{userId: number|null}|null>} null when there is no user to tie it to
  */
 async function profileOwner(aibitat) {
   const { SystemSettings } = require("../../../../../models/systemSettings");
   const userId = aibitat.handlerProps?.invocation?.user_id ?? null;
-  if (!(await SystemSettings.isMultiUserMode()))
-    return BrowserProfiles.keyFor(null);
-  return userId === null ? null : BrowserProfiles.keyFor(userId);
+  if (!(await SystemSettings.isMultiUserMode())) return { userId: null };
+  return userId === null ? null : { userId };
 }
 
 /**

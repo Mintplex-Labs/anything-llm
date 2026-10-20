@@ -102,34 +102,19 @@ export default function LiveView({ frameSrc, controlling, onInput }) {
 }
 
 /**
- * The latest frame (base64 jpeg) of a running session. The server only streams frames while a
- * card watches, so this registers as a watcher while mounted.
+ * The latest frame (base64 jpeg) of a running session. Frames are only streamed while a card
+ * watches, so this registers as a watcher while mounted.
  */
 export function useLiveFrame(sessionId, websocket) {
   // Tagged with its session so a frame never outlives a change of sessionId.
   const [latest, setLatest] = useState({ sessionId: null, frame: null });
-  useEffect(() => {
-    if (!websocket) return;
-    const onMessage = (event) => {
-      let data;
-      try {
-        data = JSON.parse(event.data);
-      } catch {
-        return;
-      }
-      if (
-        data?.type === "browserUseFrame" &&
-        data.content?.sessionId === sessionId
-      )
-        setLatest({ sessionId, frame: data.content.frame });
-    };
-    websocket.addEventListener("message", onMessage);
-    BrowserUse.control(websocket, sessionId, "watch", { watching: true });
-    return () => {
-      websocket.removeEventListener("message", onMessage);
-      BrowserUse.control(websocket, sessionId, "watch", { watching: false });
-    };
-  }, [sessionId, websocket]);
+  useEffect(
+    () =>
+      BrowserUse.watchLive(sessionId, websocket, (frame) =>
+        setLatest({ sessionId, frame })
+      ),
+    [sessionId, websocket]
+  );
   return latest.sessionId === sessionId ? latest.frame : null;
 }
 

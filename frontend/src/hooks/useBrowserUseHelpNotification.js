@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import BrowserUse from "@/models/browserUse";
 
 const supported = () =>
+  BrowserUse.helpNotifications &&
   typeof window !== "undefined" &&
   "Notification" in window &&
   window.isSecureContext;

@@ -4,6 +4,9 @@ import { baseHeaders } from "@/utils/request";
 /**
  * Browser Use agent skill. Session history lives on the server; a running session is driven over
  * the chat's agent websocket (stop, reply, the live view and taking control).
+ *
+ * The only frontend file that knows where the browser runs: the desktop app has its own copy with
+ * the same members (watchLive, openBrowser, helpNotifications), so the chat card is shared as is.
  */
 const BrowserUse = {
   /**
@@ -65,6 +68,48 @@ const BrowserUse = {
       .then((res) => res.ok)
       .catch(() => false);
   },
+
+  /**
+   * Stream a running session's live view. The server only sends frames while a card watches.
+   * @param {string} sessionId
+   * @param {WebSocket} websocket - the chat's agent socket
+   * @param {(frame: string) => void} onFrame - base64 jpeg
+   * @returns {() => void} stop watching
+   */
+  watchLive: function (sessionId, websocket, onFrame) {
+    if (!websocket) return () => {};
+    const onMessage = (event) => {
+      let data;
+      try {
+        data = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      if (
+        data?.type === "browserUseFrame" &&
+        data.content?.sessionId === sessionId
+      )
+        onFrame(data.content.frame);
+    };
+    websocket.addEventListener("message", onMessage);
+    BrowserUse.control(websocket, sessionId, "watch", { watching: true });
+    return () => {
+      websocket.removeEventListener("message", onMessage);
+      BrowserUse.control(websocket, sessionId, "watch", { watching: false });
+    };
+  },
+
+  /**
+   * Open the session's browser outside the chat card. There is none here: Take control works in
+   * the card's live view (the desktop app opens its real browser window instead).
+   * @returns {boolean} whether a browser was opened
+   */
+  openBrowser: function () {
+    return false;
+  },
+
+  /** Whether the card raises a browser notification when the agent asks for help. */
+  helpNotifications: true,
 
   /**
    * Send a control message for a live session over the agent socket:

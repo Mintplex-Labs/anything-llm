@@ -50,7 +50,10 @@ export default function LiveSession({ session, websocket }) {
           <HelpRequest
             session={session}
             controlling={inControl}
-            onToggleControl={() => setControlling((on) => !on)}
+            onToggleControl={() =>
+              BrowserUse.openBrowser(session.sessionId) ||
+              setControlling((on) => !on)
+            }
             onReply={(text) => send("reply", { text })}
             onSent={() => setControlling(false)}
           />
