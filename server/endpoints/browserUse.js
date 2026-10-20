@@ -15,13 +15,8 @@ const {
   BrowserProfiles,
 } = require("../utils/agents/aibitat/plugins/browser-use/driver/profiles");
 const {
-  BrowserBridge,
-} = require("../utils/agents/aibitat/plugins/browser-use/bridge");
-
-/** DISABLE_VIEW_CHAT_HISTORY hides chat history from admins - other people's browser sessions too. */
-function historyHidden() {
-  return "DISABLE_VIEW_CHAT_HISTORY" in process.env;
-}
+  BrowserUseAccess,
+} = require("../utils/agents/aibitat/plugins/browser-use/access");
 
 /** userId -> username for the given ids (users that no longer exist are left out). */
 async function usernames(ids = []) {
@@ -33,24 +28,17 @@ async function usernames(ids = []) {
   return new Map(users.map((user) => [user.id, user.username]));
 }
 
-/** Session history and saved browser profiles of the browser-use agent skill. */
+/**
+ * Session history and saved browser profiles of the browser-use agent skill. Who may see what is
+ * in browser-use/access.js. None of these are on the developer API.
+ */
 function browserUseEndpoints(app) {
   if (!app) return;
   const adminOnly = [validatedRequest, flexUserRoleValid([ROLES.admin])];
 
-  // The skill is hidden wherever it could never run: a bare-metal production install, no Chromium,
-  // or a server running as root.
-  app.get(
-    "/browser-use/is-available",
-    [validatedRequest],
-    async (_request, response) => {
-      response.status(200).json({ available: BrowserBridge.available });
-    }
-  );
-
   app.get("/browser-use/traces", adminOnly, async (_request, response) => {
     try {
-      if (historyHidden())
+      if (BrowserUseAccess.historyHidden)
         return response.status(200).json({ traces: [], hidden: true });
       const traces = BrowserTraces.list();
       const names = await usernames(traces.map((trace) => trace.userId));
@@ -67,20 +55,19 @@ function browserUseEndpoints(app) {
     }
   });
 
-  // The chat card opens its own session, so whoever ran it may read it - admins may read any,
-  // unless chat history is hidden from them.
+  // The chat card opens its own session. Anyone who may not read it gets the same 404 as for a
+  // session that does not exist, so ids cannot be probed.
   app.get(
     "/browser-use/traces/:id",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest],
     async (request, response) => {
       const trace = BrowserTraces.get(request.params.id);
-      const user = await userFromSession(request, response);
-      const allowed =
-        !!trace &&
-        (!user ||
-          (trace.userId ?? null) === user.id ||
-          (user.role === ROLES.admin && !historyHidden()));
-      if (!allowed) return response.status(404).json({ trace: null });
+      const multiUserMode = !!response.locals.multiUserMode;
+      const user = multiUserMode
+        ? await userFromSession(request, response)
+        : null;
+      if (!BrowserUseAccess.canReadTrace(trace, user, multiUserMode))
+        return response.status(404).json({ trace: null });
       response.status(200).json({ trace });
     }
   );

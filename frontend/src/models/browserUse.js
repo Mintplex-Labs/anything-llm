@@ -7,19 +7,6 @@ import { baseHeaders } from "@/utils/request";
  */
 const BrowserUse = {
   /**
-   * Whether this server can run the skill at all - never on a bare-metal production install.
-   * @returns {Promise<boolean>}
-   */
-  isAvailable: async function () {
-    return await fetch(`${API_BASE}/browser-use/is-available`, {
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => !!res?.available)
-      .catch(() => false);
-  },
-
-  /**
    * Every user's sessions, for admins. `hidden` when DISABLE_VIEW_CHAT_HISTORY hides them.
    * @returns {Promise<{traces: Object[], hidden: boolean}>}
    */

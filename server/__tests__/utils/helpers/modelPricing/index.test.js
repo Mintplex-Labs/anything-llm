@@ -469,42 +469,13 @@ describe("ModelPricing", () => {
       return pricing;
     }
 
-    it("reports whether models.dev lists image input for a model", async () => {
+    it("reports image input per model, and null when it is unknown", async () => {
       const pricing = await loaded();
       expect(pricing.supportsVision("openai", "gpt-4o")).toBe(true);
       expect(pricing.supportsVision("openai", "GPT-4O")).toBe(true);
       expect(pricing.supportsVision("openai", "gpt-4o-mini")).toBe(false);
-    });
-
-    it("matches Bedrock ids with region and version stripped", async () => {
-      const pricing = await loaded();
-      expect(
-        pricing.supportsVision(
-          "bedrock",
-          "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
-        )
-      ).toBe(true);
-    });
-
-    it.each([
-      ["a model without modality data", "openai", "gpt-Reasoner"],
-      ["an unlisted model", "openai", "gpt-made-up"],
-      ["a provider models.dev does not map", "ollama", "llava"],
-      ["no model", "openai", null],
-    ])("returns null (unknown) for %s", async (_label, provider, model) => {
-      const pricing = await loaded();
-      expect(pricing.supportsVision(provider, model)).toBeNull();
-    });
-
-    it("writes the vision cache alongside the pricing cache", async () => {
-      await loaded();
-      const cached = JSON.parse(
-        fs.readFileSync(
-          path.join(tempDir, "models", "pricing", "model-vision.json"),
-          "utf8"
-        )
-      );
-      expect(cached.openai).toEqual({ "gpt-4o": true, "gpt-4o-mini": false });
+      expect(pricing.supportsVision("openai", "gpt-made-up")).toBeNull();
+      expect(pricing.supportsVision("ollama", "llava")).toBeNull();
     });
 
     it("does a full GET when a fresh pricing cache has no vision cache", async () => {

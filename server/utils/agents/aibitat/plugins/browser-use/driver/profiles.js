@@ -20,8 +20,6 @@ const INCOGNITO_PREFIX = "incognito-";
  * a separate, throwaway browser that never touches their saved profile.
  */
 const BrowserProfiles = {
-  DEFAULT: DEFAULT_PROFILE,
-
   /**
    * @param {number|null} userId - null in single-user mode
    * @returns {string}
@@ -73,11 +71,15 @@ const BrowserProfiles = {
       .map((key) => ({ key, userId: this.userIdOf(key) }));
   },
 
-  /** Delete a profile's folder. The browser using it must already be shut down. */
+  /**
+   * Delete a profile's folder. The browser using it must already be shut down.
+   * @returns {boolean} whether there was a folder to delete
+   */
   removeDir(key) {
     const dir = this.dirFor(key);
-    if (dir && fs.existsSync(dir))
-      fs.rmSync(dir, { recursive: true, force: true });
+    if (!dir || !fs.existsSync(dir)) return false;
+    fs.rmSync(dir, { recursive: true, force: true });
+    return true;
   },
 };
 

@@ -73,14 +73,17 @@ const BLOCKER_RESOLVED = {
   verification: "entered the verification code",
 };
 
-/** What the user is asked when the agent hits a sign-in wall, bot check or verification step. */
+/**
+ * What the user is asked when the agent hits a sign-in wall, bot check or verification step. How
+ * they reach the browser depends on where it runs, so the bridge words that part.
+ */
 const BLOCKER_QUESTIONS = {
   login: (site) =>
-    `${site} is asking you to sign in. Click "Take control" in the session card, sign in, then press Continue - or reply with how you would like me to proceed.`,
+    `${site} is asking you to sign in. ${BrowserBridge.TAKE_CONTROL_HINT}, sign in, then press Continue - or reply with how you would like me to proceed.`,
   captcha: (site) =>
-    `${site} wants to check that you are human. Click "Take control" in the session card, complete the check, then press Continue.`,
+    `${site} wants to check that you are human. ${BrowserBridge.TAKE_CONTROL_HINT}, complete the check, then press Continue.`,
   verification: (site) =>
-    `${site} is asking for a verification code. Enter it in the session card ("Take control") or reply with the code, then press Continue.`,
+    `${site} is asking for a verification code. ${BrowserBridge.TAKE_CONTROL_HINT} and enter it, or reply with the code, then press Continue.`,
 };
 
 /**
@@ -92,8 +95,8 @@ const BLOCKER_QUESTIONS = {
  */
 
 /**
- * The browser sub-agent. It runs its own tool loop with the workspace's agent model,
- * driving a hidden Chromium window in the Electron main process.
+ * The browser sub-agent. It runs its own tool loop with the workspace's agent model and drives
+ * the browser through BrowserBridge, so it never knows where that browser runs.
  *
  * Token efficiency (this has to work on small models):
  *  - the page is a flat [n]/[Tn] list sized to the model's context window,
@@ -193,7 +196,7 @@ class BrowserAgent {
     this.trace = {
       id: this.id,
       task,
-      profile: profile,
+      profile,
       status: "running",
       summary: null,
       workspace: aibitat.handlerProps?.invocation?.workspace
@@ -1584,7 +1587,7 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
       title: page.title || null,
       favicon: page.favicon || null,
       thumbnail: result.thumbnail || null,
-      // What the page sent to the site during this step (metadata only, see session.ts NetworkWatch).
+      // What the page sent to the site during this step (metadata only, recorded by the driver).
       sent:
         Array.isArray(result.sent) && result.sent.length
           ? result.sent.slice(0, 5).map(({ label, method, status, ok }) => ({
@@ -1607,7 +1610,7 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
     this.#emit();
   }
 
-  /** The live state shown in the chat card. Thumbnails never go over the socket - frames come from Electron. */
+  /** The live state shown in the chat card. Thumbnails never go over the socket - the live view has its own frames. */
   get snapshot() {
     const last = this.trace.steps.at(-1) || null;
     return {

@@ -191,16 +191,6 @@
         "cost": {
           "input": 3,
           "output": 15
-        },
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
         }
       },
       "eu.anthropic.claude-sonnet-4-5-20250929-v1:0": {

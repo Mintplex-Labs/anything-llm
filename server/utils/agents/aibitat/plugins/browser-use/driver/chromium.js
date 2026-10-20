@@ -6,9 +6,42 @@ const path = require("path");
 
 // The browser is shut down after this long without a session, so it never sits in memory unused.
 const IDLE_SHUTDOWN_MS = 5 * 60_000;
-// The browser opens arbitrary websites, often signed in, so Chromium's sandbox is never turned off -
-// not even when ANYTHINGLLM_CHROMIUM_ARGS turns it off for the collector's scraper.
-const SANDBOX_OFF_ARGS = /^--(no-sandbox|disable-setuid-sandbox)(=|$)/i;
+// The browser opens arbitrary websites, often signed in, so nothing may weaken it: of the flags in
+// ANYTHINGLLM_CHROMIUM_ARGS (shared with the collector's scraper, which may turn its sandbox off) only
+// these harmless ones are passed on. Anything else - --no-sandbox, --single-process, a debugging port,
+// another --user-data-dir, a command prefix - is dropped.
+const ALLOWED_EXTRA_ARGS =
+  /^--(proxy-server|proxy-bypass-list|proxy-pac-url|lang|disable-gpu|disable-software-rasterizer|disable-dev-shm-usage)(=|$)/i;
+// The browser process gets only what it needs to run - never the server's API keys and secrets.
+const PASSED_ENV = [
+  "PATH",
+  "HOME",
+  "TMPDIR",
+  "TMP",
+  "TEMP",
+  "LANG",
+  "LC_ALL",
+  "TZ",
+  "LD_LIBRARY_PATH",
+  "FONTCONFIG_PATH",
+  "FONTCONFIG_FILE",
+  "XDG_CONFIG_HOME",
+  "XDG_CACHE_HOME",
+  "CHROME_DEVEL_SANDBOX",
+  // Windows, for local development.
+  "SYSTEMROOT",
+  "WINDIR",
+  "LOCALAPPDATA",
+  "APPDATA",
+  "PROGRAMFILES",
+  "USERPROFILE",
+];
+
+// Every browser process still running, so none outlives the server.
+const running = new Set();
+process.once("exit", () => {
+  for (const connection of running) connection.kill();
+});
 
 /**
  * Where Chromium lives. The Docker image provides one for the collector's web scraper:
@@ -233,7 +266,9 @@ class Chromium {
         "The browser cannot run as root: Chromium's sandbox needs a regular user."
       );
     const userDataDir = profileDir || tempDir("anythingllm-browser-");
-    fs.mkdirSync(userDataDir, { recursive: true });
+    // A saved profile holds the user's sign-ins - only the server's own user may read it.
+    fs.mkdirSync(userDataDir, { recursive: true, mode: 0o700 });
+    fs.chmodSync(userDataDir, 0o700);
     // The page cache never goes into a saved profile - it would only grow the storage folder.
     const cacheDir = tempDir("anythingllm-browser-cache-");
     // A browser that was killed (a server restart) leaves its lock behind, and Chromium refuses a
@@ -242,10 +277,7 @@ class Chromium {
       fs.rmSync(path.join(userDataDir, lock), { force: true });
     disablePasswordManager(userDataDir);
 
-    const extraArgs = String(process.env.ANYTHINGLLM_CHROMIUM_ARGS || "")
-      .split(",")
-      .map((arg) => arg.trim())
-      .filter((arg) => arg && !SANDBOX_OFF_ARGS.test(arg));
+    const extraArgs = allowedExtraArgs(process.env.ANYTHINGLLM_CHROMIUM_ARGS);
     const proc = spawn(
       exe,
       [
@@ -266,7 +298,7 @@ class Chromium {
         ...extraArgs,
         "about:blank",
       ],
-      { stdio: ["ignore", "ignore", "pipe", "pipe", "pipe"] }
+      { stdio: ["ignore", "ignore", "pipe", "pipe", "pipe"], env: browserEnv() }
     );
     // Kept only to explain a browser that fails to start (most often: no sandbox in this container).
     let stderr = "";
@@ -275,7 +307,9 @@ class Chromium {
     });
     const connection = new Connection(proc);
     browser.live = connection;
+    running.add(connection);
     connection.on("closed", () => {
+      running.delete(connection);
       fs.rm(cacheDir, { recursive: true, force: true }, () => {});
       if (!profileDir)
         fs.rm(userDataDir, { recursive: true, force: true }, () => {});
@@ -284,7 +318,6 @@ class Chromium {
       browser.live = null;
       browser.connection = null;
     });
-    process.once("exit", () => connection.kill());
 
     const { product } = await connection
       .send("Browser.getVersion")
@@ -299,6 +332,25 @@ class Chromium {
     );
     return connection;
   }
+}
+
+/**
+ * The flags of ANYTHINGLLM_CHROMIUM_ARGS this browser may use (see ALLOWED_EXTRA_ARGS).
+ * @param {string|undefined} value - comma-separated flags
+ * @returns {string[]}
+ */
+function allowedExtraArgs(value) {
+  return String(value || "")
+    .split(",")
+    .map((arg) => arg.trim())
+    .filter((arg) => arg && ALLOWED_EXTRA_ARGS.test(arg));
+}
+
+function browserEnv() {
+  const env = {};
+  for (const [name, value] of Object.entries(process.env))
+    if (PASSED_ENV.includes(name.toUpperCase())) env[name] = value;
+  return env;
 }
 
 function tempDir(prefix) {
@@ -326,4 +378,4 @@ function disablePasswordManager(userDataDir) {
   fs.writeFileSync(file, JSON.stringify(prefs));
 }
 
-module.exports = { Chromium, findChromium };
+module.exports = { Chromium, allowedExtraArgs };

@@ -351,12 +351,6 @@ const TRANSLATIONS = {
       wait: "-- waiting for models --",
     },
     skill: {
-      browserUse: {
-        title: "Browser Use",
-        description:
-          "Let your agent use a real web browser to get things done. In multi-user mode, each user gets their own browser profile.",
-      },
-
       rag: {
         title: "RAG & long-term memory",
         description:
@@ -386,6 +380,11 @@ const TRANSLATIONS = {
         title: "Web Search",
         description:
           "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
+      },
+      browserUse: {
+        title: "Browser Use",
+        description:
+          "Let your agent use a real web browser to get things done. In multi-user mode, each user gets their own browser profile.",
       },
       sql: {
         title: "SQL Connector",
@@ -1939,7 +1938,6 @@ const TRANSLATIONS = {
       savedAt: "Saved to continue from",
     },
   },
-
   scheduledJobs: {
     title: "Scheduled Jobs",
     enableNotifications: "Enable browser notifications for job results",

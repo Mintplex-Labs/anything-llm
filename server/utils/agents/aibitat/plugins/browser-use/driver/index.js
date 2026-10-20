@@ -5,15 +5,16 @@ const { BrowserSession } = require("./session");
 const FRAME_INTERVAL_MS = 250;
 // Sessions are closed by the agent when it finishes; this only catches ones it never got to close.
 const IDLE_TIMEOUT_MS = 30 * 60_000;
+// A start still running after this long logs what it is waiting on, every time it passes again.
 const SLOW_START_LOG_MS = 15_000;
+
 /**
  * The browser side of the browser-use agent skill, running in the server process. Each person has
  * their own headless Chromium on their saved profile, and a separate one for incognito sessions
  * (see chromium.js and profiles.js), so no one's browsing touches anyone else's.
  *
- * It answers the same requests the desktop app's Electron driver does (see bridge.js), and adds
- * what the chat card needs to show the session and hand control to a person: live frames
- * (watch) and their clicks and keys (input).
+ * It answers the agent's requests (see bridge.js), and adds what the chat card needs to show the
+ * session and hand control to a person: live frames (watch) and their clicks and keys (input).
  */
 class BrowserDriver {
   /** @type {Map<string, {session: BrowserSession, profile: string, touched: number, watchers: Set<Function>, stopFrames: Function|null}>} */
@@ -30,7 +31,8 @@ class BrowserDriver {
   }
 
   /**
-   * @param {string} action - start | act | close | hide | attention
+   * A request from the agent, through bridge.js.
+   * @param {string} action - start | act | close | attention | hide
    * @param {Object} params
    */
   static async request(action, { sessionId, ...params } = {}) {
@@ -45,10 +47,9 @@ class BrowserDriver {
       case "close":
         BrowserDriver.close(sessionId);
         return true;
-      // The chat card itself is where the user sees and helps the session.
-      case "show":
-      case "hide":
+      // The chat card already shows the help request - there is no window to raise or hide.
       case "attention":
+      case "hide":
         return true;
       default:
         throw new Error(`Unknown browser-use action "${action}"`);
@@ -168,8 +169,8 @@ class BrowserDriver {
     for (const [id, entry] of BrowserDriver.#sessions)
       if (entry.profile === key) BrowserDriver.close(id);
     await Chromium.shutdown(key);
-    BrowserProfiles.removeDir(key);
-    BrowserDriver.log(`Deleted browser profile ${key}`);
+    if (BrowserProfiles.removeDir(key))
+      BrowserDriver.log(`Deleted browser profile ${key}`);
     return true;
   }
 

@@ -1,5 +1,10 @@
 const { EventEmitter } = require("events");
 const { PASSKEY_BLOCK_SCRIPT } = require("./pageScript");
+const {
+  BLOCKED_URL_PATTERNS,
+  isCloudMetadataUrl,
+  isCloudMetadataIp,
+} = require("./cloudMetadata");
 
 const VIEWPORT = { width: 1280, height: 800 };
 // Nobody is at the browser to answer a permission prompt - headless Chrome would leave it pending
@@ -158,6 +163,14 @@ class Tab extends EventEmitter {
       send("DeviceAccess.enable").catch(() => {}),
       // Network events tell the agent when the page actually sent something (a post, a message).
       send("Network.enable", { maxPostDataSize: 4096 }).catch(() => {}),
+      // Requests to cloud metadata services - navigations, redirects and subresources alike - are
+      // paused and failed (see #onRequestPaused). Nothing else is paused.
+      send("Fetch.enable", {
+        patterns: BLOCKED_URL_PATTERNS.map((urlPattern) => ({
+          urlPattern,
+          requestStage: "Request",
+        })),
+      }),
       // Sites see a regular Chrome, client hints included - not "HeadlessChrome".
       send("Emulation.setUserAgentOverride", {
         userAgent: this.userAgent,
@@ -268,6 +281,23 @@ class Tab extends EventEmitter {
           "The page opened a file upload picker. Uploading files is not supported, so it was ignored."
         );
         break;
+      case "Fetch.requestPaused":
+        this.#onRequestPaused(params, sessionId);
+        break;
+      case "Network.responseReceived":
+        // A hostname that resolves to a metadata address gets past the URL patterns - the page it
+        // served is thrown away before the agent can read it.
+        if (
+          params.type === "Document" &&
+          isCloudMetadataIp(params.response?.remoteIPAddress)
+        ) {
+          this.send("Page.navigate", { url: "about:blank" }).catch(() => {});
+          this.emit(
+            "notice",
+            "That page is served by a cloud metadata service, which is blocked. It was closed."
+          );
+        }
+        break;
       case "Page.screencastFrame":
         if (!isPage) break;
         this.send("Page.screencastFrameAck", {
@@ -372,6 +402,23 @@ class Tab extends EventEmitter {
     } finally {
       resume();
     }
+  }
+
+  /** Fail a paused request to a cloud metadata service; let through anything a pattern caught by mistake. */
+  #onRequestPaused({ requestId, request }, sessionId) {
+    const blocked = isCloudMetadataUrl(request?.url);
+    this.connection
+      .send(
+        blocked ? "Fetch.failRequest" : "Fetch.continueRequest",
+        blocked ? { requestId, errorReason: "BlockedByClient" } : { requestId },
+        sessionId
+      )
+      .catch(() => {});
+    if (blocked)
+      this.emit(
+        "notice",
+        `Blocked a request to ${String(request.url).slice(0, 80)} - cloud metadata services are never opened.`
+      );
   }
 
   #onDialog({ type, message }, sessionId) {

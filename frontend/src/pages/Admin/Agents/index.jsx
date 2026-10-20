@@ -5,7 +5,6 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import MCPServers from "@/models/mcpServers";
-import BrowserUse from "@/models/browserUse";
 import showToast from "@/utils/toast";
 import {
   CaretLeft,
@@ -121,7 +120,7 @@ export default function AdminAgents() {
         flowsRes,
         fsAgentAvailable,
         createFilesAvailable,
-        browserUseIsAvailable,
+        browserUseAvail,
       ] = await Promise.all([
         System.keys(),
         Admin.systemPreferencesByFields([
@@ -133,7 +132,7 @@ export default function AdminAgents() {
         AgentFlows.listFlows(),
         System.isFileSystemAgentAvailable(),
         System.isCreateFilesAgentAvailable(),
-        BrowserUse.isAvailable(),
+        System.isBrowserUseAvailable(),
       ]);
 
       const { flows = [] } = flowsRes;
@@ -147,7 +146,7 @@ export default function AdminAgents() {
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
-      setBrowserUseAvailable(browserUseIsAvailable);
+      setBrowserUseAvailable(browserUseAvail);
       setLoading(false);
     }
     fetchSettings();

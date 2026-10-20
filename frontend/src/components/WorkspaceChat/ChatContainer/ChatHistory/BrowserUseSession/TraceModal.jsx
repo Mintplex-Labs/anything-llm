@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Globe,
   CircleNotch,
   Warning,
   ClockCounterClockwise,
@@ -14,6 +13,8 @@ import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import BrowserUse from "@/models/browserUse";
 import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "@/utils/chat/purify";
+import Favicon from "./Favicon";
+import { formatTokens } from "./utils";
 
 // How long each screenshot shows when a site's replay plays.
 const REPLAY_FRAME_MS = 700;
@@ -356,44 +357,6 @@ function Replay({ frames, onFrame, buttonRef }) {
   );
 }
 
-/**
- * A site's favicon: the one the page declared, else the favicon service chat
- * citations use for the host, else a globe.
- */
-export function Favicon({ src, host, size = 16 }) {
-  // Sources that failed to load - a new src or host gets its own attempt.
-  const [failed, setFailed] = useState([]);
-  const candidates = [
-    src,
-    host && `https://www.google.com/s2/favicons?domain=${host}&sz=64`,
-  ].filter((url) => url && !failed.includes(url));
-  const current = candidates[0];
-  if (!current)
-    return (
-      <Globe
-        size={size}
-        className="text-zinc-400 light:text-slate-500 flex-shrink-0"
-      />
-    );
-  return (
-    <img
-      key={current}
-      src={current}
-      alt=""
-      width={size}
-      height={size}
-      onError={() => setFailed((list) => [...list, current])}
-      className="rounded-sm flex-shrink-0"
-      style={{ width: size, height: size }}
-    />
-  );
-}
-
-export function formatTokens(count = 0) {
-  if (count < 1000) return String(count);
-  return `${(count / 1000).toFixed(count < 10_000 ? 1 : 0)}k`;
-}
-
 function traceSubtitle(trace, t) {
   const started = new Date(trace.startedAt);
   const seconds = trace.endedAt
@@ -401,7 +364,6 @@ function traceSubtitle(trace, t) {
     : null;
   return [
     started.toLocaleString(),
-
     seconds &&
       (seconds < 60
         ? t("browserUse.trace.seconds", { count: seconds })

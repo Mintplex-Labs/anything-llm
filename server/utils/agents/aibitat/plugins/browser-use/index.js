@@ -127,49 +127,7 @@ const browserUse = {
                 aibitat.socket?.send("browserUseSession", snapshot),
             });
 
-            // The card's live view: frames go to this chat's socket only while the card watches.
-            let stopWatching = null;
-            const watch = (watching) => {
-              stopWatching?.();
-              stopWatching = watching
-                ? BrowserDriver.watch(agent.id, (frame) =>
-                    aibitat.socket?.send("browserUseFrame", {
-                      sessionId: agent.id,
-                      frame,
-                    })
-                  )
-                : null;
-            };
-
-            const unlisten = aibitat.onControlMessage((message) => {
-              const data = safeJsonParse(message, {});
-              if (
-                data?.type !== "browserUseControl" ||
-                data?.sessionId !== agent.id
-              )
-                return false;
-              switch (data.action) {
-                case "stop":
-                  agent.stop("user");
-                  return true;
-                case "watch":
-                  watch(!!data.watching);
-                  return true;
-                // The person helping drives the browser from the card (sign in, solve a check).
-                case "input":
-                  BrowserDriver.input(agent.id, data.input);
-                  return true;
-                case "reply":
-                  if (agent.reply(data.text)) return true;
-                  console.log(
-                    `[BrowserUse] Ignoring a reply for session ${agent.id} - it is not waiting for one.`
-                  );
-                  return false;
-                default:
-                  return false;
-              }
-            });
-
+            const stopListening = listenToCard(aibitat, agent);
             try {
               const result = await agent.run();
               // Persist the (collapsed) session card with the chat so it survives reloads.
@@ -180,8 +138,7 @@ const browserUse = {
               });
               return result;
             } finally {
-              unlisten();
-              stopWatching?.();
+              stopListening();
             }
           },
         });
@@ -299,6 +256,61 @@ function userTurn(aibitat) {
 }
 
 /**
+ * The session card's messages over the chat's agent socket: stop, a reply to a help request, and
+ * the live view - frames go to this chat only while the card watches, and the person helping can
+ * drive the browser from it (sign in, solve a check).
+ * @returns {() => void} stop listening
+ */
+function listenToCard(aibitat, agent) {
+  let stopWatching = null;
+  const watch = (watching) => {
+    stopWatching?.();
+    stopWatching = watching
+      ? BrowserDriver.watch(agent.id, (frame) =>
+          aibitat.socket?.send("browserUseFrame", {
+            sessionId: agent.id,
+            frame,
+          })
+        )
+      : null;
+  };
+
+  const unlisten = aibitat.onControlMessage((message) => {
+    const data = safeJsonParse(message, {});
+    if (data?.type !== "browserUseControl" || data?.sessionId !== agent.id)
+      return false;
+    switch (data.action) {
+      case "stop":
+        agent.stop("user");
+        return true;
+      case "watch":
+        watch(!!data.watching);
+        return true;
+      // Only while the agent asks for help - the card offers Take control then, and a client that
+      // sends input at any other time would be driving the browser behind the agent's back. A
+      // release always goes through, so handing control back never leaves the button held down.
+      case "input":
+        if (agent.trace.status === "needs-help" || data.input?.type === "up")
+          BrowserDriver.input(agent.id, data.input);
+        return true;
+      case "reply":
+        if (agent.reply(data.text)) return true;
+        console.log(
+          `[BrowserUse] Ignoring a reply for session ${agent.id} - it is not waiting for one.`
+        );
+        return false;
+      default:
+        return false;
+    }
+  });
+
+  return () => {
+    unlisten();
+    stopWatching?.();
+  };
+}
+
+/**
  * A chat in the web UI: only the agent websocket (plugins/websocket.js) lets a tool take its own
  * control messages, which the session card needs. API, Telegram and scheduled job runs have none.
  */
@@ -343,14 +355,4 @@ async function chatContext(aibitat) {
   };
 }
 
-/**
- * A user was deleted: their saved browser profile, their incognito browser and their session
- * history all go with them.
- * @param {number} userId
- */
-async function forgetBrowserUser(userId) {
-  await BrowserDriver.deleteUserProfile(userId);
-  BrowserTraces.deleteForUser(userId);
-}
-
-module.exports = { browserUse, forgetBrowserUser };
+module.exports = { browserUse };

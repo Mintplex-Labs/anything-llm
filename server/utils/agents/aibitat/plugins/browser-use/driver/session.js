@@ -1,5 +1,8 @@
 const { Tab, VIEWPORT } = require("./tab");
 const { PAGE_SCRIPT } = require("./pageScript");
+const { SentLog } = require("./sentLog");
+const { keyEvents } = require("./keys");
+const { isCloudMetadataUrl } = require("./cloudMetadata");
 
 /**  ATTN: SECURITY RESEARCHERS
  * To Security researchers about to submit an SSRF report CVE - please don't.
@@ -9,6 +12,9 @@ const { PAGE_SCRIPT } = require("./pageScript");
  * Only an admin can turn the skill on. We communicate already that deployment (and security) of an
  * instance is on the deployer and system admin deploying it. This would include isolation,
  * firewalls, and the general security of the instance.
+ *
+ * The one exception is cloud instance metadata services (169.254.169.254 and friends), which hand
+ * out the server's cloud credentials - those are blocked, see cloudMetadata.js.
  */
 
 /**
@@ -23,14 +29,13 @@ const MAX_FRAMES = 6;
 // Ad slots are cross-origin frames too, but nothing in them is part of the task.
 const AD_FRAME_HOST =
   /(^|\.)(doubleclick\.net|googlesyndication\.com|googleadservices\.com|amazon-adsystem\.com|adnxs\.com|taboola\.com|outbrain\.com|criteo\.(com|net)|rubiconproject\.com|pubmatic\.com|openx\.net|moatads\.com|adsafeprotected\.com|3lift\.com|teads\.tv|casalemedia\.com|media\.net)$/i;
-// Analytics, logging and tracking endpoints POST constantly - they are not "the page sent something".
-const TRACKING_PATH =
-  /\/(track|tracking|collect|beacon|log|logs|logging|analytics|metrics|telemetry|events?|rum|pixel|ping|sentry|csp-report|li\/track|jot|1p-user-list|pagead)\b/i;
-const READ_ONLY_GRAPHQL = /"query"\s*:\s*"\s*(query\b|\{)/;
-const ACTIONS_THAT_SUBMIT = new Set(["click", "press_key", "type"]);
-// Keep-alives sockets send on a timer (socket.io "2", {"type":"ping"}, Discord {"op":1,...}), not because of the agent.
-const WS_HEARTBEAT =
-  /["'](type|event|op|action|cmd|method|msg)["']\s*:\s*["']?(ping|pong|heartbeat|hb|keep_?alive)\b|^\s*\{\s*"op"\s*:\s*1\s*,|^\s*"?(ping|pong|heartbeat|keep_?alive)"?\s*$/i;
+// Actions that can make the page send something to its site - only these record a SentLog.
+const ACTIONS_THAT_SEND = new Set([
+  "click",
+  "press_key",
+  "type",
+  "select_option",
+]);
 // Screenshots are a last resort for vision models, so keep them small.
 const SCREENSHOT_WIDTH = 768;
 const SCREENSHOT_QUALITY = 50;
@@ -78,15 +83,17 @@ class BrowserSession {
     /** Words of the task (stems) - long navigation lists keep the links that mention them. */
     this.terms = terms;
     this.notices = [];
-    /** Write requests seen since the current action started (null when no action is running). */
-    this.sentLog = null;
-    /** Open websockets by CDP request id - frames only carry the id, the URL comes with webSocketCreated. */
-    this.socketUrls = new Map();
+    /** What the page sent to its site during the current action. */
+    this.sentLog = new SentLog(() => this.tab.url);
     /** Isolated world execution contexts of cross-origin frames, by `${session}|${frameId}`. */
     this.worlds = new Map();
     this.idRanges = [];
     this.scrollFrame = null;
+    /** Agent actions, one at a time (see run). */
     this.queue = Promise.resolve();
+    /** Input from the person in the chat card, strictly in order (see userInput). */
+    this.inputQueue = Promise.resolve();
+    this.mouseHeld = false;
     this.lastFrame = null;
     this.tookOverSinceRead = false;
     this.userInputAt = 0;
@@ -95,7 +102,7 @@ class BrowserSession {
     tab.on("frame", (frame) => (this.lastFrame = frame));
     tab.on("cdp", (method, params, sessionId) => {
       if (method.startsWith("Network."))
-        this.#onNetwork(method, params, sessionId);
+        this.sentLog.onEvent(method, params, sessionId);
       else if (method === "Target.detachedFromTarget")
         for (const key of this.worlds.keys())
           if (key.startsWith(`${params.sessionId}|`)) this.worlds.delete(key);
@@ -144,7 +151,7 @@ class BrowserSession {
    * @param {{type: "click"|"down"|"move"|"up"|"scroll"|"key"|"text", x?: number, y?: number, deltaY?: number, key?: string, text?: string}} event
    */
   userInput(event = {}) {
-    this.inputQueue = (this.inputQueue || Promise.resolve())
+    this.inputQueue = this.inputQueue
       .then(() => this.#applyInput(event))
       .catch(() => {});
     return this.inputQueue;
@@ -536,121 +543,12 @@ class BrowserSession {
 
   /** Press a key or a combination ("Enter", "Control+A", "Shift+Tab", "Meta+K") with trusted CDP key events. */
   async #key(input) {
-    const { modifiers, key, commands } = parseKeys(input);
-    const send = (params) => this.tab.send("Input.dispatchKeyEvent", params);
-    const def = (k) => ({
-      key: k.key,
-      code: k.code,
-      windowsVirtualKeyCode: k.keyCode,
-      nativeVirtualKeyCode: k.keyCode,
-    });
-    let bits = 0;
-    for (const mod of modifiers) {
-      bits |= mod.bit;
-      await send({ type: "rawKeyDown", modifiers: bits, ...def(mod) });
-    }
-    // Shortcuts (Control+A) type nothing; plain keys and Shift+key do.
-    const text =
-      key.text && !(bits & (ALT.bit | CONTROL.bit | META.bit))
-        ? key.text
-        : undefined;
-    await send({
-      type: text ? "keyDown" : "rawKeyDown",
-      modifiers: bits,
-      ...def(key),
-      text,
-      unmodifiedText: text,
-      ...(commands ? { commands } : {}),
-    });
+    const { down, up } = keyEvents(input);
+    for (const params of down)
+      await this.tab.send("Input.dispatchKeyEvent", params);
     await sleep(30);
-    await send({ type: "keyUp", modifiers: bits, ...def(key) });
-    for (const mod of [...modifiers].reverse()) {
-      bits &= ~mod.bit;
-      await send({ type: "keyUp", modifiers: bits, ...def(mod) });
-    }
-  }
-
-  /////////////////////////////
-  // Network write log
-  /////////////////////////////
-
-  /** Record same-site write requests (POST/PUT/PATCH/DELETE, websocket sends) while an action runs. */
-  #onNetwork(method, params, sessionId) {
-    const id = `${sessionId}|${params.requestId}`;
-    if (method === "Network.webSocketCreated") {
-      if (this.socketUrls.size > 200) this.socketUrls.clear();
-      this.socketUrls.set(id, params.url);
-      return;
-    }
-    if (method === "Network.webSocketClosed") {
-      this.socketUrls.delete(id);
-      return;
-    }
-    const log = this.sentLog;
-    if (!log) return;
-    if (method === "Network.requestWillBeSent") {
-      const { request, type } = params;
-      if (
-        /^(GET|HEAD|OPTIONS)$/i.test(request.method) ||
-        type === "Ping" ||
-        type === "CSPViolationReport"
-      )
-        return;
-      const url = parseUrl(request.url);
-      if (!url || !this.#isSiteWrite(url)) return;
-      const body = String(request.postData || "").slice(0, 4096);
-      if (READ_ONLY_GRAPHQL.test(body)) return; // GraphQL reads sent as POST
-      const operation =
-        body.match(/"operationName"\s*:\s*"([\w-]{2,60})"/)?.[1] || null;
-      log.set(id, {
-        label: operation || lastSegment(url),
-        method: request.method.toUpperCase(),
-        target: shortTarget(url),
-        status: null,
-        ok: null,
-      });
-    } else if (method === "Network.responseReceived" && log.has(id)) {
-      const entry = log.get(id);
-      entry.status = params.response.status;
-      entry.ok = params.response.status < 400;
-    } else if (method === "Network.loadingFailed" && log.has(id)) {
-      const entry = log.get(id);
-      if (entry.status === null) entry.ok = params.canceled ? null : false;
-    } else if (
-      method === "Network.webSocketFrameSent" &&
-      !log.has(`ws:${id}`)
-    ) {
-      const url = parseUrl(this.socketUrls.get(id) || "");
-      if (!url || !this.#isSiteWrite(url) || isHeartbeat(params.response))
-        return;
-      log.set(`ws:${id}`, {
-        label: "websocket message",
-        method: "WS",
-        target: url.host.replace(/^www\./, ""),
-        status: null,
-        ok: true,
-      });
-    }
-  }
-
-  #isSiteWrite(url) {
-    return (
-      sameSite(url.hostname, this.tab.url) && !TRACKING_PATH.test(url.pathname)
-    );
-  }
-
-  /** Stop recording - after giving in-flight requests a moment to come back - and summarize. */
-  async #collectSent() {
-    const log = this.sentLog;
-    if (!log) return [];
-    const started = Date.now();
-    while (
-      [...log.values()].some((r) => r.ok === null && r.method !== "WS") &&
-      Date.now() - started < 2_000
-    )
-      await sleep(150);
-    this.sentLog = null;
-    return [...log.values()];
+    for (const params of up)
+      await this.tab.send("Input.dispatchKeyEvent", params);
   }
 
   /////////////////////////////
@@ -671,8 +569,7 @@ class BrowserSession {
 
   async #execute(tool, args) {
     if (this.closed) throw new Error("The browser session has ended.");
-    if (ACTIONS_THAT_SUBMIT.has(tool) || tool === "select_option")
-      this.sentLog = new Map();
+    if (ACTIONS_THAT_SEND.has(tool)) this.sentLog.start();
     let outcome = "";
     let ok = true;
     let sensitive = false;
@@ -686,6 +583,10 @@ class BrowserSession {
           const url = normalizeUrl(args.url);
           if (!url)
             throw new Error(`"${args.url}" is not a valid web address.`);
+          if (isCloudMetadataUrl(url))
+            throw new Error(
+              `${url} is a cloud metadata service, which the browser never opens.`
+            );
           requested = url;
           await this.tab.load(url).catch(() => {}); // load failures still leave an error page to read
           outcome = `Opened ${url}`;
@@ -944,8 +845,8 @@ class BrowserSession {
       ].includes(tool)
     )
       await this.#settle();
-    const sent = await this.#collectSent();
-    if (sent.length) outcome += `\nSent to the site: ${describeSent(sent)}`;
+    const sent = await this.sentLog.collect();
+    if (sent.length) outcome += `\nSent to the site: ${SentLog.describe(sent)}`;
     else if (
       ok &&
       (tool === "click" ||
@@ -1019,7 +920,7 @@ class BrowserSession {
 }
 
 /////////////////////////////
-// Helpers (same as the desktop driver)
+// Helpers
 /////////////////////////////
 
 const STATE_FLAGS = new Set(["checked", "selected", "expanded", "disabled"]);
@@ -1059,209 +960,6 @@ function viewportShare(box) {
   return (w * h) / (VIEWPORT.width * VIEWPORT.height);
 }
 
-// CDP key definitions. `text` makes Chromium send a char/keypress event too.
-const NAMED_KEYS = {
-  enter: { key: "Enter", code: "Enter", keyCode: 13, text: "\r" },
-  tab: { key: "Tab", code: "Tab", keyCode: 9 },
-  escape: { key: "Escape", code: "Escape", keyCode: 27 },
-  backspace: { key: "Backspace", code: "Backspace", keyCode: 8 },
-  delete: { key: "Delete", code: "Delete", keyCode: 46 },
-  insert: { key: "Insert", code: "Insert", keyCode: 45 },
-  space: { key: " ", code: "Space", keyCode: 32, text: " " },
-  arrowup: { key: "ArrowUp", code: "ArrowUp", keyCode: 38 },
-  arrowdown: { key: "ArrowDown", code: "ArrowDown", keyCode: 40 },
-  arrowleft: { key: "ArrowLeft", code: "ArrowLeft", keyCode: 37 },
-  arrowright: { key: "ArrowRight", code: "ArrowRight", keyCode: 39 },
-  pageup: { key: "PageUp", code: "PageUp", keyCode: 33 },
-  pagedown: { key: "PageDown", code: "PageDown", keyCode: 34 },
-  home: { key: "Home", code: "Home", keyCode: 36 },
-  end: { key: "End", code: "End", keyCode: 35 },
-};
-for (let n = 1; n <= 12; n++)
-  NAMED_KEYS[`f${n}`] = { key: `F${n}`, code: `F${n}`, keyCode: 111 + n };
-const KEY_ALIASES = {
-  return: "enter",
-  esc: "escape",
-  del: "delete",
-  spacebar: "space",
-  up: "arrowup",
-  down: "arrowdown",
-  left: "arrowleft",
-  right: "arrowright",
-};
-// CDP modifier bits: Alt=1, Ctrl=2, Meta/Command=4, Shift=8.
-const ALT = { bit: 1, key: "Alt", code: "AltLeft", keyCode: 18 };
-const CONTROL = { bit: 2, key: "Control", code: "ControlLeft", keyCode: 17 };
-const META = { bit: 4, key: "Meta", code: "MetaLeft", keyCode: 91 };
-const SHIFT = { bit: 8, key: "Shift", code: "ShiftLeft", keyCode: 16 };
-const IS_MAC = process.platform === "darwin";
-const MODIFIERS = {
-  alt: ALT,
-  option: ALT,
-  control: CONTROL,
-  ctrl: CONTROL,
-  meta: META,
-  cmd: META,
-  command: META,
-  super: META,
-  win: META,
-  windows: META,
-  shift: SHIFT,
-  // "the platform's shortcut key"
-  mod: IS_MAC ? META : CONTROL,
-  cmdorctrl: IS_MAC ? META : CONTROL,
-  commandorcontrol: IS_MAC ? META : CONTROL,
-};
-const PUNCTUATION_KEYCODES = {
-  ";": 186,
-  "=": 187,
-  ",": 188,
-  "-": 189,
-  ".": 190,
-  "/": 191,
-  "`": 192,
-  "[": 219,
-  "\\": 220,
-  "]": 221,
-  "'": 222,
-};
-// Synthetic key events never reach the macOS text system, so editing shortcuts need their command named.
-const MAC_EDIT_COMMANDS = {
-  a: "selectAll",
-  c: "copy",
-  v: "paste",
-  x: "cut",
-  z: "undo",
-};
-
-/** "Control+A" / "shift + tab" / "Enter" / "k" -> CDP key definitions. */
-function parseKeys(input) {
-  const raw = String(input || "").trim() || "Enter";
-  // "+" itself can be the key ("Control++").
-  const parts =
-    raw === "+"
-      ? ["+"]
-      : raw.endsWith("++")
-        ? [...raw.slice(0, -2).split(/\s*\+\s*/), "+"]
-        : raw.split(/\s*\+\s*/);
-  const last = parts.pop();
-  const modifiers = [];
-  for (const part of parts) {
-    const mod = MODIFIERS[part.toLowerCase()];
-    if (!mod)
-      throw new Error(
-        `"${part}" in "${raw}" is not a modifier key. Use Control, Shift, Alt or Meta, e.g. "Control+A".`
-      );
-    if (!modifiers.includes(mod)) modifiers.push(mod);
-  }
-  const name = last.toLowerCase().replace(/\s+/g, "");
-  const loneModifier = MODIFIERS[name];
-  if (loneModifier && !modifiers.length)
-    return {
-      modifiers: [],
-      key: {
-        key: loneModifier.key,
-        code: loneModifier.code,
-        keyCode: loneModifier.keyCode,
-      },
-    };
-  let key = NAMED_KEYS[KEY_ALIASES[name] || name];
-  if (!key && [...last].length === 1) key = charKey(last, modifiers);
-  if (!key)
-    throw new Error(
-      `"${last}" is not a key press_key knows. Use a key name (Enter, Tab, Escape, ArrowDown, PageDown, F5...), a single character, or a combination like "Control+A".`
-    );
-
-  let commands;
-  const letter = key.code.startsWith("Key")
-    ? key.code.slice(3).toLowerCase()
-    : "";
-  if (
-    IS_MAC &&
-    MAC_EDIT_COMMANDS[letter] &&
-    (modifiers.includes(META) || modifiers.includes(CONTROL)) &&
-    !modifiers.includes(ALT)
-  ) {
-    // Models write "Control+A" whatever the platform - on a Mac the shortcut is Command+A.
-    const i = modifiers.indexOf(CONTROL);
-    if (i !== -1 && !modifiers.includes(META)) modifiers[i] = META;
-    commands = [
-      letter === "z" && modifiers.includes(SHIFT)
-        ? "redo"
-        : MAC_EDIT_COMMANDS[letter],
-    ];
-  }
-  return { modifiers, key, commands };
-}
-
-function charKey(ch, modifiers) {
-  if (/^[a-z]$/i.test(ch)) {
-    const upper = ch.toUpperCase();
-    // A lone "A" types a capital; in a shortcut the letter's case comes from Shift ("Control+A" is key "a").
-    const key = modifiers.includes(SHIFT)
-      ? upper
-      : modifiers.length
-        ? upper.toLowerCase()
-        : ch;
-    return {
-      key,
-      code: `Key${upper}`,
-      keyCode: upper.charCodeAt(0),
-      text: key,
-    };
-  }
-  if (/^\d$/.test(ch))
-    return { key: ch, code: `Digit${ch}`, keyCode: ch.charCodeAt(0), text: ch };
-  return {
-    key: ch,
-    code: "",
-    keyCode: PUNCTUATION_KEYCODES[ch] || 0,
-    text: ch,
-  };
-}
-
-function isHeartbeat(frame = {}) {
-  if (frame.opcode !== undefined && frame.opcode !== 1 && frame.opcode !== 2)
-    return true; // control frames
-  const payload = String(frame.payloadData || "");
-  return payload.trim().length < 16 || WS_HEARTBEAT.test(payload.slice(0, 300));
-}
-
-// Second-level labels that belong to a country's public suffix (bbc.co.uk, abc.net.au, gov.br, amazon.co.jp).
-const CC_SECOND_LEVEL = new Set(
-  "co com net org gov edu ac ne or go gob mil nic ltd plc nom sch gen biz info int res web firm ind nhs me id gr lg ed ad".split(
-    " "
-  )
-);
-// Hosting suffixes where every subdomain belongs to someone else.
-const SHARED_HOSTS = new Set(
-  "github.io gitlab.io herokuapp.com vercel.app netlify.app pages.dev workers.dev web.app firebaseapp.com appspot.com blogspot.com azurewebsites.net cloudfront.net onrender.com fly.dev glitch.me ngrok.io ngrok-free.app".split(
-    " "
-  )
-);
-
-/**
- * The registrable domain of a host (api.x.com -> x.com, news.bbc.co.uk -> bbc.co.uk). There is no
- * public suffix list here, so country second-level suffixes and shared hosting domains are approximated.
- */
-function siteOf(host) {
-  const h = host.toLowerCase().replace(/\.$/, "");
-  if (!h.includes(".") || h.includes(":") || /^[\d.]+$/.test(h)) return h; // localhost, IPv6, IPv4
-  const labels = h.split(".");
-  const tld = labels[labels.length - 1];
-  const sld = labels[labels.length - 2];
-  const multiPart =
-    SHARED_HOSTS.has(`${sld}.${tld}`) ||
-    (tld.length === 2 && CC_SECOND_LEVEL.has(sld));
-  return labels.slice(multiPart ? -3 : -2).join(".");
-}
-
-/** Same site = same registrable domain (x.com / api.x.com, www.linkedin.com / linkedin.com). */
-function sameSite(host, pageUrl) {
-  const page = parseUrl(pageUrl);
-  return !!page && siteOf(host) === siteOf(page.hostname);
-}
-
 function parseUrl(url) {
   try {
     return new URL(url);
@@ -1272,59 +970,6 @@ function parseUrl(url) {
 
 function hostOf(url) {
   return parseUrl(url)?.host.replace(/^www\./, "") || "another site";
-}
-
-/** host + path with ids/hashes collapsed, e.g. x.com/i/api/graphql/…/CreateTweet */
-function shortTarget(url) {
-  const path = url.pathname
-    .split("/")
-    .map((part) => (isOpaqueId(part) ? "…" : part))
-    .join("/");
-  const text = `${url.host.replace(/^www\./, "")}${path}`;
-  return text.length > 80 ? `${text.slice(0, 79)}…` : text;
-}
-
-// Ids, hashes and tokens in a path say nothing to the model - collapse them.
-function isOpaqueId(part) {
-  if (
-    part.length > 24 ||
-    /^[0-9a-f-]{12,}$/i.test(part) ||
-    /^\d{5,}$/.test(part)
-  )
-    return true;
-  return part.length >= 16 && /\d/.test(part) && /[a-z]/i.test(part);
-}
-
-function lastSegment(url) {
-  const parts = url.pathname
-    .split("/")
-    .filter((p) => p && p.length <= 40 && !/^\d+$/.test(p));
-  return parts.at(-1) || url.host;
-}
-
-function describeSent(sent) {
-  const status = (r) =>
-    r.method === "WS"
-      ? "sent"
-      : r.status
-        ? `${r.status}${r.ok ? " OK" : " (failed)"}`
-        : r.ok === false
-          ? "failed"
-          : "no reply yet";
-  const shown = sent
-    .slice(0, 3)
-    .map((r) =>
-      r.method === "WS"
-        ? `a websocket message on ${r.target}`
-        : `${r.method} ${r.target}${r.label !== lastSegmentOf(r.target) ? ` (${r.label})` : ""} -> ${status(r)}`
-    );
-  return (
-    shown.join("; ") + (sent.length > 3 ? `; and ${sent.length - 3} more` : "")
-  );
-}
-
-function lastSegmentOf(target) {
-  return target.split("/").filter(Boolean).at(-1) || "";
 }
 
 /**
@@ -1355,10 +1000,4 @@ function normalizeUrl(input) {
   }
 }
 
-module.exports = {
-  BrowserSession,
-  parseKeys,
-  describeChange,
-  siteOf,
-  sameSite,
-};
+module.exports = { BrowserSession };

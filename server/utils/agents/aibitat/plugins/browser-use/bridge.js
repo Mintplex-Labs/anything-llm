@@ -2,11 +2,22 @@ const { BrowserDriver } = require("./driver");
 const { Chromium } = require("./driver/chromium");
 
 /**
- * The agent loop's way to the browser. In the desktop app this is a channel to the Electron main
- * process; here the browser runs in the server process (see driver/), so requests are plain calls -
- * with the same timeout, so a hung page never stalls the agent forever.
+ * The browser agent's only way to the browser - the one file that knows where the browser runs.
+ * The desktop app has its own bridge.js that talks to the Electron main process; here the browser
+ * runs in the server process (see driver/), so requests are plain calls - with the same timeout,
+ * so a hung page never stalls the agent forever.
+ *
+ * Requests (see BrowserDriver#request):
+ *   start     - open a session on a profile: {sessionId, profile, maxChars, startUrl, terms}
+ *   act       - run a browser tool: {sessionId, tool, args}
+ *   close     - end a session: {sessionId}
+ *   attention - the agent needs help: {sessionId, title, body, path}
+ *   hide      - the help request was answered: {sessionId}
  */
 class BrowserBridge {
+  /** How a person gets their hands on the browser - part of what the agent asks when it needs help. */
+  static TAKE_CONTROL_HINT = 'Click "Take control" in the session card';
+
   /**
    * Browser use runs a browser on the server, so a production server only offers it inside the
    * Docker image - never on a bare-metal install. Development runs it anywhere.
@@ -16,10 +27,7 @@ class BrowserBridge {
     return process.env.ANYTHING_LLM_RUNTIME === "docker";
   }
 
-  /**
-   * Browser use needs an allowed runtime and a Chromium it can run sandboxed - the Docker image
-   * has one for the collector's web scraper.
-   */
+  /** An allowed runtime and a Chromium it can run sandboxed (the Docker image ships one). */
   static get available() {
     return BrowserBridge.runtimeAllowed && Chromium.available;
   }

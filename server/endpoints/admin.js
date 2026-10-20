@@ -26,8 +26,8 @@ const {
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const ImportedPlugin = require("../utils/agents/imported");
 const {
-  forgetBrowserUser,
-} = require("../utils/agents/aibitat/plugins/browser-use");
+  BrowserUseLifecycle,
+} = require("../utils/agents/aibitat/plugins/browser-use/lifecycle");
 const {
   simpleSSOLoginDisabledMiddleware,
 } = require("../utils/middleware/simpleSSOEnabled");
@@ -146,7 +146,7 @@ function adminEndpoints(app) {
 
         await BrowserExtensionApiKey.deleteAllForUser(Number(id));
         await User.delete({ id: Number(id) });
-        await forgetBrowserUser(Number(id)).catch(() => {});
+        await BrowserUseLifecycle.userDeleted(Number(id));
         await EventLogs.logEvent(
           "user_deleted",
           {

@@ -4,7 +4,6 @@ import System from "@/models/system";
 import AgentPlugins from "@/models/experimental/agentPlugins";
 import AgentFlows from "@/models/agentFlows";
 import MCPServers from "@/models/mcpServers";
-import BrowserUse from "@/models/browserUse";
 import { getSubSkillPreferenceKeys } from "./skillRegistry";
 import useSubSkillPreferences from "./useSubSkillPreferences";
 import { toggleAgentSessionTool } from "@/utils/chat/agent";
@@ -47,7 +46,7 @@ export default function useAgentSkillsState(defaultSkills) {
         fsAgentAvailable,
         multiUserMode,
         imageGenAvailable,
-        browserUseIsAvailable,
+        browserUseAvail,
       ] = await Promise.all([
         Admin.systemPreferencesByFields([
           "disabled_agent_skills",
@@ -59,7 +58,7 @@ export default function useAgentSkillsState(defaultSkills) {
         System.isFileSystemAgentAvailable(),
         System.isMultiUserMode(),
         System.isImageGenerationAvailable(),
-        BrowserUse.isAvailable(),
+        System.isBrowserUseAvailable(),
       ]);
 
       if (prefs?.settings) {
@@ -71,7 +70,7 @@ export default function useAgentSkillsState(defaultSkills) {
       if (flowsRes?.flows) setFlows(flowsRes.flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setImageGenerationAvailable(imageGenAvailable);
-      setBrowserUseAvailable(browserUseIsAvailable);
+      setBrowserUseAvailable(browserUseAvail);
       setIsMultiUser(!!multiUserMode);
     } catch (e) {
       console.error(e);
