@@ -652,6 +652,8 @@ class Tab extends EventEmitter {
         ? {
             format: "jpeg",
             quality: 60,
+            // Caps, not a size: a page that came out a little taller than VIEWPORT must not be
+            // scaled down (and letterboxed), so the height cap is deliberately generous.
             maxWidth: VIEWPORT.width,
             maxHeight: VIEWPORT.width,
           }
