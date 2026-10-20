@@ -522,10 +522,12 @@ class Tab extends EventEmitter {
   // Input and pictures
   /////////////////////////////
 
-  /** Trusted mouse event at viewport coordinates. */
-  mouse(type, x, y, { clickCount = 1 } = {}) {
+  /** Trusted mouse event at viewport coordinates. held: a move with the left button down (a drag). */
+  mouse(type, x, y, { clickCount = 1, held = false } = {}) {
     const params = {
-      move: { type: "mouseMoved", button: "none", buttons: 0 },
+      move: held
+        ? { type: "mouseMoved", button: "left", buttons: 1 }
+        : { type: "mouseMoved", button: "none", buttons: 0 },
       down: { type: "mousePressed", button: "left", buttons: 1, clickCount },
       up: { type: "mouseReleased", button: "left", buttons: 0, clickCount },
     }[type];

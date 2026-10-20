@@ -484,6 +484,7 @@ class BrowserAgent {
     if (!parsed) return null;
     return {
       ...parsed,
+      synthetic: true,
       raw: {
         id: `call_${uuidv4()}`,
         name: parsed.name,
@@ -871,6 +872,7 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
         const call = {
           name: "navigate",
           args,
+          synthetic: true,
           raw: { id: `call_${uuidv4()}`, name: "navigate", arguments: args },
         };
         this.records.push({
@@ -940,6 +942,7 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
     const call = {
       name: "ask_user",
       args: { question },
+      synthetic: true,
       raw: {
         id: `call_${uuidv4()}`,
         name: "ask_user",
@@ -1137,7 +1140,16 @@ On the second line write one short sentence: for CONTINUE or BACK, the single ne
               },
             ]
           : null;
-      if (this.native) {
+      if (this.native && call.synthetic) {
+        // A call the model never made (the agent paused for a blocker, a checkpoint went back, or the
+        // model wrote its action as text) has no provider-issued tool call to pair with - Gemini
+        // rejects a tool call without its thought_signature. It goes in as a note instead.
+        messages.push({
+          role: "user",
+          content: `[${call.name} ${JSON.stringify(compactCall({ arguments: call.args }).arguments)}]\nResult:\n${contents[i]}`,
+          ...(image ? { attachments: image } : {}),
+        });
+      } else if (this.native) {
         messages.push({
           role: "function",
           name: call.name,

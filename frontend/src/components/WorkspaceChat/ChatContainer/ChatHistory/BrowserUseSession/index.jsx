@@ -22,6 +22,8 @@ import TraceModal, { Favicon, formatTokens } from "./TraceModal";
 const LIVE_STATUSES = ["running", "needs-help"];
 // A stop or reply the server never acknowledges must not leave the controls disabled forever.
 const ACK_TIMEOUT_MS = 30_000;
+// Mouse moves sent to the browser while the person has control - enough for a drag to follow.
+const MOVE_INTERVAL_MS = 50;
 
 /**
  * Chat card for a browser-use session. While the session runs it streams the
@@ -204,15 +206,23 @@ function SessionMetrics({ session }) {
 }
 
 /**
- * The live picture of the browser. While the person has control, their clicks, scrolls and keys
+ * The live picture of the browser. While the person has control, their mouse, scrolls and keys
  * go to the browser: positions as fractions of the view (the card's size never matters), typed
- * characters as text and everything else as key presses.
+ * characters as text and everything else as key presses. The mouse goes as press, moves and
+ * release, so they can press and hold or drag, not only click.
  */
 function LiveView({ frameSrc, controlling, onInput }) {
   const { t } = useTranslation();
   const ref = useRef(null);
+  const pressed = useRef(false);
+  const lastMoveAt = useRef(0);
   useEffect(() => {
     if (controlling) ref.current?.focus();
+    // Handing control back mid-press must not leave the browser's button held down.
+    else if (pressed.current) {
+      pressed.current = false;
+      onInput({ type: "up" });
+    }
   }, [controlling]);
 
   const at = (e) => {
@@ -222,9 +232,30 @@ function LiveView({ frameSrc, controlling, onInput }) {
       y: (e.clientY - box.top) / box.height,
     };
   };
+  const release = (e) => {
+    if (!pressed.current) return;
+    pressed.current = false;
+    onInput({ type: "up", ...at(e) });
+  };
   const handlers = controlling
     ? {
-        onClick: (e) => onInput({ type: "click", ...at(e) }),
+        onPointerDown: (e) => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          ref.current.focus();
+          // Keeps the release coming here even if the pointer leaves the view while held.
+          e.currentTarget.setPointerCapture(e.pointerId);
+          pressed.current = true;
+          onInput({ type: "down", ...at(e) });
+        },
+        onPointerMove: (e) => {
+          const now = Date.now();
+          if (now - lastMoveAt.current < MOVE_INTERVAL_MS) return;
+          lastMoveAt.current = now;
+          onInput({ type: "move", ...at(e) });
+        },
+        onPointerUp: release,
+        onPointerCancel: release,
         onWheel: (e) => onInput({ type: "scroll", ...at(e), deltaY: e.deltaY }),
         onKeyDown: (e) => {
           e.preventDefault();
@@ -246,7 +277,7 @@ function LiveView({ frameSrc, controlling, onInput }) {
       ref={ref}
       tabIndex={controlling ? 0 : -1}
       {...handlers}
-      className={`relative w-full aspect-[16/10] bg-zinc-950 light:bg-slate-200 outline-none ${controlling ? "cursor-pointer ring-2 ring-inset ring-amber-400" : ""}`}
+      className={`relative w-full aspect-[16/10] bg-zinc-950 light:bg-slate-200 outline-none ${controlling ? "cursor-pointer touch-none select-none ring-2 ring-inset ring-amber-400" : ""}`}
     >
       {frameSrc ? (
         <img

@@ -137,10 +137,20 @@ class BrowserSession {
 
   /**
    * Input from the person helping in the chat card. Coordinates are fractions (0-1) of the
-   * live view, so the card's size does not matter.
-   * @param {{type: "click"|"scroll"|"key"|"text", x?: number, y?: number, deltaY?: number, key?: string, text?: string}} event
+   * live view, so the card's size does not matter. Events apply strictly in order - a press
+   * must land before its release, however quickly they arrive.
+   * down / move / up are the mouse as the person moves it, so they can press and hold
+   * ("press and hold" checks) or drag (sliders).
+   * @param {{type: "click"|"down"|"move"|"up"|"scroll"|"key"|"text", x?: number, y?: number, deltaY?: number, key?: string, text?: string}} event
    */
-  async userInput(event = {}) {
+  userInput(event = {}) {
+    this.inputQueue = (this.inputQueue || Promise.resolve())
+      .then(() => this.#applyInput(event))
+      .catch(() => {});
+    return this.inputQueue;
+  }
+
+  async #applyInput(event) {
     if (this.closed) return;
     this.tookOverSinceRead = true;
     this.userInputAt = Date.now();
@@ -151,6 +161,18 @@ class BrowserSession {
     switch (event.type) {
       case "click":
         return await this.#click(x, y);
+      case "down":
+        // A press whose release never arrived (the card went away) is let go first.
+        if (this.mouseHeld) await this.tab.mouse("up", x, y);
+        await this.tab.mouse("move", x, y);
+        this.mouseHeld = true;
+        return await this.tab.mouse("down", x, y);
+      case "move":
+        return await this.tab.mouse("move", x, y, { held: this.mouseHeld });
+      case "up":
+        if (!this.mouseHeld) return;
+        this.mouseHeld = false;
+        return await this.tab.mouse("up", x, y);
       case "scroll":
         return await this.tab.wheel(
           x,

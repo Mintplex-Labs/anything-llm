@@ -254,7 +254,7 @@ class BrowserDriver {
   }
 
   /**
-   * A click, scroll, key or text from the person helping in the chat card.
+   * A click, press, move, release, scroll, key or text from the person helping in the chat card.
    * @param {string} sessionId
    * @param {Object} event - see BrowserSession#userInput
    */
