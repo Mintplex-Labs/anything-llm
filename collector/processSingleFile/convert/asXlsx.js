@@ -45,10 +45,14 @@ async function asXlsx({
     // they are read as the formatted text the sheet shows. Other numbers stay
     // raw so long IDs and phone numbers keep every digit instead of being
     // shortened to Excel's General display (1.23457E+12).
+    // Excel shows its built-in short date (format 14) in the reader's locale.
+    // The parser has no locale and would write m/d/yy, a two-digit year in US
+    // order, so that format is read as an ISO date instead.
     const workSheetsFromFile = xlsx.parse(fullFilePath, {
       cellDates: true,
       raw: false,
       rawNumbers: true,
+      dateNF: "yyyy-mm-dd",
     });
 
     if (options.parseOnly) {

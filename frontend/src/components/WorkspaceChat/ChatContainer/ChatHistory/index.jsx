@@ -27,6 +27,7 @@ import {
   THOUGHT_REGEX_COMPLETE,
 } from "./ThoughtContainer";
 import { MessageActionsProvider } from "./MessageActionsContext";
+import CompletedReplyAnnouncement from "./CompletedReplyAnnouncement";
 
 export default forwardRef(function (
   {
@@ -178,6 +179,7 @@ export default forwardRef(function (
   return (
     <MessageActionsProvider>
       <ThoughtExpansionProvider>
+        <CompletedReplyAnnouncement history={history} />
         <div
           className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col items-center justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
           id="chat-history"
