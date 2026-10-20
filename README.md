@@ -60,6 +60,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 ## Cool Features of AnythingLLM
 
 - [Built-in local LLM engine](/docker/HOW_TO_USE_DOCKER.md#built-in-llm-engine-optional) - Run local models on your CPU or GPU (NVIDIA via CUDA, AMD and Intel via Vulkan) with no extra setup, powered by [Lemonade](https://lemonade-server.ai) and [llama.cpp](https://github.com/ggml-org/llama.cpp).
+- [Browser Use](https://docs.anythingllm.com/agent/usage/browser-use/overview) - Your agent drives a real web browser to get things done: searching sites, clicking through pages and filling in forms. Watch it live in the chat, and take control when it hits a sign-in or captcha. _Docker version only, Desktop coming soon_
 - [Dynamic Model Routing](https://docs.anythingllm.com/model-router/overview) - Automatically route chats to the best provider & model for the conversation based on rules you define.
 - [Automatic & User Managed Memories](https://docs.anythingllm.com/features/memories) - Have your LLM remember important information about you or your workspace.
 - [Scheduled Tasks](https://docs.anythingllm.com/scheduled-jobs/overview) - Run recurring tasks or prompts on a cron schedule with full agent capabilities.
