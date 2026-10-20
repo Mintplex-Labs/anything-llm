@@ -4,15 +4,10 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-// The browser is shut down after this long without a session, so it never sits in memory unused.
 const IDLE_SHUTDOWN_MS = 5 * 60_000;
-// The browser opens arbitrary websites, often signed in, so nothing may weaken it: of the flags in
-// ANYTHINGLLM_CHROMIUM_ARGS (shared with the collector's scraper, which may turn its sandbox off) only
-// these harmless ones are passed on. Anything else - --no-sandbox, --single-process, a debugging port,
-// another --user-data-dir, a command prefix - is dropped.
+// The only ANYTHINGLLM_CHROMIUM_ARGS flags used; the rest (e.g. --no-sandbox) are dropped.
 const ALLOWED_EXTRA_ARGS =
   /^--(proxy-server|proxy-bypass-list|proxy-pac-url|lang|disable-gpu|disable-software-rasterizer|disable-dev-shm-usage)(=|$)/i;
-// The browser process gets only what it needs to run - never the server's API keys and secrets.
 const PASSED_ENV = [
   "PATH",
   "HOME",
@@ -37,50 +32,70 @@ const PASSED_ENV = [
   "USERPROFILE",
 ];
 
-// Every browser process still running, so none outlives the server.
+// Killed on exit so no browser outlives the server.
 const running = new Set();
 process.once("exit", () => {
   for (const connection of running) connection.kill();
 });
 
+// Where the Docker image installs Chromium (see docker/Dockerfile).
+const IMAGE_CHROMIUM = {
+  arm64: "/app/chrome-linux/chrome",
+  puppeteerCache: "/app/.cache/puppeteer",
+};
+
 /**
- * Where Chromium lives. The Docker image provides one for the collector's web scraper:
- * CHROME_PATH on arm64, puppeteer's Chrome for Testing download on amd64. Bare-metal installs
- * use the same puppeteer download (collector) or a system Chrome/Chromium.
+ * Production only uses the Docker image's Chromium. Development also checks CHROME_PATH,
+ * PUPPETEER_EXECUTABLE_PATH, the puppeteer cache and system installs.
  * @returns {string|null}
  */
 function findChromium() {
+  if (process.env.NODE_ENV === "production")
+    return (
+      [IMAGE_CHROMIUM.arm64].find((exe) => fs.existsSync(exe)) ||
+      puppeteerChrome(IMAGE_CHROMIUM.puppeteerCache)
+    );
+
   for (const env of ["CHROME_PATH", "PUPPETEER_EXECUTABLE_PATH"])
     if (process.env[env] && fs.existsSync(process.env[env]))
       return process.env[env];
 
-  const cache =
-    process.env.PUPPETEER_CACHE_DIR ||
-    path.join(os.homedir(), ".cache", "puppeteer");
-  const builds = path.join(cache, "chrome");
-  if (fs.existsSync(builds)) {
-    for (const build of fs.readdirSync(builds).sort().reverse()) {
-      for (const exe of [
-        "chrome-linux64/chrome",
-        "chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
-        "chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
-        "chrome-win64/chrome.exe",
-      ]) {
-        const full = path.join(builds, build, exe);
-        if (fs.existsSync(full)) return full;
-      }
-    }
-  }
-
   return (
+    puppeteerChrome(
+      process.env.PUPPETEER_CACHE_DIR ||
+        path.join(os.homedir(), ".cache", "puppeteer")
+    ) ||
     [
       "/usr/bin/chromium",
       "/usr/bin/chromium-browser",
       "/usr/bin/google-chrome",
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
       "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    ].find((exe) => fs.existsSync(exe)) || null
+    ].find((exe) => fs.existsSync(exe)) ||
+    null
   );
+}
+
+/**
+ * The newest Chrome for Testing build in a puppeteer cache folder.
+ * @param {string} cache
+ * @returns {string|null}
+ */
+function puppeteerChrome(cache) {
+  const builds = path.join(cache, "chrome");
+  if (!fs.existsSync(builds)) return null;
+  for (const build of fs.readdirSync(builds).sort().reverse()) {
+    for (const exe of [
+      "chrome-linux64/chrome",
+      "chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "chrome-win64/chrome.exe",
+    ]) {
+      const full = path.join(builds, build, exe);
+      if (fs.existsSync(full)) return full;
+    }
+  }
+  return null;
 }
 
 /** One raw CDP connection over --remote-debugging-pipe, with flattened sessions. */
@@ -166,12 +181,9 @@ class Connection extends EventEmitter {
 }
 
 /**
- * The headless Chromium browsers, one per profile key (see profiles.js), so one person's
- * browsing never shares a browser - or a crash - with anyone else's.
- *
- * A saved profile's browser keeps its folder in storage, so sign-ins carry over between sessions.
- * An incognito browser lives in a temporary folder that is deleted when it shuts down, and each of
- * its sessions gets a fresh browser context besides (see tab.js).
+ * Headless Chromium browsers, one per profile key (see profiles.js), so no one shares a browser -
+ * or a crash - with anyone else. A saved profile's folder persists sign-ins; an incognito browser
+ * uses a temp folder deleted on shutdown, plus a fresh context per session (see tab.js).
  */
 class Chromium {
   /** @type {Map<string, {connection: Promise<Connection>|null, live: Connection|null, users: number, idleTimer: NodeJS.Timeout|null}>} */
@@ -359,8 +371,7 @@ function tempDir(prefix) {
 
 /**
  * Headless Chrome's password manager leaves a save-password bubble after a login form that
- * swallows every later click. Sessions never keep passwords anyway. A saved profile's other
- * preferences are kept.
+ * swallows every later click. Sessions never keep passwords anyway.
  */
 function disablePasswordManager(userDataDir) {
   const file = path.join(userDataDir, "Default", "Preferences");
