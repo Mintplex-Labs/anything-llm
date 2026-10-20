@@ -9,6 +9,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { User } = require("../models/user");
 const {
   getVectorDbClass,
   getLLMProvider,
@@ -481,6 +482,10 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
+        // Don't hide chats for a regenerate/edit that stream-chat would reject.
+        if (multiUserMode(response) && !(await User.canSendChat(user)))
+          return response.sendStatus(429);
+
         if (!workspace || !Array.isArray(chatIds)) {
           response.sendStatus(400).end();
           return;
@@ -513,6 +518,10 @@ function workspaceEndpoints(app) {
         const { startingId } = reqBody(request);
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
+
+        // Don't hide chats for a regenerate/edit that stream-chat would reject.
+        if (multiUserMode(response) && !(await User.canSendChat(user)))
+          return response.sendStatus(429);
 
         // We mark the chat as hidden instead of deleting it so that it still
         // counts towards the user's daily message limit.
