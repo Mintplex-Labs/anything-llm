@@ -23,6 +23,26 @@ const documentsPath =
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 
 /**
+ * Embed every uploaded document into the requested workspaces. All documents
+ * are still attempted so one failure cannot block the rest, but the response
+ * reports failure if any of them did not reach the workspace.
+ * @param {string} addToWorkspaces - comma-separated workspace slugs
+ * @param {Array<{location: string}>} documents - collector documents
+ * @returns {Promise<{success: boolean, error: string|null}>}
+ */
+async function embedUploadedDocuments(addToWorkspaces, documents = []) {
+  let error = null;
+  for (const document of documents) {
+    const result = await Document.api.uploadToWorkspace(
+      addToWorkspaces,
+      document.location
+    );
+    if (!result.success && !error) error = result.error;
+  }
+  return { success: !error, error };
+}
+
+/**
  * Runs a simple validation check on the addToWorkspaces query parameter to ensure it is a string of comma-separated workspace slugs.
  * @param {*} request
  * @param {*} response
@@ -160,12 +180,14 @@ function apiDocumentEndpoints(app) {
         });
 
         if (!!addToWorkspaces) {
-          for (const document of documents) {
-            await Document.api.uploadToWorkspace(
-              addToWorkspaces,
-              document.location
-            );
-          }
+          const embedded = await embedUploadedDocuments(
+            addToWorkspaces,
+            documents
+          );
+          if (!embedded.success)
+            return response
+              .status(500)
+              .json({ success: false, error: embedded.error, documents });
         }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
@@ -312,12 +334,14 @@ function apiDocumentEndpoints(app) {
         });
 
         if (!!addToWorkspaces) {
-          for (const document of documents) {
-            await Document.api.uploadToWorkspace(
-              addToWorkspaces,
-              document.location
-            );
-          }
+          const embedded = await embedUploadedDocuments(
+            addToWorkspaces,
+            documents
+          );
+          if (!embedded.success)
+            return response
+              .status(500)
+              .json({ success: false, error: embedded.error, documents });
         }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
@@ -468,13 +492,13 @@ function apiDocumentEndpoints(app) {
           documents.push(...linkDocuments);
         }
 
+        let embedError = null;
         if (!!addToWorkspaces) {
-          for (const document of documents) {
-            await Document.api.uploadToWorkspace(
-              addToWorkspaces,
-              document.location
-            );
-          }
+          const embedded = await embedUploadedDocuments(
+            addToWorkspaces,
+            documents
+          );
+          if (!embedded.success) embedError = embedded.error;
         }
 
         const error =
@@ -485,6 +509,13 @@ function apiDocumentEndpoints(app) {
               : failures
                   .map(({ url, reason }) => `${url}: ${reason}`)
                   .join("; ");
+
+        if (embedError) {
+          return response
+            .status(500)
+            .json({ success: false, error: embedError, documents })
+            .end();
+        }
 
         if (documents.length === 0 && failures.length > 0) {
           return response
@@ -634,11 +665,16 @@ function apiDocumentEndpoints(app) {
         await Telemetry.sendTelemetry("raw_document_uploaded");
         await EventLogs.logEvent("api_raw_document_uploaded");
 
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
+        if (!!addToWorkspaces) {
+          const embedded = await embedUploadedDocuments(
             addToWorkspaces,
-            documents?.[0].location
+            documents
           );
+          if (!embedded.success)
+            return response
+              .status(500)
+              .json({ success: false, error: embedded.error, documents });
+        }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);

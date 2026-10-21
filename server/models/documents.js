@@ -82,12 +82,14 @@ const Document = {
 
   addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
-    if (additions.length === 0) return { failed: [], embedded: [] };
+    if (additions.length === 0)
+      return { failedToEmbed: [], errors: [], embedded: [] };
     const { fileData } = require("../utils/files");
     const { emitProgress } = require("../utils/EmbeddingWorkerManager");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
+    const basename = (filePath = "") => filePath.split(/[/\\]/).pop();
 
     emitProgress(workspace.slug, {
       type: "batch_starting",
@@ -105,14 +107,30 @@ const Document = {
         docIndex: index,
         totalDocs: additions.length,
       };
-
-      const data = await fileData(path);
-      if (!data) {
+      const failDocument = (filename, error) => {
+        failedToEmbed.push(filename);
+        errors.add(error);
         emitProgress(workspace.slug, {
           type: "doc_failed",
           ...docProgress,
-          error: "Failed to load file data",
+          error,
         });
+      };
+
+      let data = null;
+      try {
+        data = await fileData(path);
+      } catch (error) {
+        console.error(error.message);
+        failDocument(
+          basename(path),
+          error.message || "Failed to load file data"
+        );
+        continue;
+      }
+
+      if (!data) {
+        failDocument(basename(path), "Failed to load file data");
         continue;
       }
 
@@ -134,24 +152,27 @@ const Document = {
         userId,
       };
 
-      const { vectorized, error } = await VectorDb.addDocumentToNamespace(
-        workspace.slug,
-        { ...data, docId },
-        path
-      );
+      let vectorized = false;
+      let error = null;
+      try {
+        ({ vectorized, error } = await VectorDb.addDocumentToNamespace(
+          workspace.slug,
+          { ...data, docId },
+          path
+        ));
+      } catch (vectorizeError) {
+        error = vectorizeError.message || "Unknown error";
+      }
 
       if (!vectorized) {
         console.error(
           "Failed to vectorize",
           metadata?.title || newDoc.filename
         );
-        failedToEmbed.push(metadata?.title || newDoc.filename);
-        errors.add(error);
-        emitProgress(workspace.slug, {
-          type: "doc_failed",
-          ...docProgress,
-          error: error || "Unknown error",
-        });
+        failDocument(
+          metadata?.title || newDoc.filename,
+          error || "Unknown error"
+        );
         continue;
       }
 
@@ -164,11 +185,38 @@ const Document = {
         });
       } catch (error) {
         console.error(error.message);
-        emitProgress(workspace.slug, {
-          type: "doc_failed",
-          ...docProgress,
-          error: "Failed to save document record",
-        });
+        failDocument(
+          newDoc.filename,
+          error.message || "Failed to save document record"
+        );
+
+        // The vectors were written before the document row existed. Roll them
+        // back so a failed insert cannot leave an unlisted document behind.
+        let vectorsRemoved = false;
+        try {
+          const deleted = await VectorDb.deleteDocumentFromNamespace(
+            workspace.slug,
+            docId
+          );
+          vectorsRemoved = deleted !== false;
+        } catch (cleanupError) {
+          console.error(
+            `Failed to roll back vectors for ${newDoc.filename}:`,
+            cleanupError.message
+          );
+        }
+
+        if (vectorsRemoved) {
+          try {
+            const { DocumentVectors } = require("./vectors");
+            await DocumentVectors.delete({ docId });
+          } catch (cleanupError) {
+            console.error(
+              `Failed to remove vector rows for ${newDoc.filename}:`,
+              cleanupError.message
+            );
+          }
+        }
       }
     }
 
@@ -319,25 +367,31 @@ const Document = {
      * functionality should only be used by the backend /v1/documents/upload endpoints for post-upload embedding.
      * @param {string} wsSlugs - The slugs of the workspaces to embed the document into, will be comma-separated list of workspace slugs
      * @param {string} docLocation - The location/path of the document that was uploaded
-     * @returns {Promise<boolean>} - True if the document was uploaded successfully, false otherwise
+     * @returns {Promise<{success: boolean, error: string|null}>} - Whether the document was embedded successfully
      */
     uploadToWorkspace: async function (wsSlugs = "", docLocation = null) {
       if (!docLocation)
-        return console.log(
-          "No document location provided for embedding",
-          docLocation
-        );
+        return {
+          success: false,
+          error: "No document location provided for embedding.",
+        };
 
       const slugs = wsSlugs
         .split(",")
         .map((slug) => String(slug)?.trim()?.toLowerCase());
       if (slugs.length === 0)
-        return console.log(`No workspaces provided got: ${wsSlugs}`);
+        return {
+          success: false,
+          error: `No workspaces provided got: ${wsSlugs}`,
+        };
 
       const { Workspace } = require("./workspace");
       const workspaces = await Workspace.where({ slug: { in: slugs } });
       if (workspaces.length === 0)
-        return console.log("No valid workspaces found for slugs: ", slugs);
+        return {
+          success: false,
+          error: `No valid workspaces found for slugs: ${slugs.join(", ")}`,
+        };
 
       // Upsert the document into each workspace - do this sequentially
       // because the document may be large and we don't want to overwhelm the embedder, plus on the first
@@ -349,14 +403,14 @@ const Document = {
           [docLocation]
         );
         if (failedToEmbed.length > 0)
-          return console.log(
-            `Failed to embed document into workspace ${workspace.slug}`,
-            errors
-          );
+          return {
+            success: false,
+            error: `Failed to embed document into workspace ${workspace.slug}: ${errors[0] || "Unknown error"}`,
+          };
         console.log(`Document embedded into workspace ${workspace.slug}...`);
       }
 
-      return true;
+      return { success: true, error: null };
     },
   },
 };
