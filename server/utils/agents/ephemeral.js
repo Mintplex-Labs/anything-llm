@@ -10,11 +10,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { DocumentManager } = require("../DocumentManager");
 const { safeJsonParse } = require("../http");
-const {
-  USER_AGENT,
-  WORKSPACE_AGENT,
-  agentSkillsFromSystemSettings,
-} = require("./defaults");
+const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const { AgentHandler } = require(".");
 const {
   WorkspaceAgentInvocation,
@@ -412,22 +408,16 @@ class EphemeralAgentHandler extends AgentHandler {
       ? await User.get({ id: Number(this.#userId) })
       : null;
 
-    this.aibitat.agent(
-      WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition(
-        this.provider,
-        this.#workspace,
-        user,
-        this.#prompt
-      )
+    const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
+      this.provider,
+      this.#workspace,
+      user,
+      this.#prompt
     );
-
-    this.#funcsToLoad = [
-      ...(await agentSkillsFromSystemSettings()),
-      ...ImportedPlugin.activeImportedPlugins(),
-      ...AgentFlows.activeFlowPlugins(),
-      ...(await new MCPCompatibilityLayer().activeMCPServers()),
-    ];
+    this.aibitat.agent(WORKSPACE_AGENT.name, workspaceAgentDef);
+    // The clarifying question tool is in this list too; its plugin skips
+    // itself when the handler cannot ask the user anything.
+    this.#funcsToLoad = workspaceAgentDef.functions;
   }
 
   async init() {
@@ -659,6 +649,15 @@ class EphemeralAgentHandler extends AgentHandler {
 const EventEmitter = require("node:events");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 
+// Agent events that render as cards and travel to HTTP clients as-is.
+const CARD_EVENTS = [
+  "toolApprovalRequest",
+  "clarificationRequest",
+  "rechartVisualize",
+  "scheduledJobCreated",
+  "imageGenerationPending",
+];
+
 /**
  * This is a special EventEmitter specifically used in the Aibitat agent handler
  * that enables us to use HTTP to relay all .introspect and .send events back to an
@@ -668,8 +667,15 @@ const { writeResponseChunk } = require("../helpers/chat/responses");
  */
 class EphemeralEventListener extends EventEmitter {
   messages = [];
-  constructor() {
+  /** @type {boolean} whether the client can answer tool approvals and clarifying questions */
+  interactive = false;
+
+  /**
+   * @param {{interactive?: boolean}} options
+   */
+  constructor({ interactive = false } = {}) {
     super();
+    this.interactive = interactive;
   }
 
   send(jsonData) {
@@ -707,6 +713,8 @@ class EphemeralEventListener extends EventEmitter {
       // live card event is not a text response and is ignored here.
       if (["imageGenerationCard", "imageGenerationPending"].includes(msg.type))
         continue;
+
+      if (CARD_EVENTS.includes(msg.type)) continue;
 
       if (msg.type === "reportStreamEvent") {
         const inner = msg.content;
@@ -777,6 +785,18 @@ class EphemeralEventListener extends EventEmitter {
       if (["imageGenerationCard", "imageGenerationPending"].includes(data.type))
         return;
 
+      // Card payloads stay under `content`: a chart's own `type` field would
+      // otherwise clobber the event type.
+      if (CARD_EVENTS.includes(data.type)) {
+        return writeResponseChunk(response, {
+          id: uuid,
+          type: data.type,
+          content: data.content ?? null,
+          close: false,
+          error: null,
+        });
+      }
+
       if (data.type === "reportStreamEvent") {
         const inner = data.content;
         if (!inner?.type) return;
@@ -815,9 +835,22 @@ class EphemeralEventListener extends EventEmitter {
           });
         }
 
+        if (inner.type === "modelRouteNotification") {
+          return writeResponseChunk(response, {
+            id: uuid,
+            type: "modelRouteNotification",
+            routedTo: inner.routedTo ?? inner.content ?? null,
+            close: false,
+            error: null,
+          });
+        }
+
         return;
       }
 
+      // Card events (charts, scheduled jobs) carry objects that cannot be
+      // rendered as a text reply.
+      if (typeof data.content !== "string") return;
       return writeResponseChunk(response, {
         id: uuid,
         type: "textResponse",

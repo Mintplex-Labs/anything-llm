@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const { Workspace } = require("../models/workspace");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const { Document } = require("../models/documents");
@@ -12,6 +13,18 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { Telemetry } = require("../models/telemetry");
+const { User } = require("../models/user");
+const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
+const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const {
+  downloadGeneratedFile,
+  serveGeneratedImage,
+} = require("./agentFileServer");
+const { resolveClientReply } = require("../utils/helpers/agents");
+const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
+
+const MAX_CONTEXT_PAGES = 5;
+const MAX_PAGE_CHARACTERS = 30_000;
 
 function browserExtensionEndpoints(app) {
   if (!app) return;
@@ -151,6 +164,122 @@ function browserExtensionEndpoints(app) {
     }
   );
 
+  app.post(
+    "/browser-extension/stream-chat",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const {
+          workspaceId,
+          message,
+          sessionId = null,
+          context = [],
+          attachments = [],
+        } = reqBody(request);
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: parseInt(workspaceId) })
+          : await Workspace.get({ id: parseInt(workspaceId) });
+        if (!workspace)
+          return response.status(403).json({ error: "Workspace not found" });
+
+        if (typeof message !== "string" || message.trim().length === 0)
+          return response.status(400).json({ error: "Message is empty." });
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        if (multiUserMode(response) && !(await User.canSendChat(user))) {
+          writeResponseChunk(response, {
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
+          });
+          return response.end();
+        }
+
+        await ApiChatHandler.streamChat({
+          response,
+          workspace,
+          message,
+          user,
+          sessionId: sessionId ? String(sessionId) : null,
+          attachments: Array.isArray(attachments) ? attachments : [],
+          contextDocuments: pagesToContextDocuments(context),
+          interactive: true,
+        });
+        await Telemetry.sendTelemetry("browser_extension_chat");
+        response.end();
+      } catch (error) {
+        console.error(error);
+        writeResponseChunk(response, {
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: error.message,
+        });
+        response.end();
+      }
+    }
+  );
+
+  // Answers a tool approval or clarifying question the agent asked mid-stream.
+  app.post(
+    "/browser-extension/agent-reply",
+    [validBrowserExtensionApiKey],
+    (request, response) => {
+      const { requestId, reply } = reqBody(request);
+      const resolved = resolveClientReply(
+        String(requestId),
+        reply && typeof reply === "object" ? reply : {}
+      );
+      if (!resolved)
+        return response
+          .status(404)
+          .json({ error: "No pending request with that id." });
+      return response.status(200).json({ success: true });
+    }
+  );
+
+  // "Always allow" on a tool approval card.
+  app.post(
+    "/browser-extension/agent-skills/whitelist",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const { skillName } = reqBody(request);
+        if (typeof skillName !== "string" || !skillName.trim())
+          return response.status(400).json({ error: "skillName is required" });
+        const user = await userFromSession(request, response);
+        await AgentSkillWhitelist.add(skillName.trim(), user?.id ?? null);
+        return response.status(200).json({ success: true });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({ error: error.message });
+      }
+    }
+  );
+
+  app.get(
+    "/browser-extension/generated-files/:filename",
+    [validBrowserExtensionApiKey],
+    downloadGeneratedFile
+  );
+
+  app.get(
+    "/browser-extension/generated-images/:filename",
+    [validBrowserExtensionApiKey],
+    serveGeneratedImage
+  );
+
   // Internal endpoints for managing API keys
   app.get(
     "/browser-extension/api-keys",
@@ -219,6 +348,31 @@ function browserExtensionEndpoints(app) {
       }
     }
   );
+}
+
+/**
+ * Converts pages sent by the extension into documents injected as chat context.
+ * The title and URL are kept in the content so the model can tell pages apart.
+ * @param {{title?: string, url?: string, content?: string}[]} pages
+ * @returns {{title: string, url: string, pageContent: string}[]}
+ */
+function pagesToContextDocuments(pages = []) {
+  if (!Array.isArray(pages)) return [];
+  return pages
+    .slice(0, MAX_CONTEXT_PAGES)
+    .map((page) => {
+      const title = String(page?.title || "Untitled page");
+      const url = String(page?.url || "");
+      const content = String(page?.content || "").slice(0, MAX_PAGE_CHARACTERS);
+      return {
+        title,
+        url,
+        pageContent: content.trim()
+          ? `Title: ${title}\nURL: ${url}\n\n${content}`
+          : "",
+      };
+    })
+    .filter((doc) => doc.pageContent);
 }
 
 module.exports = { browserExtensionEndpoints };
