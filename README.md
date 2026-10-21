@@ -69,6 +69,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Multi-modal support (both closed and open-source LLMs!)](https://docs.anythingllm.com/features/language-models)
 - [Custom AI Agents](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 Multi-user instance support and permissioning _Docker version only_
+- 🎨 [Custom color themes & white-labeling](https://docs.anythingllm.com/features/branding) - Pick a built-in palette like True Dark or create your own from your brand colors, and set it for everyone on your instance. _Docker version only_
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
 - 📖 Multiple document type support (PDF, TXT, DOCX, etc)
