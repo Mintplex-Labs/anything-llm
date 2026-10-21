@@ -29,6 +29,13 @@ const {
   isCloudMetadataUrl,
   isCloudMetadataIp,
 } = require("../../../../../../utils/agents/aibitat/plugins/browser-use/driver/cloudMetadata.js");
+const {
+  browserUse,
+} = require("../../../../../../utils/agents/aibitat/plugins/browser-use/index.js");
+
+jest.mock("../../../../../../models/systemSettings", () => ({
+  SystemSettings: { isMultiUserMode: async () => false },
+}));
 
 const CART = "https://www.amazon.com/gp/cart/view.html";
 
@@ -144,6 +151,77 @@ describe("browser session history", () => {
     });
     await agent.run();
     expect(starts.map((start) => start.profile)).toEqual(["user-3"]);
+  });
+});
+
+describe("stopping a session", () => {
+  it("never starts another browser session in the same turn, whatever the model asks", async () => {
+    jest.spyOn(BrowserBridge, "available", "get").mockReturnValue(true);
+    let starts = 0;
+    jest.spyOn(BrowserBridge, "request").mockImplementation(async (action) => {
+      if (action === "start") starts++;
+      return action === "start" ? { profile: { name: "default" } } : true;
+    });
+
+    let sessionId = null;
+    let toCard = null;
+    let stopOnFirstStep = true;
+    const tools = new Map();
+    const aibitat = {
+      chats: [{ from: "USER", content: "Find me flights" }],
+      defaultProvider: {},
+      functions: tools,
+      function: (fn) => tools.set(fn.name, fn),
+      handlerProps: {
+        invocation: { uuid: "run-1", workspace: { slug: "ws", name: "WS" } },
+      },
+      socket: {
+        send: (type, payload) => {
+          if (type === "browserUseSession") sessionId = payload.sessionId;
+        },
+      },
+      onControlMessage: (listener) => {
+        toCard = listener;
+        return () => {};
+      },
+      getProviderForConfig: () => ({
+        complete: async () => {
+          if (!stopOnFirstStep)
+            return {
+              textResponse: "",
+              functionCall: {
+                id: "1",
+                name: "done",
+                arguments: { result: "ok" },
+              },
+            };
+          // The user presses Stop on the card while the model is thinking.
+          toCard(
+            JSON.stringify({
+              type: "browserUseControl",
+              sessionId,
+              action: "stop",
+            })
+          );
+          return new Promise(() => {});
+        },
+      }),
+    };
+    browserUse.plugin().setup(aibitat);
+    const callTool = () =>
+      tools
+        .get("browser-use")
+        .handler.call({ super: aibitat }, { task: "Find flights" });
+
+    expect(await callTool()).toMatch(/stopped the browser session/);
+    expect(await callTool()).toMatch(/will not run again/);
+    expect(starts).toBe(1);
+
+    // A new message from the user lets it run again.
+    aibitat.chats.push({ from: "USER", content: "OK, try again" });
+    stopOnFirstStep = false;
+    await callTool();
+    expect(starts).toBe(2);
   });
 });
 

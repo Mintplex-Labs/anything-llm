@@ -88,6 +88,9 @@ const browserUse = {
             const owner = await profileOwner(aibitat);
             if (!owner)
               return "The browser agent needs a signed-in user to run.";
+            // The model may ignore "do not retry" - a session the user stopped stays stopped.
+            if (stoppedInTurn.get(aibitat) === userTurn(aibitat))
+              return "The user stopped the browser agent, so it will not run again until they send a new message. Do not call it again; reply to the user with what you have.";
             // Web tool calls later in this turn are the model's own follow-up, never a misroute.
             ranInTurn.set(aibitat, userTurn(aibitat));
             const { path, workspaceSlug, threadSlug } =
@@ -127,6 +130,8 @@ const browserUse = {
             const stopListening = listenToCard(aibitat, agent);
             try {
               const result = await agent.run();
+              if (agent.stopReason === "user")
+                stoppedInTurn.set(aibitat, userTurn(aibitat));
               // Saved with the chat so the card survives reloads.
               aibitat._pendingOutputs ??= [];
               aibitat._pendingOutputs.push({
@@ -183,6 +188,8 @@ const WEB_TOOL_ARG = { "web-browsing": "query", "web-scraping": "url" };
 
 // aibitat -> user turn (see userTurn) in which browser-use last ran.
 const ranInTurn = new WeakMap();
+// aibitat -> the user turn in which the user pressed Stop on a session.
+const stoppedInTurn = new WeakMap();
 
 function redirectMisroutedCalls(aibitat) {
   for (const [name, argName] of Object.entries(WEB_TOOL_ARG)) {
