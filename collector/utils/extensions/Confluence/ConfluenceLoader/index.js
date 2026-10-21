@@ -128,7 +128,10 @@ class ConfluencePagesLoader {
     });
     const textWithPreservedStructure = plainTextContent
       .replace(/\n{3,}/g, "\n\n")
-      .replace(/ANYTHINGLLMCODEBLOCK(\d+)/g, (_, index) => codeBlocks[index]);
+      .replace(
+        /ANYTHINGLLMCODEBLOCK(\d+)/g,
+        (marker, index) => codeBlocks[index] ?? marker
+      );
     const pageUrl = `${this.baseUrl}${this.cloud ? "/wiki" : ""}/spaces/${
       this.spaceKey
     }/pages/${page.id}`;
