@@ -55,6 +55,8 @@ const errorResponse = (status, statusText = "Error") => ({
 function mockGithubApi({
   branches = [{ name: "main" }],
   branchStatus = 200,
+  defaultBranch = "main",
+  repoStatus = 200,
   files = {},
   octocatStatus = 200,
 } = {}) {
@@ -72,6 +74,11 @@ function mockGithubApi({
       return jsonResponse(
         Number(searchParams.get("page")) === 0 ? branches : []
       );
+    }
+
+    if (/^\/repos\/[^/]+\/[^/]+$/.test(endpoint)) {
+      if (repoStatus !== 200) return errorResponse(repoStatus);
+      return jsonResponse({ default_branch: defaultBranch });
     }
 
     const contents = endpoint.match(/\/repos\/[^/]+\/[^/]+\/contents\/(.+)$/);
@@ -237,6 +244,96 @@ describe("GitHubRepoLoader url rejection", () => {
     expect(loader.ready).toBe(false);
     expect(loader.apiBase).toBe("https://api.github.com");
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("GitHubRepoLoader branch resolution", () => {
+  test("keeps an explicitly provided branch that exists and skips the metadata lookup", async () => {
+    const fetchMock = mockGithubApi({
+      branches: [{ name: "main" }, { name: "develop" }],
+    });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.com/org/repo",
+      branch: "develop",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("develop");
+    expect(requestedUrls(fetchMock)).not.toContain(
+      "https://api.github.com/repos/org/repo"
+    );
+  });
+
+  test("auto-assigns the repository default branch when no branch is given", async () => {
+    const fetchMock = mockGithubApi({
+      branches: [{ name: "main" }, { name: "trunk" }],
+      defaultBranch: "trunk",
+    });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.com/org/repo",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("trunk");
+    expect(requestedUrls(fetchMock)).toContain(
+      "https://api.github.com/repos/org/repo"
+    );
+  });
+
+  test("auto-assigns when the provided branch does not exist on the remote", async () => {
+    mockGithubApi({
+      branches: [{ name: "develop" }, { name: "legacy" }],
+      defaultBranch: "develop",
+    });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.com/org/repo",
+      branch: "does-not-exist",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("develop");
+  });
+
+  test("looks up the default branch on the enterprise api root", async () => {
+    const fetchMock = mockGithubApi({
+      branches: [{ name: "main" }, { name: "develop" }],
+      defaultBranch: "develop",
+    });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.mycompany.com/org/repo",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("develop");
+    expect(requestedUrls(fetchMock)).toContain(
+      "https://github.mycompany.com/api/v3/repos/org/repo"
+    );
+  });
+
+  test("falls back to main when the repository metadata cannot be read", async () => {
+    mockGithubApi({
+      branches: [{ name: "main" }, { name: "legacy" }],
+      repoStatus: 404,
+    });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.com/org/repo",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("main");
+  });
+
+  test("falls back to master when neither the metadata nor a main branch exist", async () => {
+    mockGithubApi({
+      branches: [{ name: "master" }, { name: "legacy" }],
+      repoStatus: 500,
+    });
+    const loader = new GitHubRepoLoader({
+      repo: "https://github.com/org/repo",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("master");
   });
 });
 

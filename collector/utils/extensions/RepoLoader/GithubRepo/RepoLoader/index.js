@@ -110,8 +110,8 @@ class GitHubRepoLoader {
     }
   }
 
-  // Ensure the branch provided actually exists
-  // and if it does not or has not been set auto-assign to primary branch.
+  // Ensure the branch provided actually exists and if it does not or has not
+  // been set auto-assign to the repository default branch.
   async #validBranch() {
     await this.getRepoBranches();
     if (!!this.branch && this.branches.includes(this.branch)) return;
@@ -119,7 +119,12 @@ class GitHubRepoLoader {
     console.log(
       "[GitHub Loader]: Branch not set! Auto-assigning to a default branch."
     );
-    this.branch = this.branches.includes("main") ? "main" : "master";
+    const defaultBranch = await this.fetchDefaultBranch();
+    if (defaultBranch && this.branches.includes(defaultBranch)) {
+      this.branch = defaultBranch;
+    } else {
+      this.branch = this.branches.includes("main") ? "main" : "master";
+    }
     console.log(`[GitHub Loader]: Branch auto-assigned to ${this.branch}.`);
     return;
   }
@@ -200,6 +205,31 @@ class GitHubRepoLoader {
       if (preferredSort.includes(branch)) return [branch, ...acc];
       return [...acc, branch];
     }, []);
+  }
+
+  /**
+   * Retrieves the default branch of the repository from its metadata.
+   * @returns {Promise<string|null>} The default branch name, or null if it could not be resolved.
+   */
+  async fetchDefaultBranch() {
+    return fetch(`${this.apiBase}/repos/${this.author}/${this.project}`, {
+      method: "GET",
+      headers: {
+        ...(this.accessToken
+          ? { Authorization: `Bearer ${this.accessToken}` }
+          : {}),
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error(`Invalid request to Github API: ${res.statusText}`);
+      })
+      .then((metadata) => metadata?.default_branch || null)
+      .catch((err) => {
+        console.log(`RepoLoader.fetchDefaultBranch`, err);
+        return null;
+      });
   }
 
   /**
