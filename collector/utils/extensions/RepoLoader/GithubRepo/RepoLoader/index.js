@@ -113,14 +113,15 @@ class GitHubRepoLoader {
   // Ensure the branch provided actually exists and if it does not or has not
   // been set auto-assign to the repository default branch.
   async #validBranch() {
-    await this.getRepoBranches();
+    await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
+    await this.#fetchBranches();
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
     console.log(
       "[GitHub Loader]: Branch not set! Auto-assigning to a default branch."
     );
     const defaultBranch = await this.fetchDefaultBranch();
-    if (defaultBranch && this.branches.includes(defaultBranch)) {
+    if (defaultBranch) {
       this.branch = defaultBranch;
     } else {
       this.branch = this.branches.includes("main") ? "main" : "master";
@@ -198,8 +199,13 @@ class GitHubRepoLoader {
     return docs;
   }
 
-  // Sort branches to always show either main or master at the top of the result.
-  #branchPrefSort(branches = []) {
+  // Sort branches so the repository default branch is at the top of the result,
+  // since the first branch is the one preselected in the UI. When the default
+  // branch is unknown, main or master is shown at the top instead.
+  #branchPrefSort(branches = [], defaultBranch = null) {
+    if (defaultBranch && branches.includes(defaultBranch))
+      return [defaultBranch, ...branches.filter((b) => b !== defaultBranch)];
+
     const preferredSort = ["main", "master"];
     return branches.reduce((acc, branch) => {
       if (preferredSort.includes(branch)) return [branch, ...acc];
@@ -233,13 +239,24 @@ class GitHubRepoLoader {
   }
 
   /**
-   * Retrieves all branches for the repository.
+   * Retrieves all branches for the repository, with the default branch first.
    * @returns {Promise<string[]>} An array of branch names.
    */
   async getRepoBranches() {
     if (!this.#validGithubUrl() || !this.author || !this.project) return [];
     await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
+    await this.#fetchBranches();
+    if (this.branches.length === 0) return [];
 
+    const defaultBranch = await this.fetchDefaultBranch();
+    return this.#branchPrefSort(this.branches, defaultBranch);
+  }
+
+  /**
+   * Pages through the branches endpoint and stores every branch name on `this.branches`.
+   * @returns {Promise<void>}
+   */
+  async #fetchBranches() {
     let page = 0;
     let polling = true;
     const branches = [];
@@ -274,7 +291,6 @@ class GitHubRepoLoader {
     }
 
     this.branches = [...new Set(branches.flat())];
-    return this.#branchPrefSort(this.branches);
   }
 
   /**
