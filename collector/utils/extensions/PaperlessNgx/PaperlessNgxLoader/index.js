@@ -105,14 +105,24 @@ class PaperlessNgxLoader {
       if (!response.ok)
         throw new Error(`Failed to fetch document content: ${response.status}`);
 
-      const contentType = response.headers.get("content-type");
+      // The media type without parameters such as `; charset=utf-8`
+      const contentType = response.headers
+        .get("content-type")
+        ?.split(";")[0]
+        .trim()
+        .toLowerCase();
       switch (contentType) {
-        case "text/plain":
-          return await response.text();
         case "application/pdf":
           const buffer = await response.arrayBuffer();
           return await this.parsePdfContent(buffer);
+        case "text/html":
+          return htmlToText(await response.text(), {
+            wordwrap: false,
+            preserveNewlines: true,
+          });
         default:
+          // Plain text is kept as it is: read as HTML, `<john@example.com>` would be
+          // dropped as a tag and the spaces that line up columns collapsed
           return await response.text();
       }
     } catch (error) {
@@ -135,14 +145,8 @@ class PaperlessNgxLoader {
   }
 
   createDocumentFromPage(doc) {
-    const content = doc.content || "";
-    const plainTextContent = htmlToText(content, {
-      wordwrap: false,
-      preserveNewlines: true,
-    });
-
     return {
-      pageContent: plainTextContent,
+      pageContent: doc.content || "",
       metadata: {
         id: doc.id,
         title: doc.original_file_name,
