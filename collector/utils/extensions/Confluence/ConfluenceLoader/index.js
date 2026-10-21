@@ -100,9 +100,6 @@ class ConfluencePagesLoader {
   }
 
   createDocumentFromPage(page) {
-    // Code blocks are set aside while the page is converted, then put back as written:
-    // htmlToText would read the `<` of `<div>` or `List<String>` as markup and collapse
-    // the indentation.
     const codeBlocks = [];
     const extractCodeBlocks = (content) => {
       const codeBlockRegex =
