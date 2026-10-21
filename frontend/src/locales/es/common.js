@@ -875,6 +875,12 @@ const TRANSLATIONS = {
       title: "Marca y marca blanca",
       description:
         "Personaliza tu instancia de AnythingLLM con tu propia marca.",
+      tabs: {
+        identity: "Identidad",
+        colors: "Colores",
+        sidebar: "Barra lateral",
+        browser: "Navegador",
+      },
     },
     chat: {
       title: "Chat",
@@ -960,6 +966,37 @@ const TRANSLATIONS = {
         title: "Desactivar el desplazamiento automático",
         description:
           "Desactivar la función de desplazamiento automático hacia el final del chat cuando se reciben nuevos mensajes.",
+      },
+      palette: {
+        title: "Paleta de colores",
+        description:
+          "Seleccione una paleta de colores. Esto se aplica tanto al modo claro como al modo oscuro.",
+        enforced:
+          "El administrador ha configurado la paleta de colores para esta instancia.",
+        "default-badge": "Predeterminada",
+      },
+      "instance-palettes": {
+        title: "Paletas de colores",
+        description:
+          "Haga clic en una paleta para que se convierta en la predeterminada para todos en esta instancia. Las paletas personalizadas incluyen un color principal, que se aplica al fondo, la barra lateral y el contenido, y un color de acento para los botones y los enlaces.",
+        new: "Nueva paleta",
+        edit: "Editar paleta",
+        delete: "Eliminar paleta",
+        name: "Nombre de la paleta",
+        "name-required": "Asigne un nombre a la paleta.",
+        colors: {
+          main: "Color principal",
+          accent: "Color de acento",
+        },
+        "preview-note":
+          'Los cambios se muestran en toda la aplicación y se guardan al hacer clic en "Listo".',
+        done: "Listo",
+        cancel: "Cancelar",
+        enforce: "Aplicar la paleta predeterminada",
+        "enforce-description":
+          "En esta instancia, todos utilizan la paleta predeterminada y no pueden modificarla.",
+        "save-failed":
+          "No se pudieron guardar las paletas de colores: {{error}}",
       },
     },
   },
