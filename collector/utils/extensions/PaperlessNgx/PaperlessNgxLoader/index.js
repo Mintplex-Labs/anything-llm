@@ -121,8 +121,8 @@ class PaperlessNgxLoader {
             preserveNewlines: true,
           });
         default:
-          // Plain text is kept as it is: read as HTML, `<john@example.com>` would be
-          // dropped as a tag and the spaces that line up columns collapsed
+          // Returned verbatim so angle-bracketed text like `<john@example.com>`
+          // and the column spacing in OCR text are preserved
           return await response.text();
       }
     } catch (error) {
