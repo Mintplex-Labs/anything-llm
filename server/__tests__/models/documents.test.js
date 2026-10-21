@@ -86,7 +86,10 @@ describe("Document.addDocuments failure reporting", () => {
     expect(VectorDb.addDocumentToNamespace).not.toHaveBeenCalled();
     expect(emitProgress).toHaveBeenCalledWith(
       workspace.slug,
-      expect.objectContaining({ type: "doc_failed", error: "Failed to load file data" })
+      expect.objectContaining({
+        type: "doc_failed",
+        error: "Failed to load file data",
+      })
     );
   });
 
@@ -186,9 +189,8 @@ describe("Document.addDocuments failure reporting", () => {
     );
 
     expect(result).toEqual({ success: true, error: null });
-    expect(Document.addDocuments).toHaveBeenCalledWith(
-      workspace,
-      ["custom-documents/file.json"]
-    );
+    expect(Document.addDocuments).toHaveBeenCalledWith(workspace, [
+      "custom-documents/file.json",
+    ]);
   });
 });

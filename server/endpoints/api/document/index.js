@@ -24,22 +24,27 @@ const documentsPath =
 
 /**
  * Embed every uploaded document into the requested workspaces. All documents
- * are still attempted so one failure cannot block the rest, but the response
- * reports failure if any of them did not reach the workspace.
+ * are attempted so one failure cannot block the rest.
  * @param {string} addToWorkspaces - comma-separated workspace slugs
- * @param {Array<{location: string}>} documents - collector documents
- * @returns {Promise<{success: boolean, error: string|null}>}
+ * @param {Array<{location: string, title?: string}>} documents - collector documents
+ * @returns {Promise<{success: boolean, partial: boolean, error: string|null}>}
+ * `partial` is true when some documents were embedded and others were not.
  */
 async function embedUploadedDocuments(addToWorkspaces, documents = []) {
-  let error = null;
+  const failures = [];
   for (const document of documents) {
-    const result = await Document.api.uploadToWorkspace(
+    const { success, error } = await Document.api.uploadToWorkspace(
       addToWorkspaces,
       document.location
     );
-    if (!result.success && !error) error = result.error;
+    if (!success)
+      failures.push(`${document.title || document.location}: ${error}`);
   }
-  return { success: !error, error };
+  return {
+    success: failures.length === 0,
+    partial: failures.length > 0 && failures.length < documents.length,
+    error: failures.length > 0 ? failures.join("; ") : null,
+  };
 }
 
 /**
@@ -186,7 +191,7 @@ function apiDocumentEndpoints(app) {
           );
           if (!embedded.success)
             return response
-              .status(500)
+              .status(embedded.partial ? 200 : 500)
               .json({ success: false, error: embedded.error, documents });
         }
         response.status(200).json({ success: true, error: null, documents });
@@ -340,7 +345,7 @@ function apiDocumentEndpoints(app) {
           );
           if (!embedded.success)
             return response
-              .status(500)
+              .status(embedded.partial ? 200 : 500)
               .json({ success: false, error: embedded.error, documents });
         }
         response.status(200).json({ success: true, error: null, documents });
@@ -492,16 +497,11 @@ function apiDocumentEndpoints(app) {
           documents.push(...linkDocuments);
         }
 
-        let embedError = null;
-        if (!!addToWorkspaces) {
-          const embedded = await embedUploadedDocuments(
-            addToWorkspaces,
-            documents
-          );
-          if (!embedded.success) embedError = embedded.error;
-        }
+        let embedded = { success: true, partial: false, error: null };
+        if (!!addToWorkspaces)
+          embedded = await embedUploadedDocuments(addToWorkspaces, documents);
 
-        const error =
+        const linkError =
           failures.length === 0
             ? null
             : links.length === 1
@@ -509,24 +509,25 @@ function apiDocumentEndpoints(app) {
               : failures
                   .map(({ url, reason }) => `${url}: ${reason}`)
                   .join("; ");
+        const error =
+          [linkError, embedded.error].filter(Boolean).join("; ") || null;
 
-        if (embedError) {
-          return response
-            .status(500)
-            .json({ success: false, error: embedError, documents })
-            .end();
-        }
-
-        if (documents.length === 0 && failures.length > 0) {
+        // Nothing reached the documents folder, or nothing reached the workspace.
+        if (
+          (documents.length === 0 && failures.length > 0) ||
+          (!embedded.success && !embedded.partial)
+        ) {
           return response
             .status(500)
             .json({ success: false, error, documents })
             .end();
         }
 
-        response
-          .status(200)
-          .json({ success: failures.length === 0, error, documents });
+        response.status(200).json({
+          success: failures.length === 0 && embedded.success,
+          error,
+          documents,
+        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -672,7 +673,7 @@ function apiDocumentEndpoints(app) {
           );
           if (!embedded.success)
             return response
-              .status(500)
+              .status(embedded.partial ? 200 : 500)
               .json({ success: false, error: embedded.error, documents });
         }
         response.status(200).json({ success: true, error: null, documents });
