@@ -1355,6 +1355,12 @@ const TRANSLATIONS = {
       title: "Thương hiệu & Nhãn trắng",
       description:
         "Nhãn trắng phiên bản AnythingLLM của bạn với thương hiệu tùy chỉnh.",
+      tabs: {
+        identity: "Nhận diện",
+        colors: "Màu sắc",
+        sidebar: "Thanh bên",
+        browser: "Trình duyệt",
+      },
     },
     chat: {
       title: "Trò chuyện",
@@ -1436,6 +1442,36 @@ const TRANSLATIONS = {
         title: "Tắt tính năng cuộn tự động",
         description:
           "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
+      },
+      palette: {
+        title: "Bảng màu",
+        description:
+          "Chọn một bảng màu. Bảng màu này áp dụng cho cả chế độ sáng và chế độ tối.",
+        enforced:
+          "Quản trị viên của bạn đã thiết lập bảng màu cho phiên bản này.",
+        "default-badge": "Mặc định",
+      },
+      "instance-palettes": {
+        title: "Bảng màu",
+        description:
+          "Nhấn vào một bảng màu để làm nó trở thành bảng màu mặc định cho tất cả người dùng trên phiên bản này. Bảng màu tùy chỉnh bao gồm một màu chủ đạo, làm thay đổi màu sắc của nền, thanh bên và nội dung, cũng như một màu nhấn cho các nút và liên kết.",
+        new: "Bảng màu mới",
+        edit: "Chỉnh sửa bảng màu",
+        delete: "Xóa bảng màu",
+        name: "Tên bảng màu",
+        "name-required": "Đặt tên cho bảng màu.",
+        colors: {
+          main: "Màu chủ đạo",
+          accent: "Màu nhấn",
+        },
+        "preview-note":
+          'Hiển thị các thay đổi trên toàn ứng dụng và lưu lại khi bạn nhấp vào nút "Hoàn thành".',
+        done: "Hoàn thành",
+        cancel: "Hủy",
+        enforce: "Áp dụng bảng màu mặc định",
+        "enforce-description":
+          "Trên phiên bản này, tất cả người dùng đều sử dụng bảng màu mặc định và không thể thay đổi nó.",
+        "save-failed": "Không thể lưu bảng màu: {{error}}",
       },
     },
   },

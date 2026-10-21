@@ -1273,6 +1273,12 @@ const TRANSLATIONS = {
     branding: {
       title: "品牌與白標設定",
       description: "透過自訂品牌元素，將 AnythingLLM 白標化。",
+      tabs: {
+        identity: "身份",
+        colors: "顏色",
+        sidebar: "側邊欄",
+        browser: "瀏覽器",
+      },
     },
     chat: {
       title: "對話",
@@ -1345,6 +1351,33 @@ const TRANSLATIONS = {
       "disable-auto-scroll": {
         title: "停用自動捲動功能",
         description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
+      },
+      palette: {
+        title: "調色盤",
+        description: "選擇調色盤。適用於淺色與深色模式。",
+        enforced: "您的管理員已為此系統設定調色盤。",
+        "default-badge": "預設值",
+      },
+      "instance-palettes": {
+        title: "調色盤",
+        description:
+          "點擊調色盤即可將其設為此系統所有人的預設值。自訂調色盤由主要顏色（用於背景、側邊欄與內容）以及用於按鈕與連結的強調色組成。",
+        new: "新增調色盤",
+        edit: "編輯調色盤",
+        delete: "刪除調色盤",
+        name: "調色盤名稱",
+        "name-required": "請為調色盤命名。",
+        colors: {
+          main: "主要顏色",
+          accent: "強調色",
+        },
+        "preview-note":
+          "變更會在整個應用程式中預覽，並在您點擊「完成」時儲存。",
+        done: "完成",
+        cancel: "取消",
+        enforce: "強制使用預設調色盤",
+        "enforce-description": "此系統中的所有人都使用預設調色盤，且無法變更。",
+        "save-failed": "無法儲存調色盤：{{error}}",
       },
     },
   },
