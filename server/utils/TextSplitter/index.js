@@ -159,19 +159,18 @@ class TextSplitter {
     const chunkSize = isNullOrNaN(config?.chunkSize)
       ? 1_000
       : Number(config?.chunkSize);
-    let chunkOverlap = isNullOrNaN(config?.chunkOverlap)
+    const preferredOverlap = isNullOrNaN(config?.chunkOverlap)
       ? 20
       : Number(config?.chunkOverlap);
+    const chunkOverlap =
+      preferredOverlap < chunkSize
+        ? preferredOverlap
+        : Math.max(0, Math.min(20, chunkSize - 1));
 
-    // The chunk size can be capped by the embedder's max chunk length, which can put
-    // a saved overlap at or above it. Fall back to the default overlap instead of throwing.
-    if (chunkOverlap >= chunkSize) {
-      const fallbackOverlap = Math.max(0, Math.min(20, chunkSize - 1));
+    if (chunkOverlap !== preferredOverlap)
       this.log(
-        `\x1b[43m[WARN]\x1b[0m Chunk overlap of ${chunkOverlap} is not smaller than chunk size of ${chunkSize}. Will use an overlap of ${fallbackOverlap}.`
+        `\x1b[43m[WARN]\x1b[0m Chunk overlap of ${preferredOverlap} is not smaller than chunk size of ${chunkSize}. Will use an overlap of ${chunkOverlap}.`
       );
-      chunkOverlap = fallbackOverlap;
-    }
 
     // The header is prepended to every chunk after splitting, so chunks may exceed chunkSize.
     if (chunkHeader.length > 0)
