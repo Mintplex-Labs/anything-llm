@@ -24,12 +24,63 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
     log(
       `${queuesToProcess.length} watched documents have been found to be stale and will be updated now.`
     );
+
+    /**
+     * Record a per-document failure without stopping the rest of the queue.
+     * Mirrors the existing retry policy: retry on the next worker interval and
+     * unwatch a document after repeated consecutive failures.
+     * @param {Object} queue - the document_sync_queues record
+     * @param {Object} document - the workspace document being refreshed
+     * @param {string} reason - user-readable failure reason
+     */
+    const recordFailure = async (queue, document, reason) => {
+      const failedRunCount = (
+        await DocumentSyncRun.where(
+          { queueId: queue.id },
+          DocumentSyncQueue.maxRepeatFailures,
+          { createdAt: "desc" }
+        )
+      ).filter((run) => run.status === DocumentSyncRun.statuses.failed).length;
+
+      if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
+        log(
+          `Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`
+        );
+        await DocumentSyncQueue.unwatch(document);
+        return;
+      }
+
+      log(
+        `Failed to refresh document ${document.filename}: ${reason}. Skipping, but will retry next worker interval. Attempt ${failedRunCount === 0 ? 1 : failedRunCount}/${DocumentSyncQueue.maxRepeatFailures}`
+      );
+      await DocumentSyncQueue.saveRun(
+        queue.id,
+        DocumentSyncRun.statuses.failed,
+        {
+          filename: document.filename,
+          workspacesModified: [],
+          reason,
+        }
+      );
+    };
+
     for (const queue of queuesToProcess) {
       let newContent = null;
       const document = queue.workspaceDoc;
       const workspace = document.workspace;
-      const { metadata, type, source } =
-        Document.parseDocumentTypeAndSource(document);
+
+      let parsedDocument;
+      try {
+        parsedDocument = Document.parseDocumentTypeAndSource(document);
+      } catch (error) {
+        log(
+          `Document ${document.filename} has invalid metadata (${error.message}) and has been removed from all future runs.`
+        );
+        await DocumentSyncQueue.unwatch(document);
+        continue;
+      }
+
+      const { metadata, type, source } = parsedDocument;
 
       if (!metadata || !DocumentSyncQueue.validFileTypes.includes(type)) {
         // Document is either broken, invalid, or not supported so drop it from future queues.
@@ -67,40 +118,31 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
       }
 
       if (!newContent) {
-        // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.
-        const failedRunCount = (
-          await DocumentSyncRun.where(
-            { queueId: queue.id },
-            DocumentSyncQueue.maxRepeatFailures,
-            { createdAt: "desc" }
-          )
-        ).filter(
-          (run) => run.status === DocumentSyncRun.statuses.failed
-        ).length;
-        if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
-          log(
-            `Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`
-          );
-          await DocumentSyncQueue.unwatch(document);
-          continue;
-        }
+        await recordFailure(queue, document, "No content found.");
+        continue;
+      }
 
-        log(
-          `Failed to get a new content response from collector for source ${source}. Skipping, but will retry next worker interval. Attempt ${failedRunCount === 0 ? 1 : failedRunCount}/${DocumentSyncQueue.maxRepeatFailures}`
-        );
-        await DocumentSyncQueue.saveRun(
-          queue.id,
-          DocumentSyncRun.statuses.failed,
-          {
-            filename: document.filename,
-            workspacesModified: [],
-            reason: "No content found.",
-          }
+      let currentDocumentData;
+      try {
+        currentDocumentData = await fileData(document.docpath);
+      } catch (error) {
+        await recordFailure(
+          queue,
+          document,
+          `Could not read the source document: ${error.message}`
         );
         continue;
       }
 
-      const currentDocumentData = await fileData(document.docpath);
+      if (!currentDocumentData) {
+        await recordFailure(
+          queue,
+          document,
+          "Could not read the source document."
+        );
+        continue;
+      }
+
       if (currentDocumentData.pageContent === newContent) {
         const nextSync = DocumentSyncQueue.calcNextSync(queue);
         log(
