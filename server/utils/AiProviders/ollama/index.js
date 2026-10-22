@@ -97,28 +97,24 @@ class OllamaAILLM {
       const { models } = await client.list().catch(() => ({ models: [] }));
       if (!models.length) return;
 
-      // One retired or missing model (for example HTTP 410) must not drop
-      // context windows for the models whose show calls succeed.
-      const settled = await Promise.allSettled(
-        models.map((model) =>
-          client
-            .show({ model: model.name })
-            .then((info) => ({ name: model.name, ...info }))
+      // A model whose show call fails (e.g. a retired model returning HTTP 410)
+      // is skipped so the remaining models still get cached.
+      const infos = (
+        await Promise.all(
+          models.map((model) =>
+            client
+              .show({ model: model.name })
+              .then((info) => ({ name: model.name, ...info }))
+              .catch((e) => {
+                OllamaAILLM.#slog(
+                  `Error caching context window for ${model.name}`,
+                  e.message
+                );
+                return null;
+              })
+          )
         )
-      );
-      const infos = [];
-      let failed = false;
-      for (const result of settled) {
-        if (result.status === "fulfilled") {
-          infos.push(result.value);
-          continue;
-        }
-        failed = true;
-        OllamaAILLM.#slog(
-          `Error caching context window for a model`,
-          result.reason
-        );
-      }
+      ).filter(Boolean);
       infos.forEach((showInfo) => {
         if (showInfo.capabilities.includes("embedding")) return;
         const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
@@ -129,11 +125,9 @@ class OllamaAILLM {
         OllamaAILLM.modelContextWindows[showInfo.name] =
           showInfo.model_info[contextWindowKey];
       });
-      if (!failed) {
-        OllamaAILLM.#slog(`Context windows cached for all models!`);
-      } else if (infos.length > 0) {
-        OllamaAILLM.#slog(`Context windows cached for available models.`);
-      }
+      OllamaAILLM.#slog(
+        `Context windows cached for ${infos.length}/${models.length} models.`
+      );
     } catch (e) {
       OllamaAILLM.#slog(`Error caching context windows`, e);
       return;
