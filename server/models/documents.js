@@ -89,7 +89,6 @@ const Document = {
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
-    const basename = (filePath = "") => filePath.split(/[/\\]/).pop();
 
     emitProgress(workspace.slug, {
       type: "batch_starting",
@@ -100,6 +99,7 @@ const Document = {
     });
 
     for (const [index, path] of additions.entries()) {
+      const filename = path.split(/[/\\]/).pop();
       const docProgress = {
         workspaceSlug: workspace.slug,
         userId,
@@ -122,15 +122,12 @@ const Document = {
         data = await fileData(path);
       } catch (error) {
         console.error(error.message);
-        failDocument(
-          basename(path),
-          error.message || "Failed to load file data"
-        );
+        failDocument(filename, error.message || "Failed to load file data");
         continue;
       }
 
       if (!data) {
-        failDocument(basename(path), "Failed to load file data");
+        failDocument(filename, "Failed to load file data");
         continue;
       }
 
@@ -138,7 +135,7 @@ const Document = {
       const { pageContent: _pageContent, ...metadata } = data;
       const newDoc = {
         docId,
-        filename: path.split(/[/\\]/).pop(),
+        filename,
         docpath: path,
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
@@ -363,16 +360,21 @@ const Document = {
    */
   api: {
     /**
-     * Process a document upload from the API and upsert it into the database. This
+     * Process document uploads from the API and upsert them into the database. This
      * functionality should only be used by the backend /v1/documents/upload endpoints for post-upload embedding.
-     * @param {string} wsSlugs - The slugs of the workspaces to embed the document into, will be comma-separated list of workspace slugs
-     * @param {string} docLocation - The location/path of the document that was uploaded
-     * @returns {Promise<{success: boolean, error: string|null}>} - Whether the document was embedded successfully
+     * Every document is attempted so one failure cannot block the rest.
+     * @param {string} wsSlugs - The slugs of the workspaces to embed the documents into, will be comma-separated list of workspace slugs
+     * @param {string|string[]} docLocations - The location/path of each document that was uploaded
+     * @returns {Promise<{success: boolean, partial: boolean, error: string|null}>} - `partial` is true when some documents were embedded and others were not
      */
-    uploadToWorkspace: async function (wsSlugs = "", docLocation = null) {
-      if (!docLocation)
+    uploadToWorkspace: async function (wsSlugs = "", docLocations = []) {
+      const locations = (
+        Array.isArray(docLocations) ? docLocations : [docLocations]
+      ).filter(Boolean);
+      if (locations.length === 0)
         return {
           success: false,
+          partial: false,
           error: "No document location provided for embedding.",
         };
 
@@ -382,6 +384,7 @@ const Document = {
       if (slugs.length === 0)
         return {
           success: false,
+          partial: false,
           error: `No workspaces provided got: ${wsSlugs}`,
         };
 
@@ -390,27 +393,34 @@ const Document = {
       if (workspaces.length === 0)
         return {
           success: false,
+          partial: false,
           error: `No valid workspaces found for slugs: ${slugs.join(", ")}`,
         };
 
-      // Upsert the document into each workspace - do this sequentially
+      // Upsert each document into each workspace - do this sequentially
       // because the document may be large and we don't want to overwhelm the embedder, plus on the first
       // upsert we will then have the cache of the document - making n+1 embeds faster. If we parallelize this
       // we will have to do a lot of extra work to ensure that the document is not embedded more than once.
-      for (const workspace of workspaces) {
-        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
-          workspace,
-          [docLocation]
-        );
-        if (failedToEmbed.length > 0)
-          return {
-            success: false,
-            error: `Failed to embed document into workspace ${workspace.slug}: ${errors[0] || "Unknown error"}`,
-          };
-        console.log(`Document embedded into workspace ${workspace.slug}...`);
+      const failures = [];
+      for (const docLocation of locations) {
+        for (const workspace of workspaces) {
+          const { failedToEmbed = [], errors = [] } =
+            await Document.addDocuments(workspace, [docLocation]);
+          if (failedToEmbed.length > 0) {
+            failures.push(
+              `${docLocation}: Failed to embed document into workspace ${workspace.slug}: ${errors[0] || "Unknown error"}`
+            );
+            break;
+          }
+          console.log(`Document embedded into workspace ${workspace.slug}...`);
+        }
       }
 
-      return { success: true, error: null };
+      return {
+        success: failures.length === 0,
+        partial: failures.length > 0 && failures.length < locations.length,
+        error: failures.length > 0 ? failures.join("; ") : null,
+      };
     },
   },
 };

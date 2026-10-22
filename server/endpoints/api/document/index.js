@@ -23,31 +23,6 @@ const documentsPath =
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 
 /**
- * Embed every uploaded document into the requested workspaces. All documents
- * are attempted so one failure cannot block the rest.
- * @param {string} addToWorkspaces - comma-separated workspace slugs
- * @param {Array<{location: string, title?: string}>} documents - collector documents
- * @returns {Promise<{success: boolean, partial: boolean, error: string|null}>}
- * `partial` is true when some documents were embedded and others were not.
- */
-async function embedUploadedDocuments(addToWorkspaces, documents = []) {
-  const failures = [];
-  for (const document of documents) {
-    const { success, error } = await Document.api.uploadToWorkspace(
-      addToWorkspaces,
-      document.location
-    );
-    if (!success)
-      failures.push(`${document.title || document.location}: ${error}`);
-  }
-  return {
-    success: failures.length === 0,
-    partial: failures.length > 0 && failures.length < documents.length,
-    error: failures.length > 0 ? failures.join("; ") : null,
-  };
-}
-
-/**
  * Runs a simple validation check on the addToWorkspaces query parameter to ensure it is a string of comma-separated workspace slugs.
  * @param {*} request
  * @param {*} response
@@ -185,9 +160,9 @@ function apiDocumentEndpoints(app) {
         });
 
         if (!!addToWorkspaces) {
-          const embedded = await embedUploadedDocuments(
+          const embedded = await Document.api.uploadToWorkspace(
             addToWorkspaces,
-            documents
+            documents.map((document) => document.location)
           );
           if (!embedded.success)
             return response
@@ -339,9 +314,9 @@ function apiDocumentEndpoints(app) {
         });
 
         if (!!addToWorkspaces) {
-          const embedded = await embedUploadedDocuments(
+          const embedded = await Document.api.uploadToWorkspace(
             addToWorkspaces,
-            documents
+            documents.map((document) => document.location)
           );
           if (!embedded.success)
             return response
@@ -498,8 +473,11 @@ function apiDocumentEndpoints(app) {
         }
 
         let embedded = { success: true, partial: false, error: null };
-        if (!!addToWorkspaces)
-          embedded = await embedUploadedDocuments(addToWorkspaces, documents);
+        if (!!addToWorkspaces && documents.length > 0)
+          embedded = await Document.api.uploadToWorkspace(
+            addToWorkspaces,
+            documents.map((document) => document.location)
+          );
 
         const linkError =
           failures.length === 0
@@ -667,9 +645,9 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_raw_document_uploaded");
 
         if (!!addToWorkspaces) {
-          const embedded = await embedUploadedDocuments(
+          const embedded = await Document.api.uploadToWorkspace(
             addToWorkspaces,
-            documents
+            documents.map((document) => document.location)
           );
           if (!embedded.success)
             return response
