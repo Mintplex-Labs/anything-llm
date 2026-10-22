@@ -97,12 +97,28 @@ class OllamaAILLM {
       const { models } = await client.list().catch(() => ({ models: [] }));
       if (!models.length) return;
 
-      const infoPromises = models.map((model) =>
-        client
-          .show({ model: model.name })
-          .then((info) => ({ name: model.name, ...info }))
+      // One retired or missing model (for example HTTP 410) must not drop
+      // context windows for the models whose show calls succeed.
+      const settled = await Promise.allSettled(
+        models.map((model) =>
+          client
+            .show({ model: model.name })
+            .then((info) => ({ name: model.name, ...info }))
+        )
       );
-      const infos = await Promise.all(infoPromises);
+      const infos = [];
+      let failed = false;
+      for (const result of settled) {
+        if (result.status === "fulfilled") {
+          infos.push(result.value);
+          continue;
+        }
+        failed = true;
+        OllamaAILLM.#slog(
+          `Error caching context window for a model`,
+          result.reason
+        );
+      }
       infos.forEach((showInfo) => {
         if (showInfo.capabilities.includes("embedding")) return;
         const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
@@ -113,7 +129,11 @@ class OllamaAILLM {
         OllamaAILLM.modelContextWindows[showInfo.name] =
           showInfo.model_info[contextWindowKey];
       });
-      OllamaAILLM.#slog(`Context windows cached for all models!`);
+      if (!failed) {
+        OllamaAILLM.#slog(`Context windows cached for all models!`);
+      } else if (infos.length > 0) {
+        OllamaAILLM.#slog(`Context windows cached for available models.`);
+      }
     } catch (e) {
       OllamaAILLM.#slog(`Error caching context windows`, e);
       return;
