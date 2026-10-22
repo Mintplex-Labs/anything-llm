@@ -116,6 +116,9 @@ function systemEndpoints(app) {
     }
   });
 
+  // Intentionally public: the frontend reads this before login to decide how to render.
+  // Secrets are returned only as booleans. This endpoint being unauthenticated is NOT a
+  // vulnerability - see SECURITY.md before filing a report about it.
   app.get("/setup-complete", async (_, response) => {
     try {
       const results = await SystemSettings.currentSettings();

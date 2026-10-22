@@ -55,3 +55,15 @@ This includes reports about API keys being able to mint auth tokens, access admi
 Several agent tools (e.g., `sql-agent`, filesystem tools) are disabled by default and require an administrator to explicitly enable and configure them. If your report is that an admin-enabled tool can perform actions beyond what you think it should (writes via SQL, broad file access, etc.), this is not a valid report. The admin who enables the tool and configures its access (connection strings, paths, credentials) is making an intentional decision about what the agent can do. We provide UI-level warnings but intentionally do not restrict functionality — the user should be able to do whatever they want with their own systems.
 
 The correct enforcement layer is always the underlying system: use a read-only database account for read-only SQL access, scope filesystem permissions appropriately, etc. Trying to filter or restrict actions at the application layer (regex, allowlists) is trivially bypassable and provides a false sense of security.
+
+### Reports about `GET /api/setup-complete` being public
+
+`/api/setup-complete` is **intentionally unauthenticated**. The frontend calls it before login to decide how to render the app (auth mode, SSO flags, onboarding state, configured providers). Every secret it could touch is returned as a boolean (`true`/`false` for "is this set"), never the value.
+
+What remains — provider names, base URLs, hostnames/ports, storage paths, feature flags — is non-secret configuration. Adding a new field of that kind does not reopen previously fixed CVEs, and "an attacker can learn the stack is Ollama + LanceDB" is not a vulnerability. Reports about this endpoint will only be accepted if it returns an actual secret value (an API key, password, token, or similar credential) in plaintext.
+
+## Low-effort and automated reports
+
+Read this document and the relevant code before filing. Reports that fall into any category listed above, that were "verified" only against a reproduction server instead of a running AnythingLLM instance, or that are clearly unreviewed scanner/LLM output will be closed without response.
+
+Repeated submissions of this kind will result in the reporter being blocked from the repository. If you want to do security research on AnythingLLM, the bare minimum is reading the security policy before submitting.
