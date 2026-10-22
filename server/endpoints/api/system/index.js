@@ -13,6 +13,8 @@ const { validApiKey } = require("../../../utils/middleware/validApiKey");
 function apiSystemEndpoints(app) {
   if (!app) return;
 
+  // Intentionally unauthenticated so deploy/shutdown scripts can flush in-memory config to .env.
+  // Takes no input and returns nothing. NOT a vulnerability - see SECURITY.md.
   app.get("/v1/system/env-dump", async (_, response) => {
     /*
    #swagger.tags = ['System Settings']
