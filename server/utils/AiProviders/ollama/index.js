@@ -97,8 +97,6 @@ class OllamaAILLM {
       const { models } = await client.list().catch(() => ({ models: [] }));
       if (!models.length) return;
 
-      // A model whose show call fails (e.g. a retired model returning HTTP 410)
-      // is skipped so the remaining models still get cached.
       const infos = (
         await Promise.all(
           models.map((model) =>
