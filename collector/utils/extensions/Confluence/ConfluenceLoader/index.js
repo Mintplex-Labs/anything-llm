@@ -100,7 +100,7 @@ class ConfluencePagesLoader {
   }
 
   createDocumentFromPage(page) {
-    // Function to extract code blocks
+    const codeBlocks = [];
     const extractCodeBlocks = (content) => {
       const codeBlockRegex =
         /<ac:structured-macro[^>]*\sac:name="code"[^>]*>[\s\S]*?<ac:plain-text-body><!\[CDATA\[([\s\S]*?)\]\]><\/ac:plain-text-body>[\s\S]*?<\/ac:structured-macro>/g;
@@ -113,7 +113,8 @@ class ConfluencePagesLoader {
           match.match(
             /<ac:plain-text-body><!\[CDATA\[([\s\S]*?)\]\]><\/ac:plain-text-body>/
           )?.[1] || "";
-        return `\n\`\`\`${language}\n${code.trim()}\n\`\`\`\n`;
+        codeBlocks.push(`\`\`\`${language}\n${code.trim()}\n\`\`\``);
+        return `<p>ANYTHINGLLMCODEBLOCK${codeBlocks.length - 1}</p>`;
       });
     };
 
@@ -122,10 +123,12 @@ class ConfluencePagesLoader {
       wordwrap: false,
       preserveNewlines: true,
     });
-    const textWithPreservedStructure = plainTextContent.replace(
-      /\n{3,}/g,
-      "\n\n"
-    );
+    const textWithPreservedStructure = plainTextContent
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(
+        /ANYTHINGLLMCODEBLOCK(\d+)/g,
+        (marker, index) => codeBlocks[index] ?? marker
+      );
     const pageUrl = `${this.baseUrl}${this.cloud ? "/wiki" : ""}/spaces/${
       this.spaceKey
     }/pages/${page.id}`;
