@@ -62,6 +62,18 @@ The correct enforcement layer is always the underlying system: use a read-only d
 
 What remains — provider names, base URLs, hostnames/ports, storage paths, feature flags — is non-secret configuration. Adding a new field of that kind does not reopen previously fixed CVEs, and "an attacker can learn the stack is Ollama + LanceDB" is not a vulnerability. Reports about this endpoint will only be accepted if it returns an actual secret value (an API key, password, token, or similar credential) in plaintext.
 
+### Reports about `env-dump` endpoints being unauthenticated
+
+**This is the single most frequently filed invalid report we receive. Filing it is a bannable offense.**
+
+`GET /api/env-dump` and `GET /api/v1/system/env-dump` are **intentionally unauthenticated**. They exist so deployment and shutdown scripts can flush the running server's configuration to disk before the process is stopped, so no settings are lost in transit. Those scripts must be able to call it without credentials, which is why it has no auth.
+
+These endpoints take **no input** and return **no data** - the response is an empty `200`. All they do is call `dumpENV()`, which writes the server's *own current in-memory configuration* back to its own `.env` file. The same operation already runs on boot and after every settings change.
+
+There is no attacker-controlled value anywhere in this path. Calling it a thousand times produces the same `.env` file the server would have written anyway. It cannot read, leak, change, inject, or delete any setting. "An unauthenticated user can make the server save its existing config to disk" is not a vulnerability, and pointing at a Swagger `403` annotation does not make it one.
+
+Any GHSA filed about these endpoints will be closed immediately and **the reporter will be blocked from the repository** without further discussion.
+
 ## Low-effort and automated reports
 
 Read this document and the relevant code before filing. Reports that fall into any category listed above, that were "verified" only against a reproduction server instead of a running AnythingLLM instance, or that are clearly unreviewed scanner/LLM output will be closed without response.
