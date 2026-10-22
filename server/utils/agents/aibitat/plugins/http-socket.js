@@ -1,15 +1,9 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../../../models/telemetry");
 const { v4: uuidv4 } = require("uuid");
-const {
-  skillIsAutoApproved,
-  waitForClientReply,
-} = require("../../../helpers/agents");
+const { skillIsAutoApproved } = require("../../../helpers/agents");
 const { toolApprovalTimeoutMs } = require("./websocket.js");
 const TOOL_APPROVAL_TIMEOUT_MS = toolApprovalTimeoutMs();
-const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000;
-// Once the user starts answering they should not race the clock.
-const CLARIFICATION_ENGAGED_TIMEOUT_MS = 15 * 60 * 1_000;
 
 /**
  * Get the IPC channel for worker communication.
@@ -150,37 +144,6 @@ const httpSocket = {
             };
           }
 
-          // Clients that stream over HTTP and can answer requests
-          // (the browser extension) get the request as a stream event.
-          if (handler.interactive) {
-            const requestId = uuidv4();
-            aibitat.introspect(
-              `Requesting approval to execute: ${skillName}${description ? ` - ${description}` : ""}`
-            );
-            handler.send(
-              JSON.stringify({
-                type: "toolApprovalRequest",
-                content: {
-                  requestId,
-                  skillName,
-                  payload,
-                  description,
-                  timeoutMs: TOOL_APPROVAL_TIMEOUT_MS,
-                },
-              })
-            );
-            const reply = await waitForClientReply(
-              requestId,
-              TOOL_APPROVAL_TIMEOUT_MS
-            );
-            return reply?.approved === true
-              ? { approved: true, message: "User approved the tool execution." }
-              : {
-                  approved: false,
-                  message: "Tool call was rejected by the user.",
-                };
-          }
-
           // Tool approval only available in Telegram worker context
           const ipc = getWorkerIPC();
           if (!telegramChatId || !ipc) {
@@ -265,46 +228,6 @@ const httpSocket = {
             }, TOOL_APPROVAL_TIMEOUT_MS);
           });
         };
-
-        // Same shape as the websocket plugin's requestUserClarification so the
-        // request-user-input tool works for interactive HTTP clients.
-        if (handler.interactive) {
-          aibitat.requestUserClarification = async function ({
-            questions = [],
-            allowSkip = true,
-            timeoutMs = CLARIFICATION_DEFAULT_TIMEOUT_MS,
-          }) {
-            const requestId = uuidv4();
-            handler.send(
-              JSON.stringify({
-                type: "clarificationRequest",
-                content: { requestId, questions, allowSkip, timeoutMs },
-              })
-            );
-            const reply = await waitForClientReply(
-              requestId,
-              timeoutMs,
-              CLARIFICATION_ENGAGED_TIMEOUT_MS
-            );
-            const unanswered = questions.map(() => ({
-              skipped: true,
-              answer: null,
-            }));
-            if (!reply)
-              return { skipped: false, timedOut: true, answers: unanswered };
-            if (reply.skipped)
-              return { skipped: true, timedOut: false, answers: unanswered };
-            const answers = Array.isArray(reply.answers) ? reply.answers : [];
-            return {
-              skipped: false,
-              timedOut: false,
-              answers: questions.map((_, i) => ({
-                skipped: !!answers[i]?.skipped,
-                answer: answers[i]?.answer ?? null,
-              })),
-            };
-          };
-        }
 
         // We can only receive one message response with HTTP
         // so we end on first response.

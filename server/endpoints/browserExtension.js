@@ -20,10 +20,16 @@ const {
   downloadGeneratedFile,
   serveGeneratedImage,
 } = require("./agentFileServer");
-const { resolveClientReply } = require("../utils/helpers/agents");
+const {
+  BrowserExtensionEventListener,
+  makeAgentInteractive,
+  resolveClientReply,
+} = require("../utils/browserExtension/interactiveAgent");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 
+/** Pages per message; enough for a comparison without flooding the context window. */
 const MAX_CONTEXT_PAGES = 5;
+/** Characters kept per page, roughly 7k tokens, so five pages fit most models. */
 const MAX_PAGE_CHARACTERS = 30_000;
 
 function browserExtensionEndpoints(app) {
@@ -204,6 +210,7 @@ function browserExtensionEndpoints(app) {
           return response.end();
         }
 
+        const listener = new BrowserExtensionEventListener(response);
         await ApiChatHandler.streamChat({
           response,
           workspace,
@@ -212,7 +219,22 @@ function browserExtensionEndpoints(app) {
           sessionId: sessionId ? String(sessionId) : null,
           attachments: Array.isArray(attachments) ? attachments : [],
           contextDocuments: pagesToContextDocuments(context),
-          interactive: true,
+          agentEventListener: listener,
+          onAgentReady: (agentHandler) => {
+            // Setting the agent up can take a while; a panel that already left
+            // must not start a run nobody is listening to.
+            if (response.destroyed)
+              throw new Error("Client disconnected before the agent started.");
+            makeAgentInteractive(agentHandler, listener, user?.id ?? null);
+            // A panel that leaves while the agent waits on an answer ends the
+            // run instead of parking it for the full timeout. Closing the
+            // listener lets streamChat settle and save what the agent did.
+            response.on("close", () => {
+              if (response.writableFinished) return;
+              agentHandler.aibitat?.abort();
+              listener.close();
+            });
+          },
         });
         await Telemetry.sendTelemetry("browser_extension_chat");
         response.end();
@@ -235,11 +257,13 @@ function browserExtensionEndpoints(app) {
   app.post(
     "/browser-extension/agent-reply",
     [validBrowserExtensionApiKey],
-    (request, response) => {
+    async (request, response) => {
       const { requestId, reply } = reqBody(request);
+      const user = await userFromSession(request, response);
       const resolved = resolveClientReply(
         String(requestId),
-        reply && typeof reply === "object" ? reply : {}
+        reply && typeof reply === "object" ? reply : {},
+        user?.id ?? null
       );
       if (!resolved)
         return response
@@ -259,8 +283,11 @@ function browserExtensionEndpoints(app) {
         if (typeof skillName !== "string" || !skillName.trim())
           return response.status(400).json({ error: "skillName is required" });
         const user = await userFromSession(request, response);
-        await AgentSkillWhitelist.add(skillName.trim(), user?.id ?? null);
-        return response.status(200).json({ success: true });
+        const { success, error } = await AgentSkillWhitelist.add(
+          skillName.trim(),
+          user?.id ?? null
+        );
+        return response.status(success ? 200 : 400).json({ success, error });
       } catch (error) {
         console.error(error);
         return response.status(500).json({ error: error.message });

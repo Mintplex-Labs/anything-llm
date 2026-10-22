@@ -510,7 +510,8 @@ async function chatSync({
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
  *  contextDocuments: { title: string; pageContent: string }[],
- *  interactive: boolean,
+ *  agentEventListener: EphemeralEventListener|null,
+ *  onAgentReady: ((agentHandler: EphemeralAgentHandler) => Promise<void>|void)|null,
  *  reset: boolean,
  * }} parameters
  * @returns {Promise<VoidFunction>}
@@ -525,7 +526,8 @@ async function streamChat({
   sessionId = null,
   attachments = [],
   contextDocuments = [],
-  interactive = false,
+  agentEventListener = null,
+  onAgentReady = null,
   reset = false,
 }) {
   const uuid = uuidv4();
@@ -593,9 +595,10 @@ async function streamChat({
     // Establish event listener that emulates websocket calls
     // in Aibitat so that we can keep the same interface in Aibitat
     // but use HTTP.
-    const eventListener = new EphemeralEventListener({ interactive });
+    const eventListener = agentEventListener ?? new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
+    await onAgentReady?.(agentHandler);
 
     agentHandler.startAgentCluster();
 
