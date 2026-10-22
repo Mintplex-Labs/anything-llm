@@ -1,10 +1,7 @@
 const MCPHypervisor = require("./hypervisor");
 
-// JSON-RPC error code for "Method not found". Some MCP servers are fully
-// functional but do not implement the optional `ping` method; when such a
-// server answers our `ping` request it responds with -32601. That response
-// still proves the server is alive, so it must not be treated as a
-// connectivity failure (issue #6797).
+// JSON-RPC "Method not found". A server that does not implement `ping`
+// answers with this code, which still proves it is alive.
 const JSONRPC_METHOD_NOT_FOUND = -32601;
 
 /**
@@ -191,8 +188,6 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       // contains a $ref the MCP SDK cannot resolve. If we let that bubble up
       // it crashes the entire list, so a single bad server would hide every
       // other server. Keep the server visible with its error instead.
-      // A -32601 from ping() means the server is alive but does not implement
-      // ping - isMCPServerReachable treats that as reachable, not as a failure.
       try {
         const online = await isMCPServerReachable(mcp);
         const tools = (online ? (await mcp.listTools()).tools : []).filter(
