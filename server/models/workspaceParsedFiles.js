@@ -101,6 +101,46 @@ const WorkspaceParsedFiles = {
   },
 
   /**
+   * Copies a parsed file into custom-documents without removing the parsed
+   * attachment. Callers decide when the source/record can be discarded.
+   * @param {import("@prisma/client").users | null} user - The user performing the operation.
+   * @param {number} fileId - The ID of the parsed file.
+   * @param {import("@prisma/client").workspaces} workspace - The workspace the file belongs to.
+   * @returns {Promise<{docpath: string, sourceFile: string, targetPath: string}>}
+   */
+  copyToDocuments: async function (user = null, fileId, workspace) {
+    const parsedFile = await this.get({
+      id: parseInt(fileId),
+      ...(user ? { userId: user.id } : {}),
+      workspaceId: workspace.id,
+    });
+    if (!parsedFile) throw new Error("File not found");
+
+    // Get file location from metadata
+    const metadata = safeJsonParse(parsedFile.metadata, {});
+    const location = metadata.location;
+    if (!location) throw new Error("No file location in metadata");
+
+    // Get file from metadata location
+    const sourceFile = path.join(directUploadsPath, path.basename(location));
+    if (!fs.existsSync(sourceFile)) throw new Error("Source file not found");
+
+    // Move to custom-documents
+    const customDocsPath = path.join(documentsPath, "custom-documents");
+    if (!fs.existsSync(customDocsPath))
+      fs.mkdirSync(customDocsPath, { recursive: true });
+
+    // Copy the file to custom-documents
+    const targetPath = path.join(customDocsPath, path.basename(location));
+    fs.copyFileSync(sourceFile, targetPath);
+    return {
+      docpath: `custom-documents/${path.basename(location)}`,
+      sourceFile,
+      targetPath,
+    };
+  },
+
+  /**
    * Moves a parsed file into custom-documents so it can be embedded and removes the parsed file record.
    * @param {import("@prisma/client").users | null} user - The user performing the operation.
    * @param {number} fileId - The ID of the parsed file.
@@ -108,40 +148,19 @@ const WorkspaceParsedFiles = {
    * @returns {Promise<string>} The document location, eg: custom-documents/my-file-uuid.json
    */
   moveToDocuments: async function (user = null, fileId, workspace) {
-    try {
-      const parsedFile = await this.get({
-        id: parseInt(fileId),
-        ...(user ? { userId: user.id } : {}),
-        workspaceId: workspace.id,
-      });
-      if (!parsedFile) throw new Error("File not found");
+    const { docpath, sourceFile } = await this.copyToDocuments(
+      user,
+      fileId,
+      workspace
+    );
 
-      // Get file location from metadata
-      const metadata = safeJsonParse(parsedFile.metadata, {});
-      const location = metadata.location;
-      if (!location) throw new Error("No file location in metadata");
-
-      // Get file from metadata location
-      const sourceFile = path.join(directUploadsPath, path.basename(location));
-      if (!fs.existsSync(sourceFile)) throw new Error("Source file not found");
-
-      // Move to custom-documents
-      const customDocsPath = path.join(documentsPath, "custom-documents");
-      if (!fs.existsSync(customDocsPath))
-        fs.mkdirSync(customDocsPath, { recursive: true });
-
-      // Copy the file to custom-documents
-      const targetPath = path.join(customDocsPath, path.basename(location));
-      fs.copyFileSync(sourceFile, targetPath);
-      fs.unlinkSync(sourceFile);
-      return `custom-documents/${path.basename(location)}`;
-    } finally {
-      await this.delete({
-        id: parseInt(fileId),
-        ...(user ? { userId: user.id } : {}),
-        workspaceId: workspace.id,
-      });
-    }
+    fs.unlinkSync(sourceFile);
+    await this.delete({
+      id: parseInt(fileId),
+      ...(user ? { userId: user.id } : {}),
+      workspaceId: workspace.id,
+    });
+    return docpath;
   },
 
   /**
@@ -153,19 +172,48 @@ const WorkspaceParsedFiles = {
    */
   moveToDocumentsAndEmbed: async function (user = null, fileId, workspace) {
     try {
-      const docpath = await this.moveToDocuments(user, fileId, workspace);
-      const {
-        failedToEmbed = [],
-        errors = [],
-        embedded = [],
-      } = await Document.addDocuments(workspace, [docpath], user?.id ?? null);
+      const { docpath, sourceFile, targetPath } = await this.copyToDocuments(
+        user,
+        fileId,
+        workspace
+      );
 
-      if (failedToEmbed.length > 0)
-        throw new Error(errors[0] || "Failed to embed document");
+      let embedded;
+      try {
+        const result = await Document.addDocuments(
+          workspace,
+          [docpath],
+          user?.id ?? null
+        );
+        if (result.failedToEmbed.length > 0)
+          throw new Error(result.errors[0] || "Failed to embed document");
+        embedded = result.embedded;
+      } catch (error) {
+        // Keep the parsed attachment and its source file so the user can retry.
+        try {
+          fs.unlinkSync(targetPath);
+        } catch {}
+        throw error;
+      }
 
       const document = await Document.get({
         workspaceId: workspace.id,
         docpath: embedded[0],
+      });
+
+      // The workspace document is now live; discard the chat attachment.
+      try {
+        fs.unlinkSync(sourceFile);
+      } catch (error) {
+        console.error(
+          `Failed to remove parsed attachment source ${sourceFile}:`,
+          error.message
+        );
+      }
+      await this.delete({
+        id: parseInt(fileId),
+        ...(user ? { userId: user.id } : {}),
+        workspaceId: workspace.id,
       });
       return { success: true, error: null, document };
     } catch (error) {
