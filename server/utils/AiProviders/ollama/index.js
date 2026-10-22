@@ -125,9 +125,7 @@ class OllamaAILLM {
         OllamaAILLM.modelContextWindows[showInfo.name] =
           showInfo.model_info[contextWindowKey];
       });
-      OllamaAILLM.#slog(
-        `Context windows cached for ${infos.length}/${models.length} models.`
-      );
+      OllamaAILLM.#slog(`Context windows cached!`);
     } catch (e) {
       OllamaAILLM.#slog(`Error caching context windows`, e);
       return;
