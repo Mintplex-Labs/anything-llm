@@ -27,8 +27,8 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
 
     /**
      * Record a per-document failure without stopping the rest of the queue.
-     * Mirrors the existing retry policy: retry on the next worker interval and
-     * unwatch a document after repeated consecutive failures.
+     * The document is retried on the next worker interval and unwatched once it
+     * has failed maxRepeatFailures times in a row.
      * @param {Object} queue - the document_sync_queues record
      * @param {Object} document - the workspace document being refreshed
      * @param {string} reason - user-readable failure reason
@@ -65,231 +65,222 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
     };
 
     for (const queue of queuesToProcess) {
-      let newContent = null;
-      const document = queue.workspaceDoc;
-      const workspace = document.workspace;
-
-      let parsedDocument;
       try {
-        parsedDocument = Document.parseDocumentTypeAndSource(document);
-      } catch (error) {
-        log(
-          `Document ${document.filename} has invalid metadata (${error.message}) and has been removed from all future runs.`
+        let newContent = null;
+        const document = queue.workspaceDoc;
+        const workspace = document.workspace;
+        const { metadata, type, source } =
+          Document.parseDocumentTypeAndSource(document);
+
+        if (!metadata || !DocumentSyncQueue.validFileTypes.includes(type)) {
+          // Document is either broken, invalid, or not supported so drop it from future queues.
+          log(
+            `Document ${document.filename} has no metadata, is broken, or invalid and has been removed from all future runs.`
+          );
+          await DocumentSyncQueue.unwatch(document);
+          continue;
+        }
+
+        if (["link", "youtube"].includes(type)) {
+          const response = await collector.forwardExtensionRequest({
+            endpoint: "/ext/resync-source-document",
+            method: "POST",
+            body: JSON.stringify({
+              type,
+              options: { link: source },
+            }),
+          });
+          newContent = response?.content;
+        }
+
+        if (
+          ["confluence", "github", "gitlab", "gitea", "drupalwiki"].includes(
+            type
+          )
+        ) {
+          const response = await collector.forwardExtensionRequest({
+            endpoint: "/ext/resync-source-document",
+            method: "POST",
+            body: JSON.stringify({
+              type,
+              options: { chunkSource: metadata.chunkSource },
+            }),
+          });
+          newContent = response?.content;
+        }
+
+        if (!newContent) {
+          await recordFailure(queue, document, "No content found.");
+          continue;
+        }
+
+        const currentDocumentData = await fileData(document.docpath);
+
+        if (!currentDocumentData) {
+          await recordFailure(
+            queue,
+            document,
+            "Could not read the source document."
+          );
+          continue;
+        }
+
+        if (currentDocumentData.pageContent === newContent) {
+          const nextSync = DocumentSyncQueue.calcNextSync(queue);
+          log(
+            `Source ${source} is unchanged and will be skipped. Next sync will be ${nextSync.toLocaleString()}.`
+          );
+          await DocumentSyncQueue._update(queue.id, {
+            lastSyncedAt: new Date().toISOString(),
+            nextSyncAt: nextSync.toISOString(),
+          });
+          await DocumentSyncQueue.saveRun(
+            queue.id,
+            DocumentSyncRun.statuses.exited,
+            {
+              filename: document.filename,
+              workspacesModified: [],
+              reason: "Content unchanged.",
+            }
+          );
+          continue;
+        }
+
+        // update the defined document and workspace vectorDB with the latest information
+        // it will skip cache and create a new vectorCache file.
+        const vectorDatabase = getVectorDbClass();
+        // The published timestamp is half of the identifier used to filter RAG results whose parent
+        // document is pinned, so the vectors and the source document have to be stamped with the
+        // same value or a pinned document will be injected as full-text and as chunks.
+        const publishedAt = new Date().toLocaleString();
+        await vectorDatabase.deleteDocumentFromNamespace(
+          workspace.slug,
+          document.docId
         );
-        await DocumentSyncQueue.unwatch(document);
-        continue;
-      }
-
-      const { metadata, type, source } = parsedDocument;
-
-      if (!metadata || !DocumentSyncQueue.validFileTypes.includes(type)) {
-        // Document is either broken, invalid, or not supported so drop it from future queues.
-        log(
-          `Document ${document.filename} has no metadata, is broken, or invalid and has been removed from all future runs.`
-        );
-        await DocumentSyncQueue.unwatch(document);
-        continue;
-      }
-
-      if (["link", "youtube"].includes(type)) {
-        const response = await collector.forwardExtensionRequest({
-          endpoint: "/ext/resync-source-document",
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            options: { link: source },
-          }),
-        });
-        newContent = response?.content;
-      }
-
-      if (
-        ["confluence", "github", "gitlab", "gitea", "drupalwiki"].includes(type)
-      ) {
-        const response = await collector.forwardExtensionRequest({
-          endpoint: "/ext/resync-source-document",
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            options: { chunkSource: metadata.chunkSource },
-          }),
-        });
-        newContent = response?.content;
-      }
-
-      if (!newContent) {
-        await recordFailure(queue, document, "No content found.");
-        continue;
-      }
-
-      let currentDocumentData;
-      try {
-        currentDocumentData = await fileData(document.docpath);
-      } catch (error) {
-        await recordFailure(
-          queue,
-          document,
-          `Could not read the source document: ${error.message}`
-        );
-        continue;
-      }
-
-      if (!currentDocumentData) {
-        await recordFailure(
-          queue,
-          document,
-          "Could not read the source document."
-        );
-        continue;
-      }
-
-      if (currentDocumentData.pageContent === newContent) {
-        const nextSync = DocumentSyncQueue.calcNextSync(queue);
-        log(
-          `Source ${source} is unchanged and will be skipped. Next sync will be ${nextSync.toLocaleString()}.`
-        );
-        await DocumentSyncQueue._update(queue.id, {
-          lastSyncedAt: new Date().toISOString(),
-          nextSyncAt: nextSync.toISOString(),
-        });
-        await DocumentSyncQueue.saveRun(
-          queue.id,
-          DocumentSyncRun.statuses.exited,
+        // Remove document_vectors rows on delete
+        await DocumentVectors.delete({ docId: document.docId });
+        const embedResult = await vectorDatabase.addDocumentToNamespace(
+          workspace.slug,
           {
-            filename: document.filename,
-            workspacesModified: [],
-            reason: "Content unchanged.",
-          }
+            ...currentDocumentData,
+            pageContent: newContent,
+            docId: document.docId,
+            published: publishedAt,
+          },
+          document.docpath,
+          true
         );
-        continue;
-      }
+        // Embed failures are recorded on the run but not retried. The new content is still saved
+        // below so the next sync compares against it instead of re-embedding the same change.
+        const failures = [];
+        if (embedResult?.vectorized === false) {
+          failures.push({
+            workspace: workspace.slug,
+            error: embedResult.error,
+          });
+          log(
+            `Failed to embed the new content of ${source} into workspace "${workspace.name}": ${embedResult.error}`
+          );
+        } else {
+          log(`Workspace "${workspace.name}" vectors of ${source} updated.`);
+        }
 
-      // update the defined document and workspace vectorDB with the latest information
-      // it will skip cache and create a new vectorCache file.
-      const vectorDatabase = getVectorDbClass();
-      // The published timestamp is half of the identifier used to filter RAG results whose parent
-      // document is pinned, so the vectors and the source document have to be stamped with the
-      // same value or a pinned document will be injected as full-text and as chunks.
-      const publishedAt = new Date().toLocaleString();
-      await vectorDatabase.deleteDocumentFromNamespace(
-        workspace.slug,
-        document.docId
-      );
-      // Remove document_vectors rows on delete
-      await DocumentVectors.delete({ docId: document.docId });
-      const embedResult = await vectorDatabase.addDocumentToNamespace(
-        workspace.slug,
-        {
+        // Now we can bloom the results to all matching documents in all other workspaces
+        const workspacesModified = [workspace.slug];
+        const moreReferences = await Document.where(
+          {
+            id: { not: document.id },
+            filename: document.filename,
+          },
+          null,
+          null,
+          { workspace: true }
+        );
+
+        if (moreReferences.length !== 0) {
+          log(
+            `${source} is referenced in ${moreReferences.length} other workspaces. Updating those workspaces as well...`
+          );
+          for (const additionalDocumentRef of moreReferences) {
+            const additionalWorkspace = additionalDocumentRef.workspace;
+            workspacesModified.push(additionalWorkspace.slug);
+
+            await vectorDatabase.deleteDocumentFromNamespace(
+              additionalWorkspace.slug,
+              additionalDocumentRef.docId
+            );
+            await DocumentVectors.delete({
+              docId: additionalDocumentRef.docId,
+            });
+            const additionalResult =
+              await vectorDatabase.addDocumentToNamespace(
+                additionalWorkspace.slug,
+                {
+                  ...currentDocumentData,
+                  pageContent: newContent,
+                  docId: additionalDocumentRef.docId,
+                  published: publishedAt,
+                },
+                additionalDocumentRef.docpath
+              );
+            if (additionalResult?.vectorized === false) {
+              failures.push({
+                workspace: additionalWorkspace.slug,
+                error: additionalResult.error,
+              });
+              log(
+                `Failed to embed the new content of ${source} into workspace "${additionalWorkspace.name}": ${additionalResult.error}`
+              );
+              continue;
+            }
+            log(
+              `Workspace "${additionalWorkspace.name}" vectors for ${source} was also updated with the new content from cache.`
+            );
+          }
+        }
+
+        updateSourceDocument(document.docpath, {
           ...currentDocumentData,
           pageContent: newContent,
           docId: document.docId,
           published: publishedAt,
-        },
-        document.docpath,
-        true
-      );
-      // Embed failures are recorded on the run but not retried. The new content is still saved
-      // below so the next sync compares against it instead of re-embedding the same change.
-      const failures = [];
-      if (embedResult?.vectorized === false) {
-        failures.push({ workspace: workspace.slug, error: embedResult.error });
+          // Todo: Update word count and token_estimate?
+        });
+
+        const nextRefresh = DocumentSyncQueue.calcNextSync(queue);
         log(
-          `Failed to embed the new content of ${source} into workspace "${workspace.name}": ${embedResult.error}`
+          `${source} has been refreshed in all workspaces it is currently referenced in. Next refresh will be ${nextRefresh.toLocaleString()}.`
         );
-      } else {
-        log(`Workspace "${workspace.name}" vectors of ${source} updated.`);
-      }
-
-      // Now we can bloom the results to all matching documents in all other workspaces
-      const workspacesModified = [workspace.slug];
-      const moreReferences = await Document.where(
-        {
-          id: { not: document.id },
-          filename: document.filename,
-        },
-        null,
-        null,
-        { workspace: true }
-      );
-
-      if (moreReferences.length !== 0) {
-        log(
-          `${source} is referenced in ${moreReferences.length} other workspaces. Updating those workspaces as well...`
-        );
-        for (const additionalDocumentRef of moreReferences) {
-          const additionalWorkspace = additionalDocumentRef.workspace;
-          workspacesModified.push(additionalWorkspace.slug);
-
-          await vectorDatabase.deleteDocumentFromNamespace(
-            additionalWorkspace.slug,
-            additionalDocumentRef.docId
+        await DocumentSyncQueue._update(queue.id, {
+          lastSyncedAt: new Date().toISOString(),
+          nextSyncAt: nextRefresh.toISOString(),
+        });
+        if (failures.length === 0) {
+          await DocumentSyncQueue.saveRun(
+            queue.id,
+            DocumentSyncRun.statuses.success,
+            { filename: document.filename, workspacesModified }
           );
-          await DocumentVectors.delete({ docId: additionalDocumentRef.docId });
-          const additionalResult = await vectorDatabase.addDocumentToNamespace(
-            additionalWorkspace.slug,
-            {
-              ...currentDocumentData,
-              pageContent: newContent,
-              docId: additionalDocumentRef.docId,
-              published: publishedAt,
-            },
-            additionalDocumentRef.docpath
-          );
-          if (additionalResult?.vectorized === false) {
-            failures.push({
-              workspace: additionalWorkspace.slug,
-              error: additionalResult.error,
-            });
-            log(
-              `Failed to embed the new content of ${source} into workspace "${additionalWorkspace.name}": ${additionalResult.error}`
-            );
-            continue;
-          }
-          log(
-            `Workspace "${additionalWorkspace.name}" vectors for ${source} was also updated with the new content from cache.`
-          );
+          continue;
         }
-      }
 
-      updateSourceDocument(document.docpath, {
-        ...currentDocumentData,
-        pageContent: newContent,
-        docId: document.docId,
-        published: publishedAt,
-        // Todo: Update word count and token_estimate?
-      });
-
-      const nextRefresh = DocumentSyncQueue.calcNextSync(queue);
-      log(
-        `${source} has been refreshed in all workspaces it is currently referenced in. Next refresh will be ${nextRefresh.toLocaleString()}.`
-      );
-      await DocumentSyncQueue._update(queue.id, {
-        lastSyncedAt: new Date().toISOString(),
-        nextSyncAt: nextRefresh.toISOString(),
-      });
-      if (failures.length === 0) {
+        const failedSlugs = failures.map((f) => f.workspace);
         await DocumentSyncQueue.saveRun(
           queue.id,
-          DocumentSyncRun.statuses.success,
-          { filename: document.filename, workspacesModified }
+          DocumentSyncRun.statuses.failed,
+          {
+            filename: document.filename,
+            workspacesModified: workspacesModified.filter(
+              (slug) => !failedSlugs.includes(slug)
+            ),
+            reason: `Failed to embed the new content into: ${failures
+              .map((f) => `${f.workspace} (${f.error || "unknown error"})`)
+              .join(", ")}`,
+          }
         );
-        continue;
+      } catch (error) {
+        await recordFailure(queue, queue.workspaceDoc, error.message);
       }
-
-      const failedSlugs = failures.map((f) => f.workspace);
-      await DocumentSyncQueue.saveRun(
-        queue.id,
-        DocumentSyncRun.statuses.failed,
-        {
-          filename: document.filename,
-          workspacesModified: workspacesModified.filter(
-            (slug) => !failedSlugs.includes(slug)
-          ),
-          reason: `Failed to embed the new content into: ${failures
-            .map((f) => `${f.workspace} (${f.error || "unknown error"})`)
-            .join(", ")}`,
-        }
-      );
     }
   } catch (e) {
     console.error(e);

@@ -111,10 +111,7 @@ describe("watched document sync isolation", () => {
   });
 
   it("continues with later documents when one source file cannot be read", async () => {
-    mockQueues = [
-      queue(1, "missing.json"),
-      queue(2, "healthy.json"),
-    ];
+    mockQueues = [queue(1, "missing.json"), queue(2, "healthy.json")];
     mockFileData.mockImplementation(async (docpath) =>
       docpath.includes("missing")
         ? null
@@ -140,16 +137,38 @@ describe("watched document sync isolation", () => {
     );
   });
 
-  it("removes a document with unparseable metadata and continues the run", async () => {
-    mockQueues = [
-      queue(1, "bad-metadata.json"),
-      queue(2, "healthy.json"),
-    ];
+  it("records a failure for a document that throws and continues the run", async () => {
+    mockQueues = [queue(1, "bad-metadata.json"), queue(2, "healthy.json")];
+
+    await runJob();
+
+    expect(mockUnwatch).not.toHaveBeenCalled();
+    expect(mockSaveRun).toHaveBeenCalledWith(
+      1,
+      "failed",
+      expect.objectContaining({
+        filename: "bad-metadata.json",
+        reason: "missing chunkSource",
+      })
+    );
+    expect(mockAddDocument).toHaveBeenCalledTimes(1);
+    expect(mockAddDocument.mock.calls[0][0]).toBe("workspace-2");
+  });
+
+  it("unwatches a document that keeps throwing once it hits the repeat failure limit", async () => {
+    mockQueues = [queue(1, "bad-metadata.json"), queue(2, "healthy.json")];
+    mockWhere.mockResolvedValue(
+      Array.from({ length: 5 }, () => ({ status: "failed" }))
+    );
 
     await runJob();
 
     expect(mockUnwatch).toHaveBeenCalledWith(mockQueues[0].workspaceDoc);
+    expect(mockSaveRun).not.toHaveBeenCalledWith(
+      1,
+      expect.anything(),
+      expect.anything()
+    );
     expect(mockAddDocument).toHaveBeenCalledTimes(1);
-    expect(mockAddDocument.mock.calls[0][0]).toBe("workspace-2");
   });
 });

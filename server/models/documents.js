@@ -19,6 +19,8 @@ const Document = {
   parseDocumentTypeAndSource: function (document) {
     const metadata = safeJsonParse(document.metadata, null);
     if (!metadata) return { metadata: null, type: null, source: null };
+    if (typeof metadata.chunkSource !== "string")
+      return { metadata, type: null, source: null };
 
     // Parse the correct type of source and its original source path.
     const idx = metadata.chunkSource.indexOf("://");
