@@ -55,14 +55,42 @@ const INSTANCE_CACHE_KEY = "theme_palettes";
 /** @type {ThemePalettes} */
 const EMPTY_INSTANCE = { palettes: [], defaultPalette: null, enforced: false };
 
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+
+/** Skips cached palettes saved in an older format. */
+function isCompletePalette(palette) {
+  return (
+    typeof palette?.id === "string" &&
+    typeof palette?.name === "string" &&
+    PALETTE_SEEDS.every((seed) => HEX_COLOR.test(palette?.[seed]))
+  );
+}
+
+/**
+ * Coerces cached or fetched instance palettes into a valid shape, so a
+ * malformed cache can never break rendering.
+ * @param {any} value
+ * @returns {ThemePalettes}
+ */
+function normalizeInstance(value) {
+  if (!value || typeof value !== "object") return EMPTY_INSTANCE;
+  return {
+    palettes: Array.isArray(value.palettes)
+      ? value.palettes.filter(isCompletePalette)
+      : [],
+    defaultPalette:
+      typeof value.defaultPalette === "string" ? value.defaultPalette : null,
+    enforced: value.enforced === true,
+  };
+}
+
 // Shared across every useTheme() instance so they never disagree on the palette.
 let state = {
   /** The palette the user picked, or null to follow the instance default. */
   choice: localStorage.getItem(USER_PALETTE_KEY) || null,
   /** Cached until the server responds so the palette applies without a flash. */
-  instance: safeJsonParse(
-    localStorage.getItem(INSTANCE_CACHE_KEY),
-    EMPTY_INSTANCE
+  instance: normalizeInstance(
+    safeJsonParse(localStorage.getItem(INSTANCE_CACHE_KEY), EMPTY_INSTANCE)
   ),
   /**
    * Unsaved admin changes shown across the app until saved or discarded.
@@ -79,13 +107,6 @@ function setState(next) {
   else localStorage.removeItem(USER_PALETTE_KEY);
   localStorage.setItem(INSTANCE_CACHE_KEY, JSON.stringify(state.instance));
   listeners.forEach((listener) => listener());
-}
-
-const HEX_COLOR = /^#[0-9a-f]{6}$/i;
-
-/** Skips cached palettes saved in an older format. */
-function isCompletePalette(palette) {
-  return PALETTE_SEEDS.every((seed) => HEX_COLOR.test(palette?.[seed]));
 }
 
 /**
@@ -144,7 +165,7 @@ export const paletteStore = {
   },
   /** @param {ThemePalettes} instance */
   setInstance(instance) {
-    setState({ instance: instance ?? EMPTY_INSTANCE });
+    setState({ instance: normalizeInstance(instance) });
   },
   /** @param {{colors: PaletteColors|null, shades?: Record<string, string>}|null} preview */
   setPreview(preview) {

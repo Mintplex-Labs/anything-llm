@@ -60,9 +60,11 @@ function sanitizeThemePalettes(input) {
     palettes.push({ id: palette.id, name, ...colors });
   }
 
-  let defaultPalette = PALETTE_KEY.test(config.defaultPalette)
-    ? config.defaultPalette
-    : null;
+  let defaultPalette =
+    typeof config.defaultPalette === "string" &&
+    PALETTE_KEY.test(config.defaultPalette)
+      ? config.defaultPalette
+      : null;
   // A custom default must still exist.
   if (
     defaultPalette?.startsWith("custom-") &&
