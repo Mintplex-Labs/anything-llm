@@ -191,4 +191,49 @@ describe("MCPCompatibilityLayer.servers", () => {
     expect(alive.running).toBe(true);
     expect(alive.tools.map((t) => t.name)).toEqual(["echo"]);
   });
+
+  it("treats a server whose ping is not implemented (-32601) as online and lists its tools (issue #6797)", async () => {
+    writeMCPConfig({});
+    mcpLayer = new MCPCompatibilityLayer();
+
+    // The MCP SDK surfaces a server's JSON-RPC "Method not found" answer to
+    // `ping` as an error with code -32601. The server is alive - it just does
+    // not implement ping - so it must stay usable instead of being marked
+    // unavailable.
+    const pingNotImplemented = new Error(
+      "MCP error -32601: Unknown method: ping"
+    );
+    pingNotImplemented.code = -32601;
+    mcpLayer.mcps = {
+      "no-ping-server": {
+        ping: () => Promise.reject(pingNotImplemented),
+        listTools: () => Promise.resolve({ tools: [GOOD_TOOL] }),
+        transport: { close: () => {} },
+        close: () => {},
+      },
+      "dead-server": {
+        ping: () => Promise.reject(new Error("fetch failed")),
+        transport: { close: () => {} },
+        close: () => {},
+      },
+    };
+    mcpLayer.mcpLoadingResults = {
+      "no-ping-server": { status: "success", message: "connected" },
+      "dead-server": { status: "success", message: "connected" },
+    };
+
+    const servers = await mcpLayer.servers();
+
+    expect(servers).toHaveLength(2);
+
+    const noPing = servers.find((s) => s.name === "no-ping-server");
+    expect(noPing.running).toBe(true);
+    expect(noPing.tools.map((t) => t.name)).toEqual(["echo"]);
+    expect(noPing.error).toBeNull();
+
+    // Genuine connectivity failures are still reported as down.
+    const dead = servers.find((s) => s.name === "dead-server");
+    expect(dead.running).toBe(false);
+    expect(dead.error).toBe("fetch failed");
+  });
 });

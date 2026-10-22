@@ -1,5 +1,30 @@
 const MCPHypervisor = require("./hypervisor");
 
+// JSON-RPC error code for "Method not found". Some MCP servers are fully
+// functional but do not implement the optional `ping` method; when such a
+// server answers our `ping` request it responds with -32601. That response
+// still proves the server is alive, so it must not be treated as a
+// connectivity failure (issue #6797).
+const JSONRPC_METHOD_NOT_FOUND = -32601;
+
+/**
+ * Check whether an MCP server client is reachable. A server that answers
+ * `ping` with JSON-RPC -32601 ("Method not found") is alive but does not
+ * implement `ping` - treat it as reachable so its tools can still be listed
+ * and used. Any other ping failure (transport errors, timeouts) is rethrown
+ * so the server is still reported as down.
+ * @param {import("@modelcontextprotocol/sdk/client/index.js").Client} mcp - The connected MCP client
+ * @returns {Promise<boolean>} true when the server answered the ping request
+ */
+async function isMCPServerReachable(mcp) {
+  try {
+    return !!(await mcp.ping());
+  } catch (error) {
+    if (error?.code === JSONRPC_METHOD_NOT_FOUND) return true;
+    throw error;
+  }
+}
+
 class MCPCompatibilityLayer extends MCPHypervisor {
   static _instance;
 
@@ -166,8 +191,10 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       // contains a $ref the MCP SDK cannot resolve. If we let that bubble up
       // it crashes the entire list, so a single bad server would hide every
       // other server. Keep the server visible with its error instead.
+      // A -32601 from ping() means the server is alive but does not implement
+      // ping - isMCPServerReachable treats that as reachable, not as a failure.
       try {
-        const online = !!(await mcp.ping());
+        const online = await isMCPServerReachable(mcp);
         const tools = (online ? (await mcp.listTools()).tools : []).filter(
           (tool) => !tool.name.startsWith("handle_mcp_connection_mcp_")
         );
@@ -209,7 +236,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: `MCP server ${name} not found in config file.`,
       };
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
+    const online = mcp ? await isMCPServerReachable(mcp) : false; // If the server is not in the mcps object, it is not running
 
     if (online) {
       const killed = this.pruneMCPServer(name);
@@ -237,7 +264,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       };
 
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
+    const online = mcp ? await isMCPServerReachable(mcp) : false; // If the server is not in the mcps object, it is not running
     if (online) this.pruneMCPServer(name);
     this.removeMCPServerFromConfig(name);
 
