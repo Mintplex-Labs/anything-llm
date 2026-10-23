@@ -7,7 +7,12 @@ const {
   validBrowserExtensionApiKey,
 } = require("../utils/middleware/validBrowserExtensionApiKey");
 const { CollectorApi } = require("../utils/collectorApi");
-const { reqBody, multiUserMode, userFromSession } = require("../utils/http");
+const {
+  reqBody,
+  multiUserMode,
+  userFromSession,
+  safeJsonParse,
+} = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
@@ -17,6 +22,7 @@ const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const { WorkspaceChats } = require("../models/workspaceChats");
 const {
   downloadGeneratedFile,
   serveGeneratedImage,
@@ -218,9 +224,9 @@ function browserExtensionEndpoints(app) {
         if (!workspace)
           return response.status(403).json({ error: "Workspace not found" });
 
-        const thread = Number.isInteger(threadId)
+        const thread = Number.isInteger(Number(threadId))
           ? await WorkspaceThread.get({
-              id: threadId,
+              id: Number(threadId),
               workspace_id: workspace.id,
               user_id: user?.id ?? null,
             })
@@ -275,6 +281,7 @@ function browserExtensionEndpoints(app) {
             });
           },
         });
+        if (response.destroyed) await dropUnansweredReply(thread);
         await WorkspaceThread.autoRenameThread({
           thread,
           workspace,
@@ -445,6 +452,21 @@ function pagesToContextDocuments(pages = []) {
       };
     })
     .filter((doc) => doc.pageContent);
+}
+
+/**
+ * A panel that closes mid-run ends the agent before it replied, and the chat
+ * handler still saves that turn. The reply without text is removed so the
+ * thread in the app has no blank bubble and later messages do not see an
+ * empty assistant turn in their history.
+ * @param {import("@prisma/client").workspace_threads} thread
+ */
+async function dropUnansweredReply(thread) {
+  const [chat] = await WorkspaceChats.where({ thread_id: thread.id }, 1, {
+    id: "desc",
+  });
+  if (!chat || safeJsonParse(chat.response, {}).text) return;
+  await WorkspaceChats.delete({ id: chat.id });
 }
 
 module.exports = { browserExtensionEndpoints };
