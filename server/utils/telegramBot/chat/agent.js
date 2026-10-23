@@ -7,7 +7,7 @@ const {
   sendFormattedMessage,
   upsertMessage,
 } = require("../utils");
-const { escapeHTML } = require("../utils/format");
+const { escapeHTML, markdownToTelegram } = require("../utils/format");
 const { sendVoiceResponse } = require("../utils/media");
 const {
   STREAM_EDIT_INTERVAL,
@@ -53,6 +53,14 @@ async function handleAgentResponse(
   let lastEditTime = 0;
   let editTimer = null;
   let msgOffset = 0;
+  const responseMsgIds = [];
+  let responseEdits = Promise.resolve();
+
+  const editResponseMessage = (messageId, text, opts = {}) => {
+    responseEdits = responseEdits.then(() =>
+      editMessage(ctx.bot, chatId, messageId, text, ctx.log, opts)
+    );
+  };
 
   const currentResponseText = () => streamingText.slice(msgOffset);
   const handleStreamChunk = (chunk) => {
@@ -62,14 +70,11 @@ async function handleAgentResponse(
     if (responseMsgId !== null && currentResponseText().length > MAX_MSG_LEN) {
       clearTimeout(editTimer);
       editTimer = null;
-      editMessage(
-        ctx.bot,
-        chatId,
+      editResponseMessage(
         responseMsgId,
         streamingText.slice(msgOffset, msgOffset + MAX_MSG_LEN),
-        ctx.log,
         { format: true }
-      ).catch(() => {});
+      );
       msgOffset += MAX_MSG_LEN;
       responseMsgId = null;
       responsePending = null;
@@ -81,6 +86,7 @@ async function handleAgentResponse(
         .sendMessage(chatId, currentResponseText() + CURSOR_CHAR)
         .then((sent) => {
           responseMsgId = sent.message_id;
+          responseMsgIds.push(sent.message_id);
           lastEditTime = Date.now();
         })
         .catch(() => {
@@ -96,23 +102,11 @@ async function handleAgentResponse(
     if (now - lastEditTime >= STREAM_EDIT_INTERVAL) {
       clearTimeout(editTimer);
       lastEditTime = now;
-      editMessage(
-        ctx.bot,
-        chatId,
-        responseMsgId,
-        currentResponseText() + CURSOR_CHAR,
-        ctx.log
-      ).catch(() => {});
+      editResponseMessage(responseMsgId, currentResponseText() + CURSOR_CHAR);
     } else if (!editTimer) {
       editTimer = setTimeout(() => {
         lastEditTime = Date.now();
-        editMessage(
-          ctx.bot,
-          chatId,
-          responseMsgId,
-          currentResponseText() + CURSOR_CHAR,
-          ctx.log
-        ).catch(() => {});
+        editResponseMessage(responseMsgId, currentResponseText() + CURSOR_CHAR);
         editTimer = null;
       }, STREAM_EDIT_INTERVAL);
     }
@@ -248,6 +242,8 @@ async function handleAgentResponse(
     agentHandler.aibitat.maxRounds = 2;
 
     await agentHandler.startAgentCluster();
+    clearTimeout(editTimer);
+    editTimer = null;
 
     // Extract pending outputs from aibitat for persistence
     const outputs = agentHandler?.aibitat?._pendingOutputs ?? [];
@@ -285,6 +281,7 @@ async function handleAgentResponse(
 
     // Ensure the initial sendMessage has resolved before deciding how to deliver
     if (responsePending) await responsePending;
+    await responseEdits;
 
     // Fall back to the accumulated streamed text when no explicit
     // fullTextResponse event was received (e.g. audio/voice messages).
@@ -306,19 +303,69 @@ async function handleAgentResponse(
       });
 
       // Always deliver text response first
-      if (responseMsgId) {
-        await editMessage(
-          ctx.bot,
-          chatId,
-          responseMsgId,
-          finalResponse || currentResponseText(),
-          ctx.log,
-          {
-            format: true,
+      // Reconcile every preview with the final text, including missed stream updates.
+      let offset = 0;
+      let usedPreviewCount = 0;
+      let canEditPreviews = true;
+      while (offset < responseText.length) {
+        let end = Math.min(offset + MAX_MSG_LEN, responseText.length);
+        const lastChar = responseText.charCodeAt(end - 1);
+        if (
+          end < responseText.length &&
+          lastChar >= 0xd800 &&
+          lastChar <= 0xdbff
+        )
+          end--;
+        const chunk = responseText.slice(offset, end);
+        offset = end;
+
+        const formatted = markdownToTelegram(chunk);
+        const format = formatted.length <= 4096;
+        const messageId = canEditPreviews
+          ? responseMsgIds[usedPreviewCount]
+          : null;
+        let delivered = false;
+        if (messageId) {
+          const attempts = format
+            ? [{ text: formatted, parse_mode: "HTML" }, { text: chunk }]
+            : [{ text: chunk }];
+          for (const attempt of attempts) {
+            try {
+              await ctx.bot.editMessageText(attempt.text, {
+                chat_id: chatId,
+                message_id: messageId,
+                parse_mode: attempt.parse_mode,
+              });
+              delivered = true;
+              break;
+            } catch (error) {
+              if (error.message?.includes("message is not modified")) {
+                delivered = true;
+                break;
+              }
+              if (attempt.parse_mode && error.message?.includes("parse"))
+                continue;
+              ctx.log?.warn?.(
+                "Failed to finalize response message:",
+                error.message
+              );
+              break;
+            }
           }
-        ).catch(() => {});
-      } else {
-        await sendFormattedMessage(ctx.bot, chatId, responseText);
+          if (delivered) usedPreviewCount++;
+          else canEditPreviews = false;
+        }
+        if (!delivered)
+          await sendFormattedMessage(ctx.bot, chatId, chunk, { format });
+      }
+
+      // Remove superseded previews only after their replacements have been sent.
+      for (const messageId of responseMsgIds.slice(usedPreviewCount)) {
+        try {
+          await ctx.bot.deleteMessage(chatId, messageId);
+        } catch (error) {
+          ctx.log?.warn?.("Failed to remove response preview:", error.message);
+        }
       }
 
       // Send voice as an additional attachment if requested

@@ -480,6 +480,7 @@ function adminEndpoints(app) {
             "support_email",
             "meta_page_title",
             "meta_page_favicon",
+            "theme_palettes",
           ];
           const filteredUpdates = {};
           for (const key of Object.keys(updates)) {

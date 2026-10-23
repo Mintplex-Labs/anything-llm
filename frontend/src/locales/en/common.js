@@ -281,6 +281,8 @@ const TRANSLATIONS = {
       "tooltip-description":
         "You are in query mode, which only uses information from your documents. Switch to chat mode for more flexible conversations, or click here to visit our documentation to learn more about chat modes.",
     },
+    token_limit_reached:
+      "Response hit the max output token limit. Increase the model's max output tokens to allow longer responses.",
     temperature: {
       title: "LLM Temperature",
       "desc-end":
@@ -844,6 +846,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "White-label your AnythingLLM instance with custom branding.",
+      tabs: {
+        identity: "Identity",
+        colors: "Colors",
+        sidebar: "Sidebar",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -866,6 +874,36 @@ const TRANSLATIONS = {
       theme: {
         title: "Theme",
         description: "Select your preferred color theme for the application.",
+      },
+      palette: {
+        title: "Color palette",
+        description:
+          "Choose a color palette. It applies to both light and dark mode.",
+        enforced:
+          "Your administrator has set the color palette for this instance.",
+        "default-badge": "Default",
+      },
+      "instance-palettes": {
+        title: "Color palettes",
+        description:
+          "Click a palette to make it the default for everyone on this instance. Custom palettes are a main color, which tints the background, sidebar and content, and an accent for buttons and links.",
+        new: "New palette",
+        edit: "Edit palette",
+        delete: "Delete palette",
+        name: "Palette name",
+        "name-required": "Give the palette a name.",
+        colors: {
+          main: "Main color",
+          accent: "Accent",
+        },
+        "preview-note":
+          "Changes preview across the app and are saved when you click Done.",
+        done: "Done",
+        cancel: "Cancel",
+        enforce: "Enforce the default palette",
+        "enforce-description":
+          "Everyone on this instance uses the default palette and cannot change it.",
+        "save-failed": "Failed to save color palettes: {{error}}",
       },
       "show-scrollbar": {
         title: "Show Scrollbar",

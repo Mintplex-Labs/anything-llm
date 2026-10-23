@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
 import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
+import { withEmbeddedLemonade } from "@/components/LLMSelection/EmbeddedLemonadeOptions";
 
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
@@ -49,7 +50,9 @@ export default function WorkspaceLLMSelection({ settings, workspace }) {
     if (selection === "default") save();
   }
 
-  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+  const llms = withEmbeddedLemonade(LLMS, settings, { after: "default" });
+  const selectedLLMObject =
+    llms.find((llm) => llm.value === selectedLLM) ?? LLM_DEFAULT;
 
   return (
     <div className="flex flex-col gap-y-[8px]">
@@ -66,13 +69,13 @@ export default function WorkspaceLLMSelection({ settings, workspace }) {
       <div className="relative">
         <input type="hidden" name="chatProvider" value={selectedLLM} />
         <ProviderSearchMenu
-          items={LLMS}
+          items={llms}
           selected={selectedLLMObject}
           placeholder={t("chat.llm.search")}
           renderItem={(llm, close) => (
             <WorkspaceLLMItem
               llm={llm}
-              availableLLMs={LLMS}
+              availableLLMs={llms}
               settings={settings}
               checked={selectedLLM === llm.value}
               onClick={() => {

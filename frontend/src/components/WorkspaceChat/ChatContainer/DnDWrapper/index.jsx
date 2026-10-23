@@ -6,6 +6,11 @@ import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import FileUploadWarningModal from "./FileUploadWarningModal";
+import EmbeddingProgressModal from "./EmbeddingProgressModal";
+import {
+  EmbeddingProgressProvider,
+  useEmbeddingProgress,
+} from "@/EmbeddingProgressContext";
 import pluralize from "pluralize";
 
 export const DndUploaderContext = createContext();
@@ -16,6 +21,7 @@ export const ATTACHMENTS_PROCESSING_EVENT = "ATTACHMENTS_PROCESSING";
 export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
 export const PARSED_FILE_ATTACHMENT_REMOVED_EVENT =
   "PARSED_FILE_ATTACHMENT_REMOVED";
+export const PARSED_FILES_UPDATED_EVENT = "PARSED_FILES_UPDATED";
 
 /**
  * File Attachment for automatic upload on the chat container page.
@@ -47,13 +53,15 @@ export function DnDFileUploaderProvider({
 }) {
   // Attachment state and event listeners belong to one conversation.
   return (
-    <DnDFileUploader
-      key={`${workspace.slug}:${threadSlug ?? "default"}`}
-      workspace={workspace}
-      threadSlug={threadSlug}
-    >
-      {children}
-    </DnDFileUploader>
+    <EmbeddingProgressProvider>
+      <DnDFileUploader
+        key={`${workspace.slug}:${threadSlug ?? "default"}`}
+        workspace={workspace}
+        threadSlug={threadSlug}
+      >
+        {children}
+      </DnDFileUploader>
+    </EmbeddingProgressProvider>
   );
 }
 
@@ -63,11 +71,14 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
-  const [isEmbedding, setIsEmbedding] = useState(false);
-  const [embedProgress, setEmbedProgress] = useState(0);
+  const [embeddingFiles, setEmbeddingFiles] = useState([]);
+  const [showEmbedProgress, setShowEmbedProgress] = useState(false);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [tokenCount, setTokenCount] = useState(0);
   const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
+  const { embeddingProgressMap, startEmbedding } = useEmbeddingProgress();
+  const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
+  const lastEmbeddingProgressRef = useRef(null);
 
   useEffect(() => {
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
@@ -379,53 +390,113 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
 
   const handleEmbed = async () => {
     if (!pendingFiles.length) return;
-    setIsEmbedding(true);
-    setEmbedProgress(0);
-
-    // Embed all pending files
-    let completed = 0;
-    const results = await Promise.all(
-      pendingFiles.map((file) =>
-        Workspace.embedParsedFile(workspace.slug, file.parsedFileId).then(
-          (result) => {
-            completed++;
-            setEmbedProgress(completed);
-            return result;
-          }
-        )
-      )
+    const { locations } = await Workspace.moveParsedFiles(
+      workspace.slug,
+      pendingFiles.map((file) => file.parsedFileId)
     );
     if (!mountedRef.current) return;
+    window.dispatchEvent(new CustomEvent(PARSED_FILES_UPDATED_EVENT));
 
-    // Update status for all files
-    const fileUpdates = pendingFiles.map((file, i) => ({
-      uid: file.attachment.uid,
-      updates: {
-        status: results[i].response.ok ? "embedded" : "failed",
-        error: results[i].data?.error ?? null,
-        document: results[i].data?.document,
-      },
+    const queued = pendingFiles.map((file, i) => ({
+      ...file,
+      location: locations[i],
     }));
-
-    setFiles((prev) =>
-      prev.map((prevFile) => {
-        const update = fileUpdates.find((f) => f.uid === prevFile.uid);
-        return update ? { ...prevFile, ...update.updates } : prevFile;
-      })
-    );
+    const adds = queued.map((file) => file.location).filter(Boolean);
     setShowWarningModal(false);
     setPendingFiles([]);
     setTokenCount(0);
-    setIsEmbedding(false);
+    if (!adds.length) return finishEmbedding(queued, {});
+
+    setFiles((prev) =>
+      prev.map((prevFile) =>
+        queued.some((file) => file.attachment.uid === prevFile.uid)
+          ? { ...prevFile, status: "in_progress" }
+          : prevFile
+      )
+    );
+    setEmbeddingFiles(queued);
+    setShowEmbedProgress(true);
+    Workspace.modifyEmbeddings(workspace.slug, { adds });
+    startEmbedding(workspace.slug, adds);
+  };
+
+  // The queue clears its progress shortly after the job finishes, so the last
+  // non-empty snapshot holds the final status of each file.
+  useEffect(() => {
+    if (!embeddingFiles.length) return;
+    if (embeddingProgress) {
+      lastEmbeddingProgressRef.current = embeddingProgress;
+      syncEmbeddingStatus(embeddingFiles, embeddingProgress);
+      return;
+    }
+    if (lastEmbeddingProgressRef.current)
+      finishEmbedding(embeddingFiles, lastEmbeddingProgressRef.current);
+  }, [embeddingProgress, embeddingFiles]);
+
+  /**
+   * Copy each queued file's embed status onto its attachment. Attachments
+   * whose file is no longer queued (or unfinished once `done`) are dropped.
+   * @param {{attachment: Attachment, location: string|null}[]} queued
+   * @param {Object<string, {status: string, error?: string}>} progress
+   * @param {boolean} done - whether the embedding job has finished
+   */
+  function syncEmbeddingStatus(queued, progress, done = false) {
+    const results = queued.map((file) => ({
+      uid: file.attachment.uid,
+      location: file.location,
+      ...(file.location ? progress[file.location] : { status: "failed" }),
+    }));
+
+    setFiles((prev) =>
+      prev.flatMap((prevFile) => {
+        const result = results.find((r) => r.uid === prevFile.uid);
+        if (!result) return [prevFile];
+        if (result.status === "complete")
+          return [
+            {
+              ...prevFile,
+              status: "embedded",
+              error: null,
+              document: { location: result.location },
+            },
+          ];
+        if (result.status === "failed")
+          return [
+            {
+              ...prevFile,
+              status: "failed",
+              error: result.error ?? "Failed to embed file",
+            },
+          ];
+        if (done || !result.status) return [];
+        return [prevFile];
+      })
+    );
+    return results;
+  }
+
+  /**
+   * @param {{attachment: Attachment, location: string|null}[]} queued
+   * @param {Object<string, {status: string, error?: string}>} progress
+   */
+  function finishEmbedding(queued, progress) {
+    const finished = syncEmbeddingStatus(queued, progress, true).filter((r) =>
+      ["complete", "failed"].includes(r.status)
+    );
+    setEmbeddingFiles([]);
+    setShowEmbedProgress(false);
+    lastEmbeddingProgressRef.current = null;
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
-    const allEmbedded = results.every(({ response }) => response.ok);
+
+    if (!finished.length) return;
+    const allEmbedded = finished.every((r) => r.status === "complete");
     showToast(
       allEmbedded
-        ? `${pendingFiles.length} ${pluralize("file", pendingFiles.length)} embedded successfully`
+        ? `${finished.length} ${pluralize("file", finished.length)} embedded successfully`
         : "Failed to embed files",
       allEmbedded ? "success" : "error"
     );
-  };
+  }
 
   return (
     <DndUploaderContext.Provider
@@ -439,8 +510,11 @@ function DnDFileUploader({ workspace, threadSlug, children }) {
         tokenCount={tokenCount}
         maxTokens={maxTokens}
         fileCount={pendingFiles.length}
-        isEmbedding={isEmbedding}
-        embedProgress={embedProgress}
+      />
+      <EmbeddingProgressModal
+        show={showEmbedProgress}
+        onClose={() => setShowEmbedProgress(false)}
+        workspaceSlug={workspace.slug}
       />
       {children}
     </DndUploaderContext.Provider>

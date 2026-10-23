@@ -32,6 +32,15 @@ const NO_SYSTEM_PROMPT_MODELS = [
 ];
 
 class GeminiLLM {
+  /**
+   * Whether the model supports the temperature parameter at all. Newer Gemini
+   * models ignore or reject it, so it is never sent.
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature() {
+    return false;
+  }
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.GEMINI_API_KEY)
       throw new Error("No Gemini API key was set.");

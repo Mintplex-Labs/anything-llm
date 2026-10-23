@@ -259,6 +259,8 @@ const TRANSLATIONS = {
         max: "Massimo",
       },
     },
+    token_limit_reached:
+      "La risposta ha raggiunto il limite massimo di token di output consentito. Aumentare il limite massimo di token di output del modello per consentire risposte più lunghe.",
   },
   "vector-workspace": {
     identifier: "Identificatore del database vettoriale",
@@ -1387,6 +1389,12 @@ const TRANSLATIONS = {
       title: "Branding e personalizzazione",
       description:
         "Personalizza la tua istanza di AnythingLLM con il tuo marchio.",
+      tabs: {
+        identity: "Identità",
+        colors: "Colori",
+        sidebar: "Barra laterale",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1473,6 +1481,36 @@ const TRANSLATIONS = {
         title: "Disattivare lo scorrimento automatico",
         description:
           "Disabilita lo scorrimento automatico fino alla fine della finestra di chat quando vengono ricevute nuove messaggi.",
+      },
+      palette: {
+        title: "Tavolozza di colori",
+        description:
+          "Scegli una tavolozza di colori. Si applica sia alla modalità chiara sia a quella scura.",
+        enforced:
+          "L'amministratore ha impostato la tavolozza di colori per questa istanza.",
+        "default-badge": "Predefinita",
+      },
+      "instance-palettes": {
+        title: "Tavolozze di colori",
+        description:
+          "Fai clic su una tavolozza per renderla predefinita per tutti gli utenti di questa istanza. Le tavolozze personalizzate sono composte da un colore principale, che tinge sfondo, barra laterale e contenuto, e da un colore di accento per pulsanti e link.",
+        new: "Nuova tavolozza",
+        edit: "Modifica tavolozza",
+        delete: "Elimina la tavolozza",
+        name: "Nome della tavolozza",
+        "name-required": "Assegna un nome alla tavolozza.",
+        colors: {
+          main: "Colore principale",
+          accent: "Colore di accento",
+        },
+        "preview-note":
+          'Le modifiche vengono mostrate in anteprima in tutta l\'applicazione e salvate quando fai clic su "Fatto".',
+        done: "Fatto",
+        cancel: "Annulla",
+        enforce: "Applica la tavolozza predefinita.",
+        "enforce-description":
+          "Tutti gli utenti di questa istanza usano la tavolozza predefinita e non possono modificarla.",
+        "save-failed": "Impossibile salvare le tavolozze di colori: {{error}}",
       },
     },
   },
