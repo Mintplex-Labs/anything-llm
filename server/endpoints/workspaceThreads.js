@@ -17,6 +17,7 @@ const {
   validWorkspaceAndThreadSlug,
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { User } = require("../models/user");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { getModelTag } = require("./utils");
 
@@ -201,7 +202,13 @@ function workspaceThreadEndpoints(app) {
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        await WorkspaceChats.delete({
+        // Don't hide chats for a regenerate/edit that stream-chat would reject.
+        if (multiUserMode(response) && !(await User.canSendChat(user)))
+          return response.sendStatus(429);
+
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           workspaceId: Number(workspace.id),
           thread_id: Number(thread.id),
           user_id: user?.id,

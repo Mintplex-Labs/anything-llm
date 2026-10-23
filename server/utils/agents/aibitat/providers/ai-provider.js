@@ -18,6 +18,9 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
+const {
+  watchTokenLimit,
+} = require("../../../helpers/chat/LLMPerformanceMonitor");
 const { maxTokensParam, temperatureParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
@@ -91,6 +94,12 @@ class Provider {
    * @type {ProviderUsageMetrics}
    */
   cumulativeUsage = Provider.#emptyUsage();
+
+  /**
+   * Whether the latest completion stopped at the max output token limit.
+   * @type {boolean}
+   */
+  truncated = false;
 
   /**
    * Zeroed usage metrics for initializing/resetting an accumulator.
@@ -552,6 +561,19 @@ class Provider {
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
+      case "embedded_lemonade": {
+        const {
+          EmbeddedLemonadeLLM,
+        } = require("../../../AiProviders/embeddedLemonade");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: EmbeddedLemonadeLLM.openaiBasePath(),
+            fetch: EmbeddedLemonadeLLM.bootingFetch(config?.model),
+          },
+          apiKey: "not-used",
+          ...config,
+        });
+      }
       case "omlx":
         return new ChatOpenAI({
           configuration: {
@@ -780,6 +802,20 @@ class Provider {
    */
   resetCumulativeUsage() {
     this.cumulativeUsage = Provider.#emptyUsage();
+    this.truncated = false;
+  }
+
+  /**
+   * Watches a completion stream or response for the max output token limit.
+   * Each completion replaces the previous result, so after a run the flag
+   * describes the final reply.
+   * @template T
+   * @param {T} streamOrResponse
+   * @returns {T} the same object, so the call can wrap stream creation
+   */
+  watchTokenLimit(streamOrResponse) {
+    this.truncated = false;
+    return watchTokenLimit(streamOrResponse, () => (this.truncated = true));
   }
 
   /**
@@ -796,7 +832,10 @@ class Provider {
    * @returns {ProviderUsageMetrics} The accumulated usage metrics
    */
   getCumulativeUsage() {
-    return { ...this.cumulativeUsage };
+    return {
+      ...this.cumulativeUsage,
+      ...(this.truncated ? { truncated: true } : {}),
+    };
   }
 
   /**
@@ -821,6 +860,7 @@ class Provider {
         ? { functions }
         : {}),
     });
+    this.watchTokenLimit(stream);
 
     const result = {
       functionCall: null,

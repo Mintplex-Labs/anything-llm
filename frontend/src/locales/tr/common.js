@@ -257,6 +257,8 @@ const TRANSLATIONS = {
         max: "Maksimum",
       },
     },
+    token_limit_reached:
+      "Cevap, maksimum çıktı token limitine ulaştı. Modelin maksimum çıktı token sayısını artırarak daha uzun cevaplar almayı sağlayın.",
   },
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",
@@ -1369,6 +1371,12 @@ const TRANSLATIONS = {
       title: "Marka & Beyaz Etiketleme",
       description:
         "AnythingLLM örneğinizi özel markalamayla beyaz etiketleyin.",
+      tabs: {
+        identity: "Kimlik",
+        colors: "Renkler",
+        sidebar: "Kenar çubuğu",
+        browser: "Tarayıcı",
+      },
     },
     chat: {
       title: "Sohbet",
@@ -1451,6 +1459,35 @@ const TRANSLATIONS = {
         title: "Otomatik kaydırma özelliğini devre dışı bırak",
         description:
           "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
+      },
+      palette: {
+        title: "Renk paleti",
+        description:
+          "Bir renk paleti seçin. Bu, hem açık hem de koyu mod için geçerlidir.",
+        enforced: "Yöneticiniz bu örnek için renk paletini belirledi.",
+        "default-badge": "Varsayılan",
+      },
+      "instance-palettes": {
+        title: "Renk paletleri",
+        description:
+          "Bir paleti, bu örnekteki herkes için varsayılan yapmak üzere tıklayın. Özel paletler; arka planı, kenar çubuğunu ve içeriği renklendiren bir ana renk ile düğmeler ve bağlantılar için bir vurgu renginden oluşur.",
+        new: "Yeni palet",
+        edit: "Paleti düzenle",
+        delete: "Paleti sil",
+        name: "Palet adı",
+        "name-required": "Palete bir ad verin.",
+        colors: {
+          main: "Ana renk",
+          accent: "Vurgu rengi",
+        },
+        "preview-note":
+          'Değişiklikler tüm uygulamada önizlenir ve "Tamam" düğmesine tıkladığınızda kaydedilir.',
+        done: "Tamam",
+        cancel: "İptal et",
+        enforce: "Varsayılan renk paletini uygulayın",
+        "enforce-description":
+          "Bu örnekteki herkes varsayılan paleti kullanır ve değiştiremez.",
+        "save-failed": "Renk paletleri kaydedilemedi: {{error}}",
       },
     },
   },

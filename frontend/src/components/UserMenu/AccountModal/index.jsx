@@ -16,6 +16,7 @@ import Modal, {
   ModalSecondaryButton,
 } from "@/components/lib/Modal";
 import { useTheme } from "@/hooks/useTheme";
+import PalettePicker from "@/palettes/PalettePicker";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
@@ -234,6 +235,10 @@ function ThemePreference() {
           </option>
         ))}
       </select>
+      <ModalLabel className="block mt-4">
+        {t("customization.items.palette.title")}
+      </ModalLabel>
+      <PalettePicker />
     </div>
   );
 }

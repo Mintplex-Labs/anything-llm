@@ -288,6 +288,8 @@ const TRANSLATIONS = {
         max: "최대",
       },
     },
+    token_limit_reached:
+      "응답이 최대 출력 토큰 제한에 도달했습니다. 모델의 최대 출력 토큰 수를 늘려 더 긴 답변을 생성할 수 있도록 합니다.",
   },
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",
@@ -825,6 +827,12 @@ const TRANSLATIONS = {
       title: "브랜딩 및 화이트라벨링",
       description:
         "AnythingLLM 인스턴스에 맞춤 브랜딩을 적용해 화이트라벨링할 수 있습니다.",
+      tabs: {
+        identity: "아이덴티티",
+        colors: "색상",
+        sidebar: "사이드바",
+        browser: "웹 브라우저",
+      },
     },
     chat: {
       title: "채팅",
@@ -904,6 +912,35 @@ const TRANSLATIONS = {
         title: "자동 스크롤 기능 끄기",
         description:
           "새 메시지가 도착할 때 자동으로 채팅 내용이 맨 아래로 스크롤되는 기능을 비활성화합니다.",
+      },
+      palette: {
+        title: "색상 팔레트",
+        description:
+          "색상 팔레트를 선택하세요. 이는 밝은 모드와 어두운 모드 모두에 적용됩니다.",
+        enforced: "관리자가 이 인스턴스에 대한 색상 팔레트를 설정했습니다.",
+        "default-badge": "기본값",
+      },
+      "instance-palettes": {
+        title: "색상 팔레트",
+        description:
+          "팔레트를 클릭하면 이 인스턴스의 모든 사용자에게 기본 팔레트로 설정됩니다. 사용자 정의 팔레트는 배경, 사이드바, 콘텐츠에 색을 입히는 메인 색상과 버튼 및 링크용 강조 색상으로 구성됩니다.",
+        new: "새로운 팔레트",
+        edit: "팔레트 편집",
+        delete: "색상 팔레트 삭제",
+        name: "색상 팔레트 이름",
+        "name-required": "팔레트에 이름을 지정해 주세요.",
+        colors: {
+          main: "메인 색상",
+          accent: "강조 색상",
+        },
+        "preview-note":
+          '앱 전체에서 변경 사항을 미리 확인하고, "완료" 버튼을 클릭하면 변경 사항이 저장됩니다.',
+        done: "완료",
+        cancel: "취소",
+        enforce: "기본 색상 팔레트 강제 적용",
+        "enforce-description":
+          "이 인스턴스의 모든 사용자가 기본 색상 팔레트를 사용하며 변경할 수 없습니다.",
+        "save-failed": "색상 팔레트 저장 실패: {{error}}",
       },
     },
   },

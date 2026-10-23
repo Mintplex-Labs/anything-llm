@@ -46,6 +46,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "embedded_lemonade",
+  "embedded_lemonade-all",
   "minimax",
   "cerebras",
   "omlx",
@@ -175,6 +177,11 @@ async function getCustomModels(
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "embedded_lemonade":
+    case "embedded_lemonade-all":
+      return await require("../AiProviders/embeddedLemonade").getEmbeddedLemonadeModels(
+        provider === "embedded_lemonade-all"
+      );
     case "lemonade-stt":
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":

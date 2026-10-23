@@ -294,6 +294,8 @@ const TRANSLATIONS = {
         max: "Maximal",
       },
     },
+    token_limit_reached:
+      "Die Antwort hat das maximale Limit an Ausgabe-Token erreicht. Erhöhen Sie die maximale Anzahl an Ausgabe-Token des Modells, um längere Antworten zu ermöglichen.",
   },
   "vector-workspace": {
     identifier: "Vektordatenbank-Identifikator",
@@ -866,6 +868,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "Individualisieren Sie Ihre AnythingLLM-Instanz durch eigenes Branding.",
+      tabs: {
+        identity: "Identität",
+        colors: "Farben",
+        sidebar: "Seitenleiste",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -948,6 +956,36 @@ const TRANSLATIONS = {
         title: "Automatische Scrollen deaktivieren",
         description:
           "Deaktivieren Sie das automatische Scrollen zum Ende des Chats, wenn neue Nachrichten empfangen werden.",
+      },
+      palette: {
+        title: "Farbpalette",
+        description:
+          "Wählen Sie eine Farbpalette. Diese gilt sowohl für den hellen als auch für den dunklen Modus.",
+        enforced:
+          "Ihr Administrator hat die Farbpalette für diese Instanz festgelegt.",
+        "default-badge": "Standard",
+      },
+      "instance-palettes": {
+        title: "Farbpaletten",
+        description:
+          "Klicken Sie auf eine Farbpalette, um sie für alle Benutzer dieser Instanz als Standard festzulegen. Benutzerdefinierte Farbpaletten bestehen aus einer Hauptfarbe, die Hintergrund, Seitenleiste und Inhalt einfärbt, sowie einer Akzentfarbe für Schaltflächen und Links.",
+        new: "Neue Farbpalette",
+        edit: "Farbpalette bearbeiten",
+        delete: "Palette löschen",
+        name: "Palettenname",
+        "name-required": "Geben Sie der Farbpalette einen Namen.",
+        colors: {
+          main: "Hauptfarbe",
+          accent: "Akzentfarbe",
+        },
+        "preview-note":
+          "Änderungen werden in der gesamten App als Vorschau angezeigt und beim Klick auf „Fertig“ gespeichert.",
+        done: "Fertig",
+        cancel: "Abbrechen",
+        enforce: "Die Standard-Farbpalette durchsetzen",
+        "enforce-description":
+          "Alle Benutzer dieser Instanz verwenden die Standard-Farbpalette und können sie nicht ändern.",
+        "save-failed": "Fehler beim Speichern der Farbpaletten: {{error}}",
       },
     },
   },

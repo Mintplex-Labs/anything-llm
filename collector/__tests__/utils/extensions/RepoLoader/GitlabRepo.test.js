@@ -68,7 +68,9 @@ const rateLimitResponse = () => ({
  */
 function mockGitlabApi({
   branches = [{ name: "main" }],
+  defaultBranch = null,
   branchStatus = 200,
+  projectStatus = 200,
   tree = [],
   treePages = null,
   files = {},
@@ -81,6 +83,7 @@ function mockGitlabApi({
   rateLimitOnce = [],
   rateLimitAlways = [],
 } = {}) {
+  const projectDefaultBranch = defaultBranch ?? branches[0]?.name ?? "main";
   const pendingRateLimits = new Set(rateLimitOnce);
   return jest.spyOn(global, "fetch").mockImplementation(async (url) => {
     const { pathname, searchParams } = new URL(url);
@@ -101,6 +104,11 @@ function mockGitlabApi({
       return userStatus === 200
         ? jsonResponse({ username: "tester" })
         : errorResponse(userStatus, "Unauthorized");
+
+    if (/^\/api\/v4\/projects\/[^/]+$/.test(pathname)) {
+      if (projectStatus !== 200) return errorResponse(projectStatus);
+      return jsonResponse({ default_branch: projectDefaultBranch });
+    }
 
     if (pathname.endsWith("/repository/branches")) {
       if (branchStatus !== 200) return errorResponse(branchStatus);
@@ -344,6 +352,37 @@ describe("GitLabRepoLoader request urls", () => {
       "http://gitlab.example.com:8080/api/v4/projects/acme%2Fwidgets/repository/files/src%2Findex.js/raw?ref=main"
     );
   });
+
+  test.each([
+    ["feature/#42-login", "feature/%2342-login"],
+    ["fix/a&b", "fix/a%26b"],
+    ["release+1", "release%2B1"],
+  ])(
+    "file requests and links keep the whole branch name %s",
+    async (branch, linkRef) => {
+      const fetchMock = mockGitlabApi({
+        branches: [{ name: "main" }, { name: branch }],
+        tree: [{ type: "blob", path: "README.md" }],
+        files: { "README.md": "# hello" },
+      });
+      const loader = new GitLabRepoLoader({
+        repo: "https://gitlab.com/acme/widgets",
+        branch,
+      });
+      await loader.init();
+      const docs = await loader.recursiveLoader();
+
+      expect(docs).toHaveLength(1);
+      const fileRefs = requestedUrls(fetchMock)
+        .map((url) => new URL(url))
+        .filter(({ pathname }) => pathname.endsWith("/raw"))
+        .map(({ searchParams }) => searchParams.get("ref"));
+      expect(fileRefs).toEqual([branch]);
+      expect(docs[0].metadata.url).toBe(
+        `https://gitlab.com/acme/widgets/-/blob/${linkRef}/README.md`
+      );
+    }
+  );
 });
 
 describe("GitLabRepoLoader branch resolution", () => {
@@ -358,19 +397,26 @@ describe("GitLabRepoLoader branch resolution", () => {
     expect(loader.branch).toBe("develop");
   });
 
-  test("auto-assigns main when the provided branch does not exist", async () => {
-    mockGitlabApi({ branches: [{ name: "main" }, { name: "develop" }] });
+  test("auto-assigns the repository default branch when the provided branch does not exist", async () => {
+    mockGitlabApi({
+      branches: [{ name: "main" }, { name: "develop" }],
+      defaultBranch: "develop",
+    });
     const loader = new GitLabRepoLoader({
       repo: "https://gitlab.example.com/acme/widgets",
       branch: "does-not-exist",
     });
     await loader.init();
 
-    expect(loader.branch).toBe("main");
+    expect(loader.branch).toBe("develop");
   });
 
-  test("falls back to master when the repository has no main branch", async () => {
-    mockGitlabApi({ branches: [{ name: "master" }, { name: "legacy" }] });
+  test("falls back to master when project metadata is unavailable", async () => {
+    mockGitlabApi({
+      branches: [{ name: "master" }, { name: "legacy" }],
+      projectStatus: 500,
+    });
+    jest.spyOn(console, "log").mockImplementation(() => {});
     const loader = new GitLabRepoLoader({
       repo: "https://gitlab.example.com/acme/widgets",
     });
@@ -379,10 +425,25 @@ describe("GitLabRepoLoader branch resolution", () => {
     expect(loader.branch).toBe("master");
   });
 
-  test("getRepoBranches sorts main to the front and returns every branch", async () => {
+  test("getRepoBranches lists the repository default branch first", async () => {
+    mockGitlabApi({
+      branches: [{ name: "master" }, { name: "r150" }, { name: "dev" }],
+      defaultBranch: "dev",
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+    });
+    const branches = await loader.getRepoBranches();
+
+    expect(branches).toEqual(["dev", "master", "r150"]);
+  });
+
+  test("getRepoBranches sorts main to the front when metadata is unavailable", async () => {
     mockGitlabApi({
       branches: [{ name: "legacy" }, { name: "main" }, { name: "release" }],
+      projectStatus: 500,
     });
+    jest.spyOn(console, "log").mockImplementation(() => {});
     const loader = new GitLabRepoLoader({
       repo: "https://gitlab.example.com/acme/widgets",
     });
@@ -390,6 +451,35 @@ describe("GitLabRepoLoader branch resolution", () => {
 
     expect(branches[0]).toBe("main");
     expect(branches.sort()).toEqual(["legacy", "main", "release"]);
+  });
+
+  test("init assigns the default branch when the branch list cannot load", async () => {
+    mockGitlabApi({ branchStatus: 403, defaultBranch: "dev" });
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+    });
+    await loader.init();
+
+    expect(loader.ready).toBe(true);
+    expect(loader.branch).toBe("dev");
+  });
+
+  test("init keeps an explicit branch without requesting project metadata", async () => {
+    const fetchMock = mockGitlabApi({
+      branches: [{ name: "main" }, { name: "develop" }],
+      defaultBranch: "develop",
+    });
+    const loader = new GitLabRepoLoader({
+      repo: "https://gitlab.example.com/acme/widgets",
+      branch: "main",
+    });
+    await loader.init();
+
+    expect(loader.branch).toBe("main");
+    expect(requestedUrls(fetchMock)).not.toContain(
+      "https://gitlab.example.com/api/v4/projects/acme%2Fwidgets"
+    );
   });
 });
 

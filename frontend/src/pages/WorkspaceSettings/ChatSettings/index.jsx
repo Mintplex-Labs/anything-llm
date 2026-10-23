@@ -12,7 +12,7 @@ import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
 
 export default function ChatSettings({ workspace }) {
-  const [settings, setSettings] = useState({});
+  const [settings, setSettings] = useState(null);
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
@@ -38,7 +38,7 @@ export default function ChatSettings({ workspace }) {
     return true;
   };
 
-  if (!workspace) return null;
+  if (!workspace || !settings) return null;
   return (
     <div id="workspace-chat-settings-container" className="relative">
       <AutosaveForm
