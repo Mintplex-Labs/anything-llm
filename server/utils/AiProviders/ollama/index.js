@@ -97,12 +97,22 @@ class OllamaAILLM {
       const { models } = await client.list().catch(() => ({ models: [] }));
       if (!models.length) return;
 
-      const infoPromises = models.map((model) =>
-        client
-          .show({ model: model.name })
-          .then((info) => ({ name: model.name, ...info }))
-      );
-      const infos = await Promise.all(infoPromises);
+      const infos = (
+        await Promise.all(
+          models.map((model) =>
+            client
+              .show({ model: model.name })
+              .then((info) => ({ name: model.name, ...info }))
+              .catch((e) => {
+                OllamaAILLM.#slog(
+                  `Error caching context window for ${model.name}`,
+                  e.message
+                );
+                return null;
+              })
+          )
+        )
+      ).filter(Boolean);
       infos.forEach((showInfo) => {
         if (showInfo.capabilities.includes("embedding")) return;
         const contextWindowKey = Object.keys(showInfo.model_info).find((key) =>
@@ -113,7 +123,7 @@ class OllamaAILLM {
         OllamaAILLM.modelContextWindows[showInfo.name] =
           showInfo.model_info[contextWindowKey];
       });
-      OllamaAILLM.#slog(`Context windows cached for all models!`);
+      OllamaAILLM.#slog(`Context windows cached!`);
     } catch (e) {
       OllamaAILLM.#slog(`Error caching context windows`, e);
       return;
