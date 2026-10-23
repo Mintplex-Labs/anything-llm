@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { Workspace } = require("../models/workspace");
+const { WorkspaceThread } = require("../models/workspaceThread");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const { Document } = require("../models/documents");
 const {
@@ -170,6 +171,34 @@ function browserExtensionEndpoints(app) {
     }
   );
 
+  // Side panel chats live in regular workspace threads so they show up in
+  // the app and can be continued there.
+  app.post(
+    "/browser-extension/threads",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const { workspaceId } = reqBody(request);
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: parseInt(workspaceId) })
+          : await Workspace.get({ id: parseInt(workspaceId) });
+        if (!workspace)
+          return response.status(403).json({ error: "Workspace not found" });
+
+        const { thread, message } = await WorkspaceThread.new(
+          workspace,
+          user?.id ?? null
+        );
+        if (!thread) return response.status(500).json({ error: message });
+        return response.status(200).json({ thread: { id: thread.id } });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({ error: "Failed to create thread" });
+      }
+    }
+  );
+
   app.post(
     "/browser-extension/stream-chat",
     [validBrowserExtensionApiKey],
@@ -177,8 +206,8 @@ function browserExtensionEndpoints(app) {
       try {
         const {
           workspaceId,
+          threadId,
           message,
-          sessionId = null,
           context = [],
           attachments = [],
         } = reqBody(request);
@@ -188,6 +217,16 @@ function browserExtensionEndpoints(app) {
           : await Workspace.get({ id: parseInt(workspaceId) });
         if (!workspace)
           return response.status(403).json({ error: "Workspace not found" });
+
+        const thread = Number.isInteger(threadId)
+          ? await WorkspaceThread.get({
+              id: threadId,
+              workspace_id: workspace.id,
+              user_id: user?.id ?? null,
+            })
+          : null;
+        if (!thread)
+          return response.status(404).json({ error: "Thread not found" });
 
         if (typeof message !== "string" || message.trim().length === 0)
           return response.status(400).json({ error: "Message is empty." });
@@ -216,7 +255,7 @@ function browserExtensionEndpoints(app) {
           workspace,
           message,
           user,
-          sessionId: sessionId ? String(sessionId) : null,
+          thread,
           attachments: Array.isArray(attachments) ? attachments : [],
           contextDocuments: pagesToContextDocuments(context),
           agentEventListener: listener,
@@ -235,6 +274,12 @@ function browserExtensionEndpoints(app) {
               listener.close();
             });
           },
+        });
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          prompt: message,
         });
         await Telemetry.sendTelemetry("browser_extension_chat");
         response.end();
