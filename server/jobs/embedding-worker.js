@@ -75,7 +75,19 @@ async function processQueue() {
       totalDocs: batch.length,
     };
 
-    const data = await fileData(filePath);
+    let data = null;
+    try {
+      data = await fileData(filePath);
+    } catch (error) {
+      failedToEmbed.push(filePath.split(/[/\\]/).pop());
+      emit({
+        type: "doc_failed",
+        ...docProgress,
+        error: error.message || "Failed to load file data",
+      });
+      continue;
+    }
+
     if (!data) {
       emit({
         type: "doc_failed",
@@ -131,11 +143,40 @@ async function processQueue() {
       });
     } catch (err) {
       console.error(err.message);
+      failedToEmbed.push(metadata?.title || newDoc.filename);
       emit({
         type: "doc_failed",
         ...docProgress,
-        error: "Failed to save document record",
+        error: err.message || "Failed to save document record",
       });
+
+      // Roll back the vectors so the failed insert cannot leave an unlisted
+      // document behind.
+      let vectorsRemoved = false;
+      try {
+        const deleted = await VectorDb.deleteDocumentFromNamespace(
+          workspaceSlug,
+          docId
+        );
+        vectorsRemoved = deleted !== false;
+      } catch (cleanupError) {
+        console.error(
+          `Failed to roll back vectors for ${newDoc.filename}:`,
+          cleanupError.message
+        );
+      }
+
+      if (vectorsRemoved) {
+        try {
+          const { DocumentVectors } = require("../models/vectors");
+          await DocumentVectors.delete({ docId });
+        } catch (cleanupError) {
+          console.error(
+            `Failed to remove vector rows for ${newDoc.filename}:`,
+            cleanupError.message
+          );
+        }
+      }
     }
   }
 
