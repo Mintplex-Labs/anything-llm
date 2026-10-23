@@ -8,6 +8,7 @@ const {
   temperatureParam,
 } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { normalizeMistralClient } = require("../../../AiProviders/mistral");
 
 /**
  * The agent provider for the Mistral provider.
@@ -18,10 +19,12 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     super();
     const { model = "mistral-medium" } = config;
-    const client = new OpenAI({
-      baseURL: "https://api.mistral.ai/v1",
-      apiKey: process.env.MISTRAL_API_KEY,
-    });
+    const client = normalizeMistralClient(
+      new OpenAI({
+        baseURL: "https://api.mistral.ai/v1",
+        apiKey: process.env.MISTRAL_API_KEY,
+      })
+    );
 
     this.providerTag = "mistral";
     this._client = client;
