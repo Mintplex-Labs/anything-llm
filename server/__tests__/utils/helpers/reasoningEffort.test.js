@@ -106,7 +106,7 @@ function mockModelsDev(table = MODELS_DEV) {
   jest
     .spyOn(MODEL_PRICING, "getReasoningOptions")
     .mockImplementation((provider, model) =>
-      table === null ? null : table[provider]?.[model] ?? []
+      table === null ? null : (table[provider]?.[model] ?? [])
     );
 }
 
@@ -411,6 +411,8 @@ describe("reasoningParams", () => {
       null,
       { thinking: { type: "enabled" }, reasoning_effort: "max" },
     ],
+    ["mistral", "on", "mistral-large-4", { reasoning_effort: "high" }],
+    ["mistral", "off", "mistral-large-4", { reasoning_effort: "none" }],
   ])("%s %s (%s) -> %j", (provider, effort, model, expected) => {
     expect(reasoningParams(provider, effort, model)).toEqual(expected);
   });
