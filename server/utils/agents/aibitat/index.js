@@ -1475,7 +1475,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const reasoningEffort =
       config.provider === this.defaultProvider?.provider &&
       config.model === this.defaultProvider?.model
-        ? (config.reasoningEffort ?? null)
+        ? config.reasoningEffort ?? null
         : null;
 
     switch (config.provider) {
