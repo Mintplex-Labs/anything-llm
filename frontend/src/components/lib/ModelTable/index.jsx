@@ -31,6 +31,9 @@ import MonoProviderIcon from "../MonoProviderIcon";
  * @param {string} props.selectedModelId - The ID of the selected model.
  * @param {object} props.ui - The UI configuration.
  * @param {boolean} props.ui.showRuntime - Whether to show the runtime.
+ * @param {boolean} [props.ui.rawTitle] - Show the group name as-is instead of title-casing it (eg. "gpt-oss", "LFM2.5").
+ * @param {(model: ModelDefinition) => React.ReactNode} [props.ui.badges] - Renders the badges before the model name.
+ * When set, the row shows only these (no runtime tag or organization icon).
  * @returns {React.ReactNode}
  */
 export default function ModelTable({
@@ -76,8 +79,8 @@ export default function ModelTable({
             size={16}
             className="text-theme-text-primary"
           />
-          <p className="flex items-center gap-x-1 text-theme-text-primary text-base font-bold">
-            {titleCase(alias)}
+          <p className="flex items-center gap-x-1 text-theme-text-primary text-base font-bold my-0">
+            {ui.rawTitle ? alias : titleCase(alias)}
             <span className="text-theme-text-secondary font-normal text-sm">
               ({totalModels} {pluralize("Model", totalModels)})
             </span>
@@ -237,17 +240,19 @@ function ModelRow({
     >
       <button
         type="button"
-        className="border-none flex items-center gap-x-[8px] whitespace-nowrap py-[8px]"
+        className="border-none flex items-center gap-x-[8px] whitespace-nowrap py-[8px] px-0"
         disabled={processing}
         onClick={handleSetActiveModel}
       >
-        {ui.showRuntime && (
+        {ui.badges?.(model)}
+        {!ui.badges && ui.showRuntime && (
           <DeviceTypeTag
             deviceType={model.deviceType}
             runtime={model.runtime}
           />
         )}
-        {!ui.showRuntime &&
+        {!ui.badges &&
+          !ui.showRuntime &&
           model.downloaded &&
           alias === "Downloaded Models" && (
             <MonoProviderIcon

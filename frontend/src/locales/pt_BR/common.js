@@ -293,6 +293,8 @@ const TRANSLATIONS = {
         max: "Máximo",
       },
     },
+    token_limit_reached:
+      "A resposta atingiu o limite máximo de tokens de saída. Aumente o limite máximo de tokens de saída do modelo para permitir respostas mais longas.",
   },
   "vector-workspace": {
     identifier: "Identificador do banco de dados",
@@ -858,6 +860,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Marca & Etiqueta Branca",
       description: "Personalize sua instância do AnythingLLM com sua marca.",
+      tabs: {
+        identity: "Identidade",
+        colors: "Cores",
+        sidebar: "Barra lateral",
+        browser: "Navegador",
+      },
     },
     chat: {
       title: "Chat",
@@ -934,6 +942,36 @@ const TRANSLATIONS = {
         title: "Desativar a rolagem automática",
         description:
           "Desative a rolagem automática até o final da conversa quando novas mensagens forem recebidas.",
+      },
+      palette: {
+        title: "Paleta de cores",
+        description:
+          "Escolha uma paleta de cores. Isso se aplica tanto ao modo claro quanto ao modo escuro.",
+        enforced:
+          "O administrador definiu a paleta de cores para esta instância.",
+        "default-badge": "Padrão",
+      },
+      "instance-palettes": {
+        title: "Paletas de cores",
+        description:
+          "Clique em uma paleta para torná-la padrão para todos nesta instância. Paletas personalizadas são compostas por uma cor principal, que tinge o fundo, a barra lateral e o conteúdo, e uma cor de destaque para botões e links.",
+        new: "Nova paleta",
+        edit: "Editar paleta",
+        delete: "Excluir paleta",
+        name: "Nome da paleta",
+        "name-required": "Dê um nome para a paleta.",
+        colors: {
+          main: "Cor principal",
+          accent: "Cor de destaque",
+        },
+        "preview-note":
+          'As alterações são exibidas em todo o aplicativo e salvas quando você clica em "Concluído".',
+        done: "Concluído",
+        cancel: "Cancelar",
+        enforce: "Aplicar a paleta padrão",
+        "enforce-description":
+          "Todos nesta instância usam a paleta padrão e não podem alterá-la.",
+        "save-failed": "Falha ao salvar as paletas de cores: {{error}}",
       },
     },
   },

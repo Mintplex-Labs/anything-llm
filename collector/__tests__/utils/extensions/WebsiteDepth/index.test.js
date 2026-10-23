@@ -22,6 +22,18 @@ jest.mock("../../../../utils/files", () => {
   };
 });
 
+// Treat .pdf links as files, everything else as web pages
+jest.mock("../../../../processLink/helpers", () => ({
+  ...jest.requireActual("../../../../processLink/helpers"),
+  determineContentType: jest.fn(async (url) => ({
+    processVia: url.endsWith(".pdf") ? "file" : "web",
+  })),
+  processAsFile: jest.fn(async () => ({
+    success: true,
+    content: "pdf content",
+  })),
+}));
+
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -29,6 +41,7 @@ const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../../../utils/files");
+const { processAsFile } = require("../../../../processLink/helpers");
 const websiteScraper = require("../../../../utils/extensions/WebsiteDepth");
 const { extractLinks } = websiteScraper;
 
@@ -421,6 +434,24 @@ describe("WebsiteDepth websiteScraper", () => {
       "example.com_docs_上海.html",
       "example.com_docs_北京.html",
     ]);
+  });
+
+  it("parses file links with the file converters instead of the browser", async () => {
+    mockSite({
+      "https://example.com/docs/page": '<a href="/docs/manual.pdf">pdf</a>',
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(processAsFile).toHaveBeenCalledWith(
+      expect.objectContaining({ uri: "https://example.com/docs/manual.pdf" })
+    );
+    expect(fetchedUrls()).not.toContain("https://example.com/docs/manual.pdf");
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/manual.pdf",
+    ]);
+    expect(scraped[1].pageContent).toBe("pdf content");
   });
 
   it("survives a start page that cannot be loaded at all", async () => {

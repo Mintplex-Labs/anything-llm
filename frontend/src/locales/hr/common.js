@@ -304,6 +304,8 @@ const TRANSLATIONS = {
         max: "Maksimalno",
       },
     },
+    token_limit_reached:
+      "Odgovor je dostigao maksimalni limit za broj tokena. Povećajte maksimalni broj tokena koji model može generirati, kako biste omogućili duže odgovore.",
   },
   "vector-workspace": {
     identifier: "Identifikator vektorske baze podataka",
@@ -856,6 +858,12 @@ const TRANSLATIONS = {
       title: "Brendiranje i whitelabeling",
       description:
         "Bijeli žig (white-label) vaše AnythingLLM instance s prilagođenim brendiranjem.",
+      tabs: {
+        identity: "Identitet",
+        colors: "Boje",
+        sidebar: "Bočna traka",
+        browser: "Preglednik",
+      },
     },
     chat: {
       title: "Razgovor",
@@ -938,6 +946,35 @@ const TRANSLATIONS = {
         title: "Isključi automatsko pomicanje",
         description:
           "Isključi automatsko pomicanje na dno razgovora kada stignu nove poruke.",
+      },
+      palette: {
+        title: "Paleta boja",
+        description:
+          "Odaberite paletu boja. To se odnosi i na svjetli i tamni način rada.",
+        enforced: "Vaš administrator je postavio paletu boja za ovu instancu.",
+        "default-badge": "Zadano",
+      },
+      "instance-palettes": {
+        title: "Palete boja",
+        description:
+          "Kliknite na paletu kako biste je postavili kao zadanu za sve korisnike ove instance. Prilagođene palete sastoje se od glavne boje, koja boji pozadinu, bočnu traku i sadržaj, te boje naglaska za gumbe i poveznice.",
+        new: "Nova paleta",
+        edit: "Uredi paletu",
+        delete: "Izbriši paletu",
+        name: "Naziv palete",
+        "name-required": "Dajte paleti ime.",
+        colors: {
+          main: "Glavna boja",
+          accent: "Boja naglaska",
+        },
+        "preview-note":
+          'Pregled promjena u cijeloj aplikaciji i spremaju se kada kliknete na "Gotovo".',
+        done: "Gotovo",
+        cancel: "Odustani",
+        enforce: "Nametni zadanu paletu",
+        "enforce-description":
+          "Svi na ovoj instanci koriste zadanu paletu i ne mogu je promijeniti.",
+        "save-failed": "Spremanje paleta boja nije uspjelo: {{error}}",
       },
     },
   },

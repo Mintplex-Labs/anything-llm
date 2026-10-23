@@ -191,4 +191,146 @@ describe("MCPCompatibilityLayer.servers", () => {
     expect(alive.running).toBe(true);
     expect(alive.tools.map((t) => t.name)).toEqual(["echo"]);
   });
+
+  it("treats a server whose ping is not implemented (-32601) as online and lists its tools (issue #6797)", async () => {
+    writeMCPConfig({});
+    mcpLayer = new MCPCompatibilityLayer();
+
+    // The MCP SDK surfaces a server's JSON-RPC "Method not found" answer to
+    // `ping` as an error with code -32601. The server is alive - it just does
+    // not implement ping - so it must stay usable instead of being marked
+    // unavailable.
+    const pingNotImplemented = new Error(
+      "MCP error -32601: Unknown method: ping"
+    );
+    pingNotImplemented.code = -32601;
+    mcpLayer.mcps = {
+      "no-ping-server": {
+        ping: () => Promise.reject(pingNotImplemented),
+        listTools: () => Promise.resolve({ tools: [GOOD_TOOL] }),
+        transport: { close: () => {} },
+        close: () => {},
+      },
+      "dead-server": {
+        ping: () => Promise.reject(new Error("fetch failed")),
+        transport: { close: () => {} },
+        close: () => {},
+      },
+    };
+    mcpLayer.mcpLoadingResults = {
+      "no-ping-server": { status: "success", message: "connected" },
+      "dead-server": { status: "success", message: "connected" },
+    };
+
+    const servers = await mcpLayer.servers();
+
+    expect(servers).toHaveLength(2);
+
+    const noPing = servers.find((s) => s.name === "no-ping-server");
+    expect(noPing.running).toBe(true);
+    expect(noPing.tools.map((t) => t.name)).toEqual(["echo"]);
+    expect(noPing.error).toBeNull();
+
+    // Genuine connectivity failures are still reported as down.
+    const dead = servers.find((s) => s.name === "dead-server");
+    expect(dead.running).toBe(false);
+    expect(dead.error).toBe("fetch failed");
+  });
+});
+
+describe("MCPCompatibilityLayer.returnMCPResult", () => {
+  it("returns text content without wrapping it in the MCP envelope", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [{ type: "text", text: '{"success":true,"count":3}' }],
+      isError: false,
+    });
+
+    expect(raw).toBe('{"success":true,"count":3}');
+    expect(JSON.parse(raw)).toEqual({ success: true, count: 3 });
+  });
+
+  it("prefers text content over structuredContent", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [{ type: "text", text: "Found 3 issues. Top: #12 Login" }],
+      structuredContent: { count: 3 },
+      isError: false,
+    });
+
+    expect(raw).toBe("Found 3 issues. Top: #12 Login");
+  });
+
+  it("uses structuredContent when there are no content blocks", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [],
+      structuredContent: { success: true, count: 3 },
+      isError: false,
+    });
+
+    expect(JSON.parse(raw)).toEqual({ success: true, count: 3 });
+  });
+
+  it("joins multiple text blocks with newlines", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [
+        { type: "text", text: "hello" },
+        { type: "text", text: "world" },
+      ],
+      isError: false,
+    });
+
+    expect(raw).toBe("hello\nworld");
+  });
+
+  it("keeps the envelope for error results so isError is visible", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [{ type: "text", text: "tool failed: missing id" }],
+      structuredContent: { ok: false },
+      isError: true,
+    });
+
+    expect(JSON.parse(raw)).toMatchObject({
+      content: [{ type: "text", text: "tool failed: missing id" }],
+      isError: true,
+    });
+  });
+
+  it("stringifies non-text results so images are not dropped", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [{ type: "image", data: "abc", mimeType: "image/png" }],
+      isError: false,
+    });
+
+    expect(JSON.parse(raw).content[0]).toEqual({
+      type: "image",
+      data: "abc",
+      mimeType: "image/png",
+    });
+  });
+
+  it("stringifies an empty content list", () => {
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      content: [],
+      isError: false,
+    });
+
+    expect(JSON.parse(raw)).toEqual({ content: [], isError: false });
+  });
+
+  it("turns bigints into strings and marks circular references", () => {
+    const payload = { count: 1n };
+    payload.self = payload;
+
+    const raw = MCPCompatibilityLayer.returnMCPResult({
+      structuredContent: payload,
+    });
+
+    expect(JSON.parse(raw)).toEqual({ count: "1", self: "[Circular]" });
+  });
+
+  it("stringifies values that are not objects", () => {
+    expect(MCPCompatibilityLayer.returnMCPResult("already text")).toBe(
+      "already text"
+    );
+    expect(MCPCompatibilityLayer.returnMCPResult(null)).toBe("null");
+  });
 });

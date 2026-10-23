@@ -79,6 +79,16 @@ class VertexLLM {
     return modelName.includes("/") ? modelName : `google/${modelName}`;
   }
 
+  /**
+   * Whether the model supports the temperature parameter at all. Only Model
+   * Garden partner models accept it - Google's Gemini models do not.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName) {
+    return !VertexLLM.apiModelId(modelName ?? "").startsWith("google/");
+  }
+
   #appendContext(contextTexts = []) {
     if (!contextTexts || !contextTexts.length) return "";
     return (

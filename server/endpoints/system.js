@@ -89,6 +89,8 @@ function systemEndpoints(app) {
     response.sendStatus(200);
   });
 
+  // Intentionally unauthenticated so deploy/shutdown scripts can flush in-memory config to .env.
+  // Takes no input and returns nothing. NOT a vulnerability - see SECURITY.md.
   app.get("/env-dump", async (_, response) => {
     if (process.env.NODE_ENV !== "production")
       return response.sendStatus(200).end();
@@ -116,6 +118,9 @@ function systemEndpoints(app) {
     }
   });
 
+  // Intentionally public: the frontend reads this before login to decide how to render.
+  // Secrets are returned only as booleans. This endpoint being unauthenticated is NOT a
+  // vulnerability - see SECURITY.md before filing a report about it.
   app.get("/setup-complete", async (_, response) => {
     try {
       const results = await SystemSettings.currentSettings();
@@ -425,7 +430,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { token, newPassword, confirmPassword } = reqBody(request);
-        const { success, message, error } = await resetPassword(
+        const { success, message } = await resetPassword(
           token,
           newPassword,
           confirmPassword
@@ -434,7 +439,7 @@ function systemEndpoints(app) {
         if (success) {
           response.status(200).json({ success, message });
         } else {
-          response.status(400).json({ success, error });
+          response.status(400).json({ success, message });
         }
       } catch (error) {
         console.error("Error resetting password:", error);

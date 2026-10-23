@@ -1,3 +1,17 @@
+import defaultColors from "tailwindcss/colors"
+
+// Scales a color palette regenerates, see `applyPalette` in src/palettes.
+// Each step falls back to the stock Tailwind color when no palette is active.
+// zinc-925 is the sidebar shade between the page background (950) and content (900).
+function paletteScale(name, extraSteps = {}) {
+  return Object.fromEntries(
+    Object.entries({ ...defaultColors[name], ...extraSteps }).map(([step, hex]) => {
+      const channels = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(" ")
+      return [step, `rgb(var(--palette-${name}-${step}, ${channels}) / <alpha-value>)`]
+    })
+  )
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
@@ -21,6 +35,10 @@ export default {
         "360": "360deg"
       },
       colors: {
+        zinc: paletteScale("zinc", { 925: "#0e0f0f" }),
+        slate: paletteScale("slate"),
+        sky: paletteScale("sky"),
+        blue: paletteScale("blue"),
         "black-900": "#141414",
         accent: "#3D4147",
         "sidebar-button": "#31353A",

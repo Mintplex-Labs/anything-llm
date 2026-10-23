@@ -507,6 +507,22 @@ const Workspace = {
   },
 
   /**
+   * Moves parsed files into custom-documents so they can be queued for embedding.
+   * @param {string} slug - workspace slug
+   * @param {number[]} fileIds - parsed file ids
+   * @returns {Promise<{locations: (string|null)[]}>} document locations index-aligned with fileIds, null if the move failed
+   */
+  moveParsedFiles: async function (slug, fileIds = []) {
+    return fetch(`${API_BASE}/workspace/${slug}/move-parsed-files`, {
+      method: "POST",
+      body: JSON.stringify({ fileIds }),
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ locations: fileIds.map(() => null) }));
+  },
+
+  /**
    * Deletes and un-embeds a single file in a single call from a workspace
    * @param {string} slug - workspace slug
    * @param {string} documentLocation - location of file eg: custom-documents/my-file-uuid.json
