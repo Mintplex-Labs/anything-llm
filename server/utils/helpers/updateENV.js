@@ -379,20 +379,6 @@ const KEY_MAPPING = {
     checks: [],
   },
 
-  // ChromaCloud Options
-  ChromaCloudApiKey: {
-    envKey: "CHROMACLOUD_API_KEY",
-    checks: [isNotEmpty],
-  },
-  ChromaCloudTenant: {
-    envKey: "CHROMACLOUD_TENANT",
-    checks: [isNotEmpty],
-  },
-  ChromaCloudDatabase: {
-    envKey: "CHROMACLOUD_DATABASE",
-    checks: [isNotEmpty],
-  },
-
   // Weaviate Options
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
@@ -1317,7 +1303,6 @@ function supportedEmbeddingModel(input = "") {
 function supportedVectorDB(input = "") {
   const supported = [
     "chroma",
-    "chromacloud",
     "pinecone",
     "lancedb",
     "weaviate",
