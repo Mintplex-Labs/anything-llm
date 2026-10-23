@@ -1,0 +1,110 @@
+/*
+A color palette is a main color and an accent. `applyPalette` in index.js
+regenerates Tailwind's zinc and slate scales in the main color's hue and the
+sky and blue scales in the accent's hue, keeping every step's stock lightness.
+Shells use zinc-950 for the page, zinc-925 for the sidebar and zinc-900 for
+content (slate-50, slate-200 and white in light mode), so they become shades
+of the main color.
+
+The legacy `--theme-*` backgrounds and borders below are pointed at the step
+closest to their stock value so they follow the palette too. Text colors are
+left alone, the regenerated scales keep their contrast.
+*/
+
+:root[data-palette]:not([data-palette="default"]) {
+  --theme-bg-primary: rgb(var(--palette-zinc-925));
+  --theme-bg-secondary: rgb(var(--palette-zinc-900));
+  --theme-bg-sidebar: rgb(var(--palette-zinc-925));
+  --theme-bg-container: rgb(var(--palette-zinc-950));
+  --theme-bg-chat: rgb(var(--palette-zinc-900));
+  --theme-bg-chat-input: rgb(var(--palette-zinc-800));
+  --theme-popup-menu-bg: rgb(var(--palette-zinc-950));
+  --theme-placeholder: rgb(var(--palette-zinc-600));
+  --theme-sidebar-item-hover: rgb(var(--palette-zinc-700));
+  --theme-chat-input-border: rgb(var(--palette-zinc-600));
+  --theme-action-menu-bg: rgb(var(--palette-zinc-800));
+  --theme-settings-input-bg: rgb(var(--palette-zinc-925));
+  --theme-modal-border: rgb(var(--palette-zinc-700));
+  --theme-file-row-even: rgb(var(--palette-zinc-925));
+  --theme-file-row-odd: rgb(var(--palette-zinc-900));
+  --theme-home-bg-card: rgb(var(--palette-zinc-900));
+  --theme-home-bg-button: rgb(var(--palette-zinc-800));
+  --theme-home-button-secondary: rgb(var(--palette-zinc-800));
+  --theme-home-update-card-bg: rgb(var(--palette-zinc-900));
+  --theme-home-update-card-hover: rgb(var(--palette-zinc-800));
+  --theme-attachment-bg: rgb(var(--palette-zinc-900));
+  --theme-attachment-success-bg: rgb(var(--palette-zinc-900));
+  --theme-attachment-icon-spinner-bg: rgb(var(--palette-zinc-800));
+
+  --theme-button-primary: rgb(var(--palette-sky-400));
+  --theme-button-cta: rgb(var(--palette-sky-300));
+  --theme-button-code-hover-text: rgb(var(--palette-sky-300));
+  --theme-file-row-selected-even: rgb(var(--palette-sky-500) / 0.2);
+  --theme-file-row-selected-odd: rgb(var(--palette-sky-500) / 0.1);
+  --theme-file-picker-hover: rgb(var(--palette-sky-500) / 0.2);
+  --theme-home-button-primary: rgb(var(--palette-sky-400));
+  --theme-home-button-primary-hover: rgb(var(--palette-sky-400) / 0.9);
+  --theme-home-button-secondary-hover: rgb(var(--palette-sky-400) / 0.1);
+  --theme-home-button-secondary-hover-text: rgb(var(--palette-sky-400));
+  --theme-home-update-source: rgb(var(--palette-blue-400));
+  --theme-checklist-item-hover: rgb(var(--palette-sky-400));
+  --theme-checklist-button-border: rgb(var(--palette-sky-400));
+  --theme-checklist-button-text: rgb(var(--palette-sky-400));
+  --theme-checklist-button-hover-bg: rgb(var(--palette-sky-400) / 0.2);
+  --theme-checklist-button-hover-border: rgb(var(--palette-sky-400) / 0.8);
+}
+
+:root[data-palette]:not([data-palette="default"])[data-theme="light"] {
+  --theme-bg-primary: #ffffff;
+  --theme-bg-secondary: #ffffff;
+  --theme-bg-sidebar: rgb(var(--palette-slate-200));
+  --theme-bg-container: rgb(var(--palette-slate-50));
+  --theme-bg-chat: #ffffff;
+  --theme-bg-chat-input: rgb(var(--palette-slate-200));
+  --theme-popup-menu-bg: rgb(var(--palette-sky-100));
+  --theme-placeholder: rgb(var(--palette-slate-400));
+  --theme-sidebar-item-hover: rgb(var(--palette-sky-100));
+  --theme-sidebar-subitem-selected: rgb(var(--palette-slate-200));
+  --theme-sidebar-subitem-hover: rgb(var(--palette-slate-200));
+  --theme-sidebar-border: rgb(var(--palette-slate-300));
+  --theme-chat-input-border: rgb(var(--palette-slate-300));
+  --theme-action-menu-bg: rgb(var(--palette-slate-200));
+  --theme-settings-input-bg: rgb(var(--palette-slate-100));
+  --theme-modal-border: rgb(var(--palette-slate-300));
+  --theme-file-row-even: rgb(var(--palette-slate-50));
+  --theme-file-row-odd: rgb(var(--palette-slate-100));
+  --theme-file-row-selected-even: rgb(var(--palette-sky-500));
+  --theme-file-row-selected-odd: rgb(var(--palette-sky-500));
+  --theme-file-picker-hover: rgb(var(--palette-slate-200));
+  --theme-home-bg-card: rgb(var(--palette-slate-100));
+  --theme-home-bg-button: rgb(var(--palette-slate-100));
+  --theme-home-update-card-bg: rgb(var(--palette-slate-100));
+  --theme-home-update-card-hover: rgb(var(--palette-slate-50));
+  --theme-attachment-bg: rgb(var(--palette-slate-100));
+  --theme-attachment-success-bg: rgb(var(--palette-slate-200));
+  --theme-attachment-icon-spinner-bg: #ffffff;
+
+  --theme-button-primary: rgb(var(--palette-sky-500));
+  --theme-button-cta: rgb(var(--palette-sky-300));
+  --theme-button-code-hover-text: rgb(var(--palette-sky-500));
+  --theme-home-button-primary: rgb(var(--palette-sky-400));
+  --theme-home-update-source: rgb(var(--palette-sky-600));
+  --theme-checklist-item-hover: rgb(var(--palette-sky-500));
+  --theme-checklist-button-border: rgb(var(--palette-sky-500));
+  --theme-checklist-button-text: rgb(var(--palette-sky-500));
+  --theme-checklist-button-hover-bg: rgb(var(--palette-sky-500) / 0.1);
+  --theme-checklist-button-hover-border: rgb(var(--palette-sky-500) / 0.8);
+}
+
+/* Text on accent backgrounds, these buttons hardcode white text. */
+:root[data-palette]:not([data-palette="default"])
+  :is(.bg-primary-button, .bg-cta-button),
+:root[data-palette]:not([data-palette="default"])
+  :is(.bg-primary-button, .bg-cta-button)
+  .text-white {
+  color: var(--palette-accent-text);
+}
+
+:root[data-palette]:not([data-palette="default"]) body {
+  background-color: var(--theme-bg-container);
+}

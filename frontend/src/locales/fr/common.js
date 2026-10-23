@@ -1387,6 +1387,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Personnalisation de la marque",
       description: "Personnalisez les éléments de marque de votre instance.",
+      tabs: {
+        identity: "Identité",
+        colors: "Couleurs",
+        sidebar: "Barre latérale",
+        browser: "Navigateur",
+      },
     },
     chat: {
       title: "Chat",
@@ -1466,6 +1472,37 @@ const TRANSLATIONS = {
         title: "Désactiver le défilement automatique",
         description:
           "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
+      },
+      palette: {
+        title: "Palette de couleurs",
+        description:
+          "Choisissez une palette de couleurs. Elle s'applique au mode clair comme au mode sombre.",
+        enforced:
+          "Votre administrateur a défini la palette de couleurs pour cette instance.",
+        "default-badge": "Par défaut",
+      },
+      "instance-palettes": {
+        title: "Palettes de couleurs",
+        description:
+          "Cliquez sur une palette pour la définir comme la palette par défaut pour tous les utilisateurs de cette instance. Les palettes personnalisées comprennent une couleur principale, qui colore l'arrière-plan, la barre latérale et le contenu, ainsi qu'une couleur d'accent pour les boutons et les liens.",
+        new: "Nouvelle palette",
+        edit: "Modifier la palette",
+        delete: "Supprimer la palette",
+        name: "Nom de la palette",
+        "name-required": "Donnez un nom à la palette.",
+        colors: {
+          main: "Couleur principale",
+          accent: "Couleur d'accent",
+        },
+        "preview-note":
+          "Les modifications sont prévisualisées dans toute l'application et enregistrées lorsque vous cliquez sur « Terminé ».",
+        done: "Terminé",
+        cancel: "Annuler",
+        enforce: "Appliquer la palette par défaut",
+        "enforce-description":
+          "Tous les utilisateurs de cette instance utilisent la palette par défaut et ne peuvent pas la modifier.",
+        "save-failed":
+          "Impossible d'enregistrer les palettes de couleurs : {{error}}",
       },
     },
   },
