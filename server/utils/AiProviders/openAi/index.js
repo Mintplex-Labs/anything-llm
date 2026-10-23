@@ -295,7 +295,12 @@ class OpenAiLLM {
               if (!hasUsageMetrics) usage.completion_tokens++;
               writeText(token);
             }
-          } else if (chunk.type === "response.completed") {
+          } else if (
+            chunk.type === "response.completed" ||
+            // Sent instead of `response.completed` when generation stops early,
+            // e.g. `incomplete_details.reason === "max_output_tokens"`.
+            chunk.type === "response.incomplete"
+          ) {
             closeReasoning();
             const { response: res } = chunk;
             if (res.hasOwnProperty("usage") && !!res.usage) {

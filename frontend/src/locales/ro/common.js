@@ -294,6 +294,8 @@ const TRANSLATIONS = {
         max: "Maxim",
       },
     },
+    token_limit_reached:
+      "Răspunsul a atins limita maximă de token-uri pentru ieșire. Crește numărul maxim de token-uri pe care modelul le poate genera, pentru a permite răspunsuri mai lungi.",
   },
   vector: {
     title: "Baza de date vectorială",
@@ -1417,6 +1419,12 @@ const TRANSLATIONS = {
       title: "Branding & White-labeling",
       description:
         "Personalizează-ți instanța AnythingLLM cu branding personalizat.",
+      tabs: {
+        identity: "Identitate",
+        colors: "Culori",
+        sidebar: "Bară laterală",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1501,6 +1509,36 @@ const TRANSLATIONS = {
         title: "Dezactivați derularea automată",
         description:
           "Dezactivați derularea automată până la sfârșitul conversației atunci când se primesc mesaje noi.",
+      },
+      palette: {
+        title: "Paletă de culori",
+        description:
+          "Alege o paletă de culori. Aceasta se aplică atât pentru modul luminos, cât și pentru cel întunecat.",
+        enforced:
+          "Administratorul dumneavoastră a stabilit paleta de culori pentru această instanță.",
+        "default-badge": "Implicită",
+      },
+      "instance-palettes": {
+        title: "Palete de culori",
+        description:
+          "Faceți clic pe o paletă pentru a o face implicită pentru toți utilizatorii de pe această instanță. Paletele personalizate includ o culoare principală, care colorează fundalul, bara laterală și conținutul, precum și o culoare accent pentru butoane și link-uri.",
+        new: "Nouă paletă",
+        edit: "Editează paleta",
+        delete: "Șterge paleta",
+        name: "Numele paletei",
+        "name-required": "Dați un nume paletei.",
+        colors: {
+          main: "Culoarea principală",
+          accent: "Culoare de accent",
+        },
+        "preview-note":
+          "Modificările sunt previzualizate în toată aplicația și se salvează când faceți clic pe „Terminat”.",
+        done: "Terminat",
+        cancel: "Anulează",
+        enforce: "Aplică paleta implicită",
+        "enforce-description":
+          "Toți utilizatorii acestei instanțe folosesc paleta implicită și nu o pot modifica.",
+        "save-failed": "Salvarea paletelor de culori a eșuat: {{error}}",
       },
     },
   },

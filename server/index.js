@@ -36,6 +36,7 @@ const {
 const { agentFileServerEndpoints } = require("./endpoints/agentFileServer");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
+const { themePalettesEndpoints } = require("./endpoints/themePalettes");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
@@ -54,6 +55,7 @@ const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
+const EMBED_BODY_LIMIT = "1mb";
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -67,6 +69,13 @@ if (
   );
 }
 app.use(cors({ origin: true }));
+// Embed endpoints are public-facing and only accept small payloads, so parse them
+// first with a tight limit. The global parsers below skip already-parsed bodies.
+app.use("/api/embed", [
+  bodyParser.text({ limit: EMBED_BODY_LIMIT }),
+  bodyParser.json({ limit: EMBED_BODY_LIMIT }),
+  bodyParser.urlencoded({ limit: EMBED_BODY_LIMIT, extended: true }),
+]);
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
 app.use(bodyParser.json({ limit: FILE_LIMIT }));
 app.use(
@@ -75,6 +84,14 @@ app.use(
     extended: true,
   })
 );
+app.use((err, request, response, next) => {
+  if (err?.type === "entity.too.large")
+    return response.status(413).json({ error: "Request payload too large." });
+  if (err instanceof SyntaxError && "body" in err)
+    return response.status(400).json({ error: "Malformed request body." });
+  if (err) return response.status(400).json({ error: "Invalid request body." });
+  next();
+});
 
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
@@ -84,6 +101,7 @@ if (!!process.env.ENABLE_HTTPS) {
 
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
+themePalettesEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
 workspaceThreadEndpoints(apiRouter);
