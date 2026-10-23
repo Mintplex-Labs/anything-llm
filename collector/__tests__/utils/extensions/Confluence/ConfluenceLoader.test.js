@@ -47,7 +47,29 @@ describe("ConfluencePagesLoader", () => {
       },
     });
 
-    expect(document.pageContent).toBe("\n```js\nlet x = 1;\n```\n");
+    expect(document.pageContent).toBe("```js\nlet x = 1;\n```");
+  });
+
+  test("keeps markup, indentation and blank lines inside code blocks as written", () => {
+    const loader = new ConfluencePagesLoader({
+      baseUrl: "https://example.com",
+      spaceKey: "SP",
+      cloud: false,
+    });
+    const code =
+      '<div class="box">\n    <span>Hi & bye</span>\n</div>\n\n\n\nList<String> names = new ArrayList<>();';
+    const document = loader.createDocumentFromPage({
+      id: "123",
+      body: {
+        storage: {
+          value: `<p>Before</p><ac:structured-macro ac:name="code"><ac:parameter ac:name="language">html</ac:parameter><ac:plain-text-body><![CDATA[${code}]]></ac:plain-text-body></ac:structured-macro><p>After</p><p>ANYTHINGLLMCODEBLOCK7</p>`,
+        },
+      },
+    });
+
+    expect(document.pageContent).toBe(
+      `Before\n\n\`\`\`html\n${code}\n\`\`\`\n\nAfter\n\nANYTHINGLLMCODEBLOCK7`
+    );
   });
 
   test("load rejects with the HTTP status instead of resolving to no pages", async () => {

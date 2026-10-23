@@ -857,6 +857,12 @@ const TRANSLATIONS = {
       title: "Prekės ženklas",
       description:
         "Pritaikykite savo AnythingLLM instanciją naudodami savo prekės ženklą.",
+      tabs: {
+        identity: "Identitetas",
+        colors: "Spalvos",
+        sidebar: "Šoninė juosta",
+        browser: "Naršyklė",
+      },
     },
     chat: {
       title: "Pokalbiai",
@@ -938,6 +944,36 @@ const TRANSLATIONS = {
         title: "Išjunkite automatinį rolį",
         description:
           "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
+      },
+      palette: {
+        title: "Spalvų paleta",
+        description:
+          "Pasirinkite spalvų paletę. Ji tinka tiek šviesiam, tiek tamsiam režimui.",
+        enforced:
+          "Jūsų administratorius nustatė šios instancijos spalvų paletę.",
+        "default-badge": "Numatytasis",
+      },
+      "instance-palettes": {
+        title: "Spalvų paletės",
+        description:
+          "Spustelėkite paletę, kad ji taptų numatytąja visiems šios instancijos naudotojams. Pasirinktines paletes sudaro pagrindinė spalva, kuria nuspalvinamas fonas, šoninė juosta ir turinys, ir akcento spalva mygtukams bei nuorodoms.",
+        new: "Nauja spalvų paleta",
+        edit: "Redaguoti paletę",
+        delete: "Ištrinti paletę",
+        name: "Paletės pavadinimas",
+        "name-required": "Pavadinkite paletę.",
+        colors: {
+          main: "Pagrindinė spalva",
+          accent: "Akcento spalva",
+        },
+        "preview-note":
+          "Pakeitimai peržiūrimi visoje programoje ir išsaugomi spustelėjus „Atlikta“.",
+        done: "Atlikta",
+        cancel: "Atšaukti",
+        enforce: "Taikyti numatytąją paletę",
+        "enforce-description":
+          "Visi šios instancijos naudotojai naudoja numatytąją paletę ir negali jos pakeisti.",
+        "save-failed": "Nepavyko išsaugoti spalvų palečių: {{error}}",
       },
     },
   },

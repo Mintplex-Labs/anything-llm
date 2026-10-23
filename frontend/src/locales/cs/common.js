@@ -857,6 +857,12 @@ const TRANSLATIONS = {
       title: "Značení a bílé označení",
       description:
         "Bílé označení instance AnythingLLM pomocí vlastního značení.",
+      tabs: {
+        identity: "Identita",
+        colors: "Barvy",
+        sidebar: "Boční panel",
+        browser: "Webový prohlížeč",
+      },
     },
     chat: {
       title: "Chat",
@@ -938,6 +944,34 @@ const TRANSLATIONS = {
         title: "Vypnout automatické posouvání",
         description:
           "Vypněte automatické posouvání dolů v chatu při přijetí nových zpráv.",
+      },
+      palette: {
+        title: "Paleta barev",
+        description: "Vyberte barevnou paletu. Platí pro světlý i tmavý režim.",
+        enforced: "Administrátor pro danou instanci nastavil paletu barev.",
+        "default-badge": "Výchozí",
+      },
+      "instance-palettes": {
+        title: "Palety barev",
+        description:
+          "Kliknutím na paletu ji nastavíte jako výchozí pro všechny uživatele v této instanci. Vlastní palety obsahují hlavní barvu, která se použije na pozadí, boční lištu a obsah, a také akcentní barvu pro tlačítka a odkazy.",
+        new: "Nová paleta",
+        edit: "Upravit paletu",
+        delete: "Smazat paletu",
+        name: "Název palety",
+        "name-required": "Přiřaďte paletě název.",
+        colors: {
+          main: "Hlavní barva",
+          accent: "Barva zvýraznění",
+        },
+        "preview-note":
+          "Změny jsou zobrazeny v aplikaci a jsou uloženy, jakmile kliknete na tlačítko „Hotovo“.",
+        done: "Hotovo",
+        cancel: "Zrušit",
+        enforce: "Vynutit výchozí paletu",
+        "enforce-description":
+          "Všichni v této instanci používají výchozí paletu a nemohou ji změnit.",
+        "save-failed": "Palety barev se nepodařilo uložit: {{error}}",
       },
     },
   },

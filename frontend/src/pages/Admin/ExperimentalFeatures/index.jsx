@@ -113,7 +113,7 @@ function FeatureLayout({ children }) {
   return (
     <div
       id="workspace-feature-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex md:mt-0 mt-6"
     >
       <Sidebar />
       <div

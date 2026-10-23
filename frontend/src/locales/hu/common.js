@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -851,6 +852,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Arculat és egyedi márkázás",
       description: "Az AnythingLLM-példány egyedi arculattal való ellátása.",
+      tabs: {
+        identity: "Identitás",
+        colors: "Színek",
+        sidebar: "Oldalsáv",
+        browser: "Böngésző",
+      },
     },
     chat: {
       title: "Csevegés",
@@ -931,6 +938,36 @@ const TRANSLATIONS = {
         title: "HTML megjelenítése a csevegésben",
         description:
           "HTML-válaszok megjelenítése az asszisztens válaszaiban.\nEz jóval hűbb megjelenítést eredményezhet, de biztonsági kockázatokkal is járhat.",
+      },
+      palette: {
+        title: "Színpaletta",
+        description:
+          "Válassz egy színpalettát. Ez a világos és a sötét módra is vonatkozik.",
+        enforced:
+          "A rendszergazda beállította a színpalettát ehhez a példányhoz.",
+        "default-badge": "Alapértelmezett",
+      },
+      "instance-palettes": {
+        title: "Színpaletták",
+        description:
+          "Kattints egy palettára, hogy ez legyen az alapértelmezett mindenki számára ebben a példányban. Az egyéni paletták egy fő színből állnak, amely a hátteret, az oldalsávot és a tartalmat színezi, valamint egy kiemelőszínből a gombokhoz és linkekhez.",
+        new: "Új paletta",
+        edit: "Paletta szerkesztése",
+        delete: "Paletta törlése",
+        name: "Paletta neve",
+        "name-required": "Adj egy nevet a színpalettának.",
+        colors: {
+          main: "Fő szín",
+          accent: "Kiemelőszín",
+        },
+        "preview-note":
+          "A változások az egész alkalmazásban előnézetben láthatók, és a „Kész” gombra kattintva mentődnek.",
+        done: "Kész",
+        cancel: "Mégse",
+        enforce: "Alapértelmezett paletta kényszerítése",
+        "enforce-description":
+          "Ebben a példányban mindenki az alapértelmezett palettát használja, és nem módosíthatja.",
+        "save-failed": "Nem sikerült a színpalettákat menteni: {{error}}",
       },
     },
   },
