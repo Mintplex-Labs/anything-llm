@@ -91,6 +91,7 @@ const SystemSettings = {
     "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "default_system_prompt",
+    "display_currency",
 
     // Meta page customization
     "meta_page_title",
@@ -450,6 +451,12 @@ const SystemSettings = {
     hub_api_key: (apiKey) => {
       if (!apiKey) return null;
       return String(apiKey);
+    },
+    display_currency: (update) => {
+      const {
+        isSupportedCurrency,
+      } = require("../utils/helpers/currencyExchange");
+      return isSupportedCurrency(update) ? update : null;
     },
     default_system_prompt: (prompt) => {
       if (typeof prompt !== "string" || !prompt) return null;

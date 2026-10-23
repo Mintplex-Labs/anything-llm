@@ -2366,6 +2366,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Currency",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2415,7 +2422,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.",
+          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.",
           "required": true,
           "content": {
             "application/json": {
@@ -2435,7 +2442,8 @@
                     "contentString": "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
-                "reset": false
+                "reset": false,
+                "currency": "USD"
               }
             }
           }
@@ -2453,6 +2461,13 @@
             "name": "slug",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Currency",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2523,7 +2538,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.",
+          "description": "Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.",
           "required": true,
           "content": {
             "application/json": {
@@ -2543,7 +2558,8 @@
                     "contentString": "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
-                "reset": false
+                "reset": false,
+                "currency": "USD"
               }
             }
           }
@@ -3244,6 +3260,13 @@
               "type": "string"
             },
             "description": "Unique slug of thread"
+          },
+          {
+            "name": "X-Currency",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3296,7 +3319,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).",
+          "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.",
           "required": true,
           "content": {
             "application/json": {
@@ -3311,7 +3334,8 @@
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
-                "reset": false
+                "reset": false,
+                "currency": "USD"
               }
             }
           }
@@ -3342,6 +3366,13 @@
               "type": "string"
             },
             "description": "Unique slug of thread"
+          },
+          {
+            "name": "X-Currency",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3412,7 +3443,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).",
+          "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.",
           "required": true,
           "content": {
             "application/json": {
@@ -3432,7 +3463,8 @@
                     "contentString": "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
-                "reset": false
+                "reset": false,
+                "currency": "USD"
               }
             }
           }
@@ -3616,7 +3648,15 @@
           "OpenAI Compatible Endpoints"
         ],
         "description": "Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Currency",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -3647,7 +3687,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
+          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.<br/><b>Currency:</b> Costs in the response <code>usage</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the usage names the unit used.",
           "required": true,
           "content": {
             "application/json": {
@@ -3672,7 +3712,8 @@
                 ],
                 "model": "sample-workspace",
                 "stream": true,
-                "temperature": 0.7
+                "temperature": 0.7,
+                "currency": "USD"
               }
             }
           }

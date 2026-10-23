@@ -10,6 +10,10 @@ const {
 } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const { costCurrency } = require("../../../utils/middleware/costCurrency");
+const {
+  convertResponseCosts,
+} = require("../../../utils/helpers/currencyExchange");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
 const { EventLogs } = require("../../../models/eventLogs");
 const {
@@ -602,13 +606,13 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/chat",
-    [validApiKey],
+    [validApiKey, costCurrency],
     async (request, response) => {
       /*
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a chat with a workspace'
    #swagger.requestBody = {
-       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
+       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.',
        required: true,
        content: {
          "application/json": {
@@ -628,7 +632,8 @@ function apiWorkspaceEndpoints(app) {
                  contentString: "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
              ],
-             reset: false
+             reset: false,
+             currency: "USD"
            }
          }
        }
@@ -719,7 +724,9 @@ function apiWorkspaceEndpoints(app) {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
         });
-        return response.status(200).json({ ...result });
+        return response
+          .status(200)
+          .json(convertResponseCosts(result, response.locals.costCurrency));
       } catch (e) {
         console.error(e.message, e);
         response.status(500).json({
@@ -736,13 +743,13 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/stream-chat",
-    [validApiKey],
+    [validApiKey, costCurrency],
     async (request, response) => {
       /*
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a streamable chat with a workspace'
    #swagger.requestBody = {
-       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
+       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.',
        required: true,
        content: {
          "application/json": {
@@ -762,7 +769,8 @@ function apiWorkspaceEndpoints(app) {
                  contentString: "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
              ],
-             reset: false
+             reset: false,
+             currency: "USD"
            }
          }
        }

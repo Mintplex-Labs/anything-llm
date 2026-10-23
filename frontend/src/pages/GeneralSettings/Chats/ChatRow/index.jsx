@@ -6,8 +6,9 @@ import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
+import { useTranslation } from "react-i18next";
 
-export default function ChatRow({ chat, onDelete }) {
+export default function ChatRow({ chat, onDelete, formatCost }) {
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -52,6 +53,10 @@ export default function ChatRow({ chat, onDelete }) {
         >
           {truncate(safeJsonParse(chat.response, {})?.text, 40)}
         </td>
+        <CostCell
+          metrics={safeJsonParse(chat.response, {})?.metrics}
+          formatCost={formatCost}
+        />
         <td className="px-6">{moment(chat.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
@@ -90,3 +95,21 @@ const TextPreview = ({ text, closeModal }) => {
     </form>
   );
 };
+
+function CostCell({ metrics, formatCost }) {
+  const { t } = useTranslation();
+  if (typeof metrics?.totalCost !== "number")
+    return <td className="px-6 whitespace-nowrap">—</td>;
+
+  return (
+    <td
+      className="px-6 whitespace-nowrap"
+      title={t("recorded.table.cost-breakdown", {
+        input: formatCost(metrics.inputCost),
+        output: formatCost(metrics.outputCost),
+      })}
+    >
+      {formatCost(metrics.totalCost)}
+    </td>
+  );
+}
