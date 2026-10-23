@@ -121,6 +121,33 @@ function extensions(app) {
   );
 
   app.post(
+    "/ext/twelvelabs-video",
+    [verifyPayloadIntegrity],
+    async function (request, response) {
+      try {
+        const {
+          loadTwelveLabsVideo,
+        } = require("../utils/extensions/TwelveLabs");
+        const { success, reason, data } = await loadTwelveLabsVideo(
+          reqBody(request)
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            title: null,
+            author: null,
+          },
+        });
+      }
+      return;
+    }
+  );
+
+  app.post(
     "/ext/website-depth",
     [verifyPayloadIntegrity],
     async function (request, response) {
