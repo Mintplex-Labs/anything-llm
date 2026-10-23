@@ -10,6 +10,7 @@ const {
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const { reasoningParams } = require("../../helpers/reasoningEffort");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -66,6 +67,35 @@ class MistralLLM {
 
   async isValidChatCompletionModel(_modelName = "") {
     return true;
+  }
+
+  /**
+   * Returns the capabilities of the model from Mistral's models endpoint, which
+   * also resolves model aliases. Reasoning models only toggle thinking on/off.
+   * @returns {Promise<{tools: boolean, reasoning: boolean, reasoningOptions: string[], imageGeneration: boolean, vision: boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const { capabilities = {} } = await this.openai.models.retrieve(
+        this.model
+      );
+      return {
+        tools: capabilities.function_calling === true,
+        reasoning: capabilities.reasoning === true,
+        reasoningOptions: capabilities.reasoning === true ? ["off", "on"] : [],
+        imageGeneration: false,
+        vision: capabilities.vision === true,
+      };
+    } catch (error) {
+      console.error("Mistral:getModelCapabilities", error.message);
+      return {
+        tools: false,
+        reasoning: "unknown",
+        reasoningOptions: [],
+        imageGeneration: false,
+        vision: false,
+      };
+    }
   }
 
   /**
@@ -126,7 +156,7 @@ class MistralLLM {
 
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -139,6 +169,7 @@ class MistralLLM {
           model: this.model,
           messages,
           ...temperatureParam(temperature),
+          ...reasoningParams("mistral", reasoningEffort, this.model),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -168,7 +199,7 @@ class MistralLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -181,6 +212,7 @@ class MistralLLM {
         stream: true,
         messages,
         ...temperatureParam(temperature),
+        ...reasoningParams("mistral", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: false,

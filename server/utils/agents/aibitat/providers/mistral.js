@@ -1,3 +1,4 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -18,7 +19,7 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
-    const { model = "mistral-medium" } = config;
+    const { model = "mistral-medium", reasoningEffort = null } = config;
     const client = normalizeMistralClient(
       new OpenAI({
         baseURL: "https://api.mistral.ai/v1",
@@ -29,7 +30,12 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
     this.providerTag = "mistral";
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
+  }
+
+  get reasoningConfig() {
+    return reasoningParams("mistral", this.reasoningEffort, this.model);
   }
 
   get client() {

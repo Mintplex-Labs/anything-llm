@@ -1475,7 +1475,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     const reasoningEffort =
       config.provider === this.defaultProvider?.provider &&
       config.model === this.defaultProvider?.model
-        ? config.reasoningEffort ?? null
+        ? (config.reasoningEffort ?? null)
         : null;
 
     switch (config.provider) {
@@ -1515,7 +1515,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           reasoningEffort,
         });
       case "mistral":
-        return new Providers.MistralProvider({ model: config.model });
+        return new Providers.MistralProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "generic-openai":
         return new Providers.GenericOpenAiProvider({ model: config.model });
       case "perplexity":
