@@ -157,7 +157,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı destekler; örneğin güvenliği
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
-- [Chroma & ChromaCloud](https://trychroma.com)
+- [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
