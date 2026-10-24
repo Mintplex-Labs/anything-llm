@@ -324,6 +324,7 @@ class FilesystemManager {
       const chunk = Buffer.alloc(FilesystemManager.FILE_READ_CHUNK_SIZE);
       let linesFound = 0;
       let remainingText = "";
+      let isLastChunk = true;
 
       while (position > 0 && linesFound < numLines) {
         const size = Math.min(FilesystemManager.FILE_READ_CHUNK_SIZE, position);
@@ -340,6 +341,12 @@ class FilesystemManager {
         if (position > 0) {
           remainingText = chunkLines[0];
           chunkLines.shift();
+        }
+
+        // A trailing newline ends the last line, it does not start a new one.
+        if (isLastChunk) {
+          if (chunkLines.at(-1) === "") chunkLines.pop();
+          isLastChunk = false;
         }
 
         for (
@@ -642,6 +649,8 @@ class FilesystemManager {
       filePath,
       (content) => {
         const lines = this.#normalizeLineEndings(content).split("\n");
+        // A trailing newline ends the last line, it does not start a new one.
+        if (lines.at(-1) === "") lines.pop();
         return lines.slice(-numLines).join("\n");
       },
       () => this.#tailFileRaw(filePath, numLines)
