@@ -234,6 +234,50 @@ class GenericOpenAiLLM {
     };
   }
 
+  /**
+   * Ask a llama.cpp server for the exact token count of a chat prompt.
+   *
+   * cl100k_base is only a fallback for local models and can over-estimate CJK
+   * text enough to trigger prompt compression for a prompt that actually fits.
+   * llama.cpp exposes this non-standard endpoint (and returns 404 everywhere
+   * else), so an unavailable endpoint simply falls back to the local estimate.
+   * @param {Array<{role: string, content: string|object[]}>} messages
+   * @returns {Promise<number|null>}
+   */
+  async countPromptTokens(messages = []) {
+    if (!Array.isArray(messages) || messages.length === 0) return null;
+
+    try {
+      const endpoint = new URL(this.basePath);
+      endpoint.pathname = `${endpoint.pathname.replace(
+        /\/+$/,
+        ""
+      )}/chat/completions/input_tokens`;
+      const headers = {
+        "Content-Type": "application/json",
+        ...(process.env.GENERIC_OPEN_AI_API_KEY
+          ? {
+              Authorization: `Bearer ${process.env.GENERIC_OPEN_AI_API_KEY}`,
+            }
+          : {}),
+        ...GenericOpenAiLLM.parseCustomHeaders(),
+      };
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ model: this.model, messages }),
+        signal: AbortSignal.timeout(5_000),
+      });
+      if (!response.ok) return null;
+
+      const count = Number((await response.json())?.input_tokens);
+      return Number.isInteger(count) && count > 0 ? count : null;
+    } catch {
+      return null;
+    }
+  }
+
   async getChatCompletion(
     messages = null,
     { temperature = this.temperature } = {}

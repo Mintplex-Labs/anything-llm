@@ -52,8 +52,34 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
   // realistically - most users will not be impacted by this.
   const tokenBuffer = 600;
   const tokenManager = new TokenManager(llm.model);
+  const estimatedPromptTokens = tokenManager.statsFrom(messages);
+
+  // cl100k_base is only a fallback for local models and can over-estimate CJK
+  // text enough to trigger compression for a prompt that actually fits. When a
+  // provider can report the exact prompt size (for llama.cpp, via
+  // /chat/completions/input_tokens), only bypass the compressor when that
+  // count still leaves the existing response buffer; otherwise keep the
+  // current compression path unchanged.
+  if (estimatedPromptTokens + tokenBuffer >= llm.promptWindowLimit()) {
+    let nativePromptTokens = null;
+    if (typeof llm.countPromptTokens === "function") {
+      try {
+        nativePromptTokens = await llm.countPromptTokens(messages);
+      } catch {
+        nativePromptTokens = null;
+      }
+    }
+
+    if (
+      Number.isInteger(nativePromptTokens) &&
+      nativePromptTokens > 0 &&
+      nativePromptTokens + tokenBuffer < llm.promptWindowLimit()
+    )
+      return messages;
+  }
+
   // If no work needs to be done, just pass through.
-  if (tokenManager.statsFrom(messages) + tokenBuffer < llm.promptWindowLimit())
+  if (estimatedPromptTokens + tokenBuffer < llm.promptWindowLimit())
     return messages;
 
   const system = messages.shift();

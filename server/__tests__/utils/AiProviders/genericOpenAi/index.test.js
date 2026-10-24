@@ -226,3 +226,76 @@ describe("GenericOpenAiLLM max_tokens payload", () => {
     expect(create.mock.calls[0][0].max_completion_tokens).toBe(256);
   });
 });
+
+describe("GenericOpenAiLLM native prompt token count", () => {
+  /** @type {GenericOpenAiLLM} */
+  let provider;
+
+  beforeEach(() => {
+    process.env.GENERIC_OPEN_AI_API_KEY = "test-key";
+    process.env.GENERIC_OPEN_AI_CUSTOM_HEADERS = "X-Test-Header: test-value";
+    provider = new GenericOpenAiLLM();
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it("posts the chat messages to llama.cpp's input_tokens endpoint", async () => {
+    const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ object: "response.input_tokens", input_tokens: 42 }),
+    });
+    const messages = [{ role: "user", content: "hello" }];
+
+    await expect(provider.countPromptTokens(messages)).resolves.toBe(42);
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe(
+      "http://localhost:8080/v1/chat/completions/input_tokens"
+    );
+    expect(init.method).toBe("POST");
+    expect(init.headers.Authorization).toBe("Bearer test-key");
+    expect(init.headers["X-Test-Header"]).toBe("test-value");
+    expect(JSON.parse(init.body)).toEqual({
+      model: "test-model",
+      messages,
+    });
+  });
+
+  it("falls back when the endpoint is unavailable", async () => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      ok: false,
+      status: 404,
+      json: async () => ({}),
+    });
+
+    await expect(
+      provider.countPromptTokens([{ role: "user", content: "hello" }])
+    ).resolves.toBeNull();
+  });
+
+  it("falls back when the response does not contain a usable count", async () => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ input_tokens: "not-a-number" }),
+    });
+
+    await expect(
+      provider.countPromptTokens([{ role: "user", content: "hello" }])
+    ).resolves.toBeNull();
+  });
+
+  it("falls back when the request fails", async () => {
+    jest.spyOn(global, "fetch").mockRejectedValue(new Error("network down"));
+
+    await expect(
+      provider.countPromptTokens([{ role: "user", content: "hello" }])
+    ).resolves.toBeNull();
+  });
+
+  it("does not call the endpoint for an empty prompt", async () => {
+    const fetchMock = jest.spyOn(global, "fetch");
+
+    await expect(provider.countPromptTokens([])).resolves.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
