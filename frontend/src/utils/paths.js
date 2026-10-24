@@ -251,6 +251,9 @@ export default {
     contextWindows: () => {
       return "https://docs.anythingllm.com/chatting-with-documents/introduction#you-exceed-the-context-window---what-now";
     },
+    browserUseDocker: () => {
+      return "https://docs.anythingllm.com/agent/usage/browser-use/docker";
+    },
   },
 
   experimental: {

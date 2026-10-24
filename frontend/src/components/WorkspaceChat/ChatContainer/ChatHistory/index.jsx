@@ -7,6 +7,7 @@ import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import ImageGenerationPending from "./ImageGenerationPending";
 import ScheduledJobCreatedCard from "./ScheduledJobCreatedCard";
+import BrowserUseSession from "./BrowserUseSession";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -274,6 +275,17 @@ function buildMessages({
           payload={props.payload}
           description={props.description}
           timeoutMs={props.timeoutMs}
+          websocket={websocket}
+        />
+      );
+      return acc;
+    }
+
+    if (props.type === "browserUseSession" && !!props.content) {
+      acc.push(
+        <BrowserUseSession
+          key={props.uuid}
+          content={props.content}
           websocket={websocket}
         />
       );

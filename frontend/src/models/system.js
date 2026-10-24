@@ -921,6 +921,21 @@ const System = {
   },
 
   /**
+   * Checks if the browser-use skill is available.
+   * The browser-use skill is never available on a bare-metal production install.
+   * @returns {Promise<boolean>}
+   */
+  isBrowserUseAvailable: async function () {
+    return fetch(`${API_BASE}/agent-skills/browser-use/is-available`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
+  /**
    * Send a recorded audio blob to the configured server-side STT provider
    * for transcription. Returns the transcribed text or an error string.
    * @param {Blob} audioBlob - Recorded audio (e.g., audio/webm) to transcribe.

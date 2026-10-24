@@ -185,6 +185,19 @@ const websocket = {
           },
         };
 
+        // Lets a running tool claim its own control messages from the frontend
+        // (e.g. stopping a browser-use session). Handlers return true once handled.
+        const controlHandlers = new Set();
+        socket.handleControlMessage = (message) => {
+          for (const handler of controlHandlers)
+            if (handler(message)) return true;
+          return false;
+        };
+        aibitat.onControlMessage = (handler) => {
+          controlHandlers.add(handler);
+          return () => controlHandlers.delete(handler);
+        };
+
         // Toggle a tool/skill on or off for the running agent mid-session. The
         // change applies on the agent's next turn. Returns true once handled so
         // the socket message router stops further dispatch. Toggling is an

@@ -461,6 +461,42 @@ describe("ModelPricing", () => {
     });
   });
 
+  describe("supportsVision", () => {
+    async function loaded() {
+      mockFetchWith(okResponse(FIXTURE));
+      const pricing = freshInstance();
+      await flushRefresh();
+      return pricing;
+    }
+
+    it("reports image input per model, and null when it is unknown", async () => {
+      const pricing = await loaded();
+      expect(pricing.supportsVision("openai", "gpt-4o")).toBe(true);
+      expect(pricing.supportsVision("openai", "GPT-4O")).toBe(true);
+      expect(pricing.supportsVision("openai", "gpt-4o-mini")).toBe(false);
+      expect(pricing.supportsVision("openai", "gpt-made-up")).toBeNull();
+      expect(pricing.supportsVision("ollama", "llava")).toBeNull();
+    });
+
+    it("does a full GET when a fresh pricing cache has no vision cache", async () => {
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+      fs.rmSync(path.join(tempDir, "models", "pricing", "model-vision.json"));
+
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
+      expect(pricing.supportsVision("openai", "gpt-4o")).toBe(true);
+    });
+  });
+
   describe("getCostBreakdown", () => {
     let pricing;
 

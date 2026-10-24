@@ -95,6 +95,19 @@ export function MetricsProvider({ children }) {
 }
 
 /**
+ * The shared "show metrics without hovering" preference, for other cards in the
+ * thread that show metrics the same way chat replies do.
+ * @returns {{show: boolean, toggle: () => void}}
+ */
+export function useMetricsVisibility() {
+  const context = useContext(MetricsContext);
+  return {
+    show: !!context?.showMetricsAutomatically,
+    toggle: () => context?.setShowMetricsAutomatically(toggleAutoShowMetrics()),
+  };
+}
+
+/**
  * Render the metrics for a given chat, if available
  * @param {metrics: {duration:number, outputTps: number, model: string, timestamp: number}} props
  * @returns

@@ -42,6 +42,11 @@ class BackgroundService {
       timeout: "6m",
       interval: "9hr",
     },
+    {
+      name: "cleanup-browser-traces",
+      timeout: "7m",
+      interval: "6hr",
+    },
   ];
 
   #memoryJobs = [
