@@ -649,6 +649,65 @@ describe("messageArrayCompressor", () => {
       expect(content).toContain(CANNONBALL_MARKER);
     });
   });
+
+  describe("native prompt token counts", () => {
+    it("bypasses compression when the provider count fits the window", async () => {
+      const messages = [
+        systemMsg(),
+        userMsg(tokensOfText("USER TURN 1:", 1_000)),
+      ];
+      const window = tm.statsFrom(messages) + 100;
+      const countPromptTokens = jest.fn().mockResolvedValue(100);
+      const llm = {
+        model: "gpt-4o",
+        promptWindowLimit: () => window,
+        limits: { history: 10_000, system: 10_000, user: 10_000 },
+        countPromptTokens,
+      };
+
+      const result = await messageArrayCompressor(llm, messages, []);
+
+      expect(result).toBe(messages);
+      expect(countPromptTokens).toHaveBeenCalledWith(messages);
+    });
+
+    it("falls back to the existing compressor when the provider count is unavailable", async () => {
+      const messages = [
+        systemMsg(),
+        userMsg(tokensOfText("USER TURN 1:", 3_000)),
+      ];
+      const countPromptTokens = jest.fn().mockResolvedValue(null);
+      const llm = {
+        model: "gpt-4o",
+        promptWindowLimit: () => 3_000,
+        limits: { history: 450, system: 450, user: 2_100 },
+        countPromptTokens,
+      };
+
+      const result = await messageArrayCompressor(llm, messages, []);
+
+      expect(result).not.toBe(messages);
+      expect(result).toHaveLength(1);
+      expect(result[0].content).toContain(CANNONBALL_MARKER);
+      expect(countPromptTokens).toHaveBeenCalledWith(messages);
+    });
+
+    it("does not ask for a native count when the local estimate already fits", async () => {
+      const messages = [systemMsg(), userMsg("short question")];
+      const countPromptTokens = jest.fn();
+      const llm = {
+        model: "gpt-4o",
+        promptWindowLimit: () => 10_000,
+        limits: { history: 10_000, system: 10_000, user: 10_000 },
+        countPromptTokens,
+      };
+
+      const result = await messageArrayCompressor(llm, messages, []);
+
+      expect(result).toBe(messages);
+      expect(countPromptTokens).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe("messageStringCompressor", () => {
