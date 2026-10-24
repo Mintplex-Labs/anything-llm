@@ -21,7 +21,10 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
-const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const {
+  writeResponseChunk,
+  convertToChatHistory,
+} = require("../utils/helpers/chat/responses");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const {
   downloadGeneratedFile,
@@ -201,6 +204,73 @@ function browserExtensionEndpoints(app) {
       } catch (error) {
         console.error(error);
         return response.status(500).json({ error: "Failed to create thread" });
+      }
+    }
+  );
+
+  app.get(
+    "/browser-extension/threads",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const workspaceId = parseInt(request.query.workspaceId);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: workspaceId })
+          : await Workspace.get({ id: workspaceId });
+        if (!workspace)
+          return response.status(403).json({ error: "Workspace not found" });
+
+        const threads = await WorkspaceThread.where({
+          workspace_id: workspace.id,
+          user_id: user?.id ?? null,
+        });
+        return response
+          .status(200)
+          .json({ threads: threads.map(({ id, name }) => ({ id, name })) });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({ error: "Failed to list threads" });
+      }
+    }
+  );
+
+  app.get(
+    "/browser-extension/threads/:threadId/chats",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const thread = await WorkspaceThread.get({
+          id: parseInt(request.params.threadId),
+          user_id: user?.id ?? null,
+        });
+        if (!thread)
+          return response.status(404).json({ error: "Thread not found" });
+
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: thread.workspace_id })
+          : await Workspace.get({ id: thread.workspace_id });
+        if (!workspace)
+          return response.status(403).json({ error: "Workspace not found" });
+
+        const history = await WorkspaceChats.where(
+          {
+            workspaceId: workspace.id,
+            user_id: user?.id ?? null,
+            thread_id: thread.id,
+            api_session_id: null,
+            include: true,
+          },
+          null,
+          { id: "asc" }
+        );
+        return response
+          .status(200)
+          .json({ history: convertToChatHistory(history) });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({ error: "Failed to load thread" });
       }
     }
   );
