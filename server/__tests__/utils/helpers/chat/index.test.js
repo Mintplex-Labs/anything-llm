@@ -312,6 +312,29 @@ describe("messageArrayCompressor", () => {
     expect(tm.countFromContent(result[0].content)).toBeLessThan(3000);
   });
 
+  it("keeps top-level images when cannonballing an oversized user prompt", async () => {
+    const images = ["AAAA", "BBBB"];
+    const prompt = `HEAD_SENTINEL ${tokensOfText("", 2000)} MIDDLE_SENTINEL ${tokensOfText("", 2000)} TAIL_SENTINEL`;
+    const user = { role: "user", content: prompt, images };
+    const llm = {
+      model: "gpt-4o",
+      promptWindowLimit: () => 3000,
+      limits: { history: 450, system: 450, user: 2100 },
+    };
+
+    const result = await messageArrayCompressor(llm, [systemMsg(), user], []);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].images).toEqual(images);
+    expect(result[0].role).toBe("user");
+    expect(result[0].content).toContain(CANNONBALL_MARKER);
+    expect(result[0].content).toContain("HEAD_SENTINEL");
+    expect(result[0].content).toContain("TAIL_SENTINEL");
+    expect(result[0].content).not.toContain("MIDDLE_SENTINEL");
+    expect(tm.countFromString(result[0].content)).toBeLessThan(3000);
+    expect(user.content).toBe(prompt);
+  });
+
   it("keeps the most recent history pairs, in chronological order, when over the window", async () => {
     const rawHistory = [1, 2, 3, 4, 5, 6].map((n) =>
       makeHistoryRecord(n, { size: 100 })
