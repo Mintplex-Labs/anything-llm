@@ -14,7 +14,7 @@ import LLMProviderModelPicker from "@/pages/GeneralSettings/ModelRouters/LLMProv
 import useCurrency from "@/hooks/useCurrency";
 import { currencySymbol } from "@/utils/currency";
 
-const EMPTY_PRICE = { input: "", output: "", listed: false };
+const EMPTY_PRICE = { input: "", output: "", listed: false, usd: {} };
 
 /**
  * @param {Object} props
@@ -78,7 +78,12 @@ export default function PriceModal({
 
   function handlePriceChange(e) {
     const { name, value } = e.target;
-    setPrice((current) => ({ ...current, [name]: value, listed: false }));
+    setPrice((current) => ({
+      ...current,
+      [name]: value,
+      listed: false,
+      usd: { ...current.usd, [name]: undefined },
+    }));
   }
 
   async function handleSubmit(e) {
@@ -91,8 +96,8 @@ export default function PriceModal({
     const { success, error: apiError } = await onSave({
       provider,
       model: String(form.get("model") ?? "").trim() || null,
-      input: Number(form.get("input")) / rate,
-      output: Number(form.get("output")) / rate,
+      input: price.usd.input ?? Number(form.get("input")) / rate,
+      output: price.usd.output ?? Number(form.get("output")) / rate,
     });
     setSaving(false);
     if (!success) return setError(apiError || t("model-pricing.modal.error"));
@@ -174,16 +179,19 @@ export default function PriceModal({
 }
 
 /**
- * Converts a stored USD price into the display currency for the inputs.
+ * Converts a stored USD price into the display currency for the inputs,
+ * rounded to 2 decimals. The exact USD values are kept so saving an untouched
+ * field does not persist the rounded amount.
  * @param {{input: number, output: number}} price - USD per 1M tokens
  * @param {number} rate - display currency units per USD
- * @returns {{input: number, output: number, listed: false}}
+ * @returns {{input: number, output: number, listed: false, usd: {input: number, output: number}}}
  */
 function displayPrice(price, rate) {
   return {
-    input: Number((price.input * rate).toFixed(6)),
-    output: Number((price.output * rate).toFixed(6)),
+    input: Number((price.input * rate).toFixed(2)),
+    output: Number((price.output * rate).toFixed(2)),
     listed: false,
+    usd: { input: price.input, output: price.output },
   };
 }
 
