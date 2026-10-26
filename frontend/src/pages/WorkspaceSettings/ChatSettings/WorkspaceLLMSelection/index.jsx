@@ -51,7 +51,8 @@ export default function WorkspaceLLMSelection({ settings, workspace }) {
   }
 
   const llms = withEmbeddedLemonade(LLMS, settings, { after: "default" });
-  const selectedLLMObject = llms.find((llm) => llm.value === selectedLLM);
+  const selectedLLMObject =
+    llms.find((llm) => llm.value === selectedLLM) ?? LLM_DEFAULT;
 
   return (
     <div className="flex flex-col gap-y-[8px]">

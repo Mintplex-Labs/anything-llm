@@ -874,6 +874,12 @@ const TRANSLATIONS = {
       title: "Marca i etiqueta blanca",
       description:
         "Personalitza la teva instància d'AnythingLLM amb una marca pròpia.",
+      tabs: {
+        identity: "Identitat",
+        colors: "Colors",
+        sidebar: "Barre lateral",
+        browser: "Navegador",
+      },
     },
     chat: {
       title: "Xat",
@@ -959,6 +965,36 @@ const TRANSLATIONS = {
         title: "Desactivar el desplaçament automàtic",
         description:
           "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
+      },
+      palette: {
+        title: "Paleta de colors",
+        description:
+          "Seleccioneu una paleta de colors. Aquesta s'aplica tant al mode clar com al mode fosc.",
+        enforced:
+          "L'administrador ha configurat la paleta de colors per a aquesta instància.",
+        "default-badge": "Per defecte",
+      },
+      "instance-palettes": {
+        title: "Paletes de colors",
+        description:
+          "Feu clic en una paleta per establir-la com a predeterminada per a tots els usuaris d'aquesta instància. Les paletes personalitzades inclouen un color principal, que afecta el fons, la barra lateral i el contingut, i un color d'accent per als botons i els enllaços.",
+        new: "Nova paleta",
+        edit: "Edita la paleta",
+        delete: "Eliminar paleta",
+        name: "Nom de la paleta",
+        "name-required": "Posa un nom a la paleta.",
+        colors: {
+          main: "Color principal",
+          accent: "Color d'accent",
+        },
+        "preview-note":
+          'Els canvis es previsualitzen a tota l\'aplicació i es desen quan feu clic a "Fet".',
+        done: "Fet",
+        cancel: "Cancel·lar",
+        enforce: "Aplica la paleta per defecte",
+        "enforce-description":
+          "Tothom en aquesta instància fa servir la paleta per defecte i no la pot canviar.",
+        "save-failed": "No s'han pogut desar les paletes de colors: {{error}}",
       },
     },
   },

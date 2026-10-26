@@ -6,6 +6,7 @@ const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
+const { sanitizeThemePalettes } = require("../utils/themePalettes");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
@@ -94,6 +95,7 @@ const SystemSettings = {
     // Meta page customization
     "meta_page_title",
     "meta_page_favicon",
+    "theme_palettes",
 
     // beta feature flags
     "experimental_live_file_sync",
@@ -106,6 +108,7 @@ const SystemSettings = {
     "memory_auto_extraction",
   ],
   validations: {
+    theme_palettes: (update) => JSON.stringify(sanitizeThemePalettes(update)),
     footer_data: (updates) => {
       try {
         const array = JSON.parse(updates)

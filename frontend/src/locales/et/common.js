@@ -836,6 +836,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Bränding ja valgesildistamine",
       description: "Valgesildista oma AnythingLLM kohandatud brändinguga.",
+      tabs: {
+        identity: "Identiteet",
+        colors: "Värvid",
+        sidebar: "Külgriba",
+        browser: "Brauser",
+      },
     },
     chat: {
       title: "Vestlus",
@@ -913,6 +919,36 @@ const TRANSLATIONS = {
         title: "Lülita automaatne rullimine välja",
         description:
           "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
+      },
+      palette: {
+        title: "Värvipalett",
+        description:
+          "Valige värvipalett. See kehtib nii heleda kui ka tumeda režiimi kohta.",
+        enforced:
+          "Teie administraator on määranud selle instantsi värvipaleti.",
+        "default-badge": "Vaikimisi",
+      },
+      "instance-palettes": {
+        title: "Värvipaletid",
+        description:
+          "Klõpsake paletil, et muuta see selle instantsi kõigi kasutajate vaikepaletiks. Kohandatud palettidel on põhivärv, mis toonib tausta, külgriba ja sisu, ning rõhuvärv nuppude ja linkide jaoks.",
+        new: "Uus palett",
+        edit: "Muuda paletti",
+        delete: "Kustuta palett",
+        name: "Paleti nimi",
+        "name-required": "Andke paletile nimi.",
+        colors: {
+          main: "Põhivärv",
+          accent: "Rõhuvärv",
+        },
+        "preview-note":
+          "Muudatusi näeb eelvaates kogu rakenduses ja need salvestatakse, kui klõpsate „Valmis“.",
+        done: "Valmis",
+        cancel: "Tühista",
+        enforce: "Jõusta vaikepalett",
+        "enforce-description":
+          "Kõik selle instantsi kasutajad kasutavad vaikepaletti ega saa seda muuta.",
+        "save-failed": "Värvipalettide salvestamine ebaõnnestus: {{error}}",
       },
     },
   },

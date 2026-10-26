@@ -847,6 +847,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Varumärke och vitmärkning",
       description: "Vitmärka din AnythingLLM-instans med anpassad profilering.",
+      tabs: {
+        identity: "Identitet",
+        colors: "Färger",
+        sidebar: "Sidopanel",
+        browser: "Webbläsare",
+      },
     },
     chat: {
       title: "Chatt",
@@ -927,6 +933,36 @@ const TRANSLATIONS = {
         title: "Rendera HTML i chatten",
         description:
           "Rendera HTML-svar i assistentens svar.\nDet kan ge avsevärt bättre återgivning, men kan också medföra säkerhetsrisker.",
+      },
+      palette: {
+        title: "Färgpalett",
+        description:
+          "Välj en färgpalett. Den gäller både ljust och mörkt läge.",
+        enforced:
+          "Din administratör har ställt in färgpaletten för den här instansen.",
+        "default-badge": "Standard",
+      },
+      "instance-palettes": {
+        title: "Färgpaletter",
+        description:
+          "Klicka på en palett för att göra den standard för alla på denna instans. Anpassade paletter består av en huvudfärg, som ger en ton till bakgrunden, sidopanelen och innehållet, samt en accentfärg för knappar och länkar.",
+        new: "Ny palett",
+        edit: "Redigera palett",
+        delete: "Ta bort palett",
+        name: "Palettnamn",
+        "name-required": "Ge paletten ett namn.",
+        colors: {
+          main: "Huvudfärg",
+          accent: "Accentfärg",
+        },
+        "preview-note":
+          'Ändringar förhandsgranskas i hela appen och sparas när du klickar på "Klar".',
+        done: "Klar",
+        cancel: "Avbryt",
+        enforce: "Tillämpa standardpaletten",
+        "enforce-description":
+          "Alla på den här instansen använder standardpaletten och kan inte ändra den.",
+        "save-failed": "Misslyckades med att spara färgpaletter: {{error}}",
       },
     },
   },

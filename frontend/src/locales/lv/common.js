@@ -854,6 +854,12 @@ const TRANSLATIONS = {
       title: "Zīmolrade un identitāte",
       description:
         "Pielāgojiet savu AnythingLLM instanci ar pielāgotu zīmolradi.",
+      tabs: {
+        identity: "Identitāte",
+        colors: "Krāsas",
+        sidebar: "Sānjosla",
+        browser: "Pārlūks",
+      },
     },
     chat: {
       title: "Saruna",
@@ -935,6 +941,36 @@ const TRANSLATIONS = {
         title: "Atspējot automātisko skrološanu",
         description:
           "Atstāviet automātisko skrološanu uz sarunas beigām, kad saņemts jauns sūtījums.",
+      },
+      palette: {
+        title: "Krāsu palete",
+        description:
+          "Izvēlieties krāsu paleti. Tā attiecas gan uz gaišo, gan tumšo režīmu.",
+        enforced:
+          "Jūsu administrators ir iestatījis krāsu paleti šai instancei.",
+        "default-badge": "Pēc noklusējuma",
+      },
+      "instance-palettes": {
+        title: "Krāsu paletes",
+        description:
+          "Noklikšķiniet uz paletes, lai padarītu to par noklusējuma paleti visiem šīs instances lietotājiem. Pielāgotās paletes veido galvenā krāsa, kas iekrāso fonu, sānjoslu un saturu, un akcenta krāsa pogām un saitēm.",
+        new: "Jauna palete",
+        edit: "Rediģēt paleti",
+        delete: "Dzēst paleti",
+        name: "Paletes nosaukums",
+        "name-required": "Piešķiriet paletei nosaukumu.",
+        colors: {
+          main: "Galvenā krāsa",
+          accent: "Akcenta krāsa",
+        },
+        "preview-note":
+          'Izmaiņas tiek priekšskatītas visā lietotnē un tiek saglabātas, kad noklikšķināt uz "Gatavs".',
+        done: "Gatavs",
+        cancel: "Atcelt",
+        enforce: "Piemērot noklusējuma paleti",
+        "enforce-description":
+          "Visi šīs instances lietotāji izmanto noklusējuma paleti un nevar to mainīt.",
+        "save-failed": "Neizdevās saglabāt krāsu paletes: {{error}}",
       },
     },
   },

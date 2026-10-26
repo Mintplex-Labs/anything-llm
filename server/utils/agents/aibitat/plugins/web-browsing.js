@@ -129,18 +129,6 @@ const webBrowsing = {
           },
 
           /**
-           * Utility function to truncate a string to a given length for debugging
-           * calls to the API while keeping the actual values mostly intact
-           * @param {string} str - The string to truncate
-           * @param {number} length - The length to truncate the string to
-           * @returns {string} The truncated string
-           */
-          middleTruncate(str, length = 5) {
-            if (str.length <= length) return str;
-            return `${str.slice(0, length)}...${str.slice(-length)}`;
-          },
-
-          /**
            * Report citations for an array of search results.
            * Uses title, link, and snippet directly from result data.
            * @param {Array<{title?: string, link?: string, snippet?: string}>} results - Search results to report as citations
@@ -206,7 +194,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPAPI_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -466,7 +454,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SEARCHAPI_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -694,7 +682,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPER_DEV_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -757,7 +745,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_BING_SEARCH_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -820,10 +808,6 @@ const webBrowsing = {
                 const body = await res.text().catch(() => "");
                 throw new Error(
                   `${res.status} - ${res.statusText}. params: ${JSON.stringify({
-                    auth: this.middleTruncate(
-                      process.env.AGENT_BAIDU_SEARCH_API_KEY,
-                      5
-                    ),
                     q: query,
                     body: body.slice(0, 300),
                   })}`
@@ -939,7 +923,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPLY_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -1013,18 +997,19 @@ const webBrowsing = {
             })
               .then((res) => {
                 if (res.ok) return res.json();
-                throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ url: searchURL.toString() })}`
-                );
+                throw new Error(`${res.status} - ${res.statusText}`);
               })
               .then((data) => {
                 return { response: data, error: null };
               })
               .catch((e) => {
                 this.super.handlerProps.log(
-                  `SearXNG Search Error: ${e.message}`
+                  `SearXNG Search Error: ${e.message}. url: ${searchURL.toString()}`
                 );
-                return { response: null, error: e.message };
+                return {
+                  response: null,
+                  error: `${e.message}. params: ${JSON.stringify({ q: query })}`,
+                };
               });
             if (error)
               return `There was an error searching for content. ${error}`;
@@ -1078,7 +1063,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_TAVILY_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -1245,7 +1230,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_EXA_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -1315,10 +1300,6 @@ const webBrowsing = {
                 if (res.ok) return res.json();
                 throw new Error(
                   `${res.status} - ${res.statusText}. params: ${JSON.stringify({
-                    auth: this.middleTruncate(
-                      process.env.AGENT_PERPLEXITY_API_KEY,
-                      5
-                    ),
                     q: query,
                   })}`
                 );
@@ -1475,7 +1456,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_CRW_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -1665,7 +1646,6 @@ const webBrowsing = {
                 if (res.ok) return res.json();
                 const err = new Error(
                   `${res.status} - ${res.statusText}. params: ${JSON.stringify({
-                    auth: usingKey ? this.middleTruncate(apiKey, 5) : "keyless",
                     q: query,
                   })}`
                 );

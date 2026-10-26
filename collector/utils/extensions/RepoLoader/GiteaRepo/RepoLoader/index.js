@@ -105,7 +105,8 @@ class GiteaRepoLoader {
   // Ensure the branch provided actually exists and if it does not or has not
   // been set auto-assign to the repository default branch.
   async #validBranch() {
-    await this.getRepoBranches();
+    await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
+    await this.#fetchBranches();
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
     console.log(
@@ -189,8 +190,13 @@ class GiteaRepoLoader {
     return docs;
   }
 
-  // Sort branches to always show either main or master at the top of the result.
-  #branchPrefSort(branches = []) {
+  // Sort branches so the repository default branch is at the top of the result,
+  // since the first branch is the one preselected in the UI. When the default
+  // branch is unknown, main or master is shown at the top instead.
+  #branchPrefSort(branches = [], defaultBranch = null) {
+    if (defaultBranch && branches.includes(defaultBranch))
+      return [defaultBranch, ...branches.filter((b) => b !== defaultBranch)];
+
     const preferredSort = ["main", "master"];
     return branches.reduce((acc, branch) => {
       if (preferredSort.includes(branch)) return [branch, ...acc];
@@ -211,12 +217,24 @@ class GiteaRepoLoader {
   }
 
   /**
-   * Retrieves all branches for the repository.
+   * Retrieves all branches for the repository, with the default branch first.
    * @returns {Promise<string[]>} An array of branch names.
    */
   async getRepoBranches() {
     if (!this.#validGiteaUrl() || !this.author || !this.project) return [];
     await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
+    await this.#fetchBranches();
+    if (this.branches.length === 0) return [];
+
+    const defaultBranch = await this.fetchDefaultBranch();
+    return this.#branchPrefSort(this.branches, defaultBranch);
+  }
+
+  /**
+   * Pages through the branches endpoint and stores every branch name on `this.branches`.
+   * @returns {Promise<void>}
+   */
+  async #fetchBranches() {
     this.branches = [];
 
     const perPage = 50;
@@ -235,7 +253,6 @@ class GiteaRepoLoader {
     }
 
     this.branches = [...new Set(this.branches)];
-    return this.#branchPrefSort(this.branches);
   }
 
   /**

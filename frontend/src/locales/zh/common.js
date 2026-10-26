@@ -800,6 +800,12 @@ const TRANSLATIONS = {
     branding: {
       title: "品牌与白标设置",
       description: "使用自定义品牌对白标您的 AnythingLLM 实例。",
+      tabs: {
+        identity: "身份",
+        colors: "颜色",
+        sidebar: "侧边栏",
+        browser: "浏览器",
+      },
     },
     chat: {
       title: "聊天",
@@ -872,6 +878,32 @@ const TRANSLATIONS = {
       "disable-auto-scroll": {
         title: "关闭自动滚动功能",
         description: "在收到新消息时，取消自动滚动到聊天窗口底部的功能。",
+      },
+      palette: {
+        title: "调色板",
+        description: "选择一个调色板。它同时适用于浅色模式和深色模式。",
+        enforced: "您的管理员已为此实例设置了调色板。",
+        "default-badge": "默认",
+      },
+      "instance-palettes": {
+        title: "调色板",
+        description:
+          "点击调色板，将其设置为该实例中所有用户的默认设置。自定义调色板包含一个主色，用于着色背景、侧边栏和内容，以及用于按钮和链接的强调色。",
+        new: "新建调色板",
+        edit: "编辑调色板",
+        delete: "删除调色板",
+        name: "调色板名称",
+        "name-required": "为这个调色板起一个名字。",
+        colors: {
+          main: "主色",
+          accent: "强调色",
+        },
+        "preview-note": "在整个应用程序中预览更改，并在点击“完成”时保存。",
+        done: "完成",
+        cancel: "取消",
+        enforce: "强制使用默认调色板",
+        "enforce-description": "此实例中的所有人都使用默认调色板，且无法更改。",
+        "save-failed": "保存调色板失败：{{error}}",
       },
     },
   },

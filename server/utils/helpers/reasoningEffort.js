@@ -181,6 +181,9 @@ function reasoningParams(provider, effort = null, model = null) {
       return {
         reasoning: toggle ? { enabled: effort === "on" } : { effort },
       };
+    case "mistral":
+      // Reasoning models only accept "none" or "high" - other levels are rejected.
+      return { reasoning_effort: effort === "on" ? "high" : "none" };
     case "deepseek":
       // https://api-docs.deepseek.com/guides/thinking_mode
       if (toggle)

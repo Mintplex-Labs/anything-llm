@@ -1370,6 +1370,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "Geef uw AnythingLLM-instantie een whitelabel met uw eigen branding.",
+      tabs: {
+        identity: "Identiteit",
+        colors: "Kleuren",
+        sidebar: "Zijbalk",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1452,6 +1458,36 @@ const TRANSLATIONS = {
         title: "Schakel automatische scrollfunctie uit",
         description:
           "Schakel het automatische scrollen naar het einde van de chat uit wanneer er nieuwe berichten worden ontvangen.",
+      },
+      palette: {
+        title: "Kleurenpalet",
+        description:
+          "Kies een kleurenpalet. Dit geldt zowel voor de lichte als de donkere modus.",
+        enforced:
+          "Uw beheerder heeft het kleurenpalet voor deze instantie ingesteld.",
+        "default-badge": "Standaard",
+      },
+      "instance-palettes": {
+        title: "Kleurenpaletten",
+        description:
+          "Klik op een palet om het de standaard te maken voor iedereen in deze instantie. Aangepaste paletten bestaan uit een hoofdkleur, die de achtergrond, zijbalk en inhoud kleurt, en een accentkleur voor knoppen en links.",
+        new: "Nieuw palet",
+        edit: "Palet bewerken",
+        delete: "Palet verwijderen",
+        name: "Naam van het palet",
+        "name-required": "Geef het palet een naam.",
+        colors: {
+          main: "Hoofdkleur",
+          accent: "Accentkleur",
+        },
+        "preview-note":
+          'Wijzigingen worden in de hele app als voorbeeld getoond en opgeslagen wanneer u op "Gereed" klikt.',
+        done: "Gereed",
+        cancel: "Annuleren",
+        enforce: "Standaardpalet afdwingen",
+        "enforce-description":
+          "Iedereen in deze instantie gebruikt het standaardpalet en kan het niet wijzigen.",
+        "save-failed": "Kon de kleurenpaletten niet opslaan: {{error}}",
       },
     },
   },
