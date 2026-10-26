@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { log, conclude } = require("./helpers/index.js");
-const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles.js");
+const prisma = require("../utils/prisma");
 const { directUploadsPath } = require("../utils/files");
 const { safeJsonParse } = require("../utils/http/index.js");
 
@@ -47,24 +47,26 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
 (async () => {
   try {
     const filesToDelete = [];
-    const knownFiles = await WorkspaceParsedFiles.where({}, null, null, {
-      filename: true,
-      metadata: true,
-    }).then(
-      (files) =>
-        new Set(
-          files.map((file) => {
-            // Keep the file getContextFiles reads, since collector output names
-            // (e.g. MBOX "-msg-N" files) can differ from the record filename.
-            const metadata = safeJsonParse(file.metadata, {});
-            if (typeof metadata?.location === "string" && metadata.location)
-              return path.basename(metadata.location);
+    // A failed lookup must abort cleanup, not look like an empty reference set.
+    const knownFiles = await prisma.workspace_parsed_files
+      .findMany({
+        select: { filename: true, metadata: true },
+      })
+      .then(
+        (files) =>
+          new Set(
+            files.map((file) => {
+              // Keep the file getContextFiles reads, since collector output names
+              // (e.g. MBOX "-msg-N" files) can differ from the record filename.
+              const metadata = safeJsonParse(file.metadata, {});
+              if (typeof metadata?.location === "string" && metadata.location)
+                return path.basename(metadata.location);
 
-            // Records without a location match the slugified direct-uploads name.
-            return slugify(file.filename);
-          })
-        )
-    );
+              // Records without a location match the slugified direct-uploads name.
+              return slugify(file.filename);
+            })
+          )
+      );
 
     if (!fs.existsSync(directUploadsPath))
       return log("No direct uploads path found - exiting.");
