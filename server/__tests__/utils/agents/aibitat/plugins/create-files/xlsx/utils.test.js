@@ -159,6 +159,19 @@ describe("detectDelimiter", () => {
     expect(detectDelimiter("a;b\r\n1,2,3,4")).toBe(";");
   });
 
+  test("ignores delimiters inside quoted fields", () => {
+    expect(detectDelimiter('"last,name";age\n"Doe,John";42')).toBe(";");
+    expect(detectDelimiter('"a;b",c\n"d;e",f')).toBe(",");
+  });
+
+  test("ignores delimiters after escaped quotes", () => {
+    expect(detectDelimiter('"He said ""a,b""";x\n1;2')).toBe(";");
+  });
+
+  test("reads past newlines inside quoted fields", () => {
+    expect(detectDelimiter('"first\nname";age\n"Doe,John";42')).toBe(";");
+  });
+
   test("falls back to a comma when no delimiter is present", () => {
     expect(detectDelimiter("single column")).toBe(",");
     expect(detectDelimiter("")).toBe(",");

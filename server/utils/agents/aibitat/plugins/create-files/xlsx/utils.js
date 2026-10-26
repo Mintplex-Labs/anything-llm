@@ -103,20 +103,41 @@ function validateCSVData(data) {
   return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
 }
 
+function countDelimiterInFirstRecord(csvString, delimiter) {
+  let count = 0;
+  let inQuotes = false;
+
+  for (let i = 0; i < csvString.length; i++) {
+    const char = csvString[i];
+    if (char === '"') {
+      if (inQuotes && csvString[i + 1] === '"') {
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (inQuotes) continue;
+    if (char === delimiter) count++;
+    else if (char === "\n" || char === "\r") break;
+  }
+
+  return count;
+}
+
 /**
  * Attempts to detect the delimiter used in a CSV string.
  * @param {string} csvString - The CSV content
  * @returns {string} Detected delimiter (comma, semicolon, tab, or pipe)
  */
 function detectDelimiter(csvString) {
-  const firstLine = csvString.split(/\r?\n/)[0] || "";
   const delimiters = [",", ";", "\t", "|"];
   let bestDelimiter = ",";
   let maxCount = 0;
 
   for (const delimiter of delimiters) {
-    const count = (firstLine.match(new RegExp(`\\${delimiter}`, "g")) || [])
-      .length;
+    const count = countDelimiterInFirstRecord(csvString, delimiter);
     if (count > maxCount) {
       maxCount = count;
       bestDelimiter = delimiter;
