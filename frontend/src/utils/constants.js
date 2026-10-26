@@ -10,6 +10,8 @@ export const SEEN_WATCH_ALERT = "anythingllm_watched_document_alert";
 export const LAST_VISITED_WORKSPACE = "anythingllm_last_visited_workspace";
 export const USER_PROMPT_INPUT_MAP = "anythingllm_user_prompt_input_map";
 export const PENDING_HOME_MESSAGE = "anythingllm_pending_home_message";
+export const SESSION_REASONING_EFFORT_MAP =
+  "anythingllm_session_reasoning_effort_map";
 
 export const APPEARANCE_SETTINGS = "anythingllm_appearance_settings";
 
@@ -17,6 +19,12 @@ export const OLLAMA_COMMON_URLS = [
   "http://127.0.0.1:11434",
   "http://host.docker.internal:11434",
   "http://172.17.0.1:11434",
+];
+
+export const LLMMAN_COMMON_URLS = [
+  "http://127.0.0.1:17434",
+  "http://host.docker.internal:17434",
+  "http://172.17.0.1:17434",
 ];
 
 export const LMSTUDIO_COMMON_URLS = [
@@ -27,10 +35,10 @@ export const LMSTUDIO_COMMON_URLS = [
 ];
 
 export const KOBOLDCPP_COMMON_URLS = [
-  "http://127.0.0.1:5000/v1",
-  "http://localhost:5000/v1",
-  "http://host.docker.internal:5000/v1",
-  "http://172.17.0.1:5000/v1",
+  "http://127.0.0.1:5001/v1",
+  "http://localhost:5001/v1",
+  "http://host.docker.internal:5001/v1",
+  "http://172.17.0.1:5001/v1",
 ];
 
 export const LOCALAI_COMMON_URLS = [
@@ -45,14 +53,6 @@ export const NVIDIA_NIM_COMMON_URLS = [
   "http://localhost:8000/v1/version",
   "http://host.docker.internal:8000/v1/version",
   "http://172.17.0.1:8000/v1/version",
-];
-
-export const DOCKER_MODEL_RUNNER_COMMON_URLS = [
-  "http://localhost:12434/engines/llama.cpp/v1",
-  "http://127.0.0.1:12434/engines/llama.cpp/v1",
-  "http://model-runner.docker.internal/engines/llama.cpp/v1",
-  "http://host.docker.internal:12434/engines/llama.cpp/v1",
-  "http://172.17.0.1:12434/engines/llama.cpp/v1",
 ];
 
 export const LEMONADE_COMMON_URLS = [

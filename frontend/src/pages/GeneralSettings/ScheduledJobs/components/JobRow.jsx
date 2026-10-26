@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Play, PencilSimple, X } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
@@ -48,11 +49,11 @@ export default function JobRow({ job, onTrigger, onToggle, onEdit, onDelete }) {
         {statusText}
       </span>
       <span className="w-[180px] text-sm text-zinc-400 light:text-slate-600 truncate">
-        {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString() : "—"}
+        {job.lastRunAt ? moment(job.lastRunAt).format("lll") : "—"}
       </span>
       <span className="w-[180px] text-sm text-zinc-400 light:text-slate-600 truncate">
         {job.enabled && job.nextRunAt
-          ? new Date(job.nextRunAt).toLocaleString()
+          ? moment(job.nextRunAt).format("lll")
           : "—"}
       </span>
       <div className="w-[140px] flex items-center justify-end gap-1">

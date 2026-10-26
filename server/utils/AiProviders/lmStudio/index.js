@@ -7,6 +7,13 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -34,7 +41,6 @@ class LMStudioLLM {
     if (!this.model) throw new Error("LMStudio must have a valid model set.");
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
@@ -228,7 +234,10 @@ class LMStudioLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
@@ -238,7 +247,8 @@ class LMStudioLLM {
       this.lmstudio.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
+        ...reasoningParams("lmstudio", reasoningEffort, this.model),
       })
     );
 
@@ -263,7 +273,10 @@ class LMStudioLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
@@ -274,7 +287,8 @@ class LMStudioLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
+        ...reasoningParams("lmstudio", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -289,34 +303,52 @@ class LMStudioLLM {
   }
 
   /**
+   * Fetches a model's entry from the /api/v1/models endpoint.
+   * @param {string} model - The model key to look up
+   * @returns {Promise<object>} The model info, or an empty object if not found.
+   */
+  static async #getModelInfo(model) {
+    const endpoint = new URL(
+      parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH, "v1")
+    );
+    const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
+    endpoint.pathname += "/models";
+    return (
+      (await fetch(endpoint.toString(), {
+        headers: {
+          "Content-Type": "application/json",
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
+      })
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(`LMStudio:getModelInfo - ${res.statusText}`);
+          return res.json();
+        })
+        .then(({ models = [] }) => models.find((m) => m.key === model))) || {}
+    );
+  }
+
+  /**
+   * Whether the model currently has an instance loaded into memory.
+   * Resolves true on error so a dead server fails on the real completion instead.
+   * @param {string} model - The model key to check
+   * @returns {Promise<boolean>}
+   */
+  static async isModelLoaded(model) {
+    return await LMStudioLLM.#getModelInfo(model)
+      .then((info) => (info.loaded_instances ?? []).length > 0)
+      .catch(() => true);
+  }
+
+  /**
    * Returns the capabilities of the model.
    * This uses the new /api/v1 endpoint, which returns the model info in a different format.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
-      const endpoint = new URL(
-        parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH, "v1")
-      );
-      const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
-      endpoint.pathname += "/models";
-      const modelInfo =
-        (await fetch(endpoint.toString(), {
-          headers: {
-            "Content-Type": "application/json",
-            ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-          },
-        })
-          .then((res) => {
-            if (!res.ok)
-              throw new Error(
-                `LMStudio:getModelCapabilities - ${res.statusText}`
-              );
-            return res.json();
-          })
-          .then(({ models = [] }) =>
-            models.find((model) => model.key === this.model)
-          )) || {};
+      const modelInfo = await LMStudioLLM.#getModelInfo(this.model);
 
       const capabilities = modelInfo.hasOwnProperty("capabilities")
         ? modelInfo.capabilities
@@ -325,9 +357,16 @@ class LMStudioLLM {
             vision: "unknown",
           };
 
+      // `reasoning.allowed_options` is per model (eg: on/off for Qwen3, or
+      // low/medium/high for gpt-oss).
+      const reasoningOptions = PROVIDER_REASONING_EFFORTS.lmstudio().filter(
+        (option) => capabilities.reasoning?.allowed_options?.includes(option)
+      );
+
       return {
         tools: capabilities.trained_for_tool_use,
-        reasoning: "unknown",
+        reasoning: capabilities.hasOwnProperty("reasoning"),
+        reasoningOptions,
         imageGeneration: "unknown", // LM Studio does not support image generation yet.
         vision: capabilities.vision,
       };
@@ -336,6 +375,7 @@ class LMStudioLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

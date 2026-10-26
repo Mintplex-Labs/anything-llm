@@ -2,7 +2,12 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+  maxTokensParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { toValidNumber } = require("../../../http/index.js");
 const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
@@ -75,9 +80,9 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        temperature: 0,
+        ...temperatureParam(this.temperature),
         messages,
-        max_tokens: this.maxTokens,
+        ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -94,8 +99,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
+      ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
     });
   }
 
@@ -127,7 +134,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this }
+        {
+          provider: this,
+          maxTokens: this.maxTokens,
+          maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
+        }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -166,7 +177,11 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this }
+        {
+          provider: this,
+          maxTokens: this.maxTokens,
+          maxTokensKey: GenericOpenAiLLM.maxTokensKey(),
+        }
       );
 
       if (result.retryWithError) {

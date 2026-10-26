@@ -9,15 +9,33 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
 const {
+  serviceTierParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
     : path.resolve(__dirname, `../../../storage/models/openrouter`)
 );
-
 class OpenRouterLLM {
+  static SERVICE_TIERS = [
+    "auto",
+    "default",
+    "fast",
+    "flex",
+    "priority",
+    "scale",
+  ];
+
   /**
    * Some openrouter models never send a finish_reason and thus leave the stream open in the UI.
    * However, because OR is a middleware it can also wait an inordinately long time between chunks so we need
@@ -52,8 +70,8 @@ class OpenRouterLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -238,7 +256,30 @@ class OpenRouterLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7, user = null }) {
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("openrouter", this.model);
+  }
+
+  /**
+   * The reasoning portion of the request body. Without an effort the legacy
+   * `include_reasoning` flag is sent, which OpenRouter treats as
+   * `reasoning: {}` - so the reasoning text is returned either way.
+   * @param {string|null} reasoningEffort - Validated reasoning effort
+   * @returns {object}
+   */
+  #reasoningBody(reasoningEffort = null) {
+    const params = reasoningParams("openrouter", reasoningEffort, this.model);
+    return params.reasoning ? params : { include_reasoning: true };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, user = null, reasoningEffort = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
@@ -249,10 +290,9 @@ class OpenRouterLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
-          // This is an OpenRouter specific option that allows us to get the reasoning text
-          // before the token text.
-          include_reasoning: true,
+          ...temperatureParam(temperature),
+          ...this.#reasoningBody(reasoningEffort),
+          ...serviceTierParam(this.serviceTier, this.log.bind(this)),
           user: user?.id ? `user_${user.id}` : "",
         })
         .catch((e) => {
@@ -285,7 +325,7 @@ class OpenRouterLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = 0.7, user = null }
+    { temperature = this.temperature, user = null, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -297,10 +337,9 @@ class OpenRouterLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
-        // This is an OpenRouter specific option that allows us to get the reasoning text
-        // before the token text.
-        include_reasoning: true,
+        ...temperatureParam(temperature),
+        ...this.#reasoningBody(reasoningEffort),
+        ...serviceTierParam(this.serviceTier, this.log.bind(this)),
         user: user?.id ? `user_${user.id}` : "",
       }),
       messages,

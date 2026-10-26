@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     "workspaces-name": "工作區名稱",
     selection: "模型選擇",
     saving: "儲存中...",
+    saved: "已儲存",
     save: "儲存變更",
     previous: "上一頁",
     next: "下一頁",
@@ -64,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "載入",
     refresh: "重新整理",
+    noResults: "未找到任何結果",
   },
   settings: {
     title: "系統設定",
@@ -228,7 +230,25 @@ const TRANSLATIONS = {
       title: "LLM 溫度",
       "desc-end":
         "數值越高，創意度越高。對於某些模型，設定過高可能會導致不連貫的回應。",
+      placeholder: "供應商預設值",
     },
+    reasoning_effort: {
+      title: "推理強度",
+      default: "供應商預設值",
+      cannot_disable: "此模型無法關閉推理。",
+      levels: {
+        off: "關閉",
+        on: "開啟",
+        minimal: "最低",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "極高",
+        max: "最高",
+      },
+    },
+    token_limit_reached:
+      "回應已達到最大輸出token限制。請增加模型的最大輸出token數量，以便產生更長的回應。",
   },
   "vector-workspace": {
     identifier: "向量資料庫識別碼",
@@ -300,7 +320,6 @@ const TRANSLATIONS = {
         description:
           "讓您的智慧代理人能夠利用 SQL 查詢來回答您的問題，只需連接到不同的 SQL 資料庫提供者即可。",
       },
-      default_skill: "這項技能預設為啟用；若不希望智慧代理人使用，也可以停用。",
       filesystem: {
         title: "檔案系統存取",
         description:
@@ -670,6 +689,11 @@ const TRANSLATIONS = {
         description:
           "允許經理根據聊天內容，設定重複執行的工作（例如：「每天早上9點，請自動整理我的收件匣並將摘要發送至我的電子郵件」）。僅適用於單一使用者模式。",
       },
+      generateImage: {
+        title: "產生圖像",
+        description:
+          "讓代理能夠根據聊天內容生成圖片，或編輯與對話相關聯的圖片，並使用您已設定的圖片產生服務。",
+      },
     },
     mcp: {
       title: "MCP 伺服器",
@@ -681,7 +705,7 @@ const TRANSLATIONS = {
       "start-server": "啟動 MCP 伺服器",
       "delete-server": "刪除 MCP 伺服器",
       "tool-count-warning":
-        "這個 MCP 伺服器已啟用 <b> 工具，這些工具會消耗聊天中的語境 </b>。建議停用不需要的工具，以節省語境。",
+        "這個 MCP 伺服器已啟用 <b>{{count}} 個工具</b>，這些工具會在每次聊天中消耗語境。<br />建議停用不需要的工具，以節省語境。",
       "startup-command": "啟動指令",
       command: "指令",
       arguments: "辯論",
@@ -1249,6 +1273,12 @@ const TRANSLATIONS = {
     branding: {
       title: "品牌與白標設定",
       description: "透過自訂品牌元素，將 AnythingLLM 白標化。",
+      tabs: {
+        identity: "身份",
+        colors: "顏色",
+        sidebar: "側邊欄",
+        browser: "瀏覽器",
+      },
     },
     chat: {
       title: "對話",
@@ -1322,6 +1352,33 @@ const TRANSLATIONS = {
         title: "停用自動捲動功能",
         description: "當收到新訊息時，取消自動將聊天視窗滾動到底部的功能。",
       },
+      palette: {
+        title: "調色盤",
+        description: "選擇調色盤。適用於淺色與深色模式。",
+        enforced: "您的管理員已為此系統設定調色盤。",
+        "default-badge": "預設值",
+      },
+      "instance-palettes": {
+        title: "調色盤",
+        description:
+          "點擊調色盤即可將其設為此系統所有人的預設值。自訂調色盤由主要顏色（用於背景、側邊欄與內容）以及用於按鈕與連結的強調色組成。",
+        new: "新增調色盤",
+        edit: "編輯調色盤",
+        delete: "刪除調色盤",
+        name: "調色盤名稱",
+        "name-required": "請為調色盤命名。",
+        colors: {
+          main: "主要顏色",
+          accent: "強調色",
+        },
+        "preview-note":
+          "變更會在整個應用程式中預覽，並在您點擊「完成」時儲存。",
+        done: "完成",
+        cancel: "取消",
+        enforce: "強制使用預設調色盤",
+        "enforce-description": "此系統中的所有人都使用預設調色盤，且無法變更。",
+        "save-failed": "無法儲存調色盤：{{error}}",
+      },
     },
   },
   "main-page": {
@@ -1331,6 +1388,35 @@ const TRANSLATIONS = {
       uploadDocument: "上傳文件",
     },
     greeting: "今天想做什麼？",
+    greetings: {
+      anytime: {
+        working_on: "我們要做些什麼？",
+        on_your_mind: "你在想什麼？",
+        where_to_start: "我們從哪裡開始？",
+        ready: "隨時準備就緒。",
+        think_it_through: "我們來好好想一想。",
+      },
+      morning: {
+        good_morning: "早安",
+        first_today: "早安。今天先做什麼？",
+        fresh_start: "新的開始。從哪裡著手？",
+      },
+      afternoon: {
+        good_afternoon: "午安",
+        tackling: "午安。我們要處理什麼？",
+        next_on_list: "清單上的下一項是什麼？",
+        keep_moving: "我們繼續推進吧。",
+      },
+      evening: {
+        good_evening: "晚上好",
+        finish_strong: "晚上好。我們漂亮收尾吧。",
+      },
+      night: {
+        midnight_oil: "還在挑燈夜戰？",
+        late_one: "忙到這麼晚？我們來好好想一想。",
+        still_up: "還沒睡？隨時準備就緒。",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "鍵盤快速鍵",
@@ -1730,9 +1816,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "沒有任何限制 — 路線為 <route>{{route}}</route>",
       "calculated-single-condition":
-        "如果符合 <prop>、{{property}}、</prop> 的條件，則前往 {{comparator}}、<val>、「{{value}}」、</val>，然後前往 <route>、{{route}}、</route>。",
+        "如果 <prop>{{property}}</prop> {{comparator}} <val>「{{value}}」</val>，則將路線設定為 <route>{{route}}</route>",
       "calculated-multi-condition":
-        "如果 {{quantifier}} 符合 <cond> 的條件，則將路線設定為 </cond>{{route}}</route>",
+        "如果符合 <cond>{{conditions}}</cond> 中的{{quantifier}}條件，則將路線設定為 <route>{{route}}</route>",
       "comparator-contains": "包含",
       "comparator-matches": "比賽",
       "comparator-between": "之間",

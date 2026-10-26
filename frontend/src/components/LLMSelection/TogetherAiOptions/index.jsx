@@ -1,4 +1,5 @@
 import System from "@/models/system";
+import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 
 export default function TogetherAiOptions({ settings }) {
@@ -6,27 +7,71 @@ export default function TogetherAiOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.TogetherAiApiKey);
 
   return (
-    <div className="flex gap-[36px] mt-1.5">
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
-          Together AI API Key
-        </label>
-        <input
-          type="password"
-          name="TogetherAiApiKey"
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="Together AI API Key"
-          defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
-          required={true}
-          autoComplete="off"
-          spellCheck={false}
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={() => setApiKey(inputValue)}
-        />
+    <div className="flex flex-col gap-y-4 mt-1.5">
+      <div className="flex gap-[36px]">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Together AI API Key
+          </label>
+          <input
+            type="password"
+            name="TogetherAiApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Together AI API Key"
+            defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => setApiKey(inputValue)}
+          />
+        </div>
+        {!settings?.credentialsOnly && (
+          <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
+        )}
       </div>
-      {!settings?.credentialsOnly && (
-        <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
-      )}
+      {!settings?.credentialsOnly && <AdvancedControls settings={settings} />}
+    </div>
+  );
+}
+
+function AdvancedControls({ settings }) {
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-y-4">
+      <button
+        type="button"
+        onClick={() => setShowAdvancedControls(!showAdvancedControls)}
+        className="border-none text-white hover:text-white/70 flex items-center text-sm"
+      >
+        {showAdvancedControls ? "Hide" : "Show"} advanced controls
+        {showAdvancedControls ? (
+          <CaretUp size={14} className="ml-1" />
+        ) : (
+          <CaretDown size={14} className="ml-1" />
+        )}
+      </button>
+      <div hidden={!showAdvancedControls}>
+        <div className="flex gap-[36px]">
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Max Tokens
+            </label>
+            <input
+              type="number"
+              name="TogetherAiMaxTokens"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Provider default"
+              min={0}
+              step={1}
+              onScroll={(e) => e.target.blur()}
+              defaultValue={settings?.TogetherAiMaxTokens}
+              autoComplete="off"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

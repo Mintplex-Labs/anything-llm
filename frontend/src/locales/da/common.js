@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Navn på arbejdsområder",
     selection: "Modelvalg",
     saving: "Gemmer...",
+    saved: "Gemt",
     save: "Gem ændringer",
     previous: "Forrige side",
     next: "Næste side",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Stoppet",
     loading: "Indlæsning",
     refresh: "Opfrisk",
+    noResults: "Ingen resultater fundet",
   },
   settings: {
     title: "Instansindstillinger",
@@ -241,7 +243,25 @@ const TRANSLATIONS = {
       title: "LLM-temperatur",
       "desc-end":
         "Jo højere tallet er, desto mere kreative bliver svarene. For nogle modeller kan for høje værdier føre til usammenhængende svar.",
+      placeholder: "Udbyderens standard",
     },
+    reasoning_effort: {
+      title: "Ræsonneringsindsats",
+      default: "Udbyderens standard",
+      cannot_disable: "Denne model kan ikke slå ræsonnering fra.",
+      levels: {
+        off: "Fra",
+        on: "Til",
+        minimal: "Minimal",
+        low: "Lav",
+        medium: "Middel",
+        high: "Høj",
+        xhigh: "Ekstra høj",
+        max: "Maks",
+      },
+    },
+    token_limit_reached:
+      "Svaret nåede det maksimale tilladte antal tokens. Øg modellens maksimale antal tokens, så svaret kan være længere.",
   },
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",
@@ -319,8 +339,6 @@ const TRANSLATIONS = {
         description:
           "Giv din agent mulighed for at bruge SQL til at besvare dine spørgsmål ved at oprette forbindelse til forskellige SQL-databaseleverandører.",
       },
-      default_skill:
-        "Som standard er denne funktion aktiveret, men du kan deaktivere den, hvis du ikke ønsker, at den skal være tilgængelig for agenten.",
       filesystem: {
         title: "Adgang til filsystem",
         description:
@@ -713,6 +731,11 @@ const TRANSLATIONS = {
         description:
           'Lad agenten oprette gentagne planlagte opgaver fra chat (f.eks. "hver mandag kl. 9:00, opsummér min indbakke og send mig en e-mail"). Kun tilgængeligt i enkeltbruger-tilstand.',
       },
+      generateImage: {
+        title: "Generer billeder",
+        description:
+          "Lad agenten generere billeder fra chat, eller redigere de vedhæftede billeder i samtalen, ved hjælp af den leverandør, du har konfigureret til billedgenerering.",
+      },
     },
     mcp: {
       title: "MCP-servere",
@@ -725,7 +748,7 @@ const TRANSLATIONS = {
       "start-server": "Start MCP-serveren",
       "delete-server": "Slet MCP-serveren",
       "tool-count-warning":
-        "Denne MCP-server har <b>aktiverede</b>værktøjer, som vil forbruge kontekst i hvert chat-session.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
+        "Denne MCP-server har <b>{{count}} aktiverede værktøjer</b>, som vil forbruge kontekst i hver chat.<br />Overvej at deaktivere uønskede værktøjer for at spare på konteksten.",
       "startup-command": "Startkommando",
       command: "Instruktion",
       arguments: "Argumenter",
@@ -1334,6 +1357,12 @@ const TRANSLATIONS = {
     branding: {
       title: 'Brandstrategi og "white label"-løsninger',
       description: "Mærk din AnythingLLM-instans med dit eget brand.",
+      tabs: {
+        identity: "Identitet",
+        colors: "Farver",
+        sidebar: "Sidepanel",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1418,6 +1447,36 @@ const TRANSLATIONS = {
         description:
           "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
       },
+      palette: {
+        title: "Farvepalet",
+        description:
+          "Vælg en farvepalet. Den gælder for både lys og mørk tilstand.",
+        enforced:
+          "Din administrator har valgt farvepaletten for denne instans.",
+        "default-badge": "Standard",
+      },
+      "instance-palettes": {
+        title: "Farvepaletter",
+        description:
+          "Klik på en farvepalet for at gøre den standard for alle på denne instans. Tilpassede farvepaletter består af en primærfarve, der farver baggrunden, sidepanelet og indholdet, samt en accentfarve til knapper og links.",
+        new: "Ny farvepalet",
+        edit: "Rediger farvepalet",
+        delete: "Slet farvepaletten",
+        name: "Farvepaletens navn",
+        "name-required": "Giv paletten et navn.",
+        colors: {
+          main: "Hovedfarve",
+          accent: "Accent",
+        },
+        "preview-note":
+          'Ændringer vises i hele appen og gemmes, når du klikker på "Færdig".',
+        done: "Færdig",
+        cancel: "Annullér",
+        enforce: "Gennemtving standardfarvepaletten",
+        "enforce-description":
+          "Alle på denne instans bruger standardfarvepaletten, og de kan ikke ændre den.",
+        "save-failed": "Kunne ikke gemme farvepaletter: {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1427,6 +1486,35 @@ const TRANSLATIONS = {
       uploadDocument: "Upload en fil",
     },
     greeting: "Hvordan kan jeg hjælpe dig i dag?",
+    greetings: {
+      anytime: {
+        working_on: "Hvad arbejder vi på?",
+        on_your_mind: "Hvad tænker du på?",
+        where_to_start: "Hvor skal vi starte?",
+        ready: "Klar, når du er.",
+        think_it_through: "Lad os tænke det igennem.",
+      },
+      morning: {
+        good_morning: "Godmorgen",
+        first_today: "Godmorgen. Hvad står først på programmet i dag?",
+        fresh_start: "En frisk start. Hvor begynder vi?",
+      },
+      afternoon: {
+        good_afternoon: "God eftermiddag",
+        tackling: "God eftermiddag. Hvad tager vi fat på?",
+        next_on_list: "Hvad er det næste på listen?",
+        keep_moving: "Lad os holde tempoet.",
+      },
+      evening: {
+        good_evening: "God aften",
+        finish_strong: "God aften. Lad os slutte stærkt af.",
+      },
+      night: {
+        midnight_oil: "Arbejder du sent?",
+        late_one: "Lang aften? Lad os tænke det igennem.",
+        still_up: "Stadig vågen? Klar, når du er.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Tastaturgenveje",
@@ -1851,7 +1939,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'Hvis <prop>{{property}}</prop> {{comparator}} <val> "_{{value}}_"</val>, så følg ruten til <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Hvis {{quantifier}} fra <cond> er tilfældet, så følg ruten til <route>",
+        "Hvis {{quantifier}} af <cond>{{conditions}}</cond> er opfyldt, så følg ruten til <route>{{route}}</route>",
       "comparator-contains": "indeholder",
       "comparator-matches": "kampe",
       "comparator-between": "mellem",

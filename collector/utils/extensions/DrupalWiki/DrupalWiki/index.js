@@ -64,10 +64,11 @@ class DrupalWiki {
    *
    * @param {number} spaceId
    * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
-   * @returns {Promise<void>}
+   * @returns {Promise<number>} Number of pages stored.
    */
   async loadAndStoreAllPagesForSpace(spaceId, encryptionWorker) {
     const pageIndex = await this.#getPageIndexForSpace(spaceId);
+    let stored = 0;
     for (const pageId of pageIndex) {
       try {
         const page = await this.loadPage(pageId);
@@ -75,6 +76,7 @@ class DrupalWiki {
         // Pages with an empty body will lead to embedding issues / exceptions
         if (page.processedBody.trim() !== "") {
           this.#storePage(page, encryptionWorker);
+          stored++;
           await this.#downloadAndProcessAttachments(page.id);
         } else {
           console.log(`Skipping page (${page.id}) since it has no content`);
@@ -86,6 +88,7 @@ class DrupalWiki {
         console.error(e);
       }
     }
+    return stored;
   }
 
   /**
@@ -315,7 +318,10 @@ class DrupalWiki {
 
         const buffer = await attachmentResponse.arrayBuffer();
         const localFilePath = normalizePath(
-          sanitizeFileName(path.resolve(WATCH_DIRECTORY, fileName))
+          path.resolve(
+            WATCH_DIRECTORY,
+            sanitizeFileName(path.basename(fileName))
+          )
         );
         if (!isWithin(path.resolve(WATCH_DIRECTORY), localFilePath)) {
           console.error(

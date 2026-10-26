@@ -42,6 +42,10 @@ import Catalan from "./ca/common.js";
 import Indonesian from "./id/common.js";
 import Lao from "./lo/common.js";
 import Croatian from "./hr/common.js";
+import Swedish from "./sv/common.js";
+import Hindi from "./hi/common.js";
+import Bulgarian from "./bg/common.js";
+import Hungarian from "./hu/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -128,5 +132,17 @@ export const resources = {
   },
   hr: {
     common: Croatian,
+  },
+  sv: {
+    common: Swedish,
+  },
+  hi: {
+    common: Hindi,
+  },
+  bg: {
+    common: Bulgarian,
+  },
+  hu: {
+    common: Hungarian,
   },
 };

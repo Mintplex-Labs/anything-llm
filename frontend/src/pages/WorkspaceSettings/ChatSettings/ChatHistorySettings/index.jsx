@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
-export default function ChatHistorySettings({ workspace, setHasChanges }) {
+import { SavedIndicator } from "@/components/AutosaveForm";
+export default function ChatHistorySettings({ workspace }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-y-[8px]">
       <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.history.title")}
+          <SavedIndicator name="openAiHistory" />
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.history.desc-start")}
@@ -23,7 +25,6 @@ export default function ChatHistorySettings({ workspace, setHasChanges }) {
         placeholder="20"
         required={true}
         autoComplete="off"
-        onChange={() => setHasChanges(true)}
       />
     </div>
   );

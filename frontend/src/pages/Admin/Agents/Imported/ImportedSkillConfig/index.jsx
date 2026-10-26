@@ -2,8 +2,8 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Gear, Plug } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
-import { sentenceCase } from "text-case";
 import Toggle from "@/components/lib/Toggle";
+import { formatSkillName } from "../formatSkillName";
 
 /**
  * Converts setup_args to inputs for the form builder
@@ -115,7 +115,7 @@ export default function ImportedSkillConfig({
             <div className="flex items-center gap-x-2">
               <Plug size={24} weight="bold" className="text-white" />
               <label htmlFor="name" className="text-white text-md font-bold">
-                {sentenceCase(config.name)}
+                {formatSkillName(config.name)}
               </label>
             </div>
             <div className="flex items-center gap-x-2">

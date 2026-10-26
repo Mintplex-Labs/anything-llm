@@ -146,7 +146,7 @@ function writeToServerDocuments({
     // relative location string that can be passed into the /update-embeddings api
     // that will work since we know the location exists and since we only allow
     // 1-level deep folders this will always work. This still works for integrations like GitHub and YouTube.
-    location: destinationFilePath.split("/").slice(-2).join("/"),
+    location: destinationFilePath.split(/[/\\]/).slice(-2).join("/"),
     isDirectUpload: options.parseOnly || false,
   };
 }
@@ -158,9 +158,9 @@ async function wipeCollectorStorage() {
   const cleanHotDir = new Promise((resolve) => {
     const directory = path.resolve(__dirname, "../../hotdir");
 
-    if (!fs.existsSync(directory)) resolve();
+    if (!fs.existsSync(directory)) return resolve();
     fs.readdir(directory, (err, files) => {
-      if (err) resolve();
+      if (err) return resolve();
 
       for (const file of files) {
         if (file === "__HOTDIR__.md") continue;
@@ -175,7 +175,7 @@ async function wipeCollectorStorage() {
   const cleanTmpDir = new Promise((resolve) => {
     const directory = path.resolve(__dirname, "../../storage/tmp");
     fs.readdir(directory, (err, files) => {
-      if (err) resolve();
+      if (err) return resolve();
 
       for (const file of files) {
         if (file === ".placeholder") continue;

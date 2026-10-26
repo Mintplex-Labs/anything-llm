@@ -82,7 +82,7 @@ export default function RunRow({ run, jobId, onKilled }) {
         <StatusBadge status={run.status} />
       </div>
       <span className="w-[260px] text-sm font-medium text-white light:text-slate-950 truncate">
-        {new Date(run.startedAt).toLocaleString()}
+        {moment(run.startedAt).format("lll")}
       </span>
       <span className="w-[160px] text-sm font-medium text-white light:text-slate-950 truncate">
         {formatRunDuration(run)}

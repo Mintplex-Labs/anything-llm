@@ -55,6 +55,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nama Ruang Kerja",
     selection: "Pemilihan Model",
     saving: "Menyimpan...",
+    saved: "Tersimpan",
     save: "Simpan perubahan",
     previous: "Halaman Sebelumnya",
     next: "Halaman Berikutnya",
@@ -69,6 +70,7 @@ const TRANSLATIONS = {
       "Nama pengguna harus 2-64 karakter, dimulai dengan huruf kecil, dan hanya boleh berisi huruf kecil, angka, garis bawah, tanda hubung, dan titik.",
     loading: "Memuat...",
     refresh: "Segarkan",
+    noResults: "Tidak ditemukan hasil",
   },
   home: {
     welcome: "Selamat Datang",
@@ -147,6 +149,35 @@ const TRANSLATIONS = {
       createAgent: "Buat Agen",
       editWorkspace: "Edit Ruang Kerja",
       uploadDocument: "Unggah Dokumen",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Apa yang sedang kita kerjakan?",
+        on_your_mind: "Apa yang sedang Anda pikirkan?",
+        where_to_start: "Kita mulai dari mana?",
+        ready: "Siap kapan pun Anda siap.",
+        think_it_through: "Mari kita pikirkan baik-baik.",
+      },
+      morning: {
+        good_morning: "Selamat pagi",
+        first_today: "Selamat pagi. Apa yang pertama hari ini?",
+        fresh_start: "Awal yang baru. Kita mulai dari mana?",
+      },
+      afternoon: {
+        good_afternoon: "Selamat siang",
+        tackling: "Selamat siang. Apa yang akan kita kerjakan?",
+        next_on_list: "Apa berikutnya di daftar?",
+        keep_moving: "Ayo terus melaju.",
+      },
+      evening: {
+        good_evening: "Selamat malam",
+        finish_strong: "Selamat malam. Mari kita tuntaskan dengan baik.",
+      },
+      night: {
+        midnight_oil: "Lembur sampai larut?",
+        late_one: "Malam yang panjang? Mari kita pikirkan baik-baik.",
+        still_up: "Masih terjaga? Siap kapan pun Anda siap.",
+      },
     },
   },
   "new-workspace": {
@@ -255,7 +286,25 @@ const TRANSLATIONS = {
       title: "Temperature LLM",
       "desc-end":
         "Semakin tinggi angkanya, semakin kreatif. Untuk beberapa model, ini dapat menyebabkan respons yang tidak koheren jika diatur terlalu tinggi.",
+      placeholder: "Default penyedia",
     },
+    reasoning_effort: {
+      title: "Upaya Penalaran",
+      default: "Default penyedia",
+      cannot_disable: "Model ini tidak dapat menonaktifkan penalaran.",
+      levels: {
+        off: "Mati",
+        on: "Nyala",
+        minimal: "Minimal",
+        low: "Rendah",
+        medium: "Sedang",
+        high: "Tinggi",
+        xhigh: "Sangat tinggi",
+        max: "Maksimal",
+      },
+    },
+    token_limit_reached:
+      "Respons telah mencapai batas token keluaran maksimum. Tingkatkan batas token keluaran maksimum untuk model agar dapat menghasilkan respons yang lebih panjang.",
   },
   "vector-workspace": {
     identifier: "Pengenal basis data vektor",
@@ -723,8 +772,11 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Secara bawaan, keterampilan ini diaktifkan, tetapi Anda dapat menonaktifkannya jika tidak ingin tersedia untuk agen.",
+      generateImage: {
+        title: "Menghasilkan gambar",
+        description:
+          "Izinkan agen untuk menghasilkan gambar dari percakapan, atau mengedit gambar yang terlampir dalam percakapan, menggunakan penyedia pembuatan gambar yang telah Anda konfigurasi.",
+      },
     },
     mcp: {
       title: "Server MCP",
@@ -799,6 +851,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "White-label instance AnythingLLM Anda dengan branding kustom.",
+      tabs: {
+        identity: "Identitas",
+        colors: "Warna",
+        sidebar: "Bilah sisi",
+        browser: "Peramban web",
+      },
     },
     chat: {
       title: "Obrolan",
@@ -881,6 +939,36 @@ const TRANSLATIONS = {
         title: "Nonaktifkan Pengguliran Otomatis",
         description:
           "Matikan fungsi otomatis untuk menggulir ke bagian bawah jendela obrolan saat pesan baru diterima.",
+      },
+      palette: {
+        title: "Palet warna",
+        description:
+          "Pilih palet warna. Ini berlaku untuk mode terang maupun gelap.",
+        enforced:
+          "Administrator Anda telah menetapkan palet warna untuk instance ini.",
+        "default-badge": "Bawaan",
+      },
+      "instance-palettes": {
+        title: "Palet warna",
+        description:
+          "Klik palet untuk membuatnya menjadi default bagi semua pengguna pada instance ini. Palet khusus terdiri dari warna utama, yang digunakan untuk mewarnai latar belakang, sidebar, dan konten, serta warna aksen untuk tombol dan tautan.",
+        new: "Palet baru",
+        edit: "Edit palet",
+        delete: "Hapus palet",
+        name: "Nama palet",
+        "name-required": "Berikan nama untuk palet tersebut.",
+        colors: {
+          main: "Warna utama",
+          accent: "Aksen",
+        },
+        "preview-note":
+          'Perubahan ditampilkan di seluruh aplikasi dan disimpan saat Anda mengklik "Selesai".',
+        done: "Selesai",
+        cancel: "Batalkan",
+        enforce: "Terapkan palet warna standar",
+        "enforce-description":
+          "Semua orang dalam instance ini menggunakan palet standar dan tidak dapat mengubahnya.",
+        "save-failed": "Gagal menyimpan palet warna: {{error}}",
       },
     },
   },

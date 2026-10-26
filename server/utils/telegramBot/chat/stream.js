@@ -275,9 +275,7 @@ async function generateResponse({
   let metrics = {};
 
   if (LLMConnector.streamingEnabled() === true) {
-    const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const stream = await LLMConnector.streamGetChatCompletion(messages);
 
     const { responseHandler, flushEdit } = createStreamHandler({
       ctx,
@@ -293,7 +291,6 @@ async function generateResponse({
   } else {
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
-        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: null,
       });
     completeText = textResponse;

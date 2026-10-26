@@ -2,16 +2,21 @@ const { ModelRouterService } = require("../../router");
 const { getLLMProvider } = require("../../helpers");
 
 class AnythingLLMModelRouter {
-  constructor(workspace, embedder = null) {
+  /**
+   * @param {Object} workspace
+   * @param {Object|null} embedder
+   * @param {number|string|null} temperature - Per-request temperature override (defaults to the workspace setting)
+   */
+  constructor(workspace, embedder = null, temperature = null) {
     this.className = "AnythingLLMModelRouter";
     this.workspace = workspace;
     this.embedder = embedder;
+    this.temperature = temperature ?? workspace?.openAiTemp;
     this.routerService = ModelRouterService.getInstance();
     this.router = null;
     this.resolvedRoute = null;
     this._routeKey = null;
     this.delegateProvider = null;
-    this.defaultTemp = 0.7;
     this.routerService.log(
       `Initialized for workspace "${workspace?.name || workspace?.slug}"`
     );
@@ -104,6 +109,7 @@ class AnythingLLMModelRouter {
       getLLMProvider({
         provider: this.resolvedRoute.provider,
         model: this.resolvedRoute.model,
+        temperature: this.temperature,
       })
     );
   }

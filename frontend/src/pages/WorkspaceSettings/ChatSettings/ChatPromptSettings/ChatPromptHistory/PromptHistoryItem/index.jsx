@@ -9,6 +9,7 @@ const MAX_PROMPT_LENGTH = 200; // chars
 
 export default function PromptHistoryItem({
   id,
+  workspaceSlug,
   prompt,
   modifiedAt,
   user,
@@ -24,7 +25,7 @@ export default function PromptHistoryItem({
 
   const deleteHistory = async (id) => {
     if (window.confirm(t("chat.prompt.history.deleteConfirm"))) {
-      const { success } = await PromptHistory.delete(id);
+      const { success } = await PromptHistory.delete(workspaceSlug, id);
       if (success) {
         setHistory((prevHistory) =>
           prevHistory.filter((item) => item.id !== id)

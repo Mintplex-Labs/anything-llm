@@ -305,3 +305,73 @@ describe("Workspace.validateFields", () => {
     expect(validated.openAiHistory).toBe(20);
   });
 });
+
+describe("Workspace.update", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Workspace, "_update")
+      .mockResolvedValue({ workspace: null, message: null });
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  it("clears router_id when switching back to the system default", async () => {
+    await Workspace.update(1, { chatProvider: "default" });
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      chatProvider: null,
+      chatModel: null,
+      router_id: null,
+    });
+  });
+
+  it("clears router_id even when one is sent alongside the system default", async () => {
+    await Workspace.update(1, { chatProvider: "default", router_id: 7 });
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      chatProvider: null,
+      chatModel: null,
+      router_id: null,
+    });
+  });
+
+  it.each(["none", "", null])(
+    "clears router_id when chatProvider is unset with %p",
+    async (chatProvider) => {
+      await Workspace.update(1, { chatProvider });
+      expect(Workspace._update).toHaveBeenCalledWith(1, {
+        chatProvider: null,
+        router_id: null,
+      });
+    }
+  );
+
+  it("clears router_id when switching to a concrete provider", async () => {
+    await Workspace.update(1, { chatProvider: "openai", chatModel: "gpt-4o" });
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      chatProvider: "openai",
+      chatModel: "gpt-4o",
+      router_id: null,
+    });
+  });
+
+  it("keeps router_id and clears chatModel when switching to the router", async () => {
+    await Workspace.update(1, {
+      chatProvider: "anythingllm-router",
+      chatModel: "gpt-4o",
+      router_id: 7,
+    });
+    expect(Workspace._update).toHaveBeenCalledWith(1, {
+      chatProvider: "anythingllm-router",
+      chatModel: null,
+      router_id: 7,
+    });
+  });
+
+  it("passes a router_id-only update through untouched", async () => {
+    await Workspace.update(1, { router_id: 8 });
+    expect(Workspace._update).toHaveBeenCalledWith(1, { router_id: 8 });
+  });
+
+  it("keeps router_id when the update does not change the provider", async () => {
+    await Workspace.update(1, { name: "Renamed" });
+    expect(Workspace._update).toHaveBeenCalledWith(1, { name: "Renamed" });
+  });
+});

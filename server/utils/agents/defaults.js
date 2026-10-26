@@ -11,6 +11,7 @@ const DEFAULT_SKILLS = [
   AgentPlugins.memory.name,
   AgentPlugins.docSummarizer.name,
   AgentPlugins.webScraping.name,
+  AgentPlugins.webBrowsing.name,
 ];
 
 // Skills that must never be injected when the instance is running in multi-user mode.
@@ -40,6 +41,11 @@ const SKILL_FILTER_CONFIG = {
     getAvailability: async () =>
       require("./aibitat/plugins/outlook/lib").OutlookBridge.isToolAvailable(),
     disabledSettingKey: "disabled_outlook_skills",
+  },
+  "google-calendar-agent": {
+    getAvailability: async () =>
+      require("./aibitat/plugins/google-calendar/lib").GoogleCalendarBridge.isToolAvailable(),
+    disabledSettingKey: "disabled_google_calendar_skills",
   },
 };
 

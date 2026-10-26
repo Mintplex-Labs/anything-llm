@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { KOBOLDCPP_COMMON_URLS } from "@/utils/constants";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Info } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { Tooltip } from "react-tooltip";
 
 export default function KoboldCPPOptions({ settings }) {
   const {
@@ -20,18 +21,18 @@ export default function KoboldCPPOptions({ settings }) {
   });
 
   const [tokenLimit, setTokenLimit] = useState(
-    settings?.KoboldCPPTokenLimit || 4096
+    settings?.KoboldCPPTokenLimit || ""
   );
   const [maxTokens, setMaxTokens] = useState(
-    settings?.KoboldCPPMaxTokens || 2048
+    settings?.KoboldCPPMaxTokens || ""
   );
 
   const handleTokenLimitChange = (e) => {
-    setTokenLimit(Number(e.target.value));
+    setTokenLimit(e.target.value ? Number(e.target.value) : "");
   };
 
   const handleMaxTokensChange = (e) => {
-    setMaxTokens(Number(e.target.value));
+    setMaxTokens(e.target.value ? Number(e.target.value) : "");
   };
 
   return (
@@ -42,29 +43,60 @@ export default function KoboldCPPOptions({ settings }) {
           basePath={basePath.value}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
-            Model context window
-          </label>
+          <div className="flex items-center gap-x-1 mb-2">
+            <label className="text-white text-sm font-semibold">
+              Model context window
+            </label>
+            <Info
+              size={18}
+              className="text-theme-text-secondary cursor-pointer"
+              data-tooltip-id="koboldcpp-context-window"
+              data-tooltip-content="Override the context window limit. Leave empty to auto-detect from the server (defaults to 16384 if detection fails)."
+            />
+            <Tooltip
+              id="koboldcpp-context-window"
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            />
+          </div>
           <input
             type="number"
             name="KoboldCPPTokenLimit"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="4096"
+            placeholder="Automatically managed"
             min={1}
             value={tokenLimit}
             onChange={handleTokenLimitChange}
             onScroll={(e) => e.target.blur()}
-            required={true}
+            required={false}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum number of tokens for context and response.
-          </p>
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-2">
-            Max response tokens
-          </label>
+          <div className="flex items-center gap-x-1 mb-2">
+            <label className="text-white text-sm font-semibold">
+              Max response tokens
+            </label>
+            <Info
+              size={18}
+              className="text-theme-text-secondary cursor-pointer"
+              data-tooltip-id="koboldcpp-max-tokens"
+              data-tooltip-content="Maximum number of tokens the model can generate in a single response. Leave empty to let the model use the full remaining context."
+            />
+            <Tooltip
+              id="koboldcpp-max-tokens"
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            />
+          </div>
           <input
             type="number"
             name="KoboldCPPMaxTokens"
@@ -74,12 +106,9 @@ export default function KoboldCPPOptions({ settings }) {
             value={maxTokens}
             onChange={handleMaxTokensChange}
             onScroll={(e) => e.target.blur()}
-            required={true}
+            required={false}
             autoComplete="off"
           />
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum number of tokens for the response.
-          </p>
         </div>
       </div>
       <div className="flex justify-start mt-4">
@@ -103,9 +132,28 @@ export default function KoboldCPPOptions({ settings }) {
         <div className="w-full flex items-start gap-4">
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
-              <label className="text-white text-sm font-semibold">
-                KoboldCPP Base URL
-              </label>
+              <div className="flex items-center gap-x-1">
+                <label className="text-white text-sm font-semibold">
+                  KoboldCPP Base URL
+                </label>
+                <Info
+                  size={18}
+                  className="text-theme-text-secondary cursor-pointer"
+                  data-tooltip-id="koboldcpp-base-url"
+                  data-tooltip-content="Enter the URL where KoboldCPP is running."
+                />
+                <Tooltip
+                  id="koboldcpp-base-url"
+                  place="top"
+                  delayShow={300}
+                  className="tooltip !text-xs !opacity-100"
+                  style={{
+                    maxWidth: "250px",
+                    whiteSpace: "normal",
+                    wordWrap: "break-word",
+                  }}
+                />
+              </div>
               {loading ? (
                 <PreLoader size="6" />
               ) : (
@@ -125,7 +173,7 @@ export default function KoboldCPPOptions({ settings }) {
               type="url"
               name="KoboldCPPBasePath"
               className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              placeholder="http://127.0.0.1:5000/v1"
+              placeholder="http://127.0.0.1:5001/v1"
               value={basePathValue.value}
               required={true}
               autoComplete="off"
@@ -133,9 +181,6 @@ export default function KoboldCPPOptions({ settings }) {
               onChange={basePath.onChange}
               onBlur={basePath.onBlur}
             />
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-              Enter the URL where KoboldCPP is running.
-            </p>
           </div>
         </div>
       </div>
@@ -174,9 +219,11 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
   if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-2">
-          KoboldCPP Model
-        </label>
+        <div className="flex items-center gap-x-1 mb-2">
+          <label className="text-white text-sm font-semibold">
+            KoboldCPP Model
+          </label>
+        </div>
         <select
           name="KoboldCPPModelPref"
           disabled={true}
@@ -188,19 +235,17 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
               : "Enter KoboldCPP URL first"}
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Select the KoboldCPP model you want to use. Models will load after
-          entering a valid KoboldCPP URL.
-        </p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-2">
-        KoboldCPP Model
-      </label>
+      <div className="flex items-center gap-x-1 mb-2">
+        <label className="text-white text-sm font-semibold">
+          KoboldCPP Model
+        </label>
+      </div>
       <select
         name="KoboldCPPModelPref"
         required={true}
@@ -216,9 +261,6 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
           </option>
         ))}
       </select>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-        Choose the KoboldCPP model you want to use for your conversations.
-      </p>
     </div>
   );
 }

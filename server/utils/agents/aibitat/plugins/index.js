@@ -5,6 +5,7 @@ const { docSummarizer } = require("./summarize.js");
 const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
 const { rechart } = require("./rechart.js");
+const { generateImage } = require("./generate-image.js");
 const { sqlAgent } = require("./sql-agent/index.js");
 const { filesystemAgent } = require("./filesystem/index.js");
 const { createFilesAgent } = require("./create-files/index.js");
@@ -23,6 +24,7 @@ module.exports = {
   chatHistory,
   memory,
   rechart,
+  generateImage,
   sqlAgent,
   filesystemAgent,
   createFilesAgent,
@@ -41,6 +43,7 @@ module.exports = {
   [chatHistory.name]: chatHistory,
   [memory.name]: memory,
   [rechart.name]: rechart,
+  [generateImage.name]: generateImage,
   [sqlAgent.name]: sqlAgent,
   [filesystemAgent.name]: filesystemAgent,
   [createFilesAgent.name]: createFilesAgent,

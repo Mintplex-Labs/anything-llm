@@ -92,7 +92,7 @@ class TokenManager {
     if (Array.isArray(input)) {
       const perMessageFactorTokens = input.length * 3;
       const tokensFromContent = input.reduce(
-        (a, b) => a + this.countFromString(b.content),
+        (a, b) => a + this.countFromContent(b.content),
         0
       );
       const diffCoefficient = 5;
@@ -100,6 +100,17 @@ class TokenManager {
     }
 
     throw new Error("Not a supported tokenized format.");
+  }
+
+  /**
+   * Messages with attachments carry an array of content parts. Only the text
+   * parts are counted, because the token cost of an image depends on the provider.
+   * @param {string | object[]} content
+   * @returns {number}
+   */
+  countFromContent(content) {
+    if (!Array.isArray(content)) return this.countFromString(content);
+    return content.reduce((a, part) => a + this.countFromString(part?.text), 0);
   }
 }
 

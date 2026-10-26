@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 
 /**
@@ -22,7 +26,9 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
-    this.maxTokens = Number(process.env.KOBOLD_CPP_MAX_TOKENS) || 2048;
+    this.maxTokens = process.env.KOBOLD_CPP_MAX_TOKENS
+      ? Number(process.env.KOBOLD_CPP_MAX_TOKENS)
+      : null;
     this.verbose = true;
   }
 
@@ -38,8 +44,9 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
-        messages,
-        max_tokens: this.maxTokens,
+        ...temperatureParam(this.temperature),
+        messages: this.formatMessagesWithAttachments(messages),
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -56,9 +63,10 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
-      messages,
-      max_tokens: this.maxTokens,
+      messages: this.formatMessagesWithAttachments(messages),
+      ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
     });
   }
 

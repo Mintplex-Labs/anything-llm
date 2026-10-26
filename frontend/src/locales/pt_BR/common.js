@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nome do Workspace",
     selection: "Seleção de Modelo",
     saving: "Salvando...",
+    saved: "Salvo",
     save: "Salvar alterações",
     previous: "Página Anterior",
     next: "Próxima Página",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Parado",
     loading: "Carregando",
     refresh: "Atualizar",
+    noResults: "Nenhum resultado encontrado",
   },
   settings: {
     title: "Configurações da Instância",
@@ -138,6 +140,35 @@ const TRANSLATIONS = {
       uploadDocument: "Enviar um documento",
     },
     greeting: "Como posso ajudá-lo hoje?",
+    greetings: {
+      anytime: {
+        working_on: "No que estamos trabalhando?",
+        on_your_mind: "O que você tem em mente?",
+        where_to_start: "Por onde começamos?",
+        ready: "Pronto quando você estiver.",
+        think_it_through: "Vamos pensar nisso com calma.",
+      },
+      morning: {
+        good_morning: "Bom dia",
+        first_today: "Bom dia. O que vem primeiro hoje?",
+        fresh_start: "Um novo começo. Por onde começamos?",
+      },
+      afternoon: {
+        good_afternoon: "Boa tarde",
+        tackling: "Boa tarde. Vamos encarar o quê?",
+        next_on_list: "Qual é o próximo da lista?",
+        keep_moving: "Vamos manter o ritmo.",
+      },
+      evening: {
+        good_evening: "Boa noite",
+        finish_strong: "Boa noite. Vamos fechar o dia com chave de ouro.",
+      },
+      night: {
+        midnight_oil: "Trabalhando até tarde?",
+        late_one: "Noite longa? Vamos pensar nisso com calma.",
+        still_up: "Ainda por aqui? Pronto quando você estiver.",
+      },
+    },
   },
   "new-workspace": {
     title: "Novo Workspace",
@@ -245,7 +276,25 @@ const TRANSLATIONS = {
       title: "Temperatura do LLM",
       "desc-end":
         "Valores mais altos geram respostas mais criativas, mas para alguns modelos podem se tornar incoerentes.",
+      placeholder: "Padrão do provedor",
     },
+    reasoning_effort: {
+      title: "Esforço de raciocínio",
+      default: "Padrão do provedor",
+      cannot_disable: "Este modelo não pode desativar o raciocínio.",
+      levels: {
+        off: "Desativado",
+        on: "Ativado",
+        minimal: "Mínimo",
+        low: "Baixo",
+        medium: "Médio",
+        high: "Alto",
+        xhigh: "Muito alto",
+        max: "Máximo",
+      },
+    },
+    token_limit_reached:
+      "A resposta atingiu o limite máximo de tokens de saída. Aumente o limite máximo de tokens de saída do modelo para permitir respostas mais longas.",
   },
   "vector-workspace": {
     identifier: "Identificador do banco de dados",
@@ -323,8 +372,6 @@ const TRANSLATIONS = {
         description:
           "Permita que seu agente utilize o SQL para responder às suas perguntas, conectando-se a diversos provedores de bancos de dados SQL.",
       },
-      default_skill:
-        "Por padrão, essa habilidade está ativada, mas você pode desativá-la se não quiser que ela esteja disponível para o agente.",
       filesystem: {
         title: "Acesso ao Sistema de Arquivos",
         description:
@@ -734,6 +781,11 @@ const TRANSLATIONS = {
         description:
           'Permita que o agente crie tarefas recorrentes agendadas a partir do chat (por exemplo, "todos os dias úteis às 9h, resuma minha caixa de entrada e envie um e-mail"). Disponível apenas no modo para um único usuário.',
       },
+      generateImage: {
+        title: "Gerar imagens",
+        description:
+          "Permita que o agente gere imagens a partir do chat, ou edite as imagens anexadas à conversa, utilizando o provedor de geração de imagens configurado.",
+      },
     },
     mcp: {
       title: "Servidores MCP",
@@ -808,6 +860,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Marca & Etiqueta Branca",
       description: "Personalize sua instância do AnythingLLM com sua marca.",
+      tabs: {
+        identity: "Identidade",
+        colors: "Cores",
+        sidebar: "Barra lateral",
+        browser: "Navegador",
+      },
     },
     chat: {
       title: "Chat",
@@ -884,6 +942,36 @@ const TRANSLATIONS = {
         title: "Desativar a rolagem automática",
         description:
           "Desative a rolagem automática até o final da conversa quando novas mensagens forem recebidas.",
+      },
+      palette: {
+        title: "Paleta de cores",
+        description:
+          "Escolha uma paleta de cores. Isso se aplica tanto ao modo claro quanto ao modo escuro.",
+        enforced:
+          "O administrador definiu a paleta de cores para esta instância.",
+        "default-badge": "Padrão",
+      },
+      "instance-palettes": {
+        title: "Paletas de cores",
+        description:
+          "Clique em uma paleta para torná-la padrão para todos nesta instância. Paletas personalizadas são compostas por uma cor principal, que tinge o fundo, a barra lateral e o conteúdo, e uma cor de destaque para botões e links.",
+        new: "Nova paleta",
+        edit: "Editar paleta",
+        delete: "Excluir paleta",
+        name: "Nome da paleta",
+        "name-required": "Dê um nome para a paleta.",
+        colors: {
+          main: "Cor principal",
+          accent: "Cor de destaque",
+        },
+        "preview-note":
+          'As alterações são exibidas em todo o aplicativo e salvas quando você clica em "Concluído".',
+        done: "Concluído",
+        cancel: "Cancelar",
+        enforce: "Aplicar a paleta padrão",
+        "enforce-description":
+          "Todos nesta instância usam a paleta padrão e não podem alterá-la.",
+        "save-failed": "Falha ao salvar as paletas de cores: {{error}}",
       },
     },
   },
@@ -1282,7 +1370,7 @@ const TRANSLATIONS = {
     workspace_llm_manager: {
       search: "Buscar provedores de LLM",
       loading_workspace_settings: "Carregando configurações do workspace...",
-      available_models: "Modelos Disponíveis",
+      available_models: "Modelos Disponíveis para {{provider}}",
       available_models_description: "Selecione um modelo para este workspace",
       save: "Salvar modelo do workspace",
       saving: "Salvando...",
@@ -1416,11 +1504,11 @@ const TRANSLATIONS = {
     update_account: "Atualizar conta",
     theme: "Preferência de tema",
     language: "Idioma preferido",
-    failed_upload: "Falha no upload da foto de perfil",
+    failed_upload: "Falha no upload da foto de perfil: {{error}}",
     upload_success: "Foto de perfil atualizada com sucesso",
-    failed_remove: "Falha ao remover foto de perfil",
+    failed_remove: "Falha ao remover foto de perfil: {{error}}",
     profile_updated: "Perfil atualizado com sucesso",
-    failed_update_user: "Falha ao atualizar perfil do usuário",
+    failed_update_user: "Falha ao atualizar perfil do usuário: {{error}}",
     account: "Conta",
     support: "Suporte",
     signout: "Sair",

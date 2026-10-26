@@ -12,7 +12,6 @@ const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 const { fetchCometApiModels } = require("../AiProviders/cometapi");
-const { getDockerModels } = require("../AiProviders/dockerModelRunner");
 const { getAllLemonadeModels } = require("../AiProviders/lemonade");
 
 const SUPPORT_CUSTOM_MODELS = [
@@ -43,10 +42,12 @@ const SUPPORT_CUSTOM_MODELS = [
   "cohere",
   "zai",
   "giteeai",
-  "docker-model-runner",
+  "llmman",
   "privatemode",
   "sambanova",
   "lemonade",
+  "embedded_lemonade",
+  "embedded_lemonade-all",
   "minimax",
   "cerebras",
   "omlx",
@@ -62,6 +63,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama-imggen",
   "lemonade-imggen",
   "localai-imggen",
+  "llmman-imggen",
+  "gemini-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -154,6 +157,10 @@ async function getCustomModels(
       );
     case "localai-imggen":
       return await getLocalAiImageModels(basePath, apiKey);
+    case "llmman-imggen":
+      return await getLlmmanImageModels(basePath, apiKey);
+    case "gemini-imggen":
+      return await getGeminiImageModels(apiKey);
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":
@@ -162,14 +169,19 @@ async function getCustomModels(
       return await getOpenRouterEmbeddingModels();
     case "giteeai":
       return await getGiteeAIModels(apiKey);
-    case "docker-model-runner":
-      return await getDockerModelRunnerModels(basePath);
+    case "llmman":
+      return await llmmanModels(basePath, apiKey);
     case "privatemode":
       return await getPrivatemodeModels(basePath, "generate");
     case "sambanova":
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "embedded_lemonade":
+    case "embedded_lemonade-all":
+      return await require("../AiProviders/embeddedLemonade").getEmbeddedLemonadeModels(
+        provider === "embedded_lemonade-all"
+      );
     case "lemonade-stt":
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
@@ -573,7 +585,9 @@ async function getTogetherAiModels(apiKey = null) {
 }
 
 async function getFireworksAiModels(apiKey = null) {
-  const knownModels = await fireworksAiModels(apiKey);
+  const knownModels = await fireworksAiModels(
+    apiKey === true ? process.env.FIREWORKS_AI_LLM_API_KEY : apiKey
+  );
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
@@ -675,9 +689,18 @@ async function getMistralModels(apiKey = null) {
   });
   const models = await openai.models
     .list()
-    .then((results) =>
-      results.data.filter((model) => !model.id.includes("embed"))
-    )
+    .then((results) => {
+      // Every alias of a model is listed as its own entry sharing the model's
+      // `name`, so only one entry per name is kept - the canonical id when listed.
+      const chatModels = new Map();
+      for (const model of results.data) {
+        if (!model.capabilities?.completion_chat) continue;
+        const name = model.name || model.id;
+        if (chatModels.has(name) && model.id !== name) continue;
+        chatModels.set(name, { id: model.id, name: model.id });
+      }
+      return Array.from(chatModels.values());
+    })
     .catch((e) => {
       console.error(`Mistral:listModels`, e.message);
       return [];
@@ -1039,17 +1062,38 @@ async function getOpenRouterEmbeddingModels() {
   return { models, error: null };
 }
 
-async function getDockerModelRunnerModels(basePath = null) {
+/**
+ * Lists the models llmman is serving, via the Ollama API's /api/tags.
+ */
+async function llmmanModels(basePath = null, _authToken = null) {
+  let url;
   try {
-    const models = await getDockerModels(basePath);
-    return { models, error: null };
-  } catch (e) {
-    console.error(`DockerModelRunner:getDockerModelRunnerModels`, e.message);
-    return {
-      models: [],
-      error: "Could not fetch Docker Model Runner Models",
-    };
+    let urlPath = basePath ?? process.env.LLMMAN_BASE_PATH;
+    new URL(urlPath);
+    if (urlPath.split("").slice(-1)?.[0] === "/")
+      throw new Error("BasePath Cannot end in /!");
+    url = urlPath;
+  } catch {
+    return { models: [], error: "Not a valid URL." };
   }
+
+  const authToken = _authToken || process.env.LLMMAN_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not reach llmman! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.models || [])
+    .then((models) => models.map((model) => ({ id: model.name })))
+    .catch((e) => {
+      console.error(e);
+      return [];
+    });
+
+  if (models.length > 0 && !!authToken)
+    process.env.LLMMAN_AUTH_TOKEN = authToken;
+  return { models, error: null };
 }
 
 async function getLemonadeModels(
@@ -1316,9 +1360,10 @@ async function kokoroTtsVoices(basePath = null, apiKey = null) {
     return { models: [], error: "No Kokoro endpoint was provided." };
 
   endpoint = new URL(endpoint);
-  endpoint.pathname = "/v1/audio/voices";
+  if (!endpoint.pathname.endsWith("/v1")) endpoint.pathname = "/v1";
+  endpoint.pathname += "/audio/voices";
   const headers = { "Content-Type": "application/json" };
-  const key = typeof apiKey === "boolean" ? null : apiKey;
+  const key = apiKey === true ? process.env.TTS_KOKORO_KEY : apiKey || null;
   if (key) headers.Authorization = `Bearer ${key}`;
 
   const voices = await fetch(endpoint.toString(), { method: "GET", headers })
@@ -1553,6 +1598,59 @@ async function getOllamaImageModels(basePath = null, authToken = null) {
 }
 
 /**
+ * Lists the image-capable models installed on a llmman server.
+ * @param {string|null} basePath - llmman base path; defaults to IMAGE_GEN_LLMMAN_BASE_PATH when null
+ * @param {string|boolean|null} authToken - llmman bearer token; defaults to IMAGE_GEN_LLMMAN_AUTH_TOKEN when null
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getLlmmanImageModels(basePath = null, authToken = null) {
+  let url;
+  try {
+    const urlPath = basePath ?? process.env.IMAGE_GEN_LLMMAN_BASE_PATH;
+    new URL(urlPath);
+    url = urlPath.replace(/\/+$/, "");
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+
+  const _authToken =
+    unmaskedSecret(authToken) ||
+    process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN ||
+    null;
+  const headers = _authToken ? { Authorization: `Bearer ${_authToken}` } : {};
+  // llmman only reports model capabilities on /api/show, not /api/tags.
+  const models = await fetch(`${url}/api/tags`, { headers })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not reach llmman! ${res.status}`);
+      return res.json();
+    })
+    .then((data) =>
+      Promise.all(
+        (data?.models || []).map((model) =>
+          fetch(`${url}/api/show`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ model: model.name }),
+          })
+            .then((res) => res.json())
+            .then((info) =>
+              info?.capabilities?.includes("image")
+                ? { id: model.name, name: model.name }
+                : null
+            )
+            .catch(() => null)
+        )
+      )
+    )
+    .then((models) => models.filter(Boolean))
+    .catch((e) => {
+      console.error(`llmman:listImageModels`, e.message);
+      return [];
+    });
+  return { models, error: null };
+}
+
+/**
  * Lists the image-capable models installed on a LocalAI server. LocalAI reports
  * per-model capabilities on `/v1/models/capabilities`, so we filter on the
  * `image` capability - chat and vision models cannot be used for image
@@ -1592,6 +1690,51 @@ async function getLocalAiImageModels(basePath = null, apiKey = null) {
       return [];
     });
   return { models, error: null };
+}
+
+/**
+ * Lists Gemini image models from the v1 models API - the same API version the
+ * image generator calls, so every listed model can be used for generation.
+ * The API exposes no output modality, so image models are matched by id.
+ * @param {string|boolean|null} apiKey
+ * @returns {Promise<{models: {id: string, name: string}[], error: string|null}>}
+ */
+async function getGeminiImageModels(apiKey = null) {
+  const _apiKey =
+    unmaskedSecret(apiKey) || process.env.IMAGE_GEN_GEMINI_API_KEY || null;
+  if (!_apiKey) return { models: [], error: "No Gemini API key was set." };
+
+  const url = new URL("https://generativelanguage.googleapis.com/v1/models");
+  url.searchParams.set("pageSize", 1000);
+  return await fetch(url.toString(), {
+    headers: { "x-goog-api-key": _apiKey },
+  })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok)
+        throw new Error(data?.error?.message || `Gemini API ${res.status}`);
+      return data?.models || [];
+    })
+    .then((models) => ({
+      models: models
+        .filter(
+          (model) =>
+            /image/i.test(model.name) &&
+            model.supportedGenerationMethods?.includes("generateContent")
+        )
+        .map((model) => {
+          const id = model.name.split("/").pop();
+          return {
+            id,
+            name: model.displayName ? `${model.displayName} (${id})` : id,
+          };
+        }),
+      error: null,
+    }))
+    .catch((e) => {
+      console.error(`Gemini:listImageModels`, e.message);
+      return { models: [], error: e.message };
+    });
 }
 
 /**

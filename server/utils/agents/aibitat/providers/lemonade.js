@@ -1,8 +1,13 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const {
   LemonadeLLM,
@@ -17,7 +22,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    *
-   * @param {{model?: string}} config
+   * @param {{model?: string, reasoningEffort?: string|null}} config
    */
   constructor(config = {}) {
     super();
@@ -33,6 +38,7 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = config?.reasoningEffort ?? null;
     this.verbose = true;
     this.preloaded = false;
     this._supportsToolCalling = null;
@@ -42,8 +48,27 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
     return this._client;
   }
 
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("lemonade", this.reasoningEffort, this.model);
+  }
+
   get supportsAgentStreaming() {
     return true;
+  }
+
+  /**
+   * Checks Lemonade's loaded-model list (/health) for this model.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return await LemonadeLLM.getCurrentlyLoadedModels()
+      .then((models) => models.some((m) => m.model_name === this.model))
+      .catch(() => true);
   }
 
   async preloadModel() {
@@ -56,7 +81,9 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
+        ...this.reasoningConfig,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -73,8 +100,10 @@ class LemonadeProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
+      ...this.reasoningConfig,
     });
   }
 

@@ -6,6 +6,7 @@ const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
+const { sanitizeThemePalettes } = require("../utils/themePalettes");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
@@ -99,6 +100,7 @@ const SystemSettings = {
     // Meta page customization
     "meta_page_title",
     "meta_page_favicon",
+    "theme_palettes",
 
     // beta feature flags
     "experimental_live_file_sync",
@@ -115,6 +117,7 @@ const SystemSettings = {
     "memory_auto_extraction",
   ],
   validations: {
+    theme_palettes: (update) => JSON.stringify(sanitizeThemePalettes(update)),
     footer_data: (updates) => {
       try {
         const array = JSON.parse(updates)
@@ -176,6 +179,9 @@ const SystemSettings = {
             "brave-search",
             "crw-search",
             "you-search",
+            "keenable-search",
+            "anysearch-search",
+            "firecrawl-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -376,6 +382,9 @@ const SystemSettings = {
           "clientSecret",
           (v) => !v.match(/^\*+$/)
         );
+        mergeStringField(mergedConfig, newConfig, "authType", (v) =>
+          Object.values(OutlookBridge.AUTH_TYPES).includes(v)
+        );
 
         if (newConfig.accessToken !== undefined) {
           mergedConfig.accessToken = newConfig.accessToken;
@@ -540,6 +549,9 @@ const SystemSettings = {
       ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
       ImageGenerationLocalAiBasePath: process.env.IMAGE_GEN_LOCALAI_BASE_PATH,
       ImageGenerationLocalAiApiKey: !!process.env.IMAGE_GEN_LOCALAI_API_KEY,
+      ImageGenerationLlmmanBasePath: process.env.IMAGE_GEN_LLMMAN_BASE_PATH,
+      ImageGenerationLlmmanAuthToken: !!process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN,
+      ImageGenerationGeminiApiKey: !!process.env.IMAGE_GEN_GEMINI_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -633,6 +645,10 @@ const SystemSettings = {
       AgentCrwApiKey: !!process.env.AGENT_CRW_API_KEY || null,
       AgentCrwApiUrl: process.env.AGENT_CRW_API_URL || null,
       AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
+      AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
+      AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
+      AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
+      AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -873,6 +889,9 @@ const SystemSettings = {
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
       WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
+      WeaviateDeployment: process.env.WEAVIATE_DEPLOYMENT,
+      WeaviateGrpcHost: process.env.WEAVIATE_GRPC_HOST,
+      WeaviateGrpcPort: process.env.WEAVIATE_GRPC_PORT,
 
       // QDrant DB Keys
       QdrantEndpoint: process.env.QDRANT_ENDPOINT,
@@ -952,6 +971,7 @@ const SystemSettings = {
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+      TogetherAiMaxTokens: process.env.TOGETHER_AI_MAX_TOKENS,
 
       // Fireworks AI API Keys
       FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -965,6 +985,7 @@ const SystemSettings = {
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
       OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
+      OpenRouterServiceTier: process.env.OPENROUTER_SERVICE_TIER,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,
@@ -1054,12 +1075,12 @@ const SystemSettings = {
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
 
-      // Docker Model Runner Keys
-      DockerModelRunnerBasePath: process.env.DOCKER_MODEL_RUNNER_BASE_PATH,
-      DockerModelRunnerModelPref:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF,
-      DockerModelRunnerModelTokenLimit:
-        process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_TOKEN_LIMIT || 8192,
+      // llmman Keys
+      LlmmanBasePath: process.env.LLMMAN_BASE_PATH,
+      LlmmanModelPref: process.env.LLMMAN_MODEL_PREF,
+      LlmmanTokenLimit: process.env.LLMMAN_MODEL_TOKEN_LIMIT || 8192,
+      LlmmanKeepAliveSeconds: process.env.LLMMAN_KEEP_ALIVE_TIMEOUT ?? 300,
+      LlmmanAuthToken: !!process.env.LLMMAN_AUTH_TOKEN,
 
       // Privatemode Keys
       PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
@@ -1075,6 +1096,9 @@ const SystemSettings = {
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // Embedded Lemonade Keys
+      ...require("../utils/AiProviders/embeddedLemonade/config").settings(),
 
       // Minimax Keys
       MinimaxApiKey: !!process.env.MINIMAX_API_KEY,

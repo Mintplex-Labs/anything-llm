@@ -40,7 +40,7 @@ import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
-import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
@@ -224,12 +224,12 @@ const LLM_PROVIDER_PRIVACY_MAP = {
     policyUrl: "https://ai.gitee.com/docs/appendix/privacy",
     logo: GiteeAILogo,
   },
-  "docker-model-runner": {
-    name: "Docker Model Runner",
+  llmman: {
+    name: "llmman",
     description: [
-      "Your model and chats are only accessible on the machine running Docker Model Runner.",
+      "Your model and chats are only accessible on the machine running llmman.",
     ],
-    logo: DockerModelRunnerLogo,
+    logo: LlmmanLogo,
   },
   privatemode: {
     name: "Privatemode",
@@ -247,6 +247,13 @@ const LLM_PROVIDER_PRIVACY_MAP = {
       "Your model and chats are only accessible on the machine running the Lemonade server.",
     ],
     logo: LemonadeLogo,
+  },
+  embedded_lemonade: {
+    name: "Built-in",
+    description: [
+      "Your model and chats are only accessible on the server running AnythingLLM.",
+    ],
+    logo: AnythingLLMIcon,
   },
   omlx: {
     name: "oMLX",

@@ -15,6 +15,7 @@ const {
 } = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
 const { htmlToMarkdown } = require("../helpers/htmlToMarkdown");
+const { decodePathname } = require("../../utils/url");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -23,6 +24,7 @@ const { htmlToMarkdown } = require("../helpers/htmlToMarkdown");
  * @param {('html' | 'text')} config.captureAs - The format to capture the page content as. Default is 'text'
  * @param {{[key: string]: string}} config.scraperHeaders - Custom headers to use when making the request
  * @param {{[key: string]: string}} config.metadata - Metadata to use when creating the document
+ * @param {Object} config.options - The collector options sent by the server, used when the link is a file
  * @param {boolean} config.saveAsDocument - Whether to save the content as a document. Default is true
  * @returns {Promise<Object>} - The content of the page
  */
@@ -31,6 +33,7 @@ async function scrapeGenericUrl({
   captureAs = "text",
   scraperHeaders = {},
   metadata = {},
+  options = {},
   saveAsDocument = true,
 }) {
   /** @type {'web' | 'file' | 'youtube'} */
@@ -44,7 +47,12 @@ async function scrapeGenericUrl({
    * so we can return the content immediately.
    */
   if (processVia === "file")
-    return await processAsFile({ uri: link, saveAsDocument });
+    return await processAsFile({
+      uri: link,
+      saveAsDocument,
+      metadata,
+      options,
+    });
   else if (processVia === "youtube")
     return await loadYouTubeTranscript(
       { url: link },
@@ -79,7 +87,7 @@ async function scrapeGenericUrl({
 
   // Save the content as a document from the URL
   const url = new URL(link);
-  const decodedPathname = decodeURIComponent(url.pathname);
+  const decodedPathname = decodePathname(url.pathname);
   const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
   const data = {
     id: v4(),
@@ -227,6 +235,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
+    if (captureAs === "html") return pageText;
     return htmlToMarkdown(pageText, link);
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);

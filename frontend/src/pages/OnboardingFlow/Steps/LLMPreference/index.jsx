@@ -30,7 +30,7 @@ import PPIOLogo from "@/media/llmprovider/ppio.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
-import DockerModelRunnerLogo from "@/media/llmprovider/docker-model-runner.png";
+import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
 import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import LemonadeLogo from "@/media/llmprovider/lemonade.png";
@@ -68,10 +68,11 @@ import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
-import DockerModelRunnerOptions from "@/components/LLMSelection/DockerModelRunnerOptions";
+import LlmmanOptions from "@/components/LLMSelection/LlmmanOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
 import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
+import { withEmbeddedLemonade } from "@/components/LLMSelection/EmbeddedLemonadeOptions";
 import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
 import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
 import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
@@ -136,11 +137,11 @@ const LLMS = [
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
   },
   {
-    name: "Docker Model Runner",
-    value: "docker-model-runner",
-    logo: DockerModelRunnerLogo,
-    options: (settings) => <DockerModelRunnerOptions settings={settings} />,
-    description: "Run LLMs using Docker Model Runner.",
+    name: "llmman",
+    value: "llmman",
+    logo: LlmmanLogo,
+    options: (settings) => <LlmmanOptions settings={settings} />,
+    description: "Run LLMs locally using llmman.",
   },
   {
     name: "Lemonade",
@@ -376,7 +377,10 @@ export default function LLMPreference({
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setSelectedLLM(_settings?.LLMProvider || "openai");
+      setSelectedLLM(
+        _settings?.LLMProvider ||
+          (_settings?.EmbeddedLemonadeEnabled ? "embedded_lemonade" : "openai")
+      );
     }
     fetchKeys();
   }, []);
@@ -424,11 +428,13 @@ export default function LLMPreference({
   }, []);
 
   useEffect(() => {
-    const filtered = LLMS.filter((llm) =>
+    const filtered = withEmbeddedLemonade(LLMS, settings, {
+      onboarding: true,
+    }).filter((llm) =>
       llm.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredLLMs(filtered);
-  }, [searchQuery, selectedLLM]);
+  }, [searchQuery, selectedLLM, settings]);
 
   return (
     <div>
@@ -472,7 +478,9 @@ export default function LLMPreference({
         </div>
         <div className="mt-4 flex flex-col gap-y-1">
           {selectedLLM &&
-            LLMS.find((llm) => llm.value === selectedLLM)?.options(settings)}
+            withEmbeddedLemonade(LLMS, settings, { onboarding: true })
+              .find((llm) => llm.value === selectedLLM)
+              ?.options(settings)}
         </div>
         <button
           type="submit"

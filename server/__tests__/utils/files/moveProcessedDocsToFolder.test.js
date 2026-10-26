@@ -32,7 +32,9 @@ describe("moveProcessedDocsToFolder", () => {
       fs.existsSync(path.join(basePath, "my-vault/readme.md-abc123.json"))
     ).toBe(true);
     expect(
-      fs.existsSync(path.join(basePath, "custom-documents/readme.md-abc123.json"))
+      fs.existsSync(
+        path.join(basePath, "custom-documents/readme.md-abc123.json")
+      )
     ).toBe(false);
     expect(doc.location).toBe(path.join("my-vault", "readme.md-abc123.json"));
     expect(doc.name).toBe("readme.md-abc123.json");
@@ -91,9 +93,9 @@ describe("moveProcessedDocsToFolder", () => {
     expect(() => moveProcessedDocsToFolder([doc], "a/b", basePath)).toThrow(
       /path separators/
     );
-    expect(() =>
-      moveProcessedDocsToFolder([doc], "a\\b", basePath)
-    ).toThrow(/path separators/);
+    expect(() => moveProcessedDocsToFolder([doc], "a\\b", basePath)).toThrow(
+      /path separators/
+    );
     expect(fs.existsSync(path.join(basePath, "a"))).toBe(false);
     // The document is left exactly where it was.
     expect(
@@ -129,6 +131,37 @@ describe("moveProcessedDocsToFolder", () => {
     const doc = writeProcessedDoc("custom-documents/readme.md-abc123.json");
     expect(() => moveProcessedDocsToFolder([doc], "", basePath)).toThrow();
     expect(() => moveProcessedDocsToFolder([doc], ".", basePath)).toThrow();
+  });
+
+  it("removes the source folder once every document has moved out", () => {
+    const docs = [
+      writeProcessedDoc("book.xlsx-ab12/sheet-Sales-111.json"),
+      writeProcessedDoc("book.xlsx-ab12/sheet-Costs-222.json"),
+    ];
+    moveProcessedDocsToFolder(docs, "reports", basePath);
+
+    expect(fs.existsSync(path.join(basePath, "book.xlsx-ab12"))).toBe(false);
+    expect(fs.readdirSync(path.join(basePath, "reports")).sort()).toEqual([
+      "sheet-Costs-222.json",
+      "sheet-Sales-111.json",
+    ]);
+  });
+
+  it("keeps a source folder that still holds other documents", () => {
+    writeProcessedDoc("shared/other.md-333.json");
+    const doc = writeProcessedDoc("shared/readme.md-abc123.json");
+    moveProcessedDocsToFolder([doc], "my-vault", basePath);
+
+    expect(fs.readdirSync(path.join(basePath, "shared"))).toEqual([
+      "other.md-333.json",
+    ]);
+  });
+
+  it("keeps custom-documents even when the move empties it", () => {
+    const doc = writeProcessedDoc("custom-documents/readme.md-abc123.json");
+    moveProcessedDocsToFolder([doc], "my-vault", basePath);
+
+    expect(fs.existsSync(path.join(basePath, "custom-documents"))).toBe(true);
   });
 
   it("does nothing when given no documents", () => {

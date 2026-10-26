@@ -4,8 +4,12 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class GroqLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -26,7 +30,6 @@ class GroqLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -82,10 +85,9 @@ class GroqLLM {
   }
 
   /**
-   * Last Updated: October 21, 2024
+   * Last Updated: September 20, 2026
    * According to https://console.groq.com/docs/vision
    * the vision models supported all make a mess of prompting depending on the model.
-   * Currently the llama3.2 models are only in preview and subject to change and the llava model is deprecated - so we will not support attachments for that at all.
    *
    * Since we can only explicitly support the current models, this is a temporary solution.
    * If the attachments are empty or the model is not a vision model, we will return the default prompt structure which will work for all models.
@@ -100,16 +102,13 @@ class GroqLLM {
     userPrompt = "",
     attachments = [], // This is the specific attachment for only this prompt
   }) {
-    const VISION_MODELS = [
-      "llama-3.2-90b-vision-preview",
-      "llama-3.2-11b-vision-preview",
-    ];
+    const VISION_MODELS = ["qwen/qwen3.8-27b"];
     const DEFAULT_PROMPT_STRUCT = [
       {
         role: "system",
         content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
       },
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, ({ userPrompt }) => userPrompt),
       { role: "user", content: userPrompt },
     ];
 
@@ -170,7 +169,10 @@ class GroqLLM {
     });
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `GroqAI:chatCompletion: ${this.model} is not valid for chat completion!`
@@ -181,7 +183,7 @@ class GroqLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -211,7 +213,10 @@ class GroqLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
@@ -222,7 +227,7 @@ class GroqLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

@@ -39,19 +39,52 @@ const METADATA_KEYS = {
         ? chunkSource
         : `${stripAndSlug(title)}.txt`;
     },
+    /**
+     * Normalizes the `published` metadata key into a locale date string.
+     * The API schema documents this key as an epoch timestamp in ms, nullable.
+     *
+     * Falls back to the current time when the value is:
+     * - absent: `undefined`, `null`, a boolean, `""`, whitespace, or `[]`
+     *   (all of which `Number()` would otherwise coerce to `0`/`1` and stamp as 1970)
+     * - non-numeric: any string that does not parse as a number
+     * - out of range: a number a `Date` cannot represent (eg: `1e20`, `"Infinity"`),
+     *   which would otherwise render the literal string "Invalid Date"
+     *
+     * `0` and negative numbers are valid epochs and are honored as-is.
+     * @param {{ published?: unknown }} metadata
+     * @returns {string}
+     */
     published: ({ published }) => {
-      if (isNaN(Number(published))) return new Date().toLocaleString();
-      return new Date(Number(published)).toLocaleString();
+      if (
+        published === null ||
+        typeof published === "boolean" ||
+        `${published}`.trim() === ""
+      )
+        return new Date().toLocaleString();
+
+      const date = new Date(Number(published));
+      if (isNaN(date.getTime())) return new Date().toLocaleString();
+      return date.toLocaleString();
     },
   },
 };
 
 async function processRawText(textContent, metadata) {
-  console.log(`-- Working Raw Text doc ${metadata.title} --`);
-  if (!textContent || textContent.length === 0) {
+  console.log(`-- Working Raw Text doc ${metadata?.title} --`);
+  if (typeof textContent !== "string" || textContent.length === 0) {
     return {
       success: false,
       reason: "textContent was empty - nothing to process.",
+      documents: [],
+    };
+  }
+
+  // Every other metadata key has a fallback, but title is used to derive the
+  // url, chunkSource and filename via stripAndSlug, which requires a string.
+  if (typeof metadata?.title !== "string" || metadata.title.length === 0) {
+    return {
+      success: false,
+      reason: "metadata.title must be a non-empty string.",
       documents: [],
     };
   }

@@ -28,12 +28,14 @@ async function streamChatWithForEmbed(
   const chatModel = embed.allow_model_override ? modelOverride : null;
 
   // If there are overrides in request & they are permitted, override the default workspace ref information.
-  if (embed.allow_prompt_override)
+  if (embed.allow_prompt_override && typeof promptOverride === "string")
     embed.workspace.openAiPrompt = promptOverride;
-  if (embed.allow_temperature_override)
-    embed.workspace.openAiTemp = parseFloat(temperatureOverride);
+  const temperatureValue = parseFloat(temperatureOverride);
+  if (embed.allow_temperature_override && !Number.isNaN(temperatureValue))
+    embed.workspace.openAiTemp = temperatureValue;
 
   const uuid = uuidv4();
+  const messageLimit = embed.message_limit ?? 20;
   const {
     connector: LLMConnector,
     routingMetadata,
@@ -44,6 +46,7 @@ async function streamChatWithForEmbed(
     chatModel,
     message,
     sessionId,
+    messageLimit,
   });
 
   if (routerError) {
@@ -63,7 +66,6 @@ async function streamChatWithForEmbed(
 
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = embed.message_limit ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(embed.workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(embed.workspace.slug);
 
@@ -74,6 +76,7 @@ async function streamChatWithForEmbed(
       id: uuid,
       type: "textResponse",
       textResponse:
+        embed.workspace?.queryRefusalResponse ??
         "I do not have enough information to answer that. Try another question.",
       sources: [],
       close: true,
@@ -179,7 +182,11 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(embed.workspace, username),
+      // Embed visitors are anonymous - never pass request-supplied identity
+      // into chatPrompt and never inject stored memories into the prompt.
+      systemPrompt: await chatPrompt(embed.workspace, null, {
+        skipMemories: true,
+      }),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -194,9 +201,7 @@ async function streamChatWithForEmbed(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     const { textResponse, metrics: performanceMetrics } =
-      await LLMConnector.getChatCompletion(messages, {
-        temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-      });
+      await LLMConnector.getChatCompletion(messages);
     completeText = textResponse;
     metrics = addChatCostToMetrics(performanceMetrics, {
       routingMetadata,
@@ -212,9 +217,7 @@ async function streamChatWithForEmbed(
       error: false,
     });
   } else {
-    const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const stream = await LLMConnector.streamGetChatCompletion(messages);
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources: [],
@@ -226,33 +229,35 @@ async function streamChatWithForEmbed(
     });
   }
 
-  await EmbedChats.new({
-    embedId: embed.id,
-    prompt: message,
-    response: { text: completeText, type: chatMode, sources, metrics },
-    connection_information: response.locals.connection
-      ? {
-          ...response.locals.connection,
-          username: !!username ? String(username) : null,
-        }
-      : { username: !!username ? String(username) : null },
-    sessionId,
-  });
+  if (completeText?.length > 0) {
+    await EmbedChats.new({
+      embedId: embed.id,
+      prompt: message,
+      response: { text: completeText, type: chatMode, sources, metrics },
+      connection_information: response.locals.connection
+        ? {
+            ...response.locals.connection,
+            username: !!username ? String(username) : null,
+          }
+        : { username: !!username ? String(username) : null },
+      sessionId,
+    });
 
-  Observability.traceWorkspaceChat({
-    name: "embed-chat",
-    workspace: embed.workspace,
-    user: username ? { username: String(username) } : null,
-    sessionId,
-    chatMode,
-    metadata: { embedId: embed.id },
-    message,
-    output: completeText,
-    model: LLMConnector.model,
-    messages,
-    metrics,
-    sources,
-  });
+    Observability.traceWorkspaceChat({
+      name: "embed-chat",
+      workspace: embed.workspace,
+      user: username ? { username: String(username) } : null,
+      sessionId,
+      chatMode,
+      metadata: { embedId: embed.id },
+      message,
+      output: completeText,
+      model: LLMConnector.model,
+      messages,
+      metrics,
+      sources,
+    });
+  }
   return;
 }
 
@@ -280,6 +285,7 @@ async function resolveLLMConnectorForEmbed({
   chatModel,
   message,
   sessionId,
+  messageLimit,
 }) {
   // If a chat model is provided, use it to override the workspace chat model
   // otherwise use the workspace chat model as we do everywhere else.
@@ -287,7 +293,6 @@ async function resolveLLMConnectorForEmbed({
     ? { ...embed?.workspace, chatModel }
     : embed?.workspace;
   try {
-    const messageLimit = workspace?.openAiHistory || 20;
     const embedHistory = await recentEmbedChatHistory(
       sessionId,
       embed,

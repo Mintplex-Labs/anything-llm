@@ -195,7 +195,24 @@ const EmbedConfig = {
     if (!embed.allowlist_domains) return null;
 
     try {
-      return JSON.parse(embed.allowlist_domains);
+      // Compare origins, not the raw text typed: for an ordinary HTTP or HTTPS
+      // page the browser's Origin header is `scheme://host[:port]` in lowercase
+      // with no path. "null" (the origin of view-source: or data: entries) is
+      // dropped so it cannot match requests that send `Origin: null`.
+      return JSON.parse(embed.allowlist_domains)
+        .map((entry) => {
+          if (typeof entry !== "string") return null;
+          // An entry with a second scheme after the first (https://HTTPS://...)
+          // parses to a host named after the inner scheme. Drop it rather than
+          // allow that host.
+          if (/^https?:\/\/[a-z][a-z\d+.-]*:\/\//i.test(entry)) return null;
+          try {
+            return new URL(entry).origin;
+          } catch {
+            return null;
+          }
+        })
+        .filter((origin) => !!origin && origin !== "null");
     } catch {
       console.error(`Failed to parse allowlist_domains for Embed ${embed.id}!`);
       return [];
@@ -227,15 +244,15 @@ function validatedCreationData(value, field) {
   if (field === "allowlist_domains") {
     try {
       if (!value) return null;
+      const inputs = typeof value === "string" ? value.split(",") : value;
+      if (!Array.isArray(inputs) || inputs.length === 0) return null;
       return JSON.stringify(
-        // Iterate and force all domains to URL object
-        // and stringify the result.
-        value
-          .split(",")
+        // Iterate and force all domains to URL objects. Non-string/invalids are dropped.
+        inputs
+          .filter((input) => typeof input === "string")
           .map((input) => {
             let url = input;
-            if (!url.includes("http://") && !url.includes("https://"))
-              url = `https://${url}`;
+            if (!/https?:\/\//i.test(url)) url = `https://${url}`;
             try {
               new URL(url);
               return url;

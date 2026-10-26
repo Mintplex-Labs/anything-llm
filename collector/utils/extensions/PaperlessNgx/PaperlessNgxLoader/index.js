@@ -3,7 +3,8 @@ const pdf = require("pdf-parse");
 
 class PaperlessNgxLoader {
   constructor({ baseUrl, apiToken }) {
-    this.baseUrl = new URL(baseUrl).origin;
+    const url = new URL(baseUrl);
+    this.baseUrl = `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
     this.apiToken = apiToken;
     this.baseHeaders = {
       Authorization: `Token ${this.apiToken}`,
@@ -39,10 +40,7 @@ class PaperlessNgxLoader {
               ...this.baseHeaders,
             },
           }).then((res) => {
-            if (!res.ok)
-              throw new Error(
-                `Failed to fetch documents from Paperless-ngx: ${res.status}`
-              );
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
             return res.json();
           });
 
@@ -51,14 +49,20 @@ class PaperlessNgxLoader {
 
           documents.push(...validResults);
 
-          if (data.next === nextUrl) break;
-          nextUrl = data.next || null;
+          if (!data.next) break;
+          const { search } = new URL(data.next, nextUrl);
+          const next = `${this.baseUrl}/api/documents/${search}`;
+          if (next === nextUrl) break;
+          nextUrl = next;
           page++;
         } catch (error) {
           console.error(
             `Error fetching page ${page} from Paperless-ngx:`,
             error
           );
+          // Nothing was fetched, so the instance could not be read at all, for
+          // example a wrong token or URL. Report that instead of an empty import.
+          if (!documents.length) throw error;
           break;
         }
       }
@@ -101,14 +105,24 @@ class PaperlessNgxLoader {
       if (!response.ok)
         throw new Error(`Failed to fetch document content: ${response.status}`);
 
-      const contentType = response.headers.get("content-type");
+      // The media type without parameters such as `; charset=utf-8`
+      const contentType = response.headers
+        .get("content-type")
+        ?.split(";")[0]
+        .trim()
+        .toLowerCase();
       switch (contentType) {
-        case "text/plain":
-          return await response.text();
         case "application/pdf":
           const buffer = await response.arrayBuffer();
           return await this.parsePdfContent(buffer);
+        case "text/html":
+          return htmlToText(await response.text(), {
+            wordwrap: false,
+            preserveNewlines: true,
+          });
         default:
+          // Returned verbatim so angle-bracketed text like `<john@example.com>`
+          // and the column spacing in OCR text are preserved
           return await response.text();
       }
     } catch (error) {
@@ -131,14 +145,8 @@ class PaperlessNgxLoader {
   }
 
   createDocumentFromPage(doc) {
-    const content = doc.content || "";
-    const plainTextContent = htmlToText(content, {
-      wordwrap: false,
-      preserveNewlines: true,
-    });
-
     return {
-      pageContent: plainTextContent,
+      pageContent: doc.content || "",
       metadata: {
         id: doc.id,
         title: doc.original_file_name,

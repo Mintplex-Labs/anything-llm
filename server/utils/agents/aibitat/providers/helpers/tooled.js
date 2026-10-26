@@ -163,6 +163,51 @@ function formatMessagesForTools(messages, options = {}) {
 }
 
 /**
+ * Build the `max_tokens` request field from an explicit output budget passed
+ * in the tooled options. This is opt-in per provider: only providers that pass
+ * `maxTokens` in options get the field, every other provider keeps sending no
+ * `max_tokens` so the backend's own default applies unchanged.
+ * @param {unknown} maxTokens
+ * @param {string} [key] - field name to build, for clients that expect a different casing
+ * @returns {Object}
+ */
+function maxTokensParam(maxTokens, key = "max_tokens") {
+  if (
+    typeof maxTokens !== "number" ||
+    !Number.isFinite(maxTokens) ||
+    maxTokens <= 0
+  )
+    return {};
+  return { [key]: maxTokens };
+}
+
+/**
+ * Build the `service_tier` request field from the tooled options. Only providers
+ * that pass `serviceTier` get the field, every other provider keeps sending no
+ * `service_tier` at all.
+ * @param {string} serviceTier
+ * @param {((text: string) => void)|null} log - Optional provider logger.
+ * @returns {{service_tier?: string}}
+ */
+function serviceTierParam(serviceTier, log = null) {
+  if (typeof serviceTier !== "string" || !serviceTier.length) return {};
+  if (typeof log === "function") log(`Requesting service tier: ${serviceTier}`);
+  return { service_tier: serviceTier };
+}
+
+/**
+ * Build the `temperature` request field, spread so the key is absent entirely
+ * when no temperature is set or the value is not a finite number.
+ * @param {unknown} temperature
+ * @returns {{temperature?: number}}
+ */
+function temperatureParam(temperature) {
+  if (typeof temperature !== "number" || !Number.isFinite(temperature))
+    return {};
+  return { temperature };
+}
+
+/**
  * Stream a chat completion using native OpenAI-compatible tool calling.
  * Handles parallel tool calls by tracking each tool call by its streaming
  * index, then returning only the first one for the agent framework to process.
@@ -172,8 +217,10 @@ function formatMessagesForTools(messages, options = {}) {
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function|null} eventHandler - Stream event handler
- * @param {{injectReasoningContent?: boolean, provider?: object}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, maxTokensKey?: string, serviceTier?: string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
+ *   - maxTokens: If passed as a positive number, sent as `max_tokens` (or `maxTokensKey`) on the request
+ *   - serviceTier: If passed, sent as `service_tier` on the request
  * @returns {Promise<{textResponse: string, functionCall: object|null, uuid: string, usage: object|null}>}
  */
 async function tooledStream(
@@ -184,7 +231,8 @@ async function tooledStream(
   eventHandler = null,
   options = {}
 ) {
-  const { provider, ...formatOptions } = options;
+  const { provider, maxTokens, maxTokensKey, serviceTier, ...formatOptions } =
+    options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -199,11 +247,16 @@ async function tooledStream(
 
   const stream = await client.chat.completions.create({
     model,
+    ...temperatureParam(provider?.temperature),
     stream: true,
     stream_options: { include_usage: true },
     messages: formattedMessages,
+    ...maxTokensParam(maxTokens, maxTokensKey),
+    ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
+  provider?.watchTokenLimit?.(stream);
 
   const result = {
     functionCall: null,
@@ -349,8 +402,9 @@ async function tooledStream(
  * @param {Array} messages - Raw aibitat message history
  * @param {Array} functions - Aibitat function definitions
  * @param {function} getCostFn - Provider's getCost function
- * @param {{injectReasoningContent?: boolean, provider?: object}} options - Provider-specific options
+ * @param {{injectReasoningContent?: boolean, provider?: object, maxTokens?: number, maxTokensKey?: string, serviceTier?: string}} options - Provider-specific options
  *   - provider: If passed, automatically handles usage tracking via provider.resetUsage()/recordUsage()
+ *   - maxTokens: If passed as a positive number, sent as `max_tokens` (or `maxTokensKey`) on the request
  * @returns {Promise<{textResponse: string|null, functionCall: object|null, cost: number, usage: object|null}>}
  */
 async function tooledComplete(
@@ -361,7 +415,8 @@ async function tooledComplete(
   getCostFn = () => 0,
   options = {}
 ) {
-  const { provider, ...formatOptions } = options;
+  const { provider, maxTokens, maxTokensKey, serviceTier, ...formatOptions } =
+    options;
 
   // Auto-reset usage if provider is passed
   if (provider?.resetUsage) {
@@ -375,10 +430,15 @@ async function tooledComplete(
 
   const response = await client.chat.completions.create({
     model,
+    ...temperatureParam(provider?.temperature),
     stream: false,
     messages: formattedMessages,
+    ...maxTokensParam(maxTokens, maxTokensKey),
+    ...serviceTierParam(serviceTier, provider?.providerLog?.bind(provider)),
     ...(tools.length > 0 ? { tools } : {}),
+    ...(provider?.reasoningConfig ?? {}),
   });
+  provider?.watchTokenLimit?.(response);
 
   const completion = response.choices[0].message;
   const cost = getCostFn(response.usage);
@@ -449,4 +509,7 @@ module.exports = {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  temperatureParam,
+  serviceTierParam,
+  maxTokensParam,
 };

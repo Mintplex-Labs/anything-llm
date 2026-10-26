@@ -9,10 +9,11 @@
 const DEFAULT_IMAGE_SIZE = "1024x1024";
 
 /**
- * Shared base for all image generation providers. Every supported provider
- * (OpenAI, Ollama, Lemonade, OpenRouter) speaks the OpenAI
- * `images.generate` API, so the only per-provider difference is the client
- * configuration (baseURL/apiKey) and the selected model.
+ * Shared base for all image generation providers. Most supported providers
+ * (OpenAI, Ollama, Lemonade) speak the OpenAI `images.generate` API, so the
+ * only per-provider difference is the client configuration (baseURL/apiKey)
+ * and the selected model. OpenRouter and Gemini override generate/edit to use
+ * their native multimodal endpoints instead.
  */
 class BaseImageGenerator {
   /**
@@ -130,6 +131,10 @@ class BaseImageGenerator {
    * We do not force a `response_format` because some models (e.g. gpt-image-1)
    * reject it and always return base64, while others default to a URL - so we
    * accept whichever the provider returns.
+   *
+   * Note: if the `url` response format requires an API key to fetch you will need
+   * a provider specific override here to enforce that. Do not apply that constraint to every
+   * image provider.
    * @param {string} prompt
    * @param {string} size
    * @param {AbortSignal} [signal]

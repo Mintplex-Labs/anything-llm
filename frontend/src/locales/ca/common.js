@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nom de l'espai de treball",
     selection: "Selecció de model",
     saving: "Desant...",
+    saved: "Desat",
     save: "Desa els canvis",
     previous: "Pàgina anterior",
     next: "Pàgina següent",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "El nom d'usuari ha de tenir entre 2 i 64 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
     loading: "Carregant",
     refresh: "Actualitza",
+    noResults: "No s'han trobat resultats",
   },
   home: {
     welcome: "Benvingut",
@@ -146,6 +148,35 @@ const TRANSLATIONS = {
       createAgent: "Crea un agent",
       editWorkspace: "Edita l'espai de treball",
       uploadDocument: "Puja un document",
+    },
+    greetings: {
+      anytime: {
+        working_on: "En què estem treballant?",
+        on_your_mind: "Què tens al cap?",
+        where_to_start: "Per on comencem?",
+        ready: "A punt quan tu ho estiguis.",
+        think_it_through: "Pensem-hi bé.",
+      },
+      morning: {
+        good_morning: "Bon dia",
+        first_today: "Bon dia. Què fem primer avui?",
+        fresh_start: "Un nou començament. Per on comencem?",
+      },
+      afternoon: {
+        good_afternoon: "Bona tarda",
+        tackling: "Bona tarda. Què abordem?",
+        next_on_list: "Què toca ara de la llista?",
+        keep_moving: "Seguim endavant.",
+      },
+      evening: {
+        good_evening: "Bon vespre",
+        finish_strong: "Bon vespre. Acabem amb força.",
+      },
+      night: {
+        midnight_oil: "Treballant fins tard?",
+        late_one: "Nit llarga? Pensem-hi bé.",
+        still_up: "Encara per aquí? A punt quan tu ho estiguis.",
+      },
     },
   },
   "new-workspace": {
@@ -256,7 +287,25 @@ const TRANSLATIONS = {
       title: "Temperatura del LLM",
       "desc-end":
         "Com més alt sigui el número, més creatiu serà. Per a alguns models, això pot provocar respostes incoherents si és massa alt.",
+      placeholder: "Valor per defecte del proveïdor",
     },
+    reasoning_effort: {
+      title: "Esforç de raonament",
+      default: "Valor per defecte del proveïdor",
+      cannot_disable: "Aquest model no pot desactivar el raonament.",
+      levels: {
+        off: "Desactivat",
+        on: "Activat",
+        minimal: "Mínim",
+        low: "Baix",
+        medium: "Mitjà",
+        high: "Alt",
+        xhigh: "Molt alt",
+        max: "Màxim",
+      },
+    },
+    token_limit_reached:
+      "La resposta ha arribat al límit de tokens de sortida. Augmenta el nombre màxim de tokens de sortida del model per permetre respostes més llargues.",
   },
   "vector-workspace": {
     identifier: "Identificador de la base de dades vectorial",
@@ -544,8 +593,6 @@ const TRANSLATIONS = {
           },
         },
       },
-      default_skill:
-        "Per defecte, aquesta habilitat està activada, però pots desactivar-la si no vols que estigui disponible per a l'agent.",
       outlook: {
         title: "Connector per a Outlook",
         description:
@@ -746,6 +793,11 @@ const TRANSLATIONS = {
         description:
           'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
       },
+      generateImage: {
+        title: "Generar imatges",
+        description:
+          "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
+      },
     },
     mcp: {
       title: "Servidors MCP",
@@ -822,6 +874,12 @@ const TRANSLATIONS = {
       title: "Marca i etiqueta blanca",
       description:
         "Personalitza la teva instància d'AnythingLLM amb una marca pròpia.",
+      tabs: {
+        identity: "Identitat",
+        colors: "Colors",
+        sidebar: "Barre lateral",
+        browser: "Navegador",
+      },
     },
     chat: {
       title: "Xat",
@@ -907,6 +965,36 @@ const TRANSLATIONS = {
         title: "Desactivar el desplaçament automàtic",
         description:
           "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
+      },
+      palette: {
+        title: "Paleta de colors",
+        description:
+          "Seleccioneu una paleta de colors. Aquesta s'aplica tant al mode clar com al mode fosc.",
+        enforced:
+          "L'administrador ha configurat la paleta de colors per a aquesta instància.",
+        "default-badge": "Per defecte",
+      },
+      "instance-palettes": {
+        title: "Paletes de colors",
+        description:
+          "Feu clic en una paleta per establir-la com a predeterminada per a tots els usuaris d'aquesta instància. Les paletes personalitzades inclouen un color principal, que afecta el fons, la barra lateral i el contingut, i un color d'accent per als botons i els enllaços.",
+        new: "Nova paleta",
+        edit: "Edita la paleta",
+        delete: "Eliminar paleta",
+        name: "Nom de la paleta",
+        "name-required": "Posa un nom a la paleta.",
+        colors: {
+          main: "Color principal",
+          accent: "Color d'accent",
+        },
+        "preview-note":
+          'Els canvis es previsualitzen a tota l\'aplicació i es desen quan feu clic a "Fet".',
+        done: "Fet",
+        cancel: "Cancel·lar",
+        enforce: "Aplica la paleta per defecte",
+        "enforce-description":
+          "Tothom en aquesta instància fa servir la paleta per defecte i no la pot canviar.",
+        "save-failed": "No s'han pogut desar les paletes de colors: {{error}}",
       },
     },
   },

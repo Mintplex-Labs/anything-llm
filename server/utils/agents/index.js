@@ -16,7 +16,14 @@ const {
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
-const { getAndClearInvocationAttachments } = require("../chats/agents");
+const {
+  getAndClearInvocationAttachments,
+  getAndClearInvocationReasoningEffort,
+} = require("../chats/agents");
+const {
+  resolveReasoningEffort,
+  usesModelRouter,
+} = require("../helpers/reasoningEffort");
 const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
@@ -95,13 +102,11 @@ class AgentHandler {
         )
       ).reverse();
 
-      const { generatedImageAttachments } = require("../files");
+      const { chatHistoryAttachments } = require("../files");
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
-        // Re-read `/img` generated images off disk as attachments so they reach
-        // the agent as vision context, the same way they do in normal chat.
-        const attachments = generatedImageAttachments(response?.outputs);
+        const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
             from: USER_AGENT.name,
@@ -260,11 +265,9 @@ class AgentHandler {
         if (!process.env.COHERE_API_KEY)
           throw new Error("Cohere API key must be provided to use agents.");
         break;
-      case "docker-model-runner":
-        if (!process.env.DOCKER_MODEL_RUNNER_BASE_PATH)
-          throw new Error(
-            "Docker Model Runner base path must be provided to use agents."
-          );
+      case "llmman":
+        if (!process.env.LLMMAN_BASE_PATH)
+          throw new Error("llmman base path must be provided to use agents.");
         break;
       case "privatemode":
         if (!process.env.PRIVATEMODE_LLM_BASE_PATH)
@@ -279,6 +282,13 @@ class AgentHandler {
       case "lemonade":
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
+        break;
+      case "embedded_lemonade":
+        // lemond is booted on demand by the provider - it only has to be enabled on this instance.
+        if (!require("../AiProviders/embeddedLemonade/config").isEnabled())
+          throw new Error(
+            "The built-in LLM engine is not enabled. Set ENABLE_BUILT_IN_LLM=true when starting the AnythingLLM Docker container."
+          );
         break;
       case "omlx":
         if (!process.env.OMLX_LLM_BASE_PATH)
@@ -381,14 +391,16 @@ class AgentHandler {
         return process.env.GITEE_AI_MODEL_PREF ?? null;
       case "cohere":
         return process.env.COHERE_MODEL_PREF ?? "command-r-08-2024";
-      case "docker-model-runner":
-        return process.env.DOCKER_MODEL_RUNNER_LLM_MODEL_PREF ?? null;
+      case "llmman":
+        return process.env.LLMMAN_MODEL_PREF ?? null;
       case "privatemode":
         return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
       case "sambanova":
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "embedded_lemonade":
+        return process.env.EMBEDDED_LEMONADE_MODEL_PREF ?? null;
       case "omlx":
         return process.env.OMLX_LLM_MODEL_PREF ?? null;
       case "minimax":
@@ -472,18 +484,17 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  async #providerSetupAndCheck() {
+  async #providerSetupAndCheck(prompt = null) {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
 
     // If provider resolved to model router, resolve the actual provider/model
     if (this.provider === "anythingllm-router") {
-      await this.#resolveRouterProvider();
+      await this.#resolveRouterProvider(prompt);
     }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }
 
@@ -774,9 +785,13 @@ class AgentHandler {
   async init() {
     await this.#validInvocation();
     await this.#providerSetupAndCheck();
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+    this.sessionReasoningEffort = getAndClearInvocationReasoningEffort(
+      this.#invocationUUID
+    );
 
     return this;
   }
@@ -848,6 +863,37 @@ class AgentHandler {
       });
   }
 
+  /**
+   * Reasoning effort for the current provider + model, validated against the
+   * model's live capabilities. Re-run whenever the route changes, since an
+   * effort valid for one model can be rejected by another.
+   * @returns {Promise<string|null>}
+   */
+  async #reasoningEffortForRoute() {
+    if (usesModelRouter(this.invocation.workspace)) return null;
+    const { getLLMProvider } = require("../helpers");
+    return await resolveReasoningEffort(
+      () => getLLMProvider({ provider: this.provider, model: this.model }),
+      this.sessionReasoningEffort
+    );
+  }
+
+  /**
+   * Switches the session's reasoning effort mid-session. The new effort is
+   * validated against the current route's model and used from the next turn.
+   * @param {string|null} sessionEffort - null uses the provider default
+   */
+  async #updateReasoningEffort(sessionEffort = null) {
+    const effort = typeof sessionEffort === "string" ? sessionEffort : null;
+    if (effort === this.sessionReasoningEffort) return;
+    this.sessionReasoningEffort = effort;
+    this.aibitat.defaultProvider.reasoningEffort =
+      await this.#reasoningEffortForRoute();
+    this.log(
+      `Reasoning effort for ${this.provider}:${this.model} is now ${this.aibitat.defaultProvider.reasoningEffort ?? "provider default"}.`
+    );
+  }
+
   async createAIbitat(
     args = {
       socket: null,
@@ -857,6 +903,8 @@ class AgentHandler {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
       model: this.model ?? "gpt-4.1-nano",
+      temperature: this.invocation.workspace?.openAiTemp,
+      reasoningEffort: await this.#reasoningEffortForRoute(),
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
@@ -873,40 +921,62 @@ class AgentHandler {
     // running agent mid-session.
     this.aibitat.toggleAgentTool = (payload) => this.#toggleAgentTool(payload);
 
-    // If the workspace uses the model router, attach a resolver so routing
-    // is re-evaluated on every agent turn instead of only at initialization.
-    // Skip the first invocation since routing was already resolved during init()
-    // and re-resolving would cause shouldNotify to return false (route already recorded).
-    if (this.routingMetadata) {
-      let isFirstCall = true;
-      this.aibitat.resolveRoute = async (prompt) => {
-        if (isFirstCall) {
-          isFirstCall = false;
-          return { provider: this.provider, model: this.model };
-        }
-        try {
-          await this.#resolveRouterProvider(prompt);
-          this.aibitat.handlerProps.routingMetadata =
-            this.routingMetadata || null;
-          return { provider: this.provider, model: this.model };
-        } catch (e) {
-          this.log(
-            "Router re-resolution failed, keeping current route",
-            e.message
-          );
-          return null;
-        }
-      };
+    // Register callback so the websocket plugin can apply the reasoning effort
+    // the chat session sends with each message to the agent's next turn.
+    this.aibitat.updateReasoningEffort = (effort) =>
+      this.#updateReasoningEffort(effort);
 
-      this.log(
-        `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
-      );
-      this.aibitat.use(
-        AgentPlugins.modelRouterCooldown.plugin(() =>
-          this._modelRouter?.onInferenceComplete()
-        )
-      );
-    }
+    // Re-read the workspace and re-resolve the provider/model on every agent turn
+    // so model changes and router rules apply mid-session, not only at initialization.
+    // Skip the first invocation since the route was already resolved during init()
+    // and re-resolving would cause shouldNotify to return false (route already recorded).
+    let isFirstCall = true;
+    this.aibitat.resolveRoute = async (prompt) => {
+      if (isFirstCall) {
+        isFirstCall = false;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
+        };
+      }
+      try {
+        const { provider, model } = this;
+        this.invocation.workspace =
+          (await Workspace._findFirst({
+            where: { id: this.invocation.workspace.id },
+          })) ?? this.invocation.workspace;
+        this.routingMetadata = null;
+        this._modelRouter = null;
+        await this.#providerSetupAndCheck(prompt);
+        if (this.provider !== provider || this.model !== model)
+          this.log(
+            `Route changed ${this.#invocationUUID}::${this.provider}:${this.model}`
+          );
+        this.aibitat.handlerProps.routingMetadata =
+          this.routingMetadata || null;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: await this.#reasoningEffortForRoute(),
+        };
+      } catch (e) {
+        this.log(
+          "Route re-resolution failed, keeping current route",
+          e.message
+        );
+        return null;
+      }
+    };
+
+    this.log(
+      `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
+    );
+    this.aibitat.use(
+      AgentPlugins.modelRouterCooldown.plugin(() =>
+        this._modelRouter?.onInferenceComplete()
+      )
+    );
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);

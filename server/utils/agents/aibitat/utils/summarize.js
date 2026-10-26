@@ -175,10 +175,9 @@ async function summarizeContent({
     );
     let textResponse, metrics;
     try {
-      ({ textResponse, metrics } = await llm.getChatCompletion(
-        [{ role: "user", content: summaryPrompt(chunks[i], priorPoints) }],
-        { temperature: 0 }
-      ));
+      ({ textResponse, metrics } = await llm.getChatCompletion([
+        { role: "user", content: summaryPrompt(chunks[i], priorPoints) },
+      ]));
     } catch (error) {
       // An aborted request rejects - return the points gathered so far rather than
       // failing the whole tool call, and never start another section.

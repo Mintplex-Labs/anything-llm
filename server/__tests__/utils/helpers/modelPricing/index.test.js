@@ -12,10 +12,12 @@ const FIXTURE = JSON.parse(
  * The module memoizes a singleton at require time, so every test builds its
  * own instance against a fresh temp STORAGE_DIR and a mocked global fetch.
  */
+let lastInstance = null;
 function freshInstance() {
   const { ModelPricing } = require("../../../../utils/helpers/modelPricing");
   ModelPricing.instance = null;
-  return new ModelPricing();
+  lastInstance = new ModelPricing();
+  return lastInstance;
 }
 
 function mockFetchWith(response) {
@@ -30,9 +32,9 @@ function okResponse(data, { etag = null } = {}) {
   };
 }
 
-/** Waits for the constructor's fire-and-forget refresh to settle. */
+/** Waits for the constructor's background refresh to settle. */
 async function flushRefresh() {
-  await new Promise((resolve) => setTimeout(resolve, 25));
+  await lastInstance.bootRefresh;
 }
 
 describe("ModelPricing", () => {
@@ -336,6 +338,129 @@ describe("ModelPricing", () => {
     });
   });
 
+  describe("getReasoningOptions", () => {
+    async function loaded() {
+      mockFetchWith(okResponse(FIXTURE));
+      const pricing = freshInstance();
+      await flushRefresh();
+      return pricing;
+    }
+
+    it("returns the models.dev reasoning options for a model", async () => {
+      const pricing = await loaded();
+      expect(pricing.getReasoningOptions("openai", "gpt-Reasoner")).toEqual([
+        { type: "effort", values: ["none", "low", "medium", "high"] },
+      ]);
+      expect(pricing.getReasoningOptions("gemini", "gemini-tiered")).toEqual([
+        { type: "budget_tokens", min: 128, max: 32768 },
+      ]);
+    });
+
+    it("matches model ids case-insensitively", async () => {
+      const pricing = await loaded();
+      expect(pricing.getReasoningOptions("openai", "GPT-REASONER")).toEqual([
+        { type: "effort", values: ["none", "low", "medium", "high"] },
+      ]);
+    });
+
+    it("keeps reasoning options for models without published pricing", async () => {
+      const pricing = await loaded();
+      expect(
+        pricing.getReasoningOptions("openai", "gpt-subscription-only")
+      ).toEqual([{ type: "effort", values: ["low", "high"] }]);
+    });
+
+    it.each([
+      ["a model without reasoning", "openai", "gpt-4o"],
+      [
+        "a reasoning model without options",
+        "openai",
+        "gpt-reasoning-flag-only",
+      ],
+      ["an unknown model", "openai", "gpt-unknown"],
+      ["an unmapped provider", "ollama", "gpt-Reasoner"],
+      ["a missing model", "openai", null],
+      ["a non-string model", "openai", 42],
+      ["a missing provider", null, "gpt-Reasoner"],
+    ])("returns [] for %s", async (_, provider, model) => {
+      const pricing = await loaded();
+      expect(pricing.getReasoningOptions(provider, model)).toEqual([]);
+    });
+
+    it("returns null when no models.dev data has been loaded", async () => {
+      mockFetchWith({ status: 500, headers: { get: () => null } });
+      const pricing = freshInstance();
+      await flushRefresh();
+      expect(pricing.getReasoningOptions("openai", "gpt-Reasoner")).toBeNull();
+    });
+
+    it("writes the reasoning cache alongside the pricing cache", async () => {
+      await loaded();
+      const cached = JSON.parse(
+        fs.readFileSync(
+          path.join(tempDir, "models", "pricing", "model-reasoning.json"),
+          "utf8"
+        )
+      );
+      expect(Object.keys(cached.openai).sort()).toEqual([
+        "gpt-Reasoner",
+        "gpt-subscription-only",
+      ]);
+    });
+
+    it("does a full GET when a fresh pricing cache has no reasoning cache", async () => {
+      // Caches written before reasoning options were kept have no reasoning
+      // file - they must refetch in full instead of revalidating with an etag.
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+      fs.rmSync(
+        path.join(tempDir, "models", "pricing", "model-reasoning.json")
+      );
+
+      jest.resetModules();
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
+      expect(
+        pricing.getReasoningOptions("openai", "gpt-Reasoner")
+      ).toHaveLength(1);
+    });
+
+    it("keeps the pricing cache when the reasoning cache is missing and the refresh fails", async () => {
+      // An offline upgrade from a cache written before reasoning options
+      // were kept must not lose the pricing it already has.
+      mockFetchWith(okResponse(FIXTURE, { etag: '"v1"' }));
+      freshInstance();
+      await flushRefresh();
+      const cacheDir = path.join(tempDir, "models", "pricing");
+      fs.rmSync(path.join(cacheDir, "model-reasoning.json"));
+
+      jest.resetModules();
+      global.fetch = jest.fn().mockRejectedValue(new Error("offline"));
+      const pricing = freshInstance();
+      await flushRefresh();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ headers: {} })
+      );
+      expect(fs.existsSync(path.join(cacheDir, ".etag"))).toBe(false);
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        })
+      ).toEqual({ inputCost: 2.5, outputCost: 0, totalCost: 2.5 });
+      expect(pricing.getReasoningOptions("openai", "gpt-Reasoner")).toBeNull();
+    });
+  });
+
   describe("getCostBreakdown", () => {
     let pricing;
 
@@ -449,7 +574,11 @@ describe("ModelPricing", () => {
           prompt_tokens: 300_000,
           completion_tokens: 0,
         })
-      ).toEqual({ inputCost: (300_000 / 1_000_000) * 2, outputCost: 0, totalCost: (300_000 / 1_000_000) * 2 });
+      ).toEqual({
+        inputCost: (300_000 / 1_000_000) * 2,
+        outputCost: 0,
+        totalCost: (300_000 / 1_000_000) * 2,
+      });
     });
 
     it("clamps negative and non-finite token counts to zero cost", () => {
@@ -611,9 +740,9 @@ describe("ModelPricing", () => {
         completion_tokens: 10,
         model: "some-local-model",
       };
-      expect(
-        addCostToMetrics(metrics, { provider: "generic-openai" })
-      ).toEqual(metrics);
+      expect(addCostToMetrics(metrics, { provider: "generic-openai" })).toEqual(
+        metrics
+      );
       expect(addCostToMetrics({}, { provider: "openai" })).toEqual({});
     });
 

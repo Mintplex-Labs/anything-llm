@@ -4,6 +4,7 @@ const { default: slugify } = require("slugify");
 const { log, conclude } = require("./helpers/index.js");
 const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles.js");
 const { directUploadsPath } = require("../utils/files");
+const { safeJsonParse } = require("../utils/http/index.js");
 
 async function batchDeleteFiles(filesToDelete, batchSize = 500) {
   let deletedCount = 0;
@@ -48,11 +49,22 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
     const filesToDelete = [];
     const knownFiles = await WorkspaceParsedFiles.where({}, null, null, {
       filename: true,
-    })
-      // Slugify the filename to match the direct uploads naming convention otherwise
-      // files with spaces will not result in a match and will be pruned when attached to a thread.
-      // This could then result in files showing "Attached" but the model not seeing them during chat.
-      .then((files) => new Set(files.map((f) => slugify(f.filename))));
+      metadata: true,
+    }).then(
+      (files) =>
+        new Set(
+          files.map((file) => {
+            // Keep the file getContextFiles reads, since collector output names
+            // (e.g. MBOX "-msg-N" files) can differ from the record filename.
+            const metadata = safeJsonParse(file.metadata, {});
+            if (typeof metadata?.location === "string" && metadata.location)
+              return path.basename(metadata.location);
+
+            // Records without a location match the slugified direct-uploads name.
+            return slugify(file.filename);
+          })
+        )
+    );
 
     if (!fs.existsSync(directUploadsPath))
       return log("No direct uploads path found - exiting.");

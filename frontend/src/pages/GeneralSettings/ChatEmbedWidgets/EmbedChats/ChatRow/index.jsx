@@ -1,3 +1,4 @@
+import moment from "moment";
 import truncate from "truncate";
 import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
@@ -67,7 +68,7 @@ export default function ChatRow({ chat, onDelete }) {
         >
           {truncate(safeJsonParse(chat.response, {})?.text, 40)}
         </td>
-        <td className="px-6">{chat.createdAt}</td>
+        <td className="px-6">{moment(chat.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}

@@ -28,8 +28,9 @@ import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderM
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import { getSessionReasoningEffort } from "@/utils/chat/reasoningEffort";
 import { safeJsonParse } from "@/utils/request";
-import { useTranslation } from "react-i18next";
+import useGreeting from "@/hooks/useGreeting";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
@@ -46,7 +47,7 @@ export default function ChatContainer({
   knownHistory = [],
 }) {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const greeting = useGreeting();
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
@@ -319,6 +320,10 @@ export default function ChatContainer({
             type: "awaitingFeedback",
             feedback: promptMessage?.userMessage,
             attachments,
+            reasoningEffort: getSessionReasoningEffort(
+              workspace.slug,
+              activeThreadSlug
+            ),
           })
         );
 
@@ -351,6 +356,10 @@ export default function ChatContainer({
             setSocketId
           ),
         attachments,
+        reasoningEffort: getSessionReasoningEffort(
+          workspace.slug,
+          activeThreadSlug
+        ),
       });
       return;
     }
@@ -491,8 +500,8 @@ export default function ChatContainer({
             <DnDFileUploaderWrapper>
               <div className="flex flex-col h-full w-full items-center justify-center">
                 <div className="flex flex-col items-center w-full max-w-[750px]">
-                  <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-                    {t("main-page.greeting")}
+                  <h1 className="text-white text-2xl md:text-[32px] md:leading-10 mb-11 text-center">
+                    {greeting}
                   </h1>
                   <PromptInput
                     workspace={workspace}

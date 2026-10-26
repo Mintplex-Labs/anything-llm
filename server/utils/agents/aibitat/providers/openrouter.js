@@ -2,8 +2,14 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+  serviceTierParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 
 /**
  * The agent provider for the OpenRouter provider.
@@ -16,7 +22,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
-    const { model = "openrouter/auto" } = config;
+    const { model = "openrouter/auto", reasoningEffort = null } = config;
     super();
     this.providerTag = "openrouter";
     const client = new OpenAI({
@@ -30,12 +36,23 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
     this.verbose = true;
     this._supportsToolCalling = null;
   }
 
   get client() {
     return this._client;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("openrouter", this.reasoningEffort, this.model);
   }
 
   get supportsAgentStreaming() {
@@ -46,7 +63,10 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
+        ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
+        ...this.reasoningConfig,
         user: this.executingUserId,
       })
       .then((result) => {
@@ -64,8 +84,11 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
+      ...serviceTierParam(this.serviceTier, this.providerLog.bind(this)),
+      ...this.reasoningConfig,
       user: this.executingUserId,
     });
   }
@@ -98,7 +121,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         eventHandler,
-        { provider: this }
+        { provider: this, serviceTier: this.serviceTier }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -137,7 +160,7 @@ class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this }
+        { provider: this, serviceTier: this.serviceTier }
       );
 
       if (result.retryWithError) {

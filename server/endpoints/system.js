@@ -44,6 +44,8 @@ const { Telemetry } = require("../models/telemetry");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
 const {
   flexUserRoleValid,
   ROLES,
@@ -71,9 +73,10 @@ const {
 } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
-const { VALID_COMMANDS } = require("../utils/chats");
+const { isReservedCommand } = require("../utils/chats");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
 const { Memory } = require("../models/memory");
+const { dummyHashCompare } = require("../utils/helpers/dummyHashCompare");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -86,6 +89,8 @@ function systemEndpoints(app) {
     response.sendStatus(200);
   });
 
+  // Intentionally unauthenticated so deploy/shutdown scripts can flush in-memory config to .env.
+  // Takes no input and returns nothing. NOT a vulnerability - see SECURITY.md.
   app.get("/env-dump", async (_, response) => {
     if (process.env.NODE_ENV !== "production")
       return response.sendStatus(200).end();
@@ -113,6 +118,9 @@ function systemEndpoints(app) {
     }
   });
 
+  // Intentionally public: the frontend reads this before login to decide how to render.
+  // Secrets are returned only as booleans. This endpoint being unauthenticated is NOT a
+  // vulnerability - see SECURITY.md before filing a report about it.
   app.get("/setup-complete", async (_, response) => {
     try {
       const results = await SystemSettings.currentSettings();
@@ -213,6 +221,8 @@ function systemEndpoints(app) {
         const existingUser = await User._get({ username: String(username) });
 
         if (!existingUser) {
+          // Compare anyway so an unknown username takes as long as a wrong password.
+          dummyHashCompare(password);
           await EventLogs.logEvent(
             "failed_login_invalid_username",
             {
@@ -243,7 +253,7 @@ function systemEndpoints(app) {
             user: null,
             valid: false,
             token: null,
-            message: "[002] Invalid login credentials.",
+            message: "[001] Invalid login credentials.",
           });
           return;
         }
@@ -420,7 +430,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { token, newPassword, confirmPassword } = reqBody(request);
-        const { success, message, error } = await resetPassword(
+        const { success, message } = await resetPassword(
           token,
           newPassword,
           confirmPassword
@@ -429,7 +439,7 @@ function systemEndpoints(app) {
         if (success) {
           response.status(200).json({ success, message });
         } else {
-          response.status(400).json({ success, error });
+          response.status(400).json({ success, message });
         }
       } catch (error) {
         console.error("Error resetting password:", error);
@@ -622,14 +632,26 @@ function systemEndpoints(app) {
           // Password is being disabled so directly unset everything to bypass validation.
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
+          if (process.env.NODE_ENV === "production") dumpENV();
         } else {
-          error = await updateENV(
+          // An all-asterisk value is indistinguishable from the UI's masked
+          // placeholder, so updateENV would silently drop it while JWT_SECRET
+          // still rotates - reject it before mutating anything.
+          if (/^\*+$/.test(String(newPassword))) {
+            response.status(200).json({
+              success: false,
+              error: "Password cannot consist of only asterisks (*).",
+            });
+            return;
+          }
+          const update = await updateENV(
             {
               AuthToken: newPassword,
               JWTSecret: v4(),
             },
             true
-          )?.error;
+          );
+          error = update?.error;
         }
         response.status(200).json({ success: !error, error });
       } catch (e) {
@@ -673,6 +695,8 @@ function systemEndpoints(app) {
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
         await Memory.migrateToMultiUser(user.id);
         await WorkspaceChats.migrateToMultiUser(user.id);
+        await WorkspaceThread.migrateToMultiUser(user.id);
+        await WorkspaceParsedFiles.migrateToMultiUser(user.id);
         await MobileDevice.migrateDevicesToMultiUser(user.id);
         await SlashCommandPresets.migrateToMultiUser(user.id);
         await AgentSkillWhitelist.clearSingleUserWhitelist();
@@ -1250,7 +1274,7 @@ function systemEndpoints(app) {
       if (username !== sessionUser.username)
         updates.username = User.validations.username(String(username));
       if (password) updates.password = String(password);
-      if (bio) updates.bio = String(bio);
+      if (bio || bio === "") updates.bio = String(bio);
 
       if (Object.keys(updates).length === 0) {
         response
@@ -1295,7 +1319,7 @@ function systemEndpoints(app) {
           String(command)
         );
 
-        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+        if (isReservedCommand(formattedCommand)) {
           return response.status(400).json({
             message:
               "Cannot create a preset with a command that matches a system command",
@@ -1334,7 +1358,7 @@ function systemEndpoints(app) {
           String(command)
         );
 
-        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+        if (isReservedCommand(formattedCommand)) {
           return response.status(400).json({
             message:
               "Cannot update a preset to use a command that matches a system command",

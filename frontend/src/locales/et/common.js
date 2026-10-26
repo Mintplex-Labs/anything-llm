@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tööruumide nimi",
     selection: "Mudeli valik",
     saving: "Salvestan…",
+    saved: "Salvestatud",
     save: "Salvesta muudatused",
     previous: "Eelmine leht",
     next: "Järgmine leht",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Peatas",
     loading: "Laadimine",
     refresh: "Värskendada",
+    noResults: "Tulemusi ei leitud",
   },
   settings: {
     title: "Instantsi seaded",
@@ -137,6 +139,35 @@ const TRANSLATIONS = {
       uploadDocument: "Lae fail üles",
     },
     greeting: "Kuidas saan teid täna aidata?",
+    greetings: {
+      anytime: {
+        working_on: "Millega tegeleme?",
+        on_your_mind: "Mis teil mõttes on?",
+        where_to_start: "Kust alustame?",
+        ready: "Valmis, kui teie olete.",
+        think_it_through: "Mõtleme selle läbi.",
+      },
+      morning: {
+        good_morning: "Tere hommikust",
+        first_today: "Tere hommikust. Millega täna alustame?",
+        fresh_start: "Uus algus. Kust alustame?",
+      },
+      afternoon: {
+        good_afternoon: "Tere päevast",
+        tackling: "Tere päevast. Mille kallale asume?",
+        next_on_list: "Mis on nimekirjas järgmine?",
+        keep_moving: "Liigume edasi.",
+      },
+      evening: {
+        good_evening: "Tere õhtust",
+        finish_strong: "Tere õhtust. Lõpetame hästi.",
+      },
+      night: {
+        midnight_oil: "Töötate hilisööni?",
+        late_one: "Pikk õhtu? Mõtleme selle läbi.",
+        still_up: "Ikka veel üleval? Valmis, kui teie olete.",
+      },
+    },
   },
   "new-workspace": {
     title: "Uus tööruum",
@@ -242,7 +273,25 @@ const TRANSLATIONS = {
       title: "LLM-i temperatuur",
       "desc-end":
         "Kõrgem väärtus = loovam, ent liiga kõrge võib tekitada ebaühtlasi vastuseid.",
+      placeholder: "Teenusepakkuja vaikeväärtus",
     },
+    reasoning_effort: {
+      title: "Arutlemise pingutus",
+      default: "Teenusepakkuja vaikeväärtus",
+      cannot_disable: "See mudel ei saa arutlemist välja lülitada.",
+      levels: {
+        off: "Väljas",
+        on: "Sees",
+        minimal: "Minimaalne",
+        low: "Madal",
+        medium: "Keskmine",
+        high: "Kõrge",
+        xhigh: "Väga kõrge",
+        max: "Maksimaalne",
+      },
+    },
+    token_limit_reached:
+      "Vastus jõudis maksimaalse väljundtokenite piirini. Pikemate vastuste lubamiseks suurendage mudeli maksimaalset väljundtokenite arvu.",
   },
   "vector-workspace": {
     identifier: "Vektoriandmebaasi identifikaator",
@@ -316,8 +365,6 @@ const TRANSLATIONS = {
         description:
           "Tagage, et teie esindaja saaks kasutada SQL-i, et vastata teie küsimustele, ühendades erinevate SQL andmebaasiteenustega.",
       },
-      default_skill:
-        "Vaikimisi on see funktsioon lubatud, kuid saate seda välja lülitada, kui ei soovi, et see oleks saadaval kaagentile.",
       filesystem: {
         title: "Failisüsteemi juurdepääs",
         description:
@@ -711,6 +758,11 @@ const TRANSLATIONS = {
         description:
           'Lase esindajal luua korduvad, planeeritud ülesanded vestluse kaudu (nt " iga tööpäeva kell 9 kokkuvõta minu postkasti ja saada mulle e-posti"). Saadav ainult ühe kasutaja režiimis.',
       },
+      generateImage: {
+        title: "Loo pildid",
+        description:
+          "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
+      },
     },
     mcp: {
       title: "MCP-serverid",
@@ -723,7 +775,7 @@ const TRANSLATIONS = {
       "start-server": "Alusta MCP-serverit",
       "delete-server": "Kasuta MCP-serveri kustutamise funktsiooni",
       "tool-count-warning":
-        "See MCP server on lubanud <b>_, mis tarbivad konteksti igas vestluses.</b> Selle asemel võid soovimatuid tööriistu välja lülitada, et säästa konteksti.",
+        "Selles MCP serveris on <b>{{count}} lubatud tööriista</b>, mis tarbivad konteksti igas vestluses.<br />Konteksti säästmiseks kaalu soovimatute tööriistade välja lülitamist.",
       "startup-command": "Alustamine",
       command: "Juhendamine",
       arguments: "Argumentid",
@@ -784,6 +836,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Bränding ja valgesildistamine",
       description: "Valgesildista oma AnythingLLM kohandatud brändinguga.",
+      tabs: {
+        identity: "Identiteet",
+        colors: "Värvid",
+        sidebar: "Külgriba",
+        browser: "Brauser",
+      },
     },
     chat: {
       title: "Vestlus",
@@ -861,6 +919,36 @@ const TRANSLATIONS = {
         title: "Lülita automaatne rullimine välja",
         description:
           "Lülitage automaatne rullimine alla lootes välja, kui saabuvad uued sõnumid.",
+      },
+      palette: {
+        title: "Värvipalett",
+        description:
+          "Valige värvipalett. See kehtib nii heleda kui ka tumeda režiimi kohta.",
+        enforced:
+          "Teie administraator on määranud selle instantsi värvipaleti.",
+        "default-badge": "Vaikimisi",
+      },
+      "instance-palettes": {
+        title: "Värvipaletid",
+        description:
+          "Klõpsake paletil, et muuta see selle instantsi kõigi kasutajate vaikepaletiks. Kohandatud palettidel on põhivärv, mis toonib tausta, külgriba ja sisu, ning rõhuvärv nuppude ja linkide jaoks.",
+        new: "Uus palett",
+        edit: "Muuda paletti",
+        delete: "Kustuta palett",
+        name: "Paleti nimi",
+        "name-required": "Andke paletile nimi.",
+        colors: {
+          main: "Põhivärv",
+          accent: "Rõhuvärv",
+        },
+        "preview-note":
+          "Muudatusi näeb eelvaates kogu rakenduses ja need salvestatakse, kui klõpsate „Valmis“.",
+        done: "Valmis",
+        cancel: "Tühista",
+        enforce: "Jõusta vaikepalett",
+        "enforce-description":
+          "Kõik selle instantsi kasutajad kasutavad vaikepaletti ega saa seda muuta.",
+        "save-failed": "Värvipalettide salvestamine ebaõnnestus: {{error}}",
       },
     },
   },

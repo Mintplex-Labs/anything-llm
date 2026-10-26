@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Darba telpas nosaukums",
     selection: "Modeļa izvēle",
     saving: "Saglabā...",
+    saved: "Saglabāts",
     save: "Saglabāt izmaiņas",
     previous: "Iepriekšējā lapa",
     next: "Nākamā lapa",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Apstājās",
     loading: "Ielāde",
     refresh: "Atjaunot",
+    noResults: "Netika atrasti rezultāti",
   },
   settings: {
     title: "Instances iestatījumi",
@@ -138,6 +140,35 @@ const TRANSLATIONS = {
       uploadDocument: "August failu",
     },
     greeting: "Kā es varu jums šodien palīdzēt?",
+    greetings: {
+      anytime: {
+        working_on: "Pie kā mēs strādājam?",
+        on_your_mind: "Kas jums prātā?",
+        where_to_start: "Ar ko sāksim?",
+        ready: "Gatavs, kad būsiet gatavi.",
+        think_it_through: "Pārdomāsim to rūpīgi.",
+      },
+      morning: {
+        good_morning: "Labrīt",
+        first_today: "Labrīt. Ar ko šodien sāksim?",
+        fresh_start: "Jauns sākums. Ar ko sāksim?",
+      },
+      afternoon: {
+        good_afternoon: "Labdien",
+        tackling: "Labdien. Kam ķersimies klāt?",
+        next_on_list: "Kas nākamais sarakstā?",
+        keep_moving: "Turpināsim.",
+      },
+      evening: {
+        good_evening: "Labvakar",
+        finish_strong: "Labvakar. Pabeigsim dienu ar uzviju.",
+      },
+      night: {
+        midnight_oil: "Strādājat līdz vēlai naktij?",
+        late_one: "Gara nakts? Pārdomāsim to rūpīgi.",
+        still_up: "Vēl nomodā? Gatavs, kad būsiet gatavi.",
+      },
+    },
   },
   "new-workspace": {
     title: "Jauna darba telpa",
@@ -245,7 +276,25 @@ const TRANSLATIONS = {
       title: "LLM Temperatūra",
       "desc-end":
         "Jo lielāks skaitlis, jo radošākas atbildes. Dažiem modeļiem tas var novest pie nesaprotamām atbildēm, ja iestatīts pārāk augsts.",
+      placeholder: "Nodrošinātāja noklusējums",
     },
+    reasoning_effort: {
+      title: "Spriešanas piepūle",
+      default: "Nodrošinātāja noklusējums",
+      cannot_disable: "Šis modelis nevar izslēgt spriešanu.",
+      levels: {
+        off: "Izslēgts",
+        on: "Ieslēgts",
+        minimal: "Minimāla",
+        low: "Zema",
+        medium: "Vidēja",
+        high: "Augsta",
+        xhigh: "Ļoti augsta",
+        max: "Maksimāla",
+      },
+    },
+    token_limit_reached:
+      "Atbildē tika sasniegts maksimālais izvades tokenu limits. Palieliniet modeļa maksimālo izvades tokenu skaitu, lai varētu saņemt garākas atbildes.",
   },
   "vector-workspace": {
     identifier: "Vektoru datubāzes identifikators",
@@ -322,8 +371,6 @@ const TRANSLATIONS = {
         description:
           "Ļauj savam pārstāvim izmantot SQL, lai atbildētu uz jūsu jautājumiem, savienojoties ar dažādiem SQL datubāzes sniedzējiem.",
       },
-      default_skill:
-        "Par iestatījumu, šī spēja ir aktivizēta, taču jūs varat to izslēgt, ja nevēlaties, lai tā būtu pieejama aģentam.",
       filesystem: {
         title: "Failu sistēmas piekļuves tiesības",
         description:
@@ -729,6 +776,11 @@ const TRANSLATIONS = {
         description:
           'Ļauj aģentam izveidot atkārtotus plānotus darbus no čata (piemēram, "katru darba dienu plkst. 9:00 nosūtīt man savu e-pasta kopsavilkumu un nosūtīt ziņu"). Pieejams tikai vienam lietotājam.',
       },
+      generateImage: {
+        title: "Izveidot attēlus",
+        description:
+          "Ļauj aģentam ģenerēt attēlus no sarunas, vai rediģēt attēlus, kas pievienoti sarunai, izmantojot konfigurētu attēlu ģenerēšanas pakalpojumu.",
+      },
     },
     mcp: {
       title: "MCP serveri",
@@ -741,7 +793,7 @@ const TRANSLATIONS = {
       "start-server": "Sākt MCP serveri",
       "delete-server": "Dzēst MCP serveri",
       "tool-count-warning":
-        "Šis MCP servers ir aktivizētas <b> instrumenti, kas izmantos kontekstu katrā sarunā.</b> Iespējams, ir labāk deaktivizēt nevēlamus instrumentus, lai saglabātu kontekstu.",
+        "Šim MCP serverim ir <b>aktivizēti instrumenti ({{count}})</b>, kas izmantos kontekstu katrā sarunā.<br />Apsveriet nevēlamo instrumentu deaktivizēšanu, lai taupītu kontekstu.",
       "startup-command": "Sākuma komanda",
       command: "Instrukcijas",
       arguments: "Pamatatpersonas",
@@ -802,6 +854,12 @@ const TRANSLATIONS = {
       title: "Zīmolrade un identitāte",
       description:
         "Pielāgojiet savu AnythingLLM instanci ar pielāgotu zīmolradi.",
+      tabs: {
+        identity: "Identitāte",
+        colors: "Krāsas",
+        sidebar: "Sānjosla",
+        browser: "Pārlūks",
+      },
     },
     chat: {
       title: "Saruna",
@@ -883,6 +941,36 @@ const TRANSLATIONS = {
         title: "Atspējot automātisko skrološanu",
         description:
           "Atstāviet automātisko skrološanu uz sarunas beigām, kad saņemts jauns sūtījums.",
+      },
+      palette: {
+        title: "Krāsu palete",
+        description:
+          "Izvēlieties krāsu paleti. Tā attiecas gan uz gaišo, gan tumšo režīmu.",
+        enforced:
+          "Jūsu administrators ir iestatījis krāsu paleti šai instancei.",
+        "default-badge": "Pēc noklusējuma",
+      },
+      "instance-palettes": {
+        title: "Krāsu paletes",
+        description:
+          "Noklikšķiniet uz paletes, lai padarītu to par noklusējuma paleti visiem šīs instances lietotājiem. Pielāgotās paletes veido galvenā krāsa, kas iekrāso fonu, sānjoslu un saturu, un akcenta krāsa pogām un saitēm.",
+        new: "Jauna palete",
+        edit: "Rediģēt paleti",
+        delete: "Dzēst paleti",
+        name: "Paletes nosaukums",
+        "name-required": "Piešķiriet paletei nosaukumu.",
+        colors: {
+          main: "Galvenā krāsa",
+          accent: "Akcenta krāsa",
+        },
+        "preview-note":
+          'Izmaiņas tiek priekšskatītas visā lietotnē un tiek saglabātas, kad noklikšķināt uz "Gatavs".',
+        done: "Gatavs",
+        cancel: "Atcelt",
+        enforce: "Piemērot noklusējuma paleti",
+        "enforce-description":
+          "Visi šīs instances lietotāji izmanto noklusējuma paleti un nevar to mainīt.",
+        "save-failed": "Neizdevās saglabāt krāsu paletes: {{error}}",
       },
     },
   },

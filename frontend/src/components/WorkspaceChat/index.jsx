@@ -20,6 +20,8 @@ import {
   useWatchForAutoPlayAssistantTTSResponse,
 } from "../contexts/TTSProvider";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { PROMPT_INPUT_ID } from "./ChatContainer/PromptInput";
+import { movePromptInputDraft } from "@/hooks/usePromptInputStorage";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
@@ -47,7 +49,15 @@ export default function WorkspaceChat({ loading, workspace }) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
     const { thread } = await Workspace.threads.new(workspace.slug);
-    if (thread) navigate(paths.workspace.thread(workspace.slug, thread.slug));
+    if (!thread) return;
+    // The thread route remounts PromptInput under the thread's storage key,
+    // so carry the unsent draft over with the files.
+    movePromptInputDraft({
+      from: workspace.slug,
+      to: thread.slug,
+      value: document.getElementById(PROMPT_INPUT_ID)?.value ?? "",
+    });
+    navigate(paths.workspace.thread(workspace.slug, thread.slug));
   }
 
   useEffect(() => {
@@ -76,7 +86,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   if (loaded === null) {
     if (hasPendingMessage) {
       return (
-        <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full" />
+        <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full" />
       );
     }
     return <LoadingChat />;

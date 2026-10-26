@@ -215,4 +215,4 @@ function resolveImageBuffers(attachments = []) {
   return buffers;
 }
 
-module.exports = { generateImage };
+module.exports = { generateImage, resolveImageBuffers };

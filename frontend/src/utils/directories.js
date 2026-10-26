@@ -1,14 +1,5 @@
 import moment from "moment";
 
-export function formatDate(dateString) {
-  const date = isNaN(new Date(dateString).getTime())
-    ? new Date()
-    : new Date(dateString);
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  const formattedDate = date.toLocaleDateString("en-US", options);
-  return formattedDate;
-}
-
 export function formatDateTimeAsMoment(dateString, format = "LLL") {
   if (!dateString) return moment().format(format);
   try {

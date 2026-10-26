@@ -8,13 +8,11 @@ import ChatPromptHistory from "./ChatPromptHistory";
 import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
-export default function ChatPromptSettings({
-  workspace,
-  setHasChanges,
-  hasChanges,
-}) {
+export default function ChatPromptSettings({ workspace }) {
   const { t } = useTranslation();
+  const { markDirty, save, hasChanges } = useAutosaveForm();
   const [searchParams] = useSearchParams();
 
   // Prompt state
@@ -98,7 +96,8 @@ export default function ChatPromptSettings({
   const handleRestoreFromHistory = (historicalPrompt) => {
     setPrompt(historicalPrompt);
     setShowPromptHistory(false);
-    setHasChanges(true);
+    markDirty("openAiPrompt");
+    save();
   };
 
   const handlePublishFromHistory = (historicalPrompt) => {
@@ -111,7 +110,8 @@ export default function ChatPromptSettings({
   const handleRestoreToDefaultSystemPrompt = () => {
     System.fetchDefaultSystemPrompt().then(({ defaultSystemPrompt }) => {
       setPrompt(defaultSystemPrompt);
-      setHasChanges(true);
+      markDirty("openAiPrompt");
+      save();
     });
   };
 
@@ -130,6 +130,7 @@ export default function ChatPromptSettings({
           <div className="flex items-center justify-between">
             <label htmlFor="name" className="block input-label">
               {t("chat.prompt.title")}
+              <SavedIndicator name="openAiPrompt" />
             </label>
           </div>
           <p className="text-white text-opacity-60 text-xs font-medium">
@@ -195,11 +196,11 @@ export default function ChatPromptSettings({
                 }}
                 onChange={(e) => {
                   setPrompt(e.target.value);
-                  setHasChanges(true);
+                  markDirty("openAiPrompt");
                 }}
                 onPaste={(e) => {
                   setPrompt(e.target.value);
-                  setHasChanges(true);
+                  markDirty("openAiPrompt");
                 }}
                 style={{
                   resize: "vertical",

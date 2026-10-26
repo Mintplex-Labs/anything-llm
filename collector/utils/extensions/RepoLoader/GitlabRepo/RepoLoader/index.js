@@ -68,21 +68,41 @@ class GitLabRepoLoader {
     if (!match?.groups) return false;
 
     const { author, project } = match.groups;
-    this.projectId = encodeURIComponent(`${author}/${project}`);
-    this.apiBase = new URL(this.repo).origin;
+    // GitLab puts the reserved `/-/` segment between a project path and its views (eg: `/-/tree/main`)
+    // and forbids a project path that ends in `.git`, so the repository is everything before either.
+    // A trailing slash is not part of the path. Sub-groups (`group/sub/project`) are preserved.
+    const segments = project.replace(/[?#].*$/, "").split("/");
+    const separator = segments.indexOf("-");
+    const projectPath = (
+      separator === -1 ? segments : segments.slice(0, separator)
+    )
+      .filter(Boolean)
+      .join("/")
+      .replace(/\.git$/, "");
+    if (!projectPath) return false;
+
+    const { origin } = new URL(this.repo);
+    this.repo = `${origin}/${author}/${projectPath}`;
+    this.projectId = encodeURIComponent(`${author}/${projectPath}`);
+    this.apiBase = origin;
     this.author = author;
-    this.project = project;
+    this.project = projectPath;
     return true;
   }
 
   async #validBranch() {
-    await this.getRepoBranches();
+    await this.#fetchBranches();
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
     console.log(
       "[Gitlab Loader]: Branch not set! Auto-assigning to a default branch."
     );
-    this.branch = this.branches.includes("main") ? "main" : "master";
+    const defaultBranch = await this.fetchDefaultBranch();
+    if (defaultBranch) {
+      this.branch = defaultBranch;
+    } else {
+      this.branch = this.branches.includes("main") ? "main" : "master";
+    }
     console.log(`[Gitlab Loader]: Branch auto-assigned to ${this.branch}.`);
     return;
   }
@@ -93,7 +113,9 @@ class GitLabRepoLoader {
       await fetch(`${this.apiBase}/api/v4/user`, {
         method: "GET",
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
-      }).then((res) => res.ok);
+      }).then((res) => {
+        if (!res.ok) throw new Error(res.statusText || `HTTP ${res.status}`);
+      });
     } catch (e) {
       console.error(
         "Invalid Gitlab Access Token provided! Access token will not be used",
@@ -143,7 +165,10 @@ class GitLabRepoLoader {
         pageContent: file.content,
         metadata: {
           source: file.path,
-          url: `${this.repo}/-/blob/${this.branch}/${file.path}`,
+          url: `${this.repo}/-/blob/${this.branch
+            .split("/")
+            .map(encodeURIComponent)
+            .join("/")}/${file.path}`,
         },
       });
     }
@@ -183,7 +208,13 @@ class GitLabRepoLoader {
     return docs;
   }
 
-  #branchPrefSort(branches = []) {
+  // Sort branches so the repository default branch is at the top of the result,
+  // since the first branch is the one preselected in the UI. When the default
+  // branch is unknown, main or master is shown at the top instead.
+  #branchPrefSort(branches = [], defaultBranch = null) {
+    if (defaultBranch && branches.includes(defaultBranch))
+      return [defaultBranch, ...branches.filter((b) => b !== defaultBranch)];
+
     const preferredSort = ["main", "master"];
     return branches.reduce((acc, branch) => {
       if (preferredSort.includes(branch)) return [branch, ...acc];
@@ -192,11 +223,33 @@ class GitLabRepoLoader {
   }
 
   /**
-   * Retrieves all branches for the repository.
-   * @returns {Promise<string[]>} An array of branch names.
+   * Retrieves the default branch of the repository from its metadata.
+   * @returns {Promise<string|null>} The default branch name, or null if it could not be resolved.
    */
-  async getRepoBranches() {
-    if (!this.#validGitlabUrl() || !this.projectId) return [];
+  async fetchDefaultBranch() {
+    if (!this.projectId) return null;
+    return fetch(`${this.apiBase}/api/v4/projects/${this.projectId}`, {
+      method: "GET",
+      headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error(
+          `Invalid request to GitLab API: ${res.statusText || res.status}`
+        );
+      })
+      .then((metadata) => metadata?.default_branch || null)
+      .catch((err) => {
+        console.log(`RepoLoader.fetchDefaultBranch`, err);
+        return null;
+      });
+  }
+
+  /**
+   * Pages through the branches endpoint and stores every branch name on `this.branches`.
+   * @returns {Promise<void>}
+   */
+  async #fetchBranches() {
     await this.#validateAccessToken();
     this.branches = [];
 
@@ -209,7 +262,19 @@ class GitLabRepoLoader {
       if (!Array.isArray(branchesPage) || !branchesPage?.length) break;
       this.branches.push(...branchesPage.map((branch) => branch.name));
     }
-    return this.#branchPrefSort(this.branches);
+  }
+
+  /**
+   * Retrieves all branches for the repository, with the default branch first.
+   * @returns {Promise<string[]>} An array of branch names.
+   */
+  async getRepoBranches() {
+    if (!this.#validGitlabUrl() || !this.projectId) return [];
+    await this.#fetchBranches();
+    if (this.branches.length === 0) return [];
+
+    const defaultBranch = await this.fetchDefaultBranch();
+    return this.#branchPrefSort(this.branches, defaultBranch);
   }
 
   /**
@@ -255,6 +320,35 @@ class GitLabRepoLoader {
   }
 
   /**
+   * Fetches every discussion note on a single issue.
+   * @param {number|string} issueId - The iid of the issue.
+   * @returns {Promise<string[][]>} The notes of each discussion.
+   */
+  async #fetchIssueDiscussions(issueId) {
+    const discussionsRequestData = {
+      endpoint: `/api/v4/projects/${this.projectId}/issues/${issueId}/discussions`,
+    };
+    let discussionPage = null;
+    const discussions = [];
+
+    while (
+      (discussionPage = await this.fetchNextPage(discussionsRequestData))
+    ) {
+      if (!Array.isArray(discussionPage) || !discussionPage?.length) break;
+      discussions.push(
+        ...discussionPage.map(({ notes }) =>
+          notes.map(
+            ({ body, author, created_at }) =>
+              `${author.username} at ${created_at}:
+${body}`
+          )
+        )
+      );
+    }
+    return discussions;
+  }
+
+  /**
    * Fetches all issues from the repository.
    * @returns {Promise<Issue[]>} An array of issue objects.
    */
@@ -270,29 +364,9 @@ class GitLabRepoLoader {
       if (!Array.isArray(issuesPage) || !issuesPage?.length) break;
       // Fetch all the issues in parallel.
       pagePromises = issuesPage.map(async (issue) => {
-        const discussionsRequestData = {
-          endpoint: `/api/v4/projects/${this.projectId}/issues/${issue.iid}/discussions`,
-        };
-        let discussionPage = null;
-        const discussions = [];
-
-        while (
-          (discussionPage = await this.fetchNextPage(discussionsRequestData))
-        ) {
-          if (!Array.isArray(discussionPage) || !discussionPage?.length) break;
-          discussions.push(
-            ...discussionPage.map(({ notes }) =>
-              notes.map(
-                ({ body, author, created_at }) =>
-                  `${author.username} at ${created_at}:
-${body}`
-              )
-            )
-          );
-        }
         const result = {
           ...issue,
-          discussions,
+          discussions: await this.#fetchIssueDiscussions(issue.iid),
         };
         return result;
       });
@@ -304,6 +378,33 @@ ${body}`
     }
     console.log(`Total issues fetched: ${issues.length}`);
     return issues;
+  }
+
+  /**
+   * Fetches a single issue and its discussions.
+   * @param {number|string} issueId - The iid of the issue.
+   * @returns {Promise<Issue|null>} The issue object, or null if fetching fails.
+   */
+  async fetchSingleIssue(issueId) {
+    try {
+      const url = `${this.apiBase}/api/v4/projects/${this.projectId}/issues/${issueId}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to fetch single issue ${issueId}`);
+
+      const issue = await response.json();
+      return {
+        ...issue,
+        discussions: await this.#fetchIssueDiscussions(issueId),
+      };
+    } catch (e) {
+      console.error(`RepoLoader.fetchSingleIssue`, e);
+      return null;
+    }
   }
 
   /**
@@ -333,9 +434,9 @@ ${body}`
     try {
       const url = `${this.apiBase}/api/v4/projects/${
         this.projectId
-      }/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${
-        this.branch
-      }`;
+      }/repository/files/${encodeURIComponent(
+        sourceFilePath
+      )}/raw?ref=${encodeURIComponent(this.branch)}`;
       const response = await fetch(url, {
         method: "GET",
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},

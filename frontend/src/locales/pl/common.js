@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nazwa obszaru roboczego",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
+    saved: "Zapisano",
     save: "Zapisz zmiany",
     previous: "Poprzednia strona",
     next: "Następna strona",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Zatrzymano",
     loading: "Ładowanie",
     refresh: "Odświeżyć",
+    noResults: "Nie znaleziono żadnych wyników",
   },
   settings: {
     title: "Ustawienia instancji",
@@ -138,6 +140,35 @@ const TRANSLATIONS = {
       uploadDocument: "Załaduj dokument",
     },
     greeting: "W czym mogę Ci dzisiaj pomóc?",
+    greetings: {
+      anytime: {
+        working_on: "Nad czym pracujemy?",
+        on_your_mind: "O czym myślisz?",
+        where_to_start: "Od czego zaczniemy?",
+        ready: "Jestem gotowy, gdy tylko zechcesz.",
+        think_it_through: "Przemyślmy to.",
+      },
+      morning: {
+        good_morning: "Dzień dobry",
+        first_today: "Dzień dobry. Od czego dziś zaczynamy?",
+        fresh_start: "Nowy początek. Od czego zaczniemy?",
+      },
+      afternoon: {
+        good_afternoon: "Dzień dobry",
+        tackling: "Dzień dobry. Czym się zajmiemy?",
+        next_on_list: "Co następne na liście?",
+        keep_moving: "Działajmy dalej.",
+      },
+      evening: {
+        good_evening: "Dobry wieczór",
+        finish_strong: "Dobry wieczór. Zakończmy dzień mocnym akcentem.",
+      },
+      night: {
+        midnight_oil: "Pracujesz do późna?",
+        late_one: "Długi wieczór? Przemyślmy to.",
+        still_up: "Jeszcze nie śpisz? Jestem gotowy, gdy tylko zechcesz.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nowy obszar roboczy",
@@ -245,7 +276,25 @@ const TRANSLATIONS = {
       title: "Temperatura modelu",
       "desc-end":
         "Im wyższa liczba, tym większa kreatywność. W przypadku niektórych modeli może to prowadzić do niespójnych odpowiedzi przy zbyt wysokich ustawieniach.",
+      placeholder: "Domyślna wartość dostawcy",
     },
+    reasoning_effort: {
+      title: "Wysiłek rozumowania",
+      default: "Domyślna wartość dostawcy",
+      cannot_disable: "Ten model nie może wyłączyć rozumowania.",
+      levels: {
+        off: "Wyłączone",
+        on: "Włączone",
+        minimal: "Minimalny",
+        low: "Niski",
+        medium: "Średni",
+        high: "Wysoki",
+        xhigh: "Bardzo wysoki",
+        max: "Maksymalny",
+      },
+    },
+    token_limit_reached:
+      "Odpowiedź osiągnęła maksymalną dopuszczalną liczbę tokenów. Zwiększ limit maksymalnej liczby tokenów, które model może wygenerować, aby uzyskać dłuższe odpowiedzi.",
   },
   "vector-workspace": {
     identifier: "Identyfikator wektorowej bazy danych",
@@ -323,8 +372,6 @@ const TRANSLATIONS = {
         description:
           "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
       },
-      default_skill:
-        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
       filesystem: {
         title: "Dostęp do systemu plików",
         description:
@@ -737,6 +784,11 @@ const TRANSLATIONS = {
         description:
           "Umożliw agentowi tworzenie powtarzalnych zadań w harmonogramie bezpośrednio z czatu (np. „codziennie w poniedziałek o 9:00, podsumuj zawartość mojej skrzynki pocztowej i wyślij mi e-mail”). Funkcja dostępna tylko w trybie dla jednego użytkownika.",
       },
+      generateImage: {
+        title: "Generuj obrazy",
+        description:
+          "Pozwól przedstawicielowi generować obrazy na podstawie rozmowy lub edytować dołączone obrazy, korzystając z wybranego dostawcy usług generowania obrazów.",
+      },
     },
     mcp: {
       title: "Serwery MCP",
@@ -749,7 +801,7 @@ const TRANSLATIONS = {
       "start-server": "Uruchom serwer MCP",
       "delete-server": "Usuń serwer MCP",
       "tool-count-warning":
-        "Ten serwer MCP ma włączone <b> narzędzia, które będą zużywać kontekst w każdej rozmowie.</b> Rozważ wyłączenie niepotrzebnych narzędzi, aby oszczędzać kontekst.",
+        "Ten serwer MCP ma <b>włączone narzędzia ({{count}})</b>, które będą zużywać kontekst w każdej rozmowie.<br />Rozważ wyłączenie niepotrzebnych narzędzi, aby oszczędzać kontekst.",
       "startup-command": "Polecenie uruchamiające",
       command: "Rozkaz",
       arguments: "Argumenty",
@@ -812,6 +864,12 @@ const TRANSLATIONS = {
       title: "Branding i white-labeling",
       description:
         "Oznakuj swoją instancję AnythingLLM niestandardowym brandingiem.",
+      tabs: {
+        identity: "Tożsamość",
+        colors: "Kolory",
+        sidebar: "Pasek boczny",
+        browser: "Przeglądarka",
+      },
     },
     chat: {
       title: "Czat",
@@ -893,6 +951,36 @@ const TRANSLATIONS = {
         title: "Wyłącz automatyczne przewijanie",
         description:
           "Wyłącz automatyczne przewijanie do końca okna czatu po otrzymaniu nowych wiadomości.",
+      },
+      palette: {
+        title: "Paleta kolorów",
+        description:
+          "Wybierz paletę kolorów. Dotyczy zarówno trybu jasnego, jak i ciemnego.",
+        enforced:
+          "Twój administrator ustawił paletę kolorów dla tej konkretnej instancji.",
+        "default-badge": "Domyślne",
+      },
+      "instance-palettes": {
+        title: "Palety kolorów",
+        description:
+          "Kliknij paletę, aby ustawić ją jako domyślną dla wszystkich w tej instancji. Niestandardowe palety składają się z koloru głównego, który barwi tło, pasek boczny i zawartość, oraz koloru akcentu dla przycisków i linków.",
+        new: "Nowa paleta",
+        edit: "Edytuj paletę",
+        delete: "Usuń paletę",
+        name: "Nazwa palety",
+        "name-required": "Nadaj palecie nazwę.",
+        colors: {
+          main: "Główny kolor",
+          accent: "Kolor akcentu",
+        },
+        "preview-note":
+          "Zmiany są widoczne w podglądzie w całej aplikacji i zostaną zapisane po kliknięciu „Gotowe”.",
+        done: "Gotowe",
+        cancel: "Anuluj",
+        enforce: "Wymuś domyślną paletę",
+        "enforce-description":
+          "Wszyscy w tej instancji używają domyślnej palety i nie mogą jej zmienić.",
+        "save-failed": "Nie udało się zapisać palet kolorów: {{error}}",
       },
     },
   },
@@ -1980,7 +2068,8 @@ const TRANSLATIONS = {
       "select-router-error": "Wybierz router",
       "invalid-model": "Nieprawidłowy wybór modelu",
       "routed-to": "Przekazane do <route>{{model}}</route>",
-      "routed-to-rule": "Przekazane do <route> przez <rule>",
+      "routed-to-rule":
+        "Przekazane do <route>{{model}}</route> przez <rule>{{ruleTitle}}</rule>",
     },
   },
   imageGeneration: {

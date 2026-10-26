@@ -9,7 +9,8 @@ import Modal, {
   ModalInput,
   ModalTextarea,
 } from "@/components/lib/Modal";
-import { CMD_REGEX } from "./constants";
+import { CMD_REGEX, isReservedCommand } from "./constants";
+import showToast from "@/utils/toast";
 
 export default function EditPresetModal({
   isOpen,
@@ -31,6 +32,13 @@ export default function EditPresetModal({
     e.preventDefault();
     const form = new FormData(e.target);
     const sanitizedCommand = command.replace(CMD_REGEX, "");
+    if (isReservedCommand(`/${sanitizedCommand}`)) {
+      showToast(
+        "This command is reserved for system use - please choose another.",
+        "error"
+      );
+      return;
+    }
     onSave({
       id: preset.id,
       command: `/${sanitizedCommand}`,

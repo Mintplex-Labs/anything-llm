@@ -9,8 +9,17 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass, stripThinkingFromText } = require("../utils/helpers");
+const { User } = require("../models/user");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  stripThinkingFromText,
+} = require("../utils/helpers");
 const { handleFileUpload } = require("../utils/files/multer");
+const {
+  getReasoningCapabilities,
+  usesModelRouter,
+} = require("../utils/helpers/reasoningEffort");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
@@ -26,6 +35,7 @@ const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
+const { messageToSpeech } = require("../utils/TextToSpeech/messageToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 
 const truncate = require("truncate");
@@ -411,6 +421,32 @@ function workspaceEndpoints(app) {
   );
 
   app.get(
+    "/workspace/:slug/llm-capabilities",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        if (usesModelRouter(workspace))
+          return response.status(200).json({
+            capabilities: { reasoning: false, reasoningOptions: [] },
+          });
+        const capabilities = await getReasoningCapabilities(
+          getLLMProvider({
+            provider: workspace.chatProvider,
+            model: workspace.chatModel,
+          })
+        );
+        return response.status(200).json({ capabilities });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.status(200).json({
+          capabilities: { reasoning: "unknown", reasoningOptions: [] },
+        });
+      }
+    }
+  );
+
+  app.get(
     "/workspace/:slug/chats",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
@@ -446,6 +482,10 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
+        // Don't hide chats for a regenerate/edit that stream-chat would reject.
+        if (multiUserMode(response) && !(await User.canSendChat(user)))
+          return response.sendStatus(429);
+
         if (!workspace || !Array.isArray(chatIds)) {
           response.sendStatus(400).end();
           return;
@@ -454,7 +494,9 @@ function workspaceEndpoints(app) {
         // This works for both workspace and threads.
         // we simplify this by just looking at workspace<>user overlap
         // since they are all on the same table.
-        await WorkspaceChats.delete({
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           id: { in: chatIds.map((id) => Number(id)) },
           user_id: user?.id ?? null,
           workspaceId: workspace.id,
@@ -477,7 +519,13 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
-        await WorkspaceChats.delete({
+        // Don't hide chats for a regenerate/edit that stream-chat would reject.
+        if (multiUserMode(response) && !(await User.canSendChat(user)))
+          return response.sendStatus(429);
+
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           workspaceId: workspace.id,
           thread_id: null,
           user_id: user?.id,
@@ -598,7 +646,7 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error processing the suggested messages:", error);
         response.status(500).json({
-          success: true,
+          success: false,
           message: "Error saving the suggested messages.",
         });
       }
@@ -657,7 +705,9 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const text = safeJsonParse(wsChat.response, null)?.text;
+        const text = messageToSpeech(
+          safeJsonParse(wsChat.response, null)?.text
+        );
         if (!text) return response.sendStatus(204).end();
 
         const TTSProvider = getTTSProvider();
@@ -889,7 +939,11 @@ function workspaceEndpoints(app) {
 
   app.get(
     "/workspace/:slug/prompt-history",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
     async (_, response) => {
       try {
         response.status(200).json({
@@ -926,7 +980,7 @@ function workspaceEndpoints(app) {
   );
 
   app.delete(
-    "/workspace/prompt-history/:id",
+    "/workspace/:slug/prompt-history/:id",
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),

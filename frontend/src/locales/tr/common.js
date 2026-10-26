@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Çalışma Alanları Adı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
+    saved: "Kaydedildi",
     save: "Değişiklikleri Kaydet",
     previous: "Önceki Sayfa",
     next: "Sonraki Sayfa",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Durdu",
     loading: "Yükleniyor",
     refresh: "Tazelemek",
+    noResults: "Hiçbir sonuç bulunamadı",
   },
   settings: {
     title: "Instance Ayarları",
@@ -238,7 +240,25 @@ const TRANSLATIONS = {
       title: "LLM Sıcaklığı",
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
+      placeholder: "Sağlayıcı varsayılanı",
     },
+    reasoning_effort: {
+      title: "Akıl Yürütme Düzeyi",
+      default: "Sağlayıcı varsayılanı",
+      cannot_disable: "Bu model akıl yürütmeyi kapatamaz.",
+      levels: {
+        off: "Kapalı",
+        on: "Açık",
+        minimal: "Minimum",
+        low: "Düşük",
+        medium: "Orta",
+        high: "Yüksek",
+        xhigh: "Çok yüksek",
+        max: "Maksimum",
+      },
+    },
+    token_limit_reached:
+      "Cevap, maksimum çıktı token limitine ulaştı. Modelin maksimum çıktı token sayısını artırarak daha uzun cevaplar almayı sağlayın.",
   },
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",
@@ -316,8 +336,6 @@ const TRANSLATIONS = {
         description:
           "Temsilcinizin, çeşitli SQL veri tabanı sağlayıcılarına bağlanarak SQL'i kullanarak sorularınızı yanıtlamasına olanak tanıyın.",
       },
-      default_skill:
-        "Varsayılan olarak bu özellik etkinleştirilmiştir, ancak ajanın kullanmasına izin vermek istemiyorsanız, bu özelliği devre dışı bırakabilirsiniz.",
       filesystem: {
         title: "Dosya Sistemi Erişimi",
         description:
@@ -729,6 +747,11 @@ const TRANSLATIONS = {
         description:
           'Temsilcinin, sohbetten otomatik olarak tekrarlayan görevler oluşturmasına izin verin (örneğin, "her hafta içi her gün saat 09:00\'da e-posta kutlumu özetleyip bana gönder"). Sadece tek kullanıcı modunda kullanılabilir.',
       },
+      generateImage: {
+        title: "Görseller oluştur",
+        description:
+          "Ajantın, yapılandırılmış görüntü oluşturma sağlayıcınız aracılığıyla sohbetten görüntüler oluşturmasına veya konuşmaya eklenen görüntüleri düzenlemesine izin verin.",
+      },
     },
     mcp: {
       title: "MCP Sunucuları",
@@ -741,7 +764,7 @@ const TRANSLATIONS = {
       "start-server": "MCP sunucusunu başlatın",
       "delete-server": "MCP sunucusunu sil",
       "tool-count-warning":
-        "Bu MCP sunucusu, <b> özelliklerini etkinleştirmiş durumda ve bu özellikler her etkileşimde bağlamı tüketebilir. </b> Bağlamı korumak için istenmeyen özellikleri devre dışı bırakmayı düşünebilirsiniz.",
+        "Bu MCP sunucusunda <b>{{count}} araç etkin</b> ve bu araçlar her sohbette bağlam tüketir.<br />Bağlamı korumak için istenmeyen araçları devre dışı bırakmayı düşünebilirsiniz.",
       "startup-command": "Başlangıç Komutu",
       command: "Emir",
       arguments: "Tartışmalar",
@@ -1348,6 +1371,12 @@ const TRANSLATIONS = {
       title: "Marka & Beyaz Etiketleme",
       description:
         "AnythingLLM örneğinizi özel markalamayla beyaz etiketleyin.",
+      tabs: {
+        identity: "Kimlik",
+        colors: "Renkler",
+        sidebar: "Kenar çubuğu",
+        browser: "Tarayıcı",
+      },
     },
     chat: {
       title: "Sohbet",
@@ -1431,6 +1460,35 @@ const TRANSLATIONS = {
         description:
           "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
       },
+      palette: {
+        title: "Renk paleti",
+        description:
+          "Bir renk paleti seçin. Bu, hem açık hem de koyu mod için geçerlidir.",
+        enforced: "Yöneticiniz bu örnek için renk paletini belirledi.",
+        "default-badge": "Varsayılan",
+      },
+      "instance-palettes": {
+        title: "Renk paletleri",
+        description:
+          "Bir paleti, bu örnekteki herkes için varsayılan yapmak üzere tıklayın. Özel paletler; arka planı, kenar çubuğunu ve içeriği renklendiren bir ana renk ile düğmeler ve bağlantılar için bir vurgu renginden oluşur.",
+        new: "Yeni palet",
+        edit: "Paleti düzenle",
+        delete: "Paleti sil",
+        name: "Palet adı",
+        "name-required": "Palete bir ad verin.",
+        colors: {
+          main: "Ana renk",
+          accent: "Vurgu rengi",
+        },
+        "preview-note":
+          'Değişiklikler tüm uygulamada önizlenir ve "Tamam" düğmesine tıkladığınızda kaydedilir.',
+        done: "Tamam",
+        cancel: "İptal et",
+        enforce: "Varsayılan renk paletini uygulayın",
+        "enforce-description":
+          "Bu örnekteki herkes varsayılan paleti kullanır ve değiştiremez.",
+        "save-failed": "Renk paletleri kaydedilemedi: {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1440,6 +1498,35 @@ const TRANSLATIONS = {
       uploadDocument: "Bir belge yükleyin",
     },
     greeting: "Bugün size nasıl yardımcı olabilirim?",
+    greetings: {
+      anytime: {
+        working_on: "Ne üzerinde çalışıyoruz?",
+        on_your_mind: "Aklınızda ne var?",
+        where_to_start: "Nereden başlayalım?",
+        ready: "Hazır olduğunuzda buradayım.",
+        think_it_through: "Gelin, birlikte düşünelim.",
+      },
+      morning: {
+        good_morning: "Günaydın",
+        first_today: "Günaydın. Bugün ilk iş ne?",
+        fresh_start: "Yeni bir başlangıç. Nereden başlayalım?",
+      },
+      afternoon: {
+        good_afternoon: "İyi günler",
+        tackling: "İyi günler. Neyi halledelim?",
+        next_on_list: "Listede sırada ne var?",
+        keep_moving: "Devam edelim.",
+      },
+      evening: {
+        good_evening: "İyi akşamlar",
+        finish_strong: "İyi akşamlar. Günü güçlü bitirelim.",
+      },
+      night: {
+        midnight_oil: "Geç saatlere kadar mı çalışıyorsunuz?",
+        late_one: "Uzun bir gece mi? Gelin, birlikte düşünelim.",
+        still_up: "Hâlâ uyanık mısınız? Hazır olduğunuzda buradayım.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Klavye Kısayolları",
@@ -1855,8 +1942,9 @@ const TRANSLATIONS = {
       "llm-section-label":
         "LLM kuralları — eğer hiçbir hesaplanmış kural eşleşmiyorsa, toplu olarak değerlendirilir.",
       "llm-rule-body":
-        'Ardından "<desc>" içindeki "{{description}}" öğesini eşleştirin ve ardından <route>\'ye yönlendirin.',
-      "calculated-no-conditions": "Şart yok — <route>'a giden rota",
+        '<desc>"{{description}}"</desc> ile eşleşirse rotayı <route>{{route}}</route> olarak belirle.',
+      "calculated-no-conditions":
+        "Şart yok — rotayı <route>{{route}}</route> olarak belirle",
       "calculated-single-condition":
         'Eğer <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> ise, rotayı <route> {{route}} </route> olarak belirle.',
       "calculated-multi-condition":

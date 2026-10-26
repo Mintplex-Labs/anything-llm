@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Tên không gian làm việc",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
+    saved: "Đã lưu",
     save: "Lưu thay đổi",
     previous: "Trang trước",
     next: "Trang tiếp theo",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Dừng",
     loading: "Đang tải",
     refresh: "Tái tạo",
+    noResults: "Không tìm thấy kết quả",
   },
   settings: {
     title: "Cài đặt hệ thống",
@@ -238,7 +240,25 @@ const TRANSLATIONS = {
       title: "Nhiệt độ LLM",
       "desc-end":
         "Số càng cao thì càng sáng tạo. Đối với một số mô hình, điều này có thể dẫn đến phản hồi không mạch lạc khi đặt quá cao.",
+      placeholder: "Mặc định của nhà cung cấp",
     },
+    reasoning_effort: {
+      title: "Mức độ suy luận",
+      default: "Mặc định của nhà cung cấp",
+      cannot_disable: "Mô hình này không thể tắt suy luận.",
+      levels: {
+        off: "Tắt",
+        on: "Bật",
+        minimal: "Tối thiểu",
+        low: "Thấp",
+        medium: "Trung bình",
+        high: "Cao",
+        xhigh: "Rất cao",
+        max: "Tối đa",
+      },
+    },
+    token_limit_reached:
+      "Câu trả lời đã đạt đến giới hạn số lượng token tối đa. Tăng giới hạn số lượng token tối đa cho mô hình để cho phép câu trả lời dài hơn.",
   },
   "vector-workspace": {
     identifier: "Định danh cơ sở dữ liệu vector",
@@ -316,8 +336,6 @@ const TRANSLATIONS = {
         description:
           "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
       },
-      default_skill:
-        "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
       filesystem: {
         title: "Quyền truy cập hệ thống tệp",
         description:
@@ -715,6 +733,11 @@ const TRANSLATIONS = {
         title: "Tạo các công việc theo lịch trình",
         description:
           'Cho phép đại lý tạo các công việc lặp lại theo lịch trình từ cuộc trò chuyện (ví dụ: "mỗi ngày làm việc lúc 9 giờ sáng, tóm tắt hộp thư và gửi email cho tôi"). Chỉ khả dụng trong chế độ sử dụng riêng.',
+      },
+      generateImage: {
+        title: "Tạo hình ảnh",
+        description:
+          "Cho phép đại lý tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
       },
     },
     mcp: {
@@ -1332,6 +1355,12 @@ const TRANSLATIONS = {
       title: "Thương hiệu & Nhãn trắng",
       description:
         "Nhãn trắng phiên bản AnythingLLM của bạn với thương hiệu tùy chỉnh.",
+      tabs: {
+        identity: "Nhận diện",
+        colors: "Màu sắc",
+        sidebar: "Thanh bên",
+        browser: "Trình duyệt",
+      },
     },
     chat: {
       title: "Trò chuyện",
@@ -1414,6 +1443,36 @@ const TRANSLATIONS = {
         description:
           "Tắt tính năng tự động cuộn xuống cuối cuộc trò chuyện khi nhận được tin nhắn mới.",
       },
+      palette: {
+        title: "Bảng màu",
+        description:
+          "Chọn một bảng màu. Bảng màu này áp dụng cho cả chế độ sáng và chế độ tối.",
+        enforced:
+          "Quản trị viên của bạn đã thiết lập bảng màu cho phiên bản này.",
+        "default-badge": "Mặc định",
+      },
+      "instance-palettes": {
+        title: "Bảng màu",
+        description:
+          "Nhấn vào một bảng màu để làm nó trở thành bảng màu mặc định cho tất cả người dùng trên phiên bản này. Bảng màu tùy chỉnh bao gồm một màu chủ đạo, làm thay đổi màu sắc của nền, thanh bên và nội dung, cũng như một màu nhấn cho các nút và liên kết.",
+        new: "Bảng màu mới",
+        edit: "Chỉnh sửa bảng màu",
+        delete: "Xóa bảng màu",
+        name: "Tên bảng màu",
+        "name-required": "Đặt tên cho bảng màu.",
+        colors: {
+          main: "Màu chủ đạo",
+          accent: "Màu nhấn",
+        },
+        "preview-note":
+          'Hiển thị các thay đổi trên toàn ứng dụng và lưu lại khi bạn nhấp vào nút "Hoàn thành".',
+        done: "Hoàn thành",
+        cancel: "Hủy",
+        enforce: "Áp dụng bảng màu mặc định",
+        "enforce-description":
+          "Trên phiên bản này, tất cả người dùng đều sử dụng bảng màu mặc định và không thể thay đổi nó.",
+        "save-failed": "Không thể lưu bảng màu: {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1423,6 +1482,35 @@ const TRANSLATIONS = {
       uploadDocument: "Tải lên một tài liệu",
     },
     greeting: "Hôm nay tôi có thể giúp gì cho bạn?",
+    greetings: {
+      anytime: {
+        working_on: "Chúng ta đang làm gì nhỉ?",
+        on_your_mind: "Bạn đang nghĩ gì?",
+        where_to_start: "Chúng ta nên bắt đầu từ đâu?",
+        ready: "Sẵn sàng khi bạn cần.",
+        think_it_through: "Hãy cùng suy nghĩ kỹ nhé.",
+      },
+      morning: {
+        good_morning: "Chào buổi sáng",
+        first_today: "Chào buổi sáng. Hôm nay làm gì trước?",
+        fresh_start: "Khởi đầu mới. Bắt đầu từ đâu đây?",
+      },
+      afternoon: {
+        good_afternoon: "Chào buổi chiều",
+        tackling: "Chào buổi chiều. Chúng ta xử lý việc gì?",
+        next_on_list: "Việc tiếp theo trong danh sách là gì?",
+        keep_moving: "Tiếp tục nào.",
+      },
+      evening: {
+        good_evening: "Chào buổi tối",
+        finish_strong: "Chào buổi tối. Cùng kết thúc thật tốt nhé.",
+      },
+      night: {
+        midnight_oil: "Làm việc đến khuya à?",
+        late_one: "Một đêm dài? Hãy cùng suy nghĩ kỹ nhé.",
+        still_up: "Vẫn còn thức à? Sẵn sàng khi bạn cần.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Phím tắt",
@@ -1845,9 +1933,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "Không có điều kiện – đường đi đến <route>{{route}}</route>",
       "calculated-single-condition":
-        'Nếu <prop> có {{property}} và </prop> thì {{comparator}} và <val> "{{value}}" và </val>, thì điều hướng đến <route> {{route}} và </route>',
+        'Nếu <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> thì chuyển hướng đến <route>{{route}}</route>',
       "calculated-multi-condition":
-        "Nếu {{quantifier}} thuộc loại <cond> và </cond>, thì đường đi sẽ là <route> và {{route}} </route>",
+        "Nếu {{quantifier}} trong <cond>{{conditions}}</cond> thỏa mãn, thì chuyển hướng đến <route>{{route}}</route>",
       "comparator-contains": "chứa",
       "comparator-matches": "trận đấu",
       "comparator-between": "giữa",

@@ -20,7 +20,7 @@ Keep in mind that we are a small team and have limited resources. We will do our
 
 Before you start working on an issue, please read the following so that you don't waste time on something that is not a good fit for the project or is more suitable for a personal fork. We would rather answer a comment on an issue than close a PR after you've spent time on it. Your time is valuable and we appreciate your time and effort to make AnythingLLM better.
 
-0. (most important) If you are making a PR that does not have a corresponding issue, **it will not be merged.** _The only exception to this is language translations._
+0. (most important) If you are making a PR that does not have a corresponding issue, **it will not be merged.** _The only exception to this is language translations._ New features have an additional requirement, see [Feature PRs require prior approval](#feature-prs-require-prior-approval).
 
 1. If you are modifying the permission system for a new role or something custom, you are likely better off forking the project and building your own version since this is a core part of the project and is only to be maintained by the AnythingLLM team.
 
@@ -29,6 +29,20 @@ Before you start working on an issue, please read the following so that you don'
 3. It is our discretion to merge or not merge a PR. We value every contribution, but we also value the quality of the code and the user experience we envision for the project. It is a fine line to walk when running a project like this and please understand that merging or not merging a PR is not a reflection of the quality of the contribution and is not personal. We will do our best to provide feedback on the PR and help you make the changes necessary to get it merged.
 
 4. **Security** is always important. If you have a security concern, please do not open an issue. Instead, please open a CVE on our designated reporting platform [Huntr](https://huntr.com) or contact us at [team@mintplexlabs.com](mailto:team@mintplexlabs.com).
+
+## Feature PRs require prior approval
+
+Bug fixes only need a linked issue. **New features need a linked issue that a maintainer has approved before any code is written.**
+
+Opening an issue, commenting "I'm working on this", and then opening a PR does not count as approval. That's true however complete or well-tested the PR is. Features decide things for the whole project: what goes into the context window, storage layouts, new endpoints and settings, and UI. We have to maintain those decisions for every user, forever, so we need to agree on scope and architecture before the work starts.
+
+The process is:
+
+1. Open a feature request issue describing what you want and why.
+2. Wait for a maintainer to respond on the issue. We may accept it, ask for changes to the approach, say we plan to build it ourselves, or decline it.
+3. Only after a maintainer has explicitly said the feature is open for contribution should you open a PR.
+
+**Feature PRs opened without this approval will be closed without review.** The issue stays open for discussion. Closing the PR is not a judgement on your code. It is how we keep the project's direction coherent and protect the small team's review time. If you have an immediate need for a feature that should just belong on a personal fork.
 
 ## Configuring Git
 
@@ -60,6 +74,7 @@ Next, run:
 ```bash
 yarn dev
 ```
+
 This will start the server, frontend, and collector in development mode. Changes to the code will be hot reloaded.
 
 ## Best practices for pull requests
@@ -74,9 +89,9 @@ For the best chance of having your pull request accepted, please follow these gu
 1. Before marking a pull request ready-for-review, do a self review of your code.
    Is it clear why you are making the changes? Are the changes easy to understand?
 1. Use [conventional commit messages](https://www.conventionalcommits.org/en/) as pull request titles. Examples:
-    * New feature: `feat: adding foo API`
-    * Bug fix: `fix: issue with foo API`
-    * Documentation change: `docs: adding foo API documentation`
+   - New feature: `feat: adding foo API`
+   - Bug fix: `fix: issue with foo API`
+   - Documentation change: `docs: adding foo API documentation`
 1. If your pull request is a work in progress, leave the pull request as a draft.
    We will assume the pull request is ready for review when it is opened.
 1. When writing tests, test the error cases. Make sure they have understandable
@@ -86,9 +101,9 @@ For the best chance of having your pull request accepted, please follow these gu
 
 The core library is written in Node.js. There are additional sub-repositories for the embed widget and browser extension. These are not part of the core AnythingLLM project, but are maintained by the AnythingLLM team.
 
-* `server`: Node.js server source code
-* `frontend`: React frontend source code
-* `collector`: Node.js collector source code
+- `server`: Node.js server source code
+- `frontend`: React frontend source code
+- `collector`: Node.js collector source code
 
 ## Release process
 
@@ -102,32 +117,46 @@ Changes to the desktop app are downstream of the core AnythingLLM project. Relea
 
 ## 🔌 Criteria for New LLM Providers
 
-To ensure the long-term maintainability of AnythingLLM and prevent repository bloat, we enforce a vetting process for adding new third-party LLM provider integrations. 
+To ensure the long-term maintainability of AnythingLLM and prevent repository bloat, we enforce a vetting process for adding new third-party LLM provider integrations.
 
 With thousands of new wrapper API services launching daily, we do not accept dedicated integrations for services that lack an established user base or offer no unique technical utility over our existing generic connectors which should be sufficient for most use cases.
 
 While we understand everyone has to start somewhere, we cannot maintain a repository with thousands of **bespoke** LLM integrations that functionally are no different from one another. We want to keep the repository as clean and maintainable as possible since 99% of contributors for this specific integration do their integration PR and never contribute again.
 
-> 🤝 **Strategic Partnership Exception:** 
+> 🤝 **Strategic Partnership Exception:**
 > These guidelines apply strictly to unsolicited community or third-party startup contributions. If you are an ecosystem, silicon, or cloud hardware partner engaging directly with the Mintplex Labs core team on a co-developed integration, proof-of-concept, or native optimization project, this vetting process is not applicable.
 
 Before opening an unsolicited issue or submitting a Pull Request for a new provider, it **must** meet both the Technical and Market Viability thresholds below.
 
 ### 1. Technical Threshold
+
 We do not accept dedicated integration code for providers whose API architecture mimics existing standards.
 
-* **The OpenAI-Compatibility Rule:** If your service utilizes the OpenAI SDK, standard OpenAI API schema (eg: `/v1/chat/completions`, `/models`) without requiring unique orchestration logic, **it will be rejected.** Users must connect to your service using our generic **OpenAI Compatible** or **Generic API** connectors.
-* **To qualify for a dedicated integration, the PR must prove:**
-  * **Custom Authentication:** Requires a complex, multi-step auth flow or custom request signing (e.g., AWS SigV4) that standard bearer tokens/headers cannot support.
-  * **Proprietary SDK/Payloads:** Relies on a distinct, widely adopted native SDK with a JSON schema that cannot be cleanly mapped to our generic layers.
-  * **Unique Architectural Features:** Exposes critical, native platform capabilities (e.g., custom server-side routing nodes or proprietary hyper-parameters) that are completely lost when forced through a generic wrapper.
+- **The OpenAI-Compatibility Rule:** If your service utilizes the OpenAI SDK, standard OpenAI API schema (eg: `/v1/chat/completions`, `/models`) without requiring unique orchestration logic, **it will be rejected.** Users must connect to your service using our generic **OpenAI Compatible** or **Generic API** connectors.
+- **To qualify for a dedicated integration, the PR must prove:**
+  - **Custom Authentication:** Requires a complex, multi-step auth flow or custom request signing (e.g., AWS SigV4) that standard bearer tokens/headers cannot support.
+  - **Proprietary SDK/Payloads:** Relies on a distinct, widely adopted native SDK with a JSON schema that cannot be cleanly mapped to our generic layers.
+  - **Unique Architectural Features:** Exposes critical, native platform capabilities (e.g., custom server-side routing nodes or proprietary hyper-parameters) that are completely lost when forced through a generic wrapper.
 
 ### 2. Market Viability Threshold
+
 We cannot act as a discovery or marketing engine for early-stage startups. To qualify for codebase inclusion, a provider must demonstrate an active, existing user base who would benefit from AnythingLLM's functionality. Any of the following criteria are acceptable:
 
-* **Community Demand:** An integration issue request must accumulate a minimum of **20 organic upvotes (`+1` reactions)** from unique GitHub users before a PR will be reviewed. 
-* **Footprint Metrics:** The provider or core underlying model organization must possess a verifiable footprint (e.g., `50,000` aggregate downloads on Hugging Face, or `1,000` stars on its core open-source repository).
-* **Operational Longevity:** The provider's production API must be publicly accessible and stable for a minimum of **90 days**. We do not accept integrations for services that launched less than 90 days ago.
+- **Community Demand:** An integration issue request must accumulate a minimum of **20 organic upvotes (`+1` reactions)** from unique GitHub users before a PR will be reviewed.
+- **Footprint Metrics:** The provider or core underlying model organization must possess a verifiable footprint (e.g., `50,000` aggregate downloads on Hugging Face, or `1,000` stars on its core open-source repository).
+- **Operational Longevity:** The provider's production API must be publicly accessible and stable for a minimum of **90 days**. We do not accept integrations for services that launched less than 90 days ago.
+
+## 🧩 Criteria for All Other Third-Party Integrations
+
+The criteria above are not limited to LLM providers. They apply to **any** integration with a third-party product or service, including embedding engines, vector databases, web search providers, rerankers, TTS/STT providers, data connectors, and agent skills.
+
+In addition, every third-party integration must meet the following:
+
+- **Existing traction or relationship:** The product must already have meaningful adoption, a reputation we recognize, or an existing relationship with the Mintplex Labs team. Being new, being a good product, or being cheaper than an existing option is not enough on its own.
+- **Testable by maintainers:** We must be able to test and maintain the integration without paying for it. If the service has no free tier or trial and requires a funded API key just to make a request, we cannot verify it works today or keep it working later.
+- **No promotional contributions:** AnythingLLM is not a distribution or marketing channel. Integrations opened by, or on behalf of, a provider primarily to gain visibility, backlinks, or a spot in our provider list will be closed. If you work for the provider, say so in the issue.
+
+Requests that don't meet these criteria will be labeled as an integration request and left for community demand to build up. PRs for them will be closed without review.
 
 ## 🤖 AI Use in Contributions
 

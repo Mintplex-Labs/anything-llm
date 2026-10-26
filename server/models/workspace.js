@@ -263,10 +263,7 @@ const Workspace = {
     // When switching away from anythingllm-router, clear router_id.
     if (validatedUpdates?.chatProvider === "anythingllm-router") {
       validatedUpdates.chatModel = null;
-    } else if (
-      validatedUpdates?.chatProvider &&
-      validatedUpdates.chatProvider !== "anythingllm-router"
-    ) {
+    } else if ("chatProvider" in validatedUpdates) {
       validatedUpdates.router_id = null;
     }
 
@@ -654,7 +651,7 @@ const Workspace = {
    */
   deletePromptHistory: async function ({ workspaceId, id }) {
     try {
-      return await PromptHistory.delete({ id, workspaceId });
+      return await PromptHistory.deleteForWorkspace({ id, workspaceId });
     } catch (error) {
       console.error(error.message);
       return false;

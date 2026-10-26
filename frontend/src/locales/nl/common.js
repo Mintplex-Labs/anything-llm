@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Werkruimten Naam",
     selection: "Model Selectie",
     saving: "Opslaan...",
+    saved: "Opgeslagen",
     save: "Wijzigingen opslaan",
     previous: "Vorige pagina",
     next: "Volgende pagina",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Gestopt",
     loading: "Laad",
     refresh: "Verfrissen",
+    noResults: "Geen resultaten gevonden",
   },
   settings: {
     title: "Instelling Instanties",
@@ -239,7 +241,25 @@ const TRANSLATIONS = {
       title: "LLM Temperatuur",
       "desc-end":
         "Hoe hoger het getal, hoe creatiever. Voor sommige modellen kan dit leiden tot onsamenhangende antwoorden als het te hoog wordt ingesteld.",
+      placeholder: "Standaard van de provider",
     },
+    reasoning_effort: {
+      title: "Redeneerinspanning",
+      default: "Standaard van de provider",
+      cannot_disable: "Dit model kan redeneren niet uitschakelen.",
+      levels: {
+        off: "Uit",
+        on: "Aan",
+        minimal: "Minimaal",
+        low: "Laag",
+        medium: "Gemiddeld",
+        high: "Hoog",
+        xhigh: "Extra hoog",
+        max: "Maximaal",
+      },
+    },
+    token_limit_reached:
+      "Het antwoord heeft het maximale aantal uitvoertokens bereikt. Verhoog het maximale aantal uitvoertokens van het model om langere antwoorden mogelijk te maken.",
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",
@@ -317,8 +337,6 @@ const TRANSLATIONS = {
         description:
           "Maak het mogelijk voor uw agent om SQL te gebruiken om uw vragen te beantwoorden, door verbinding te maken met verschillende SQL-databaseproviders.",
       },
-      default_skill:
-        "Standaard is deze functie ingeschakeld, maar u kunt deze uitschakelen als u niet wilt dat de agent er gebruik van kan maken.",
       filesystem: {
         title: "Toegang tot het bestandssysteem",
         description:
@@ -722,6 +740,11 @@ const TRANSLATIONS = {
         description:
           'Laat de agent herhaalde geplande taken aanmaken vanuit het gesprek (bijvoorbeeld: "elke werkdag om 9 uur, vat mijn inbox samen en stuur me een e-mail"). Dit is alleen beschikbaar in single-user modus.',
       },
+      generateImage: {
+        title: "Afbeeldingen genereren",
+        description:
+          "Laat de agent afbeeldingen genereren op basis van de chat, of bestaande afbeeldingen in het gesprek bewerken, met behulp van uw geconfigureerde dienst voor het genereren van afbeeldingen.",
+      },
     },
     mcp: {
       title: "MCP-servers",
@@ -734,7 +757,7 @@ const TRANSLATIONS = {
       "start-server": "Start de MCP-server",
       "delete-server": "Verwijder de MCP-server",
       "tool-count-warning":
-        "Deze MCP-server heeft <b> bepaalde tools ingeschakeld</b> die context gebruiken in elke chat. <br /> Overweeg om ongewenste tools uit te schakelen om context te besparen.",
+        "Deze MCP-server heeft <b>{{count}} tools ingeschakeld</b> die context gebruiken in elke chat.<br />Overweeg om ongewenste tools uit te schakelen om context te besparen.",
       "startup-command": "Startcommando",
       command: "Instructie",
       arguments: "Argumenten",
@@ -1347,6 +1370,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "Geef uw AnythingLLM-instantie een whitelabel met uw eigen branding.",
+      tabs: {
+        identity: "Identiteit",
+        colors: "Kleuren",
+        sidebar: "Zijbalk",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1430,6 +1459,36 @@ const TRANSLATIONS = {
         description:
           "Schakel het automatische scrollen naar het einde van de chat uit wanneer er nieuwe berichten worden ontvangen.",
       },
+      palette: {
+        title: "Kleurenpalet",
+        description:
+          "Kies een kleurenpalet. Dit geldt zowel voor de lichte als de donkere modus.",
+        enforced:
+          "Uw beheerder heeft het kleurenpalet voor deze instantie ingesteld.",
+        "default-badge": "Standaard",
+      },
+      "instance-palettes": {
+        title: "Kleurenpaletten",
+        description:
+          "Klik op een palet om het de standaard te maken voor iedereen in deze instantie. Aangepaste paletten bestaan uit een hoofdkleur, die de achtergrond, zijbalk en inhoud kleurt, en een accentkleur voor knoppen en links.",
+        new: "Nieuw palet",
+        edit: "Palet bewerken",
+        delete: "Palet verwijderen",
+        name: "Naam van het palet",
+        "name-required": "Geef het palet een naam.",
+        colors: {
+          main: "Hoofdkleur",
+          accent: "Accentkleur",
+        },
+        "preview-note":
+          'Wijzigingen worden in de hele app als voorbeeld getoond en opgeslagen wanneer u op "Gereed" klikt.',
+        done: "Gereed",
+        cancel: "Annuleren",
+        enforce: "Standaardpalet afdwingen",
+        "enforce-description":
+          "Iedereen in deze instantie gebruikt het standaardpalet en kan het niet wijzigen.",
+        "save-failed": "Kon de kleurenpaletten niet opslaan: {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1439,6 +1498,35 @@ const TRANSLATIONS = {
       uploadDocument: "Upload een document",
     },
     greeting: "Hoe kan ik u vandaag helpen?",
+    greetings: {
+      anytime: {
+        working_on: "Waar werken we aan?",
+        on_your_mind: "Waar denkt u aan?",
+        where_to_start: "Waar beginnen we?",
+        ready: "Klaar wanneer u dat bent.",
+        think_it_through: "Laten we het goed doordenken.",
+      },
+      morning: {
+        good_morning: "Goedemorgen",
+        first_today: "Goedemorgen. Waar beginnen we vandaag mee?",
+        fresh_start: "Een frisse start. Waar beginnen we?",
+      },
+      afternoon: {
+        good_afternoon: "Goedemiddag",
+        tackling: "Goedemiddag. Wat pakken we aan?",
+        next_on_list: "Wat staat er nu op de lijst?",
+        keep_moving: "Laten we doorpakken.",
+      },
+      evening: {
+        good_evening: "Goedenavond",
+        finish_strong: "Goedenavond. Laten we sterk afsluiten.",
+      },
+      night: {
+        midnight_oil: "Tot laat aan het werk?",
+        late_one: "Lange avond? Laten we het goed doordenken.",
+        still_up: "Nog wakker? Klaar wanneer u dat bent.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Sneltoetsen",

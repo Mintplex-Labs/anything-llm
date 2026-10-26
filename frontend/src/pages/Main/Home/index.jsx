@@ -12,6 +12,7 @@ import DnDFileUploaderWrapper, {
   PASTE_ATTACHMENT_EVENT,
 } from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
 import { useTranslation } from "react-i18next";
+import useGreeting from "@/hooks/useGreeting";
 import {
   LAST_VISITED_WORKSPACE,
   PENDING_HOME_MESSAGE,
@@ -27,7 +28,15 @@ import ChatSettingsMenu from "@/components/WorkspaceChat/ChatContainer/ChatSetti
 import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
 import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
 import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
-import { clearPromptInputDraft } from "@/hooks/usePromptInputStorage";
+import {
+  clearPromptInputDraft,
+  movePromptInputDraft,
+} from "@/hooks/usePromptInputStorage";
+import {
+  HOME_DRAFT_SESSION,
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
 import MemoriesSidebar from "@/components/WorkspaceChat/ChatContainer/MemoriesSidebar";
 
 async function getTargetWorkspace() {
@@ -62,6 +71,25 @@ export default function Home() {
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
   const [dragging, setDragging] = useState(false);
   const pendingFilesRef = useRef([]);
+
+  /**
+   * Creates the thread pending files are uploaded into. The unsent draft is
+   * moved to the new thread first since switching to it remounts PromptInput
+   * under the thread's storage key.
+   * @param {Object} ws - workspace to create the thread in
+   * @param {string} draft - prompt text captured before any workspace was
+   * created, as setting a new workspace re-hydrates the input under its slug
+   */
+  async function createThreadForFiles(ws, draft) {
+    const { thread } = await Workspace.threads.new(ws.slug);
+    if (!thread) return;
+    movePromptInputDraft({ from: ws.slug, to: thread.slug, value: draft });
+    setThreadSlug(thread.slug);
+  }
+
+  function currentDraft() {
+    return document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+  }
 
   useEffect(() => {
     async function init() {
@@ -102,14 +130,14 @@ export default function Home() {
       if (!files?.length) return;
 
       pendingFilesRef.current = files;
+      const draft = currentDraft();
       let ws = workspace;
       if (!ws) {
         ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
         if (!ws) return;
         setWorkspace(ws);
       }
-      const { thread } = await Workspace.threads.new(ws.slug);
-      if (thread) setThreadSlug(thread.slug);
+      await createThreadForFiles(ws, draft);
     }
 
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
@@ -120,18 +148,17 @@ export default function Home() {
   async function handleDropWithoutWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
+    const draft = currentDraft();
     const ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
     if (!ws) return;
     setWorkspace(ws);
-    const { thread } = await Workspace.threads.new(ws.slug);
-    if (thread) setThreadSlug(thread.slug);
+    await createThreadForFiles(ws, draft);
   }
 
   async function handleDropWithWorkspace(acceptedFiles) {
     setDragging(false);
     pendingFilesRef.current = acceptedFiles;
-    const { thread } = await Workspace.threads.new(workspace.slug);
-    if (thread) setThreadSlug(thread.slug);
+    await createThreadForFiles(workspace, currentDraft());
   }
 
   if (workspaceLoading) {
@@ -185,6 +212,7 @@ export default function Home() {
 
 function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   const { t } = useTranslation();
+  const greeting = useGreeting();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { files, parseAttachments } = useContext(DndUploaderContext);
@@ -220,7 +248,21 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
       if (!targetThread) {
         const { thread } = await Workspace.threads.new(targetWorkspace.slug);
         targetThread = thread?.slug;
-        if (thread) setThreadSlug(thread.slug);
+        if (thread) {
+          // Carry the reasoning effort picked before the thread existed over
+          // to the thread the message is sent in.
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            thread.slug,
+            getSessionReasoningEffort(targetWorkspace.slug, HOME_DRAFT_SESSION)
+          );
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            HOME_DRAFT_SESSION,
+            null
+          );
+          setThreadSlug(thread.slug);
+        }
       }
 
       sessionStorage.setItem(
@@ -301,8 +343,8 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
           <DnDFileUploaderWrapper>
             <div className="flex flex-col h-full w-full items-center justify-center">
               <div className="flex flex-col items-center w-full max-w-[750px]">
-                <h1 className="text-white text-xl md:text-2xl mb-11 text-center">
-                  {t("main-page.greeting")}
+                <h1 className="text-white text-2xl md:text-[32px] md:leading-10 mb-11 text-center">
+                  {greeting}
                 </h1>
                 <PromptInput
                   workspace={workspace}
@@ -313,6 +355,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
                   centered={true}
                   workspaceSlug={workspace?.slug}
                   threadSlug={threadSlug}
+                  reasoningSessionSlug={threadSlug ?? HOME_DRAFT_SESSION}
                 />
                 <QuickActions
                   hasAvailableWorkspace={!!workspace}

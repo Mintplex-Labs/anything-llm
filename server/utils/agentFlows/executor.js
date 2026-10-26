@@ -124,7 +124,31 @@ class FlowExecutor {
       return obj;
     };
 
-    return deepReplace(config);
+    const replaced = deepReplace(config);
+    if (config?.bodyType === "json" && typeof config.body === "string")
+      replaced.body = this.replaceJsonBodyVariables(config.body);
+    return replaced;
+  }
+
+  /**
+   * Replaces variables in a JSON body template.
+   * A ${var} inside a string literal (eg: "prompt": "Do ${plan}") is JSON-escaped
+   * so quotes/newlines in the value do not break the body.
+   * A bare ${var} (eg: "messages": ${history}) is spliced raw so objects,
+   * arrays, and numbers stay structural.
+   * @param {string} body - The JSON body template
+   * @returns {string} The body with variables replaced
+   */
+  replaceJsonBodyVariables(body) {
+    return body.replace(/\${([^}]+)}/g, (match, varName, offset) => {
+      const value = this.getValueFromPath(this.variables, varName);
+      if (value === undefined) return match;
+      // An odd number of unescaped quotes before the match means we are inside a string literal
+      const quotesBefore = body.slice(0, offset).match(/(?<!\\)"/g) || [];
+      const inString = quotesBefore.length % 2 === 1;
+      // JSON.stringify wraps in quotes, slice them off since the template already has its own
+      return inString ? JSON.stringify(String(value)).slice(1, -1) : value;
+    });
   }
 
   /**

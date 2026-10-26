@@ -15,19 +15,6 @@ const sanitizeNamespace = (namespace) => {
   return `ns_${namespace.replace(/[^a-zA-Z0-9_]/g, "_")}`;
 };
 
-// Add this helper method to check if collection exists more reliably
-const collectionExists = async function (client, namespace) {
-  try {
-    const collections = await AstraDB.allNamespaces(client);
-    if (collections) {
-      return collections.includes(namespace);
-    }
-  } catch (error) {
-    this.logger("collectionExists check error", error?.message || error);
-    return false; // Return false for any error to allow creation attempt
-  }
-};
-
 class AstraDB extends VectorDatabase {
   constructor() {
     super();
@@ -120,13 +107,25 @@ class AstraDB extends VectorDatabase {
     return true;
   }
 
+  async collectionExists(client, namespace) {
+    try {
+      const collections = await this.allNamespaces(client);
+      if (collections) {
+        return collections.includes(namespace);
+      }
+    } catch (error) {
+      this.logger("collectionExists check error", error?.message || error);
+      return false; // Return false for any error to allow creation attempt
+    }
+  }
+
   // AstraDB requires a dimension aspect for collection creation
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
   async getOrCreateCollection(client, namespace, dimensions = null) {
     const sanitizedNamespace = sanitizeNamespace(namespace);
     try {
-      const exists = await collectionExists(client, sanitizedNamespace);
+      const exists = await this.collectionExists(client, sanitizedNamespace);
 
       if (!exists) {
         if (!dimensions) {
@@ -355,6 +354,20 @@ class AstraDB extends VectorDatabase {
     };
   }
 
+  /**
+   * Converts Astra's cosine `$similarity` ([0, 1], computed as (1 + cosine) / 2)
+   * back to a cosine similarity score in [0, 1]. Chunks at or past orthogonal
+   * floor at 0 so unrelated chunks can never clear a similarity threshold,
+   * matching the scale of the other providers.
+   * @see https://docs.datastax.com/en/astra-db-serverless/get-started/vector-concepts.html#cosine-metric
+   * @param {number|null} similarity - `$similarity` from the vector search.
+   * @returns {number} Similarity score in [0, 1].
+   */
+  similarityToScore(similarity = null) {
+    if (!Number.isFinite(similarity)) return 0.0;
+    return Math.min(1, Math.max(0, 2 * similarity - 1));
+  }
+
   async similarityResponse({
     client,
     namespace,
@@ -383,7 +396,8 @@ class AstraDB extends VectorDatabase {
       .toArray();
 
     responses.forEach((response) => {
-      if (response.$similarity < similarityThreshold) return;
+      const score = this.similarityToScore(response.$similarity);
+      if (score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response.metadata))) {
         this.logger(
           "A source was filtered from context as it's parent document is pinned."
@@ -393,9 +407,9 @@ class AstraDB extends VectorDatabase {
       result.contextTexts.push(response.metadata.text);
       result.sourceDocuments.push({
         ...response.metadata,
-        score: response.$similarity,
+        score,
       });
-      result.scores.push(response.$similarity);
+      result.scores.push(score);
     });
     return result;
   }

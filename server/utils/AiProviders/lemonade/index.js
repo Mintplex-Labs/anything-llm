@@ -8,6 +8,13 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { OpenAI: OpenAIApi } = require("openai");
 const { humanFileSize } = require("../../helpers");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  PROVIDER_REASONING_EFFORTS,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 
 class LemonadeLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -27,7 +34,6 @@ class LemonadeLLM {
 
     this.model = modelPreference || process.env.LEMONADE_LLM_MODEL_PREF;
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // We can establish here since we cannot dynamically curl the context window limit from the API.
     this.limits = {
@@ -152,13 +158,17 @@ class LemonadeLLM {
     return textResponse;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.lemonade.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
+        ...reasoningParams("lemonade", reasoningEffort, this.model),
       })
     );
 
@@ -183,14 +193,18 @@ class LemonadeLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     await LemonadeLLM.loadModel(this.model);
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.lemonade.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
+        ...reasoningParams("lemonade", reasoningEffort, this.model),
       }),
       messages,
       runPromptTokenCalculation: true,
@@ -209,7 +223,7 @@ class LemonadeLLM {
    * Note: This is a heuristic approach to get the capabilities of the model based on the model metadata.
    * It is not perfect, but works since every model metadata is different and may not have key values we rely on.
    * There is no "capabilities" key in the metadata via any API endpoint - so we do this.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
@@ -222,9 +236,13 @@ class LemonadeLLM {
       });
 
       const { labels = [] } = await client.models.retrieve(this.model);
+      const supportsReasoning = labels.includes("reasoning");
       return {
         tools: labels.includes("tool-calling"),
-        reasoning: labels.includes("reasoning"),
+        reasoning: supportsReasoning,
+        reasoningOptions: supportsReasoning
+          ? PROVIDER_REASONING_EFFORTS.lemonade(this.model)
+          : [],
         imageGeneration: "unknown",
         vision: labels.includes("vision"),
       };
@@ -233,6 +251,7 @@ class LemonadeLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

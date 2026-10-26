@@ -7,8 +7,48 @@ const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const { Observability } = require("../observability");
+const { extractTextContent } = require("../../endpoints/api/openai/helpers");
 
 const { PassThrough } = require("stream");
+
+/**
+ * The prompt compressor rebuilds the history it keeps from stored chat rows, a
+ * prompt and a response each. This endpoint receives its history in the request
+ * instead, so shape it like stored rows or every earlier turn is dropped once
+ * the prompt has to be compressed.
+ * Consecutive messages from the same role are joined into one. Only complete
+ * exchanges become rows. An assistant message before any user message, or a
+ * user message nobody answered, is left out, because a row with an empty half
+ * turns into a blank message and some providers refuse those. The prompt that
+ * is not compressed is built from the request history itself and keeps them.
+ * @param {{role: string, content: string|object[]}[]} history
+ * @returns {{prompt: string, response: string}[]}
+ */
+function historyAsChatRecords(history = []) {
+  const rows = [];
+  for (const { role, content } of history) {
+    if (role !== "user" && role !== "assistant") continue;
+    // A null part would make extractTextContent throw, even when nothing is
+    // compressed.
+    const text = extractTextContent(
+      Array.isArray(content) ? content.filter(Boolean) : content
+    );
+    if (typeof text !== "string" || !text.trim()) continue;
+
+    // A user message after an assistant reply starts a new row.
+    const row = rows.at(-1);
+    if (role === "assistant") row?.response.push(text);
+    else if (!row || row.response.length > 0)
+      rows.push({ prompt: [text], response: [] });
+    else row.prompt.push(text);
+  }
+  return rows
+    .filter(({ response }) => response.length > 0)
+    .map(({ prompt, response }) => ({
+      prompt: prompt.join("\n\n"),
+      response: JSON.stringify({ text: response.join("\n\n") }),
+    }));
+}
 
 async function chatSync({
   workspace,
@@ -26,6 +66,7 @@ async function chatSync({
       workspace,
       prompt,
       attachments,
+      temperature,
       chatHistoryOverride: {
         rawHistory: history,
         chatHistory: history,
@@ -166,20 +207,20 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: String(prompt),
-    contextTexts,
-    chatHistory: history,
-    attachments,
-  });
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
+      userPrompt: String(prompt),
+      contextTexts,
+      chatHistory: history,
+      attachments,
+    },
+    historyAsChatRecords(history)
+  );
 
   // Send the text completion.
   const { textResponse, metrics: completionMetrics } =
-    await LLMConnector.getChatCompletion(messages, {
-      temperature:
-        temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    await LLMConnector.getChatCompletion(messages);
   const metrics = addChatCostToMetrics(completionMetrics, {
     routingMetadata,
     workspace,
@@ -256,6 +297,7 @@ async function streamChat({
       workspace,
       prompt,
       attachments,
+      temperature,
       chatHistoryOverride: {
         rawHistory: history,
         chatHistory: history,
@@ -431,13 +473,16 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: String(prompt),
-    contextTexts,
-    chatHistory: history,
-    attachments,
-  });
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
+      userPrompt: String(prompt),
+      contextTexts,
+      chatHistory: history,
+      attachments,
+    },
+    historyAsChatRecords(history)
+  );
 
   if (!LLMConnector.streamingEnabled()) {
     writeResponseChunk(
@@ -461,10 +506,7 @@ async function streamChat({
     return;
   }
 
-  const stream = await LLMConnector.streamGetChatCompletion(messages, {
-    temperature:
-      temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-  });
+  const stream = await LLMConnector.streamGetChatCompletion(messages);
   const completeText = await LLMConnector.handleStream(
     responseInterceptor,
     stream,

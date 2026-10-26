@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "1.16.1",
+  "version": "1.19.0",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -36,7 +36,7 @@
     "@modelcontextprotocol/sdk": "^1.24.3",
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
-    "@qdrant/js-client-rest": "^1.9.0",
+    "@qdrant/js-client-rest": "1.18.0",
     "@vscode/ripgrep": "1.17.1",
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "2.3.5",
@@ -96,7 +96,7 @@
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
-    "weaviate-ts-client": "^1.4.0",
+    "weaviate-client": "3.9.0",
     "web-push": "^3.6.7",
     "winston": "^3.13.0"
   },

@@ -303,6 +303,11 @@ const ScheduledJob = {
         name: "Web Scraping",
         description: "Scrape content from web pages",
       },
+      {
+        id: "web-browsing",
+        name: "Web Browsing",
+        description: "Search and browse the web",
+      },
     ];
 
     // Configurable skills without sub-skills
@@ -311,11 +316,6 @@ const ScheduledJob = {
         id: "create-chart",
         name: "Create Charts",
         description: "Generate data visualization charts",
-      },
-      {
-        id: "web-browsing",
-        name: "Web Browsing",
-        description: "Search and browse the web",
       },
       {
         id: "sql-agent",

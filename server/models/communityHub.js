@@ -124,8 +124,17 @@ const CommunityHub = {
 
     if (item.itemType === "slash-command") {
       const { SlashCommandPresets } = require("./slashCommandsPresets");
+      const { isReservedCommand } = require("../utils/chats");
+      const command = SlashCommandPresets.formatCommand(String(item.command));
+      if (isReservedCommand(command))
+        return {
+          success: false,
+          error:
+            "Cannot import a preset with a command that matches a system command",
+        };
+
       await SlashCommandPresets.create(options?.currentUser?.id, {
-        command: SlashCommandPresets.formatCommand(String(item.command)),
+        command,
         prompt: String(item.prompt),
         description: String(item.description),
       });

@@ -50,8 +50,7 @@ export default function SlashCommandsTab({
   };
 
   const fetchImageGenStatus = async () => {
-    const settings = await System.keys();
-    setImageGenEnabled(!!settings?.ImageGenerationProvider);
+    setImageGenEnabled(await System.isImageGenerationAvailable());
   };
 
   const items = useMemo(

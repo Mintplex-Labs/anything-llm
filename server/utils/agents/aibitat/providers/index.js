@@ -28,7 +28,7 @@ const CometApiProvider = require("./cometapi.js");
 const FoundryProvider = require("./foundry.js");
 const GiteeAIProvider = require("./giteeai.js");
 const CohereProvider = require("./cohere.js");
-const DockerModelRunnerProvider = require("./dockerModelRunner.js");
+const LlmmanProvider = require("./llmman.js");
 const PrivatemodeProvider = require("./privatemode.js");
 const SambaNovaProvider = require("./sambanova.js");
 const LemonadeProvider = require("./lemonade.js");
@@ -68,7 +68,7 @@ module.exports = {
   FoundryProvider,
   GiteeAIProvider,
   CohereProvider,
-  DockerModelRunnerProvider,
+  LlmmanProvider,
   PrivatemodeProvider,
   SambaNovaProvider,
   LemonadeProvider,

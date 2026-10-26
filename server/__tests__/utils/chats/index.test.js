@@ -1,8 +1,22 @@
 /* eslint-env jest, node */
-const { grepCommand, grepAllSlashCommands } = require("../../../utils/chats");
+const {
+  grepCommand,
+  grepAllSlashCommands,
+  isReservedCommand,
+  chatPrompt,
+} = require("../../../utils/chats");
 const { SlashCommandPresets } = require("../../../models/slashCommandsPresets");
+const { promptWithMemories } = require("../../../utils/memories");
 
 jest.mock("../../../models/slashCommandsPresets");
+jest.mock("../../../utils/memories", () => ({
+  promptWithMemories: jest.fn(async ({ systemPrompt }) => systemPrompt),
+}));
+jest.mock("../../../models/systemPromptVariables", () => ({
+  SystemPromptVariables: {
+    expandSystemPromptVariables: jest.fn(async (prompt) => prompt),
+  },
+}));
 
 // Helper to shape preset rows the way the model returns them.
 const preset = (command, prompt) => ({ command, prompt });
@@ -14,11 +28,34 @@ describe("grepCommand", () => {
     SlashCommandPresets.getUserPresets.mockResolvedValue([]);
     expect(await grepCommand("/reset")).toBe("/reset");
     expect(await grepCommand("/RESET now")).toBe("/reset"); // case-insensitive
+    expect(await grepCommand("/reset?")).toBe("/reset"); // punctuation still dispatches
+  });
+
+  it("returns the built-in command when followed by more text", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([]);
+    expect(await grepCommand("/img a cat")).toBe("/img");
   });
 
   it("returns the message unchanged when no command matches", async () => {
     SlashCommandPresets.getUserPresets.mockResolvedValue([]);
     expect(await grepCommand("hello there")).toBe("hello there");
+  });
+
+  it("does not match a built-in command that is part of a longer command", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([]);
+    expect(await grepCommand("/resetall")).toBe("/resetall");
+    expect(await grepCommand("/reset-all")).toBe("/reset-all");
+    expect(await grepCommand("/resetting my password, how?")).toBe(
+      "/resetting my password, how?"
+    );
+    expect(await grepCommand("/imgs hello")).toBe("/imgs hello");
+  });
+
+  it("expands a preset whose command extends a built-in command name", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([
+      preset("/reset-all", "clear every workspace"),
+    ]);
+    expect(await grepCommand("/reset-all")).toBe("clear every workspace");
   });
 
   describe("preset expansion", () => {
@@ -33,7 +70,9 @@ describe("grepCommand", () => {
     });
 
     it("expands a command that follows other text and a space", async () => {
-      expect(await grepCommand("ok, /weather")).toBe("ok, what is the weather?");
+      expect(await grepCommand("ok, /weather")).toBe(
+        "ok, what is the weather?"
+      );
     });
 
     it("expands a command with trailing punctuation", async () => {
@@ -66,6 +105,30 @@ describe("grepCommand", () => {
   });
 });
 
+describe("isReservedCommand", () => {
+  it("reserves exact matches of the built-in commands", () => {
+    expect(isReservedCommand("/reset")).toBe(true);
+    expect(isReservedCommand("/img")).toBe(true);
+  });
+
+  it("is case-insensitive", () => {
+    expect(isReservedCommand("/RESET")).toBe(true);
+    expect(isReservedCommand("/Img")).toBe(true);
+  });
+
+  it("allows commands that extend a built-in command name", () => {
+    expect(isReservedCommand("/reset-all")).toBe(false);
+    expect(isReservedCommand("/resetall")).toBe(false);
+    expect(isReservedCommand("/img-gen")).toBe(false);
+    expect(isReservedCommand("/imgs")).toBe(false);
+  });
+
+  it("allows unrelated commands", () => {
+    expect(isReservedCommand("/weather")).toBe(false);
+    expect(isReservedCommand("")).toBe(false);
+  });
+});
+
 describe("grepAllSlashCommands", () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -94,5 +157,40 @@ describe("grepAllSlashCommands", () => {
     expect(await grepAllSlashCommands("/weather and /time")).toBe(
       "the weather and the time"
     );
+  });
+});
+
+describe("chatPrompt", () => {
+  const workspace = { id: 7, openAiPrompt: "Workspace prompt." };
+
+  beforeEach(() => promptWithMemories.mockClear());
+
+  it("injects memories scoped to the provided user", async () => {
+    await chatPrompt(workspace, { id: 3 });
+
+    expect(promptWithMemories).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 3, workspaceId: 7 })
+    );
+  });
+
+  it("falls back to the null memory scope when no user is given", async () => {
+    await chatPrompt(workspace);
+
+    expect(promptWithMemories).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: null, workspaceId: 7 })
+    );
+  });
+
+  it("never looks up memories when skipMemories is set", async () => {
+    const result = await chatPrompt(workspace, null, { skipMemories: true });
+
+    expect(result).toBe("Workspace prompt.");
+    expect(promptWithMemories).not.toHaveBeenCalled();
+  });
+
+  it("does not treat a non-object user (eg: a username string) as an identity", async () => {
+    await chatPrompt(workspace, "visitor-name", { skipMemories: true });
+
+    expect(promptWithMemories).not.toHaveBeenCalled();
   });
 });

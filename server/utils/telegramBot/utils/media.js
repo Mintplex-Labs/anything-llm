@@ -1,4 +1,5 @@
 const { getAudioFileInfo } = require("../../TextToSpeech/audioFormat");
+const { messageToSpeech } = require("../../TextToSpeech/messageToSpeech");
 
 /**
  * Download a file from Telegram by file ID.
@@ -130,10 +131,12 @@ async function photoToAttachment(bot, photos) {
  * @returns {Promise<boolean>} true if voice was sent, false if TTS failed
  */
 async function sendVoiceResponse(bot, chatId, text) {
+  const speechText = messageToSpeech(text);
+  if (!speechText) return false;
   try {
     const { getTTSProvider } = require("../../TextToSpeech");
     const provider = getTTSProvider();
-    const buffer = await provider.ttsBuffer(text);
+    const buffer = await provider.ttsBuffer(speechText);
     if (!buffer) return false;
     const { mime, extension } = getAudioFileInfo(buffer);
     await bot.sendAudio(

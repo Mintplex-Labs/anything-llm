@@ -11,14 +11,28 @@ const VALID_COMMANDS = {
   "/img": generateImage,
 };
 
+/**
+ * Checks if a command exactly matches a built-in system command (eg: /reset)
+ * so a preset cannot shadow it. Commands that merely extend a built-in name
+ * (eg: /reset-all) are valid user-defined presets.
+ * @param {string} command - the formatted command to check (eg: /reset)
+ * @returns {boolean}
+ */
+function isReservedCommand(command = "") {
+  return Object.keys(VALID_COMMANDS).includes(String(command).toLowerCase());
+}
+
 async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
 
-  // Check if the message starts with any built-in command
+  // Check if the message starts with any built-in command. Like the preset
+  // matching below, require the command to not be part of a longer command
+  // (e.g. don't match /reset in /reset-all) so preset commands that extend a
+  // built-in name are not hijacked.
   for (let i = 0; i < availableCommands.length; i++) {
     const cmd = availableCommands[i];
-    const re = new RegExp(`^(${cmd})`, "i");
+    const re = new RegExp(`^(${cmd})(?![a-z0-9_-])`, "i");
     if (re.test(message)) {
       return cmd;
     }
@@ -90,11 +104,19 @@ async function recentChatHistory({
 }
 
 /**
+ * @typedef {Object} ChatPromptOptions
+ * @property {string} [prompt] - The current user message. Used to rerank injected memories.
+ * @property {object[]} [rawHistory] - Recent chat history rows. Used to rerank injected memories.
+ * @property {boolean} [skipMemories] - When true, no stored memories are looked up or injected.
+ * Set this for unauthenticated contexts (eg: embeds) where there is no real user identity.
+ */
+
+/**
  * Returns the base prompt for the chat with memories appended (when enabled).
  * Also does variable substitution on the prompt if there are any defined variables.
  * @param {Object|null} workspace - the workspace object
  * @param {Object|null} user - the user object
- * @param {{prompt?: string, rawHistory?: object[]}} [opts] - current user message + chat history, used for reranking injected memories
+ * @param {ChatPromptOptions} [opts]
  * @returns {Promise<string>}
  */
 async function chatPrompt(workspace, user = null, opts = {}) {
@@ -107,6 +129,11 @@ async function chatPrompt(workspace, user = null, opts = {}) {
     user?.id,
     workspace?.id
   );
+
+  // Memories are scoped per-user, but in single-user mode they are stored with a
+  // null userId. Never inject them into anonymous/unauthenticated contexts.
+  if (opts.skipMemories === true) return systemPrompt;
+
   return promptWithMemories({
     systemPrompt,
     userId: user?.id ?? null,
@@ -132,5 +159,6 @@ module.exports = {
   chatPrompt,
   grepCommand,
   grepAllSlashCommands,
+  isReservedCommand,
   VALID_COMMANDS,
 };

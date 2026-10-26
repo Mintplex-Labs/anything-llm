@@ -18,10 +18,11 @@ const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
-const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const {
-  parseDockerModelRunnerEndpoint,
-} = require("../../../AiProviders/dockerModelRunner");
+  watchTokenLimit,
+} = require("../../../helpers/chat/LLMPerformanceMonitor");
+const { maxTokensParam, temperatureParam } = require("./helpers/tooled.js");
+const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
 const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
@@ -29,6 +30,7 @@ const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
 const { OllamaAILLM } = require("../../../AiProviders/ollama");
+const { LlmmanLLM } = require("../../../AiProviders/llmman");
 const { bindAbortSignal } = require("../../../helpers/abortSignals");
 
 /**
@@ -94,6 +96,12 @@ class Provider {
   cumulativeUsage = Provider.#emptyUsage();
 
   /**
+   * Whether the latest completion stopped at the max output token limit.
+   * @type {boolean}
+   */
+  truncated = false;
+
+  /**
    * Zeroed usage metrics for initializing/resetting an accumulator.
    * @returns {ProviderUsageMetrics}
    */
@@ -139,6 +147,14 @@ class Provider {
    * @type {AbortSignal|null}
    */
   abortSignal = null;
+
+  /**
+   * Sampling temperature for chat requests, assigned by AIbitat when the
+   * provider is instantiated. Undefined when unset or when the model rejects
+   * the parameter, so it is omitted from requests entirely.
+   * @type {number|undefined}
+   */
+  temperature = undefined;
 
   constructor(client) {
     if (this.constructor == Provider) {
@@ -218,6 +234,15 @@ class Provider {
   }
 
   /**
+   * Whether the model is loaded into memory on the inference server.
+   * Local providers override this; overrides should resolve true on error.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return true;
+  }
+
+  /**
    *
    * @param {string} provider - the string key of the provider LLM being loaded.
    * @param {LangChainModelConfig} config - Config to be used to override default connection object.
@@ -278,6 +303,10 @@ class Provider {
             baseURL: "https://api.together.xyz/v1",
           },
           apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...maxTokensParam(
+            toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null),
+            "maxTokens"
+          ),
           ...config,
         });
       case "generic-openai":
@@ -286,9 +315,9 @@ class Provider {
             baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
           },
           apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
-          maxTokens: toValidNumber(
-            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
-            1024
+          ...maxTokensParam(
+            toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+            "maxTokens"
           ),
           ...config,
         });
@@ -522,16 +551,8 @@ class Provider {
           ...config,
         });
       }
-      case "docker-model-runner":
-        return new ChatOpenAI({
-          configuration: {
-            baseURL: parseDockerModelRunnerEndpoint(
-              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
-            ),
-          },
-          apiKey: null,
-          ...config,
-        });
+      case "llmman":
+        return LlmmanLangchainChatModel.create(config);
       case "lemonade":
         return new ChatOpenAI({
           configuration: {
@@ -540,6 +561,19 @@ class Provider {
           apiKey: process.env.LEMONADE_LLM_API_KEY || null,
           ...config,
         });
+      case "embedded_lemonade": {
+        const {
+          EmbeddedLemonadeLLM,
+        } = require("../../../AiProviders/embeddedLemonade");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: EmbeddedLemonadeLLM.openaiBasePath(),
+            fetch: EmbeddedLemonadeLLM.bootingFetch(config?.model),
+          },
+          apiKey: "not-used",
+          ...config,
+        });
+      }
       case "omlx":
         return new ChatOpenAI({
           configuration: {
@@ -768,6 +802,20 @@ class Provider {
    */
   resetCumulativeUsage() {
     this.cumulativeUsage = Provider.#emptyUsage();
+    this.truncated = false;
+  }
+
+  /**
+   * Watches a completion stream or response for the max output token limit.
+   * Each completion replaces the previous result, so after a run the flag
+   * describes the final reply.
+   * @template T
+   * @param {T} streamOrResponse
+   * @returns {T} the same object, so the call can wrap stream creation
+   */
+  watchTokenLimit(streamOrResponse) {
+    this.truncated = false;
+    return watchTokenLimit(streamOrResponse, () => (this.truncated = true));
   }
 
   /**
@@ -784,7 +832,10 @@ class Provider {
    * @returns {ProviderUsageMetrics} The accumulated usage metrics
    */
   getCumulativeUsage() {
-    return { ...this.cumulativeUsage };
+    return {
+      ...this.cumulativeUsage,
+      ...(this.truncated ? { truncated: true } : {}),
+    };
   }
 
   /**
@@ -802,12 +853,14 @@ class Provider {
     const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0
         ? { functions }
         : {}),
     });
+    this.watchTokenLimit(stream);
 
     const result = {
       functionCall: null,
@@ -856,6 +909,28 @@ class Provider {
 }
 
 // Langchain Wrappers
+
+/**
+ * Langchain chat model for llmman, which serves the Ollama API, so the same
+ * client is reused. Passes context window options through so preferences are
+ * respected between chat/agent and Langchain tooling.
+ */
+class LlmmanLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.LLMMAN_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.LLMMAN_MODEL_PREF;
+    return {
+      num_ctx: LlmmanLLM.promptWindowLimit(model),
+    };
+  }
+}
 
 /**
  * Ollama Langchain Chat Model that supports passing in context window options

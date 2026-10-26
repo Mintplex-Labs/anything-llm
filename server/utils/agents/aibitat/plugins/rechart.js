@@ -55,9 +55,9 @@ Make sure field "name" always stays named "name". Instead of naming value field 
 Make sure the format use double quotes and property names are string literals. Provide JSON data only.`,
               },
             },
+            required: ["type", "title", "dataset"],
             additionalProperties: false,
           },
-          required: ["type", "title", "dataset"],
           handler: async function ({ type, dataset, title }) {
             try {
               if (this.tracker.isMarkedUnique(this.name)) {

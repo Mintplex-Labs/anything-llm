@@ -211,7 +211,9 @@ export function CitationDetailModal({ source, onClose }) {
               rel="noreferrer"
               className="flex items-center gap-x-1 max-w-full overflow-hidden hover:underline hover:text-blue-300 light:hover:text-blue-600"
             >
-              <span className="truncate">{webpageUrl}</span>
+              <span className="truncate" title={webpageUrl}>
+                {truncate(webpageUrl, 45)}
+              </span>
               <ArrowSquareOut className="flex-shrink-0" />
             </a>
           ) : (

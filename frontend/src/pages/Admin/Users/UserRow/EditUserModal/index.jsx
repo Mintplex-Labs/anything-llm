@@ -34,7 +34,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) {
-      if (!value || value === null) continue;
+      if (!value && key !== "bio") continue;
       data[key] = value;
     }
     if (messageLimit.enabled) {
@@ -78,7 +78,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
         <ModalInput
           label="New Password"
           name="password"
-          type="text"
+          type="password"
           placeholder={`${user.username}'s new password`}
           autoComplete="off"
           minLength={8}

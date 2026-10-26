@@ -1,3 +1,4 @@
+import moment from "moment";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { safeJsonParse } from "@/utils/request";
@@ -35,7 +36,7 @@ export default function LogRow({ log }) {
           {log.user.username}
         </td>
         <td className="px-6 border-transparent transform transition-transform duration-200">
-          {log.occurredAt}
+          {moment(log.occurredAt).format("lll")}
         </td>
         {hasMetadata && (
           <div className="mt-1">
