@@ -260,6 +260,8 @@ const TRANSLATIONS = {
         max: "Maks",
       },
     },
+    token_limit_reached:
+      "Svaret nåede det maksimale tilladte antal tokens. Øg modellens maksimale antal tokens, så svaret kan være længere.",
   },
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",
@@ -1355,6 +1357,12 @@ const TRANSLATIONS = {
     branding: {
       title: 'Brandstrategi og "white label"-løsninger',
       description: "Mærk din AnythingLLM-instans med dit eget brand.",
+      tabs: {
+        identity: "Identitet",
+        colors: "Farver",
+        sidebar: "Sidepanel",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1438,6 +1446,36 @@ const TRANSLATIONS = {
         title: "Deaktiver automatisk rulle",
         description:
           "Deaktiver automatisk rulle ned til bundlinjen i chatten, når der modtages nye beskeder.",
+      },
+      palette: {
+        title: "Farvepalet",
+        description:
+          "Vælg en farvepalet. Den gælder for både lys og mørk tilstand.",
+        enforced:
+          "Din administrator har valgt farvepaletten for denne instans.",
+        "default-badge": "Standard",
+      },
+      "instance-palettes": {
+        title: "Farvepaletter",
+        description:
+          "Klik på en farvepalet for at gøre den standard for alle på denne instans. Tilpassede farvepaletter består af en primærfarve, der farver baggrunden, sidepanelet og indholdet, samt en accentfarve til knapper og links.",
+        new: "Ny farvepalet",
+        edit: "Rediger farvepalet",
+        delete: "Slet farvepaletten",
+        name: "Farvepaletens navn",
+        "name-required": "Giv paletten et navn.",
+        colors: {
+          main: "Hovedfarve",
+          accent: "Accent",
+        },
+        "preview-note":
+          'Ændringer vises i hele appen og gemmes, når du klikker på "Færdig".',
+        done: "Færdig",
+        cancel: "Annullér",
+        enforce: "Gennemtving standardfarvepaletten",
+        "enforce-description":
+          "Alle på denne instans bruger standardfarvepaletten, og de kan ikke ændre den.",
+        "save-failed": "Kunne ikke gemme farvepaletter: {{error}}",
       },
     },
   },

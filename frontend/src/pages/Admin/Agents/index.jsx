@@ -804,7 +804,7 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
   return (
     <div
       id="workspace-agent-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex md:mt-0 mt-6"
     >
       <Sidebar />
       <div

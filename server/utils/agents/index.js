@@ -283,6 +283,13 @@ class AgentHandler {
         if (!process.env.LEMONADE_LLM_BASE_PATH)
           throw new Error("Lemonade base path must be provided to use agents.");
         break;
+      case "embedded_lemonade":
+        // lemond is booted on demand by the provider - it only has to be enabled on this instance.
+        if (!require("../AiProviders/embeddedLemonade/config").isEnabled())
+          throw new Error(
+            "The built-in LLM engine is not enabled. Set ENABLE_BUILT_IN_LLM=true when starting the AnythingLLM Docker container."
+          );
+        break;
       case "omlx":
         if (!process.env.OMLX_LLM_BASE_PATH)
           throw new Error("OMLX base path must be provided to use agents.");
@@ -392,6 +399,8 @@ class AgentHandler {
         return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
       case "lemonade":
         return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "embedded_lemonade":
+        return process.env.EMBEDDED_LEMONADE_MODEL_PREF ?? null;
       case "omlx":
         return process.env.OMLX_LLM_MODEL_PREF ?? null;
       case "minimax":
@@ -475,18 +484,17 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  async #providerSetupAndCheck() {
+  async #providerSetupAndCheck(prompt = null) {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
 
     // If provider resolved to model router, resolve the actual provider/model
     if (this.provider === "anythingllm-router") {
-      await this.#resolveRouterProvider();
+      await this.#resolveRouterProvider(prompt);
     }
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }
 
@@ -777,6 +785,7 @@ class AgentHandler {
   async init() {
     await this.#validInvocation();
     await this.#providerSetupAndCheck();
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
 
     // Retrieve cached attachments (images, etc.) from the HTTP request
     this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
@@ -917,48 +926,57 @@ class AgentHandler {
     this.aibitat.updateReasoningEffort = (effort) =>
       this.#updateReasoningEffort(effort);
 
-    // If the workspace uses the model router, attach a resolver so routing
-    // is re-evaluated on every agent turn instead of only at initialization.
-    // Skip the first invocation since routing was already resolved during init()
+    // Re-read the workspace and re-resolve the provider/model on every agent turn
+    // so model changes and router rules apply mid-session, not only at initialization.
+    // Skip the first invocation since the route was already resolved during init()
     // and re-resolving would cause shouldNotify to return false (route already recorded).
-    if (this.routingMetadata) {
-      let isFirstCall = true;
-      this.aibitat.resolveRoute = async (prompt) => {
-        if (isFirstCall) {
-          isFirstCall = false;
-          return {
-            provider: this.provider,
-            model: this.model,
-            reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
-          };
-        }
-        try {
-          await this.#resolveRouterProvider(prompt);
-          this.aibitat.handlerProps.routingMetadata =
-            this.routingMetadata || null;
-          return {
-            provider: this.provider,
-            model: this.model,
-            reasoningEffort: await this.#reasoningEffortForRoute(),
-          };
-        } catch (e) {
+    let isFirstCall = true;
+    this.aibitat.resolveRoute = async (prompt) => {
+      if (isFirstCall) {
+        isFirstCall = false;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
+        };
+      }
+      try {
+        const { provider, model } = this;
+        this.invocation.workspace =
+          (await Workspace._findFirst({
+            where: { id: this.invocation.workspace.id },
+          })) ?? this.invocation.workspace;
+        this.routingMetadata = null;
+        this._modelRouter = null;
+        await this.#providerSetupAndCheck(prompt);
+        if (this.provider !== provider || this.model !== model)
           this.log(
-            "Router re-resolution failed, keeping current route",
-            e.message
+            `Route changed ${this.#invocationUUID}::${this.provider}:${this.model}`
           );
-          return null;
-        }
-      };
+        this.aibitat.handlerProps.routingMetadata =
+          this.routingMetadata || null;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: await this.#reasoningEffortForRoute(),
+        };
+      } catch (e) {
+        this.log(
+          "Route re-resolution failed, keeping current route",
+          e.message
+        );
+        return null;
+      }
+    };
 
-      this.log(
-        `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
-      );
-      this.aibitat.use(
-        AgentPlugins.modelRouterCooldown.plugin(() =>
-          this._modelRouter?.onInferenceComplete()
-        )
-      );
-    }
+    this.log(
+      `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
+    );
+    this.aibitat.use(
+      AgentPlugins.modelRouterCooldown.plugin(() =>
+        this._modelRouter?.onInferenceComplete()
+      )
+    );
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);

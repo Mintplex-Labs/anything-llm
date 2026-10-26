@@ -276,9 +276,23 @@ describe("GiteaRepoLoader branch resolution", () => {
     expect(loader.branch).toBe("master");
   });
 
-  test("getRepoBranches sorts main to the front and returns every branch", async () => {
+  test("getRepoBranches lists the repository default branch first", async () => {
+    mockGiteaApi({
+      branches: [{ name: "main" }, { name: "develop" }, { name: "release" }],
+      defaultBranch: "develop",
+    });
+    const loader = new GiteaRepoLoader({
+      repo: "https://git.example.com/acme/widgets",
+    });
+    const branches = await loader.getRepoBranches();
+
+    expect(branches).toEqual(["develop", "main", "release"]);
+  });
+
+  test("getRepoBranches sorts main to the front when metadata is unavailable", async () => {
     mockGiteaApi({
       branches: [{ name: "legacy" }, { name: "main" }, { name: "release" }],
+      repoStatus: 500,
     });
     const loader = new GiteaRepoLoader({
       repo: "https://git.example.com/acme/widgets",

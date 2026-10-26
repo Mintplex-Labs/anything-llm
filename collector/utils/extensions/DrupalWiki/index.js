@@ -48,9 +48,13 @@ async function loadAndStoreSpaces(
     return Number(idStr.trim());
   });
 
+  let storedPages = 0;
   for (const spaceId of spaceIdsArr) {
     try {
-      await drupalWiki.loadAndStoreAllPagesForSpace(spaceId, encryptionWorker);
+      storedPages += await drupalWiki.loadAndStoreAllPagesForSpace(
+        spaceId,
+        encryptionWorker
+      );
       console.log(`--- Finished space ${spaceId} ---`);
     } catch (e) {
       console.error(e);
@@ -62,6 +66,13 @@ async function loadAndStoreSpaces(
     }
   }
   console.log(`-- Finished all spaces--`);
+
+  if (storedPages === 0)
+    return {
+      success: false,
+      reason: `No pages with content were imported from Drupal Wiki spaces ${spaceIds}.`,
+      data: {},
+    };
 
   return {
     success: true,

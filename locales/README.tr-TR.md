@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> Ayrıca AI ajanlarının kullanabileceği eksiksiz bir bilgisayar ortamı sunan [Open Computer](../open-computer) üzerinde de çalışıyoruz.
->
-> Bu, AnythingLLM'in ajan yeteneklerini yeni bir seviyeye taşıyacak ve AI ajan kullanımı için yepyeni bir UX paradigması getirecek.
->
-> ⭐ Güncellemelerden haberdar olmak için depoya yıldız verin!
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>

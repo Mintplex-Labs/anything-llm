@@ -246,13 +246,13 @@ const SystemPromptVariables = {
 
     try {
       const allVariables = await this.getAll(userId);
-      let result = str;
+      const resolved = new Map();
 
       // Find all variable patterns in the string
       const matches = str.match(/\{([^}]+)\}/g) || [];
 
       // Process each match
-      for (const match of matches) {
+      for (const match of new Set(matches)) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
         // Determine if the variable is a class-based variable (workspace.X or user.X)
@@ -289,7 +289,7 @@ const SystemPromptVariables = {
                 );
                 value = `[${variableTypeDisplay} ${prop}]`;
               }
-              result = result.replace(match, value);
+              resolved.set(match, value);
             } else {
               let value;
               try {
@@ -306,11 +306,11 @@ const SystemPromptVariables = {
                 );
                 value = `[${variableTypeDisplay} ${prop}]`;
               }
-              result = result.replace(match, value);
+              resolved.set(match, value);
             }
           } else {
             // If the variable is not a function, replace the match with the variable value
-            result = result.replace(match, `[${variableTypeDisplay} ${prop}]`);
+            resolved.set(match, `[${variableTypeDisplay} ${prop}]`);
           }
           continue;
         }
@@ -327,20 +327,23 @@ const SystemPromptVariables = {
           try {
             if (variable.value.constructor.name === "AsyncFunction") {
               const value = await variable.value(userId);
-              result = result.replace(match, value);
+              resolved.set(match, value);
             } else {
               const value = variable.value();
-              result = result.replace(match, value);
+              resolved.set(match, value);
             }
           } catch (error) {
             console.error(`Error processing dynamic variable ${key}:`, error);
-            result = result.replace(match, match);
+            resolved.set(match, match);
           }
         } else {
-          result = result.replace(match, variable.value || match);
+          resolved.set(match, variable.value || match);
         }
       }
-      return result;
+      return str.replace(
+        /\{([^}]+)\}/g,
+        (match) => resolved.get(match) ?? match
+      );
     } catch (error) {
       console.error("Error in expandSystemPromptVariables:", error);
       return str;

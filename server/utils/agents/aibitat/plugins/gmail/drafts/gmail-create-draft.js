@@ -148,6 +148,10 @@ module.exports.GmailCreateDraft = {
                   payload: {
                     to,
                     subject,
+                    body,
+                    ...(cc ? { cc } : {}),
+                    ...(bcc ? { bcc } : {}),
+                    ...(htmlBody ? { htmlBody } : {}),
                     attachmentCount: preparedAttachments.length,
                   },
                   description: `Create Gmail draft to "${to}" with subject "${subject}"${attachmentNote}`,

@@ -16,6 +16,7 @@ class BackgroundService {
   memoryExtractionEnabled = false;
   #root = path.resolve(__dirname, "../../jobs");
   #scheduledJobTimers = new Map();
+  #scheduledJobVersions = new Map();
   #scheduledJobQueue = new PQueue({
     concurrency: Number(process.env.SCHEDULED_JOB_MAX_CONCURRENT) || 1,
   });
@@ -272,6 +273,11 @@ class BackgroundService {
    */
   async #bootScheduledJobs() {
     const { ScheduledJob } = require("../../models/scheduledJob");
+    const { SystemSettings } = require("../../models/systemSettings");
+
+    // Scheduled jobs are only available in single-user mode.
+    if (await SystemSettings.isMultiUserMode()) return;
+
     const enabledJobs = await ScheduledJob.allEnabled();
 
     for (const job of enabledJobs) {
@@ -328,11 +334,19 @@ class BackgroundService {
 
   /**
    * Re-sync a scheduled job's cron timer after an update.
-   * Removes the old timer and re-adds if still enabled.
+   * Cancels waiting runs, removes the old timer and re-adds if still enabled.
    * @param {number} jobId - scheduled_jobs.id
    */
   async syncScheduledJob(jobId) {
     const { ScheduledJob } = require("../../models/scheduledJob");
+    const { ScheduledJobRun } = require("../../models/scheduledJobRun");
+    this.#scheduledJobVersions.set(
+      jobId,
+      (this.#scheduledJobVersions.get(jobId) || 0) + 1
+    );
+    this.removeScheduledJob(jobId);
+    await ScheduledJobRun.cancelQueuedForJob(jobId);
+    // A waiting worker may have started while cancellation was in flight.
     this.removeScheduledJob(jobId);
     const job = await ScheduledJob.get({ id: Number(jobId) });
     if (job && job.enabled) {
@@ -373,21 +387,42 @@ class BackgroundService {
    *
    * @param {number} jobId - scheduled_jobs.id
    * @returns {Promise<object|null>} the created run row, or null if skipped
-   *   because a run is already in flight for this job.
+   *   because a run is already in flight for this job or the instance is in
+   *   multi-user mode.
    */
   async enqueueScheduledJob(jobId) {
     const { ScheduledJobRun } = require("../../models/scheduledJobRun");
+    const { SystemSettings } = require("../../models/systemSettings");
+    const version = this.#scheduledJobVersions.get(jobId) || 0;
+    const stale = () =>
+      version !== (this.#scheduledJobVersions.get(jobId) || 0);
+
+    // Timers registered before the switch to multi-user mode stop here.
+    if (await SystemSettings.isMultiUserMode()) {
+      this.removeScheduledJob(jobId);
+      return null;
+    }
+    if (stale()) return null;
 
     const run = await ScheduledJobRun.start(jobId);
     // if start returns null, skip enqueuing, schueduled job already has a run in flight
     if (!run) return null;
+    // A timer callback may have been claiming its run when the job was resynced.
+    if (stale()) {
+      await ScheduledJobRun.kill(run.id);
+      return null;
+    }
 
-    this.#scheduledJobQueue.add(() =>
-      this.#runScheduledJobWorker(jobId, run.id).catch(async (err) => {
+    this.#scheduledJobQueue.add(async () => {
+      if (stale()) {
+        await ScheduledJobRun.kill(run.id);
+        return;
+      }
+      await this.#runScheduledJobWorker(jobId, run.id).catch(async (err) => {
         this.#log(`Scheduled job ${jobId} failed: ${err.message}`);
         await ScheduledJobRun.failIfNotTerminal(run.id, err.message);
-      })
-    );
+      });
+    });
     return run;
   }
 

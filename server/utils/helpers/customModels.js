@@ -46,6 +46,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "privatemode",
   "sambanova",
   "lemonade",
+  "embedded_lemonade",
+  "embedded_lemonade-all",
   "minimax",
   "cerebras",
   "omlx",
@@ -175,6 +177,11 @@ async function getCustomModels(
       return await getSambaNovaModels(apiKey);
     case "lemonade":
       return await getLemonadeModels(basePath);
+    case "embedded_lemonade":
+    case "embedded_lemonade-all":
+      return await require("../AiProviders/embeddedLemonade").getEmbeddedLemonadeModels(
+        provider === "embedded_lemonade-all"
+      );
     case "lemonade-stt":
       return await getLemonadeSTTModels(basePath);
     case "lemonade-embedder":
@@ -682,9 +689,18 @@ async function getMistralModels(apiKey = null) {
   });
   const models = await openai.models
     .list()
-    .then((results) =>
-      results.data.filter((model) => !model.id.includes("embed"))
-    )
+    .then((results) => {
+      // Every alias of a model is listed as its own entry sharing the model's
+      // `name`, so only one entry per name is kept - the canonical id when listed.
+      const chatModels = new Map();
+      for (const model of results.data) {
+        if (!model.capabilities?.completion_chat) continue;
+        const name = model.name || model.id;
+        if (chatModels.has(name) && model.id !== name) continue;
+        chatModels.set(name, { id: model.id, name: model.id });
+      }
+      return Array.from(chatModels.values());
+    })
     .catch((e) => {
       console.error(`Mistral:listModels`, e.message);
       return [];

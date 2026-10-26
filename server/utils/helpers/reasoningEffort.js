@@ -86,7 +86,9 @@ function modelsDevReasoningCapabilities(provider, model) {
     levels.add("on");
     levels.add("off");
   }
-  if (provider === "gemini" && options.budget) {
+  // Budget levels only apply to budget-only models (eg: 2.5) - a model that
+  // lists levels offers just those, since newer models reject a budget.
+  if (provider === "gemini" && options.budget && !options.effortValues.length) {
     for (const level of Object.keys(GEMINI_THINKING_BUDGETS)) levels.add(level);
     // A thinking toggle alongside a budget means a zero budget is allowed.
     if (options.toggle) levels.add("off");
@@ -98,10 +100,15 @@ function modelsDevReasoningCapabilities(provider, model) {
   return { reasoning: reasoningOptions.length > 0, reasoningOptions };
 }
 
-/** The Gemini `thinking_config` for an effort, shaped by the model's options. */
+/**
+ * The Gemini `thinking_config` for an effort, shaped by the model's options.
+ * Levels are sent whenever the model lists them - newer models reject a budget.
+ */
 function geminiThinkingConfig(effort, model) {
-  const { budget = null } = modelsDevOptions("gemini", model) ?? {};
-  if (!budget) return { thinking_level: effort, include_thoughts: true };
+  const { effortValues = [], budget = null } =
+    modelsDevOptions("gemini", model) ?? {};
+  if (!budget || effortValues.length > 0)
+    return { thinking_level: effort, include_thoughts: true };
   if (effort === "off") return { thinking_budget: 0 };
 
   const min = Number.isFinite(budget.min) ? budget.min : 0;
@@ -174,6 +181,9 @@ function reasoningParams(provider, effort = null, model = null) {
       return {
         reasoning: toggle ? { enabled: effort === "on" } : { effort },
       };
+    case "mistral":
+      // Reasoning models only accept "none" or "high" - other levels are rejected.
+      return { reasoning_effort: effort === "on" ? "high" : "none" };
     case "deepseek":
       // https://api-docs.deepseek.com/guides/thinking_mode
       if (toggle)

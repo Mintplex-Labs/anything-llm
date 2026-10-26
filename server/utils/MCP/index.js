@@ -1,6 +1,28 @@
 const MCPHypervisor = require("./hypervisor");
 const { Workspace } = require("../../models/workspace");
 
+// JSON-RPC "Method not found". A server that does not implement `ping`
+// answers with this code, which still proves it is alive.
+const JSONRPC_METHOD_NOT_FOUND = -32601;
+
+/**
+ * Check whether an MCP server client is reachable. A server that answers
+ * `ping` with JSON-RPC -32601 ("Method not found") is alive but does not
+ * implement `ping` - treat it as reachable so its tools can still be listed
+ * and used. Any other ping failure (transport errors, timeouts) is rethrown
+ * so the server is still reported as down.
+ * @param {import("@modelcontextprotocol/sdk/client/index.js").Client} mcp - The connected MCP client
+ * @returns {Promise<boolean>} true when the server answered the ping request
+ */
+async function isMCPServerReachable(mcp) {
+  try {
+    return !!(await mcp.ping());
+  } catch (error) {
+    if (error?.code === JSONRPC_METHOD_NOT_FOUND) return true;
+    throw error;
+  }
+}
+
 class MCPCompatibilityLayer extends MCPHypervisor {
   static _instance;
 
@@ -181,7 +203,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       // it crashes the entire list, so a single bad server would hide every
       // other server. Keep the server visible with its error instead.
       try {
-        const online = !!(await mcp.ping());
+        const online = await isMCPServerReachable(mcp);
         const tools = (online ? (await mcp.listTools()).tools : []).filter(
           (tool) => !tool.name.startsWith("handle_mcp_connection_mcp_")
         );
@@ -223,7 +245,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: `MCP server ${name} not found in config file.`,
       };
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
+    const online = mcp ? await isMCPServerReachable(mcp) : false; // If the server is not in the mcps object, it is not running
 
     if (online) {
       const killed = this.pruneMCPServer(name);
@@ -251,7 +273,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       };
 
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
+    const online = mcp ? await isMCPServerReachable(mcp) : false; // If the server is not in the mcps object, it is not running
     if (online) this.pruneMCPServer(name);
     this.removeMCPServerFromConfig(name);
 
@@ -262,23 +284,56 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   }
 
   /**
-   * Return the result of an MCP server call as a string
-   * This will handle circular references and bigints since an MCP server can return any type of data.
-   * @param {Object} result - The result to return
+   * Return the useful MCP payload as a string for the agent.
+   * Text blocks are returned as-is so JSON inside them is not escaped again.
+   * Error results keep the full envelope so the agent sees `isError: true`.
+   * `structuredContent` is only used when the server sent no content blocks,
+   * since the spec treats text content as the model-facing representation.
+   * Images, mixed blocks, and anything else still stringify the whole result,
+   * with circular references and bigints made safe.
+   * @param {Object} result - The MCP CallToolResult
    * @returns {string} The result as a string
    */
   static returnMCPResult(result) {
     if (typeof result !== "object" || result === null) return String(result);
+    if (result.isError) return MCPCompatibilityLayer.#serialize(result);
 
+    const blocks = Array.isArray(result.content) ? result.content : [];
+    if (
+      blocks.length > 0 &&
+      blocks.every(
+        (block) => block?.type === "text" && typeof block.text === "string"
+      )
+    ) {
+      return blocks.map((block) => block.text).join("\n");
+    }
+
+    if (
+      blocks.length === 0 &&
+      result.structuredContent &&
+      typeof result.structuredContent === "object"
+    ) {
+      return MCPCompatibilityLayer.#serialize(result.structuredContent);
+    }
+
+    return MCPCompatibilityLayer.#serialize(result);
+  }
+
+  /**
+   * JSON.stringify that survives bigints and circular references.
+   * @param {unknown} value
+   * @returns {string}
+   */
+  static #serialize(value) {
     const seen = new WeakSet();
     try {
-      return JSON.stringify(result, (key, value) => {
-        if (typeof value === "bigint") return value.toString();
-        if (typeof value === "object" && value !== null) {
-          if (seen.has(value)) return "[Circular]";
-          seen.add(value);
+      return JSON.stringify(value, (_key, item) => {
+        if (typeof item === "bigint") return item.toString();
+        if (typeof item === "object" && item !== null) {
+          if (seen.has(item)) return "[Circular]";
+          seen.add(item);
         }
-        return value;
+        return item;
       });
     } catch (e) {
       return `[Unserializable: ${e.message}]`;

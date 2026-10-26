@@ -130,6 +130,11 @@ function extensions(app) {
         const validatedUrl = validateURL(url);
         if (!validURL(validatedUrl)) throw new Error("Not a valid URL.");
         const scrapedData = await websiteDepth(validatedUrl, depth, maxLinks);
+        if (scrapedData.length === 0)
+          return response.status(200).json({
+            success: false,
+            reason: `No pages could be scraped from ${validatedUrl}.`,
+          });
         response.status(200).json({ success: true, data: scrapedData });
       } catch (e) {
         console.error(e);
