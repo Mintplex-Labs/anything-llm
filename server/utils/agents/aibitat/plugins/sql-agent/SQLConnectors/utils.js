@@ -132,13 +132,21 @@ class ConnectionStringParser {
    */
   _formatAddress(connectionStringObject) {
     return connectionStringObject.hosts
-      .map(
-        (address) =>
-          encodeURIComponent(address.host) +
+      .map((address) => {
+        const host =
+          address.host.startsWith("[") && address.host.endsWith("]")
+            ? address.host.slice(1, -1)
+            : address.host;
+        const encodedHost = host.includes(":")
+          ? `[${encodeURIComponent(host).replace(/%3A/gi, ":")}]`
+          : encodeURIComponent(host);
+        return (
+          encodedHost +
           (address.port
             ? ":" + encodeURIComponent(address.port.toString(10))
             : "")
-      )
+        );
+      })
       .join(",");
   }
 
@@ -148,6 +156,14 @@ class ConnectionStringParser {
    */
   _parseAddress(addresses) {
     return addresses.split(",").map((address) => {
+      const ipv6 = /^\[([^\]]+)\](?::(\d+))?$/.exec(address);
+      if (ipv6) {
+        return {
+          host: decodeURIComponent(ipv6[1]),
+          ...(ipv6[2] !== undefined ? { port: +ipv6[2] } : {}),
+        };
+      }
+
       const i = address.indexOf(":");
 
       return i >= 0

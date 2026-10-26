@@ -129,6 +129,42 @@ describe("ConnectionStringParser", () => {
     });
   });
 
+  describe("IPv6 Hosts", () => {
+    test("should parse an IPv6 host and port", () => {
+      const parser = new ConnectionStringParser({ scheme: "mssql" });
+      const result = parser.parse(
+        "mssql://user:pass@[2001:db8::1]:1433/mydb"
+      );
+
+      expect(result.hosts).toEqual([{ host: "2001:db8::1", port: 1433 }]);
+    });
+
+    test("should parse an IPv6 host without a port", () => {
+      const parser = new ConnectionStringParser({ scheme: "mssql" });
+      const result = parser.parse("mssql://user:pass@[::1]/mydb");
+
+      expect(result.hosts).toEqual([{ host: "::1" }]);
+    });
+
+    test("should format an IPv6 host with brackets and round-trip it", () => {
+      const parser = new ConnectionStringParser({ scheme: "postgresql" });
+      const uri = parser.format({
+        scheme: "postgresql",
+        username: "user",
+        password: "pass",
+        hosts: [{ host: "2001:db8::1", port: 5432 }],
+        endpoint: "mydb",
+      });
+
+      expect(uri).toBe(
+        "postgresql://user:pass@[2001:db8::1]:5432/mydb"
+      );
+      expect(parser.parse(uri).hosts).toEqual([
+        { host: "2001:db8::1", port: 5432 },
+      ]);
+    });
+  });
+
   describe("Provider-Specific Tests", () => {
     test("should parse MySQL connection string", () => {
       const parser = new ConnectionStringParser({ scheme: "mysql" });
