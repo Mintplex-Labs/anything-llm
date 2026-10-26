@@ -1515,7 +1515,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           reasoningEffort,
         });
       case "mistral":
-        return new Providers.MistralProvider({ model: config.model });
+        return new Providers.MistralProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "generic-openai":
         return new Providers.GenericOpenAiProvider({ model: config.model });
       case "perplexity":
