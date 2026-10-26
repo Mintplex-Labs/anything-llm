@@ -29,7 +29,7 @@ class OpenAiLLM {
       apiKey: process.env.OPEN_AI_KEY,
     });
     this.model =
-      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4.1-nano";
+      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-5.6-luna";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
