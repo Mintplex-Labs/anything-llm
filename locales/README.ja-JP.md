@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-  <a href='../README.md'>English</a> · <a href='./README.zh-CN.md'>简体中文</a> · <b>日本語</b> · <a href='./README.tr-TR.md'>Türkçe</a> · <a href='./README.fa-IR.md'>فارسی</a>
+  <a href='../README.md'>English</a> · <a href='./README.zh-CN.md'>简体中文</a> · <b>日本語</b> · <a href='./README.tr-TR.md'>Türkçe</a> · <a href='./README.fa-IR.md'>فارسی</a> · <a href='./README.id-ID.md'>Bahasa Indonesia</a>
 </p>
 
 <p align="center">

@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-  <b>English</b> · <a href='./locales/README.zh-CN.md'>简体中文</a> · <a href='./locales/README.ja-JP.md'>日本語</a>
+  <b>English</b> · <a href='./locales/README.zh-CN.md'>简体中文</a> · <a href='./locales/README.ja-JP.md'>日本語</a> · <a href='./locales/README.id-ID.md'>Bahasa Indonesia</a>
 </p>
 
 <p align="center">
