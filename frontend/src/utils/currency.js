@@ -125,9 +125,8 @@ export function currencyName(code, locale = undefined) {
 }
 
 /**
- * Formats a stored USD cost into the given display currency.
- * Precision scales down with the value so tiny per-message costs stay legible:
- * >= 1 shows 2 decimals, >= 0.01 shows up to 4, anything smaller up to 6.
+ * Formats a stored USD cost into the given display currency, rounded to the
+ * currency's standard minor units (eg: 2 decimals for USD, 0 for JPY).
  * @param {number} usd - the cost in USD
  * @param {{currency?: string, rate?: number}} [options] - display currency and its units-per-USD rate
  * @returns {string}
@@ -135,16 +134,13 @@ export function currencyName(code, locale = undefined) {
 export function formatCost(usd, { currency = "USD", rate = 1 } = {}) {
   if (typeof usd !== "number" || !isFinite(usd)) return "";
   const value = usd * (rate || 1);
-  const maxDigits = value >= 1 ? 2 : value >= 0.01 ? 4 : value > 0 ? 6 : 2;
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
       currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: maxDigits,
     }).format(value);
   } catch {
-    return `${value.toFixed(maxDigits)} ${currency}`;
+    return `${value.toFixed(2)} ${currency}`;
   }
 }
 
