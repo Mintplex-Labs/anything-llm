@@ -349,7 +349,7 @@ async function streamChatWithWorkspace(
   }
 
   if (completeText?.length > 0) {
-    await WorkspaceChats.upsert(chat.id, {
+    const completedChat = {
       workspaceId: workspace.id,
       prompt: message,
       response: {
@@ -362,14 +362,18 @@ async function streamChatWithWorkspace(
       threadId: thread?.id || null,
       user,
       include: true,
-    });
+    };
+    // The early save can fail, so fall back to creating the row here.
+    const { chat: savedChat } = chat
+      ? await WorkspaceChats.upsert(chat.id, completedChat)
+      : await WorkspaceChats.new(completedChat);
 
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
       close: true,
       error: false,
-      chatId: chat.id,
+      chatId: savedChat?.id,
       metrics,
     });
     return;
