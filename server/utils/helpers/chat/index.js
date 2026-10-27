@@ -67,7 +67,7 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
   if (userPromptSize > llm.limits.user) {
     return [
       {
-        role: "user",
+        ...user,
         content: cannonball({
           input: user.content,
           targetTokenSize: llm.promptWindowLimit() * 0.8,
