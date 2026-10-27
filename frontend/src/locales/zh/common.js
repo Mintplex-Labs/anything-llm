@@ -286,6 +286,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "回复已达到最大输出 token 限制。增加模型的最大输出 token 数量，以便生成更长的回复。",
+    no_response: "模型未能响应。",
   },
   "vector-workspace": {
     identifier: "向量数据库标识符",

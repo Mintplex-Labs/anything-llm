@@ -261,6 +261,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "La risposta ha raggiunto il limite massimo di token di output consentito. Aumentare il limite massimo di token di output del modello per consentire risposte più lunghe.",
+    no_response: "Il modello non è riuscito a rispondere.",
   },
   "vector-workspace": {
     identifier: "Identificatore del database vettoriale",

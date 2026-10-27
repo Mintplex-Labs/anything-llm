@@ -304,6 +304,7 @@ const TRANSLATIONS = {
         max: "Maximális",
       },
     },
+    no_response: "A modell nem tudott válaszolni.",
   },
   "vector-workspace": {
     identifier: "Vektoradatbázis-azonosító",

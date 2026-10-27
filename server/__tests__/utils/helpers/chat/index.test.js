@@ -486,6 +486,7 @@ describe("messageArrayCompressor", () => {
     it.each([
       ["a null response text", { response: JSON.stringify({ text: null }) }],
       ["a null prompt", { prompt: null }],
+      ["an unanswered prompt", { response: JSON.stringify({ text: "" }) }],
     ])(
       "skips a record with %s instead of throwing",
       async (_label, corrupt) => {

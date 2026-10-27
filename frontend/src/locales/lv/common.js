@@ -295,6 +295,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Atbildē tika sasniegts maksimālais izvades tokenu limits. Palieliniet modeļa maksimālo izvades tokenu skaitu, lai varētu saņemt garākas atbildes.",
+    no_response: "Modelis nespēja atbildēt.",
   },
   "vector-workspace": {
     identifier: "Vektoru datubāzes identifikators",
