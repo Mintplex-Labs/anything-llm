@@ -26,6 +26,13 @@ class TopK extends VectorDatabase {
     maxRecordsPerWrite: 100,
   };
 
+  /**
+   * How much a keyword (BM25) match can add to a chunk's vector similarity.
+   * The BM25 score is squashed into [0, 1) first, so the boost is at most this value.
+   * Chunks with no keyword match keep their plain vector similarity.
+   */
+  keywordWeight = 0.3;
+
   // Every workspace gets one collection per embedding dimension:
   //   anythingllm-<namespace>-d<dimension>
   // A collection's vector dimension is fixed at creation, and changing the
@@ -114,10 +121,55 @@ class TopK extends VectorDatabase {
     return Math.min(1, Math.max(0, score));
   }
 
+  /**
+   * Builds a hybrid query that ranks chunks by vector similarity plus a keyword (BM25) boost,
+   * in a single TopK query. `should()` scores keyword matches without excluding chunks that
+   * have none, so purely semantic matches are still returned.
+   * Without input text, this is a plain vector search.
+   * @param {number[]} queryVector
+   * @param {string} input - The raw user query, used for keyword matching.
+   * @param {number} topN
+   */
+  hybridQuery(queryVector, input = "", topN = 4) {
+    const fields = {
+      text: query.field("text"),
+      metadata: query.field("metadata"),
+      vectorScore: query_fn.vectorDistance("embedding", queryVector),
+    };
+    if (!input?.trim())
+      return query.select(fields).topk(query.field("vectorScore"), topN, false);
+
+    const keywordScore = query.field("keywordScore");
+    return query
+      .select({ ...fields, keywordScore: query_fn.bm25Score() })
+      .filter(query.should(input, { field: "text" }))
+      .topk(
+        query
+          .field("vectorScore")
+          .add(keywordScore.div(keywordScore.add(1)).mul(this.keywordWeight)),
+        topN,
+        false
+      );
+  }
+
+  /**
+   * Combines a chunk's vector similarity and BM25 score the same way `hybridQuery` ranks them.
+   * @param {{vectorScore: number, keywordScore?: number}} doc
+   * @returns {number} Score in [0, 1].
+   */
+  hybridScore({ vectorScore = null, keywordScore = 0 } = {}) {
+    const keywordBoost =
+      keywordScore > 0 ? keywordScore / (keywordScore + 1) : 0;
+    return this.normalizeScore(
+      (vectorScore ?? 0) + keywordBoost * this.keywordWeight
+    );
+  }
+
   async similarityResponse({
     client,
     namespace,
     queryVector,
+    input = "",
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
@@ -128,26 +180,22 @@ class TopK extends VectorDatabase {
       scores: [],
     };
 
-    const collectionName = this.collectionName(namespace, queryVector.length);
-    const docs = await client
-      .collection(collectionName)
-      .query(
-        query
-          .select({
-            text: query.field("text"),
-            metadata: query.field("metadata"),
-            score: query_fn.vectorDistance("embedding", queryVector),
-          })
-          .topk(query.field("score"), topN, false),
-        { consistency: "strong" }
-      )
-      .catch((e) => {
-        if (this.isNotFound(e)) return [];
-        throw e;
+    const collection = client.collection(
+      this.collectionName(namespace, queryVector.length)
+    );
+    const search = (text) =>
+      collection.query(this.hybridQuery(queryVector, text, topN), {
+        consistency: "strong",
       });
+    const docs = await search(input).catch((e) => {
+      if (this.isNotFound(e)) return [];
+      // Collections created without a keyword index fall back to vector search.
+      if (/keyword index/i.test(e?.message || "")) return search("");
+      throw e;
+    });
 
     docs.forEach((doc) => {
-      const similarity = this.normalizeScore(doc.score);
+      const similarity = this.hybridScore(doc);
       if (similarity < similarityThreshold) return;
 
       const metadata = JSON.parse(doc.metadata || "{}");
@@ -213,7 +261,7 @@ class TopK extends VectorDatabase {
           .f32Vector({ dimension })
           .index(schema.vectorIndex({ metric: "cosine" }))
           .required(),
-        text: schema.text().required(),
+        text: schema.text().index(schema.keywordIndex()).required(),
         doc_id: schema.text(),
         metadata: schema.text(),
       });
@@ -428,6 +476,7 @@ class TopK extends VectorDatabase {
         client,
         namespace,
         queryVector,
+        input,
         similarityThreshold,
         topN,
         filterIdentifiers,
