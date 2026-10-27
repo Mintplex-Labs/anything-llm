@@ -221,6 +221,38 @@ async function openAiModels(apiKey = null) {
       console.error(`OpenAI:listModels`, e.message);
       return [
         {
+          name: "gpt-6.1-sol",
+          id: "gpt-6.1-sol",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-6-luna",
+          id: "gpt-6-luna",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-5.6-sol",
+          id: "gpt-5.6-sol",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-5.6-terra",
+          id: "gpt-5.6-terra",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
           name: "gpt-5.6-luna",
           id: "gpt-5.6-luna",
           object: "model",
