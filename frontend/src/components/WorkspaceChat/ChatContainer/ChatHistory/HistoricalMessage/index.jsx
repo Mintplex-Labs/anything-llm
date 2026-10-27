@@ -170,7 +170,7 @@ const HistoricalMessage = ({
           <div className="break-words">
             <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
             {isUnanswered ? (
-              <div className="flex items-center gap-x-1.5 text-xs font-mono text-amber-400 light:text-amber-600">
+              <div className="flex items-center gap-x-1.5 text-xs font-mono text-theme-text-secondary opacity-70">
                 <Warning className="h-4 w-4 shrink-0" />
                 <p className="!m-0">{t("chat.no_response")}</p>
               </div>
