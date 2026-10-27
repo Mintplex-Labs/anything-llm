@@ -82,7 +82,7 @@ async function processDocumentAttachments(attachments = []) {
       const filename = sanitizeFileName(
         normalizePath(attachment.name || `attachment-${uuidv4()}`)
       );
-      const hotdirFilename = `${uuidv4()}-${filename}`;
+      const hotdirFilename = `${uuidv4().split("-")[0]}-${filename}`;
       const filePath = normalizePath(path.join(hotdirPath, hotdirFilename));
       if (!isWithin(hotdirPath, filePath))
         throw new Error(`Invalid file path for attachment ${filename}`);
