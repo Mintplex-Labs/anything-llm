@@ -253,6 +253,8 @@ function reducer(state, action) {
         selectedFiles.delete(file.id);
         deselectedFiles.delete(file.id);
       }
+      for (const [id, file] of selectedFiles)
+        if (file.folderName === name) selectedFiles.delete(id);
       return {
         ...state,
         selectedFolders: withToggled(state.selectedFolders, name, turningOn),
@@ -300,6 +302,9 @@ function reducer(state, action) {
           selectedFiles.delete(file.id);
           deselectedFiles.delete(file.id);
         }
+        // Search-only selections from unloaded pages are not in `items`.
+        for (const [id, file] of selectedFiles)
+          if (file.folderName === name) selectedFiles.delete(id);
       }
       return { ...state, selectedFolders, selectedFiles, deselectedFiles };
     }
