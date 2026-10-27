@@ -76,6 +76,10 @@ markdown.renderer.rules.image = function (tokens, idx) {
   return `<div class="w-full max-w-[800px]"><img src="${HTMLEncode(src)}" alt="${HTMLEncode(alt)}" class="w-full h-auto" /></div>`;
 };
 
+markdown.renderer.rules.table_open = () =>
+  '<div class="w-full overflow-x-auto"><table>';
+markdown.renderer.rules.table_close = () => "</table></div>";
+
 markdown.use(markdownItKatexPlugin);
 
 export default function renderMarkdown(text = "") {
