@@ -21,6 +21,7 @@ const UNLOADED = Object.freeze({
 });
 
 const EMPTY_SET = Object.freeze(new Set());
+const EMPTY_MAP = Object.freeze(new Map());
 
 /**
  * Single source of truth for the "My Documents" file picker.
@@ -48,8 +49,8 @@ const initialState = {
   expanded: EMPTY_SET,
   /** @type {Set<string>} folder names selected wholesale */
   selectedFolders: EMPTY_SET,
-  /** @type {Set<string>} individually selected file ids */
-  selectedFiles: EMPTY_SET,
+  /** @type {Map<string, object & {folderName: string}>} selected file records, including search-only hits */
+  selectedFiles: EMPTY_MAP,
   /** @type {Set<string>} files opted out of an otherwise-selected folder */
   deselectedFiles: EMPTY_SET,
   /** @type {Array<{name, fileCount, items}>|null} null when not searching */
@@ -201,14 +202,18 @@ function reducer(state, action) {
       };
 
     case "toggle-file": {
-      const { id, folderName } = action;
+      const { file, folderName } = action;
+      const { id } = file;
       const inSelectedFolder = state.selectedFolders.has(folderName);
       const isOn =
         (inSelectedFolder && !state.deselectedFiles.has(id)) ||
         state.selectedFiles.has(id);
+      const selectedFiles = new Map(state.selectedFiles);
+      if (isOn) selectedFiles.delete(id);
+      else selectedFiles.set(id, { ...file, folderName });
       return {
         ...state,
-        selectedFiles: withToggled(state.selectedFiles, id, !isOn),
+        selectedFiles,
         // Turning a file off inside a wholesale-selected folder records an
         // exception; turning it back on clears that exception.
         deselectedFiles: withToggled(
@@ -240,7 +245,7 @@ function reducer(state, action) {
           !partiallyLoaded &&
           items.every((file) => state.selectedFiles.has(file.id));
       const turningOn = !fullySelected;
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       // Individual entries are redundant once the folder itself carries the
       // selection, so drop them either way to keep the sets canonical.
@@ -248,6 +253,8 @@ function reducer(state, action) {
         selectedFiles.delete(file.id);
         deselectedFiles.delete(file.id);
       }
+      for (const [id, file] of selectedFiles)
+        if (file.folderName === name) selectedFiles.delete(id);
       return {
         ...state,
         selectedFolders: withToggled(state.selectedFolders, name, turningOn),
@@ -260,7 +267,7 @@ function reducer(state, action) {
       return {
         ...state,
         selectedFolders: new Set(state.folders.map((f) => f.name)),
-        selectedFiles: EMPTY_SET,
+        selectedFiles: EMPTY_MAP,
         deselectedFiles: EMPTY_SET,
       };
 
@@ -268,17 +275,17 @@ function reducer(state, action) {
       return {
         ...state,
         selectedFolders: EMPTY_SET,
-        selectedFiles: EMPTY_SET,
+        selectedFiles: EMPTY_MAP,
         deselectedFiles: EMPTY_SET,
       };
 
     case "select-files": {
-      if (!action.ids.length) return state;
-      const selectedFiles = new Set(state.selectedFiles);
+      if (!action.files.length) return state;
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
-      for (const id of action.ids) {
-        selectedFiles.add(id);
-        deselectedFiles.delete(id);
+      for (const file of action.files) {
+        selectedFiles.set(file.id, file);
+        deselectedFiles.delete(file.id);
       }
       return { ...state, selectedFiles, deselectedFiles };
     }
@@ -287,7 +294,7 @@ function reducer(state, action) {
     case "select-folders": {
       if (!action.names.length) return state;
       const selectedFolders = new Set(state.selectedFolders);
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       for (const name of action.names) {
         selectedFolders.add(name);
@@ -295,6 +302,9 @@ function reducer(state, action) {
           selectedFiles.delete(file.id);
           deselectedFiles.delete(file.id);
         }
+        // Search-only selections from unloaded pages are not in `items`.
+        for (const [id, file] of selectedFiles)
+          if (file.folderName === name) selectedFiles.delete(id);
       }
       return { ...state, selectedFolders, selectedFiles, deselectedFiles };
     }
@@ -325,7 +335,7 @@ function reducer(state, action) {
                   : entry.fetched,
               };
       }
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       for (const id of removed) {
         selectedFiles.delete(id);
@@ -526,7 +536,7 @@ export default function useDocumentPicker({ slug }) {
       count += Math.max(0, total - opted);
       entry.items.forEach((f) => counted.add(f.id));
     }
-    for (const id of selectedFiles) if (!counted.has(id)) count += 1;
+    for (const id of selectedFiles.keys()) if (!counted.has(id)) count += 1;
     return count;
   }, [state]);
 
@@ -542,8 +552,7 @@ export default function useDocumentPicker({ slug }) {
     state.selectedFolders.size > 0 || state.selectedFiles.size > 0;
 
   const toggleFile = useCallback(
-    (file, folderName) =>
-      dispatch({ type: "toggle-file", id: file.id, folderName }),
+    (file, folderName) => dispatch({ type: "toggle-file", file, folderName }),
     []
   );
   const toggleFolder = useCallback(
@@ -595,14 +604,21 @@ export default function useDocumentPicker({ slug }) {
           seen.add(file.id);
           resolved.push({ ...file, folderName: folder.name });
         }
-        continue;
       }
+    }
 
-      for (const file of items) {
-        if (!selectedFiles.has(file.id) || seen.has(file.id)) continue;
-        seen.add(file.id);
-        resolved.push({ ...file, folderName: folder.name });
-      }
+    // Individual selections may come from search results outside loaded pages.
+    const folderNames = new Set(folders.map((folder) => folder.name));
+    for (const file of selectedFiles.values()) {
+      if (
+        selectedFolders.has(file.folderName) ||
+        !folderNames.has(file.folderName) ||
+        workspaceDocpaths.has(`${file.folderName}/${file.name}`) ||
+        seen.has(file.id)
+      )
+        continue;
+      seen.add(file.id);
+      resolved.push(file);
     }
     return resolved;
   }, []);
@@ -698,7 +714,7 @@ export default function useDocumentPicker({ slug }) {
       changed.map((folder) => System.localFiles(folder.name, 0, PAGE_SIZE))
     );
 
-    const freshIds = [];
+    const freshFiles = [];
     const freshFolders = [];
     changed.forEach((folder, i) => {
       const result = pages[i];
@@ -721,11 +737,12 @@ export default function useDocumentPicker({ slug }) {
         return;
       }
       for (const file of items)
-        if (!knownIds.has(file.id)) freshIds.push(file.id);
+        if (!knownIds.has(file.id))
+          freshFiles.push({ ...file, folderName: folder.name });
     });
 
     dispatch({ type: "select-folders", names: freshFolders });
-    dispatch({ type: "select-files", ids: freshIds });
+    dispatch({ type: "select-files", files: freshFiles });
   }, [refresh]);
 
   return {
