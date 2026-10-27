@@ -72,6 +72,14 @@ const HistoricalMessage = ({
   const isRefusalMessage =
     role === "assistant" && message === chatQueryRefusalResponse(workspace);
 
+  // An assistant record with no text (failed or abandoned generation) has nothing to render.
+  const isUnanswered =
+    role === "assistant" &&
+    !message?.trim() &&
+    !outputs?.length &&
+    !clarifyingQuestions?.length &&
+    !attachments?.length;
+
   if (completeDelete) return null;
 
   if (!!error) {
@@ -161,7 +169,13 @@ const HistoricalMessage = ({
         ) : (
           <div className="break-words">
             <HistoricalClarifyingQuestions surveys={clarifyingQuestions} />
-            <RenderChatContent role={role} message={message} />
+            {isUnanswered ? (
+              <p className="italic text-theme-text-secondary opacity-70 !m-0">
+                {t("chat.no_response")}
+              </p>
+            ) : (
+              <RenderChatContent role={role} message={message} />
+            )}
             {isRefusalMessage && (
               <Link
                 data-tooltip-id="query-refusal-info"
