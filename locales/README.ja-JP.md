@@ -162,6 +162,7 @@ AnythingLLM は複数ユーザーもサポートしており、インスタン�
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+- [TopK](https://topk.io)
 
 ### 技術概要
 

@@ -168,6 +168,7 @@ AnythingLLM supports multiple users as well where you can control the access and
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+- [TopK](https://topk.io)
 
 ### Technical Overview
 

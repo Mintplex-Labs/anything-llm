@@ -162,6 +162,7 @@ AnythingLLM ayrıca birden fazla kullanıcıyı destekler; örneğin güvenliği
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+- [TopK](https://topk.io)
 
 ### Teknik Genel Bakış
 

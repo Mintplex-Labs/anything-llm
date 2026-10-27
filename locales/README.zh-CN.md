@@ -162,6 +162,7 @@ AnythingLLM 还支持多用户，您可以控制每个用户的访问权限和�
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+- [TopK](https://topk.io)
 
 ### 技术概览
 

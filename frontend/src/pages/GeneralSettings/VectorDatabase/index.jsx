@@ -20,6 +20,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import TopKLogo from "@/media/vectordbs/topk.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -31,6 +32,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
+import TopKOptions from "@/components/VectorDBSelection/TopKOptions";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
 
 const VECTOR_DBS = [
@@ -71,6 +73,13 @@ const VECTOR_DBS = [
     logo: PineconeLogo,
     options: (settings) => <PineconeDBOptions settings={settings} />,
     description: "100% cloud-based vector database for enterprise use cases.",
+  },
+  {
+    name: "TopK",
+    value: "topk",
+    logo: TopKLogo,
+    options: (settings) => <TopKOptions settings={settings} />,
+    description: "Fully managed, serverless search engine for AI.",
   },
   {
     name: "Zilliz Cloud",

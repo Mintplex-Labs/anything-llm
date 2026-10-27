@@ -887,6 +887,10 @@ const SystemSettings = {
       // PGVector Keys
       PGVectorConnectionString: !!PGVector.connectionString() || false,
       PGVectorTableName: PGVector.tableName(),
+
+      // TopK Keys
+      TopKApiKey: !!process.env.TOPK_API_KEY,
+      TopKRegion: process.env.TOPK_REGION,
     };
   },
 

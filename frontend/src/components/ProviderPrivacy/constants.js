@@ -36,6 +36,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import TopKLogo from "@/media/vectordbs/topk.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
@@ -300,6 +301,11 @@ const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
     name: "Pinecone",
     policyUrl: "https://www.pinecone.io/privacy/",
     logo: PineconeLogo,
+  },
+  topk: {
+    name: "TopK",
+    policyUrl: "https://www.topk.io/privacy-policy",
+    logo: TopKLogo,
   },
   qdrant: {
     name: "Qdrant",

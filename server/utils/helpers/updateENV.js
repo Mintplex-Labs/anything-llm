@@ -484,6 +484,16 @@ const KEY_MAPPING = {
     preUpdate: [validatePGVectorTableName],
   },
 
+  // TopK Options
+  TopKApiKey: {
+    envKey: "TOPK_API_KEY",
+    checks: [isNotEmpty],
+  },
+  TopKRegion: {
+    envKey: "TOPK_REGION",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -1326,6 +1336,7 @@ function supportedVectorDB(input = "") {
     "zilliz",
     "astra",
     "pgvector",
+    "topk",
   ];
   return supported.includes(input)
     ? null

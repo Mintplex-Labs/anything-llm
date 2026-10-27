@@ -168,6 +168,7 @@ AnythingLLM همچنین از چندین کاربر پشتیبانی می‌کن
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+- [TopK](https://topk.io)
 
 <div dir="rtl">
 
