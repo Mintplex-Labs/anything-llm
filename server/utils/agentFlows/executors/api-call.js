@@ -14,8 +14,6 @@ async function executeApiCall(config, context) {
 
   const requestConfig = {
     method,
-    // Skip header rows without a name (eg: an added but unfilled row) since
-    // fetch rejects an empty or space-padded header name and fails the call.
     headers: headers.reduce((acc, h) => {
       const name = String(h?.key ?? "").trim();
       if (name) acc[name] = h.value;
