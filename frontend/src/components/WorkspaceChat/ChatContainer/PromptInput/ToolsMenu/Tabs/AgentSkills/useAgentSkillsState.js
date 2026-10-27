@@ -18,6 +18,7 @@ export default function useAgentSkillsState(defaultSkills) {
     useState(false);
   const [imageGenerationAvailable, setImageGenerationAvailable] =
     useState(false);
+  const [browserUseAvailable, setBrowserUseAvailable] = useState(false);
   const [isMultiUser, setIsMultiUser] = useState(false);
   const [disabledDefaults, setDisabledDefaults] = useState([]);
   const [enabledConfigurable, setEnabledConfigurable] = useState([]);
@@ -45,6 +46,7 @@ export default function useAgentSkillsState(defaultSkills) {
         fsAgentAvailable,
         multiUserMode,
         imageGenAvailable,
+        browserUseAvail,
       ] = await Promise.all([
         Admin.systemPreferencesByFields([
           "disabled_agent_skills",
@@ -56,6 +58,7 @@ export default function useAgentSkillsState(defaultSkills) {
         System.isFileSystemAgentAvailable(),
         System.isMultiUserMode(),
         System.isImageGenerationAvailable(),
+        System.isBrowserUseAvailable(),
       ]);
 
       if (prefs?.settings) {
@@ -67,6 +70,7 @@ export default function useAgentSkillsState(defaultSkills) {
       if (flowsRes?.flows) setFlows(flowsRes.flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setImageGenerationAvailable(imageGenAvailable);
+      setBrowserUseAvailable(browserUseAvail);
       setIsMultiUser(!!multiUserMode);
     } catch (e) {
       console.error(e);
@@ -182,6 +186,7 @@ export default function useAgentSkillsState(defaultSkills) {
     // State
     fileSystemAgentAvailable,
     imageGenerationAvailable,
+    browserUseAvailable,
     isMultiUser,
     disabledDefaults,
     enabledConfigurable,

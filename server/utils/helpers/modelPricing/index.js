@@ -91,6 +91,9 @@ const CACHE_FILES = {
   get reasoning() {
     return path.resolve(cacheDir(), "model-reasoning.json");
   },
+  get vision() {
+    return path.resolve(cacheDir(), "model-vision.json");
+  },
 };
 
 /**
@@ -136,6 +139,26 @@ function slimReasoning(apiJson = {}) {
 }
 
 /**
+ * Extracts whether each model accepts image input from the full models.dev API
+ * response. Models without modality data are dropped, so a lookup miss means "unknown".
+ * @param {Object} apiJson - full models.dev response: `{provider: {models: {model: {modalities: {input: string[]}}}}}`
+ * @returns {Record<string, Record<string, boolean>>} flattened to `{provider: {model: acceptsImages}}`
+ */
+function slimVision(apiJson = {}) {
+  const slimmed = {};
+  for (const [providerId, provider] of Object.entries(apiJson)) {
+    if (!provider?.models || typeof provider.models !== "object") continue;
+    for (const [modelId, model] of Object.entries(provider.models)) {
+      const input = model?.modalities?.input;
+      if (!Array.isArray(input)) continue;
+      slimmed[providerId] ??= {};
+      slimmed[providerId][modelId] = input.includes("image");
+    }
+  }
+  return slimmed;
+}
+
+/**
  * Strips region prefix and version suffix from a Bedrock model id
  * so that e.g. `us.anthropic.claude-3-haiku-v1:0` matches `anthropic.claude-3-haiku`.
  * @param {string} modelId
@@ -164,6 +187,8 @@ class ModelPricing {
   #hasDiskCache = false;
   /** @type {Record<string, Record<string, Array<object>>>|null} */
   #reasoning = null;
+  /** @type {Record<string, Record<string, boolean>>|null} */
+  #vision = null;
   /** @type {Record<string, Record<string, string>>} - lazy case-insensitive index per provider */
   #lowercaseIndexes = {};
   /** @type {Record<string, Record<string, string>>} - lazy bedrock normalization index per provider */
@@ -177,7 +202,12 @@ class ModelPricing {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     this.#loadFromDisk();
-    if (this.#isCacheStale() || !this.#pricing || !this.#reasoning) {
+    if (
+      this.#isCacheStale() ||
+      !this.#pricing ||
+      !this.#reasoning ||
+      !this.#vision
+    ) {
       this.bootRefresh = this.#refresh()
         .then(() => {
           if (this.#pricing)
@@ -224,6 +254,16 @@ class ModelPricing {
       this.#reasoning = null;
       fs.rmSync(CACHE_FILES.etag, { force: true });
     }
+
+    // Same for a cache written before image-input support was kept.
+    try {
+      this.#vision = JSON.parse(
+        fs.readFileSync(CACHE_FILES.vision, { encoding: "utf8" })
+      );
+    } catch {
+      this.#vision = null;
+      fs.rmSync(CACHE_FILES.etag, { force: true });
+    }
   }
 
   async #refresh() {
@@ -253,8 +293,10 @@ class ModelPricing {
         throw new Error("Remote pricing data contained no usable cost data");
 
       const reasoning = slimReasoning(data);
+      const vision = slimVision(data);
       this.#pricing = pricing;
       this.#reasoning = reasoning;
+      this.#vision = vision;
       this.#hasDiskCache = true;
       this.#clearIndexes();
 
@@ -262,6 +304,7 @@ class ModelPricing {
       await Promise.all([
         fs.promises.writeFile(CACHE_FILES.data, JSON.stringify(pricing)),
         fs.promises.writeFile(CACHE_FILES.reasoning, JSON.stringify(reasoning)),
+        fs.promises.writeFile(CACHE_FILES.vision, JSON.stringify(vision)),
         fs.promises.writeFile(CACHE_FILES.expiry, Date.now().toString()),
         etag
           ? fs.promises.writeFile(CACHE_FILES.etag, etag)
@@ -281,14 +324,18 @@ class ModelPricing {
   /**
    * Finds a model's entry in a slimmed models.dev table - exact id, then
    * case-insensitive, then (for Bedrock) with region/version stripped.
-   * @param {"pricing"|"reasoning"} table
+   * @param {"pricing"|"reasoning"|"vision"} table
    */
   #findModelEntry(table, providerId, providerSlug, model) {
-    const models = (table === "reasoning" ? this.#reasoning : this.#pricing)?.[
-      providerId
-    ];
+    const tables = {
+      pricing: this.#pricing,
+      reasoning: this.#reasoning,
+      vision: this.#vision,
+    };
+    const models = tables[table]?.[providerId];
     if (!models) return null;
-    if (models[model]) return models[model];
+    // Entries can be `false` (vision), so check for presence rather than truthiness.
+    if (models[model] !== undefined) return models[model];
 
     const indexKey = `${table}:${providerId}`;
     if (!this.#lowercaseIndexes[indexKey]) {
@@ -297,7 +344,7 @@ class ModelPricing {
       this.#lowercaseIndexes[indexKey] = index;
     }
     const caseMatch = this.#lowercaseIndexes[indexKey][model.toLowerCase()];
-    if (caseMatch) return models[caseMatch];
+    if (caseMatch !== undefined) return models[caseMatch];
 
     if (providerSlug === "bedrock") {
       if (!this.#normalizedIndexes[indexKey]) {
@@ -311,7 +358,7 @@ class ModelPricing {
       }
       const normalizedMatch =
         this.#normalizedIndexes[indexKey][normalizeBedrockId(model)];
-      if (normalizedMatch) return models[normalizedMatch];
+      if (normalizedMatch !== undefined) return models[normalizedMatch];
     }
 
     return null;
@@ -393,6 +440,25 @@ class ModelPricing {
     return (
       this.#findModelEntry("reasoning", providerId, providerSlug, model) ?? []
     );
+  }
+
+  /**
+   * Whether models.dev lists the model as accepting image input.
+   * @param {string|null} providerSlug - AnythingLLM provider slug
+   * @param {string|null} model - model id
+   * @returns {boolean|null} null when unknown (data not loaded, provider not mapped, model not listed)
+   */
+  supportsVision(providerSlug = null, model = null) {
+    if (!this.#vision) return null;
+    const providerId = PROVIDER_ID_MAP[providerSlug];
+    if (!providerId || !model || typeof model !== "string") return null;
+    const entry = this.#findModelEntry(
+      "vision",
+      providerId,
+      providerSlug,
+      model
+    );
+    return typeof entry === "boolean" ? entry : null;
   }
 
   get isCacheStale() {

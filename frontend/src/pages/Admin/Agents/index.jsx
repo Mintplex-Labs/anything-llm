@@ -69,11 +69,13 @@ export default function AdminAgents() {
     useState(false);
   const [createFilesAgentAvailable, setCreateFilesAgentAvailable] =
     useState(false);
+  const [browserUseAvailable, setBrowserUseAvailable] = useState(false);
 
   const defaultSkills = getDefaultSkills(t);
   const allConfigurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
     createFilesAgentAvailable,
+    browserUseAvailable,
   });
   const allAppIntegrationSkills = getAppIntegrationSkills(t);
 
@@ -118,6 +120,7 @@ export default function AdminAgents() {
         flowsRes,
         fsAgentAvailable,
         createFilesAvailable,
+        browserUseAvail,
       ] = await Promise.all([
         System.keys(),
         Admin.systemPreferencesByFields([
@@ -129,6 +132,7 @@ export default function AdminAgents() {
         AgentFlows.listFlows(),
         System.isFileSystemAgentAvailable(),
         System.isCreateFilesAgentAvailable(),
+        System.isBrowserUseAvailable(),
       ]);
 
       const { flows = [] } = flowsRes;
@@ -142,6 +146,7 @@ export default function AdminAgents() {
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
+      setBrowserUseAvailable(browserUseAvail);
       setLoading(false);
     }
     fetchSettings();

@@ -34,6 +34,7 @@ export default function AgentSkillsTab({
   const {
     fileSystemAgentAvailable,
     imageGenerationAvailable,
+    browserUseAvailable,
     importedSkills,
     flows,
     mcpServers,
@@ -53,6 +54,7 @@ export default function AgentSkillsTab({
   const configurableSkills = getConfigurableSkills(t, {
     fileSystemAgentAvailable,
     imageGenerationAvailable,
+    browserUseAvailable,
   });
 
   // UI state

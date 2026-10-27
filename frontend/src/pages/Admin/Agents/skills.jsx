@@ -7,6 +7,7 @@ import CreateFileSkillPanel from "./CreateFileSkillPanel";
 import GMailSkillPanel from "./GMailSkillPanel";
 import GoogleCalendarSkillPanel from "./GoogleCalendarSkillPanel";
 import OutlookSkillPanel from "./OutlookSkillPanel";
+import BrowserUseSkillPanel from "./BrowserUseSkillPanel";
 import {
   Brain,
   File,
@@ -16,6 +17,7 @@ import {
   FilePlus,
   CalendarCheck,
   ImageSquare,
+  Globe,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -71,6 +73,8 @@ export const getDefaultSkills = (t) => ({
  * @param {boolean} options.imageGenerationAvailable - Whether an image generation provider is
  * configured. Only the in-chat skills menu passes this - the admin page always lists the skill so
  * it can be enabled before a provider is set up.
+ * @param {boolean} options.browserUseAvailable - Whether this server can run Browser Use (never on a
+ * bare-metal production install).
  * @returns {object} The configurable skills.
  */
 export const getConfigurableSkills = (
@@ -79,6 +83,7 @@ export const getConfigurableSkills = (
     fileSystemAgentAvailable = true,
     createFilesAgentAvailable = true,
     imageGenerationAvailable = true,
+    browserUseAvailable = true,
   } = {}
 ) => ({
   ...(fileSystemAgentAvailable && {
@@ -117,6 +122,15 @@ export const getConfigurableSkills = (
       skill: "generate-image",
       icon: ImageSquare,
       image: GenerateImageImage,
+    },
+  }),
+  ...(browserUseAvailable && {
+    "browser-use": {
+      title: t("agent.skill.browserUse.title"),
+      description: t("agent.skill.browserUse.description"),
+      component: BrowserUseSkillPanel,
+      skill: "browser-use",
+      icon: Globe,
     },
   }),
   "sql-agent": {
