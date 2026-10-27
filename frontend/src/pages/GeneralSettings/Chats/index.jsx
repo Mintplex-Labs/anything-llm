@@ -11,6 +11,7 @@ import { CaretDown, Download, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
 import { CanViewChatHistory } from "@/components/CanViewChatHistory";
+import useCurrency from "@/hooks/useCurrency";
 
 const exportOptions = {
   csv: {
@@ -57,9 +58,10 @@ export default function WorkspaceChats() {
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
   const { t } = useTranslation();
+  const { currency, formatCost } = useCurrency();
 
   const handleDumpChats = async (exportType) => {
-    const chats = await System.exportChats(exportType, "workspace");
+    const chats = await System.exportChats(exportType, "workspace", currency);
     if (!!chats) {
       const { name, mimeType, fileExtension, filenameFunc } =
         exportOptions[exportType];
@@ -183,6 +185,7 @@ export default function WorkspaceChats() {
                 offset={offset}
                 setOffset={setOffset}
                 canNext={canNext}
+                formatCost={formatCost}
                 t={t}
               />
             </div>
@@ -200,6 +203,7 @@ function ChatsContainer({
   offset,
   setOffset,
   canNext,
+  formatCost,
   t,
 }) {
   const handlePrevious = () => {
@@ -249,6 +253,9 @@ function ChatsContainer({
               {t("recorded.table.response")}
             </th>
             <th scope="col" className="px-6 py-3">
+              {t("recorded.table.cost")}
+            </th>
+            <th scope="col" className="px-6 py-3">
               {t("recorded.table.at")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
@@ -259,7 +266,12 @@ function ChatsContainer({
         <tbody>
           {!!chats &&
             chats.map((chat) => (
-              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
+              <ChatRow
+                key={chat.id}
+                chat={chat}
+                onDelete={handleDeleteChat}
+                formatCost={formatCost}
+              />
             ))}
         </tbody>
       </table>

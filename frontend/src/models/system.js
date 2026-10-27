@@ -5,6 +5,22 @@ import LiveDocumentSync from "./experimental/liveSync";
 import AgentPlugins from "./experimental/agentPlugins";
 import SystemPromptVariable from "./systemPromptVariable";
 
+/**
+ * @typedef {Object} ModelPricingOverride - USD per 1,000,000 tokens
+ * @property {string} provider - LLM provider slug
+ * @property {string|null} model - model id, null applies to every model of the provider
+ * @property {number} input - cost per 1M prompt tokens
+ * @property {number} output - cost per 1M completion tokens
+ */
+
+/**
+ * @typedef {Object} CurrencySettings
+ * @property {string} base - currency the rates are relative to (USD)
+ * @property {string|null} currency - instance display currency, null when unset
+ * @property {string[]} currencies - currency codes the display currency can be set to
+ * @property {Record<string, number>|null} rates - units per USD, null when unavailable
+ */
+
 const System = {
   cacheKeys: {
     footerIcons: "anythingllm_footer_links",
@@ -18,6 +34,80 @@ const System = {
       .then((res) => res.json())
       .then((res) => res?.online || false)
       .catch(() => false);
+  },
+  /**
+   * Fetches the instance display currency, the supported currencies and the
+   * server-cached USD exchange rates used to render stored USD costs.
+   * `currency` is null when no display currency is set and `rates` is null
+   * when the server has no rates available (callers should then display USD).
+   * @returns {Promise<CurrencySettings|null>}
+   */
+  exchangeRates: async function () {
+    return await fetch(`${API_BASE}/system/exchange-rates`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch exchange rates.");
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
+  /**
+   * Fetches the admin-defined model pricing overrides.
+   * @returns {Promise<ModelPricingOverride[]>}
+   */
+  modelPricingOverrides: async function () {
+    return await fetch(`${API_BASE}/system/model-pricing-overrides`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("Could not fetch model pricing overrides.");
+        return res.json();
+      })
+      .then((res) => res.overrides ?? [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  /**
+   * Fetches the price models.dev lists for a model.
+   * @param {string} provider - AnythingLLM provider slug
+   * @param {string} model - model id
+   * @returns {Promise<{input: number, output: number}|null>} USD per 1M tokens, null when unknown
+   */
+  modelPricingListed: async function (provider, model) {
+    const params = new URLSearchParams({ provider, model });
+    return await fetch(`${API_BASE}/system/model-pricing-listed?${params}`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch listed model price.");
+        return res.json();
+      })
+      .then((res) => res.price ?? null)
+      .catch(() => null);
+  },
+  /**
+   * Replaces the admin-defined model pricing overrides.
+   * @param {ModelPricingOverride[]} overrides
+   * @returns {Promise<{success: boolean, overrides?: ModelPricingOverride[], error?: string}>}
+   */
+  updateModelPricingOverrides: async function (overrides = []) {
+    return await fetch(`${API_BASE}/system/model-pricing-overrides`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ overrides }),
+    })
+      .then((res) => res.json())
+      .catch((e) => ({ success: false, error: e.message }));
   },
   totalIndexes: async function (slug = null) {
     const url = new URL(`${fullApiUrl()}/system/system-vectors`);
@@ -669,10 +759,22 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  exportChats: async (type = "csv", chatType = "workspace") => {
+  /**
+   * Exports all chats of a type. Costs are converted into `currency`.
+   * @param {string} [type] - export format (csv, json, jsonl, jsonAlpaca)
+   * @param {"workspace"|"embed"} [chatType]
+   * @param {string|null} [currency] - ISO 4217 code, USD when omitted
+   * @returns {Promise<string|null>} the export file contents, null on failure
+   */
+  exportChats: async (
+    type = "csv",
+    chatType = "workspace",
+    currency = null
+  ) => {
     const url = new URL(`${fullApiUrl()}/system/export-chats`);
     url.searchParams.append("type", encodeURIComponent(type));
     url.searchParams.append("chatType", encodeURIComponent(chatType));
+    if (currency) url.searchParams.append("currency", currency);
     return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),

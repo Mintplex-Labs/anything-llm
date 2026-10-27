@@ -2,6 +2,10 @@ const { v4: uuidv4 } = require("uuid");
 const { WorkspaceThread } = require("../../../models/workspaceThread");
 const { Workspace } = require("../../../models/workspace");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const { costCurrency } = require("../../../utils/middleware/costCurrency");
+const {
+  convertResponseCosts,
+} = require("../../../utils/helpers/currencyExchange");
 const { reqBody, multiUserMode } = require("../../../utils/http");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
 const { Telemetry } = require("../../../models/telemetry");
@@ -328,7 +332,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/thread/:threadSlug/chat",
-    [validApiKey],
+    [validApiKey, costCurrency],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
@@ -346,7 +350,7 @@ function apiWorkspaceThreadEndpoints(app) {
           type: 'string'
       }
       #swagger.requestBody = {
-        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
+        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.',
         required: true,
         content: {
           "application/json": {
@@ -361,7 +365,8 @@ function apiWorkspaceThreadEndpoints(app) {
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
               ],
-              reset: false
+              reset: false,
+              currency: "USD"
             }
           }
         }
@@ -468,7 +473,9 @@ function apiWorkspaceThreadEndpoints(app) {
           threadName: thread?.name,
           userId: user?.id,
         });
-        response.status(200).json({ ...result });
+        response
+          .status(200)
+          .json(convertResponseCosts(result, response.locals.costCurrency));
       } catch (e) {
         console.error(e.message, e);
         response.status(500).json({
@@ -485,7 +492,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/thread/:threadSlug/stream-chat",
-    [validApiKey],
+    [validApiKey, costCurrency],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
@@ -503,7 +510,7 @@ function apiWorkspaceThreadEndpoints(app) {
           type: 'string'
       }
       #swagger.requestBody = {
-        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
+        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).<br/><b>Currency:</b> Costs in the response <code>metrics</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the metrics names the unit used.',
         required: true,
         content: {
           "application/json": {
@@ -523,7 +530,8 @@ function apiWorkspaceThreadEndpoints(app) {
                  contentString: "data:application/pdf;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
               ],
-              reset: false
+              reset: false,
+              currency: "USD"
             }
           }
         }
