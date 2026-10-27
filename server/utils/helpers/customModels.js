@@ -221,51 +221,11 @@ async function openAiModels(apiKey = null) {
       console.error(`OpenAI:listModels`, e.message);
       return [
         {
-          name: "gpt-3.5-turbo",
-          id: "gpt-3.5-turbo",
+          name: "gpt-5.6-luna",
+          id: "gpt-5.6-luna",
           object: "model",
           created: 1677610602,
           owned_by: "openai",
-          organization: "OpenAi",
-        },
-        {
-          name: "gpt-4o",
-          id: "gpt-4o",
-          object: "model",
-          created: 1677610602,
-          owned_by: "openai",
-          organization: "OpenAi",
-        },
-        {
-          name: "gpt-4",
-          id: "gpt-4",
-          object: "model",
-          created: 1687882411,
-          owned_by: "openai",
-          organization: "OpenAi",
-        },
-        {
-          name: "gpt-4-turbo",
-          id: "gpt-4-turbo",
-          object: "model",
-          created: 1712361441,
-          owned_by: "system",
-          organization: "OpenAi",
-        },
-        {
-          name: "gpt-4-32k",
-          id: "gpt-4-32k",
-          object: "model",
-          created: 1687979321,
-          owned_by: "openai",
-          organization: "OpenAi",
-        },
-        {
-          name: "gpt-3.5-turbo-16k",
-          id: "gpt-3.5-turbo-16k",
-          object: "model",
-          created: 1683758102,
-          owned_by: "openai-internal",
           organization: "OpenAi",
         },
       ];
