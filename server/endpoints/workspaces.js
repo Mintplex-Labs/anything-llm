@@ -127,7 +127,7 @@ function workspaceEndpoints(app) {
     async function (request, response) {
       try {
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
 
         // Multipart field order matters: multer only exposes text fields on
         // request.body that were appended BEFORE the file part, so the client
@@ -154,8 +154,9 @@ function workspaceEndpoints(app) {
         }
 
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
@@ -851,7 +852,7 @@ function workspaceEndpoints(app) {
         }
 
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -865,8 +866,11 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+        const { success, reason, documents } = await Collector.processDocument(
+          hotdirFilename,
+          {},
+          { originalFilename: originalname }
+        );
         if (!success || documents?.length === 0) {
           response.status(500).json({ success: false, error: reason }).end();
           return;

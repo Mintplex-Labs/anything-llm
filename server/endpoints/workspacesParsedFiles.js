@@ -161,7 +161,7 @@ function workspaceParsedFilesEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -171,8 +171,12 @@ function workspaceParsedFilesEndpoints(app) {
           });
         }
 
-        const { success, reason, documents } =
-          await Collector.parseDocument(originalname);
+        const { success, reason, documents } = await Collector.parseDocument(
+          hotdirFilename,
+          {
+            originalFilename: originalname,
+          }
+        );
         if (!success || !documents?.[0]) {
           return response.status(500).json({
             success: false,
