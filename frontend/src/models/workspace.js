@@ -274,6 +274,51 @@ const Workspace = {
       .catch(() => null);
     return capabilities ?? { reasoning: "unknown", reasoningOptions: [] };
   },
+  /**
+   * This workspace's own agent skill toggles, or null when it follows the system settings.
+   * @param {string} slug - Workspace slug
+   * @returns {Promise<{enabled: string[], mcpSuppressedTools: Object<string, string[]>}|null>}
+   */
+  agentSkills: async function (slug = "") {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skills`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res.agentSkills ?? null)
+      .catch(() => null);
+  },
+
+  /**
+   * Turn an agent skill or MCP tool on or off for this workspace. The first change
+   * copies the system toggles into the workspace.
+   * @param {string} slug - Workspace slug
+   * @param {{skill: string, enabled: boolean, mcpServer?: string}} change - `skill` is the tool name when `mcpServer` is set
+   * @returns {Promise<{enabled: string[], mcpSuppressedTools: Object<string, string[]>}|null>} updated toggles, or null on failure
+   */
+  setAgentSkill: async function (slug = "", change) {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skills`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(change),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => res?.agentSkills ?? null)
+      .catch(() => null);
+  },
+
+  /**
+   * Drop this workspace's own agent skill toggles so it follows the system settings again.
+   * @param {string} slug - Workspace slug
+   * @returns {Promise<boolean>}
+   */
+  resetAgentSkills: async function (slug = "") {
+    return await fetch(`${API_BASE}/workspace/${slug}/agent-skills`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   delete: async function (slug) {
     const result = await fetch(`${API_BASE}/workspace/${slug}`, {
       method: "DELETE",
