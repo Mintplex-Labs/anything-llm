@@ -321,7 +321,10 @@ function buildMessages({
             content: thought,
           });
         }
-        if (!hasVisible) return acc;
+        // A saved reply with no text and no thought is an unanswered prompt,
+        // which HistoricalMessage renders as a placeholder.
+        const isUnanswered = !!props.chatId && !thought;
+        if (!hasVisible && !isUnanswered) return acc;
       }
 
       if (isLastBotReply && props.animate) {
