@@ -324,7 +324,6 @@ class FilesystemManager {
       const chunk = Buffer.alloc(FilesystemManager.FILE_READ_CHUNK_SIZE);
       let linesFound = 0;
       let remainingText = "";
-      let isLastChunk = true;
 
       while (position > 0 && linesFound < numLines) {
         const size = Math.min(FilesystemManager.FILE_READ_CHUNK_SIZE, position);
@@ -343,11 +342,9 @@ class FilesystemManager {
           chunkLines.shift();
         }
 
-        // A trailing newline ends the last line, it does not start a new one.
-        if (isLastChunk) {
-          if (chunkLines.at(-1) === "") chunkLines.pop();
-          isLastChunk = false;
-        }
+        // The chunk that ends at EOF may end with a newline; that is not an extra empty line.
+        if (position + size === fileSize && chunkLines.at(-1) === "")
+          chunkLines.pop();
 
         for (
           let i = chunkLines.length - 1;
