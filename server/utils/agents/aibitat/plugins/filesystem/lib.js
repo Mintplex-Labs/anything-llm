@@ -342,7 +342,6 @@ class FilesystemManager {
           chunkLines.shift();
         }
 
-        // The chunk that ends at EOF may end with a newline; that is not an extra empty line.
         if (position + size === fileSize && chunkLines.at(-1) === "")
           chunkLines.pop();
 
@@ -646,7 +645,6 @@ class FilesystemManager {
       filePath,
       (content) => {
         const lines = this.#normalizeLineEndings(content).split("\n");
-        // A trailing newline ends the last line, it does not start a new one.
         if (lines.at(-1) === "") lines.pop();
         return lines.slice(-numLines).join("\n");
       },
