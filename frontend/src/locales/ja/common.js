@@ -257,6 +257,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "応答が最大出力トークン数の上限に達しました。より長い応答を生成するには、モデルの最大出力トークン数を増やしてください。",
+    no_response: "モデルが応答できませんでした。",
   },
   "vector-workspace": {
     identifier: "ベクターデータベース識別子",

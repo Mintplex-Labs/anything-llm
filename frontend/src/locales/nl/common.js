@@ -260,6 +260,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Het antwoord heeft het maximale aantal uitvoertokens bereikt. Verhoog het maximale aantal uitvoertokens van het model om langere antwoorden mogelijk te maken.",
+    no_response: "Model kon niet reageren.",
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",

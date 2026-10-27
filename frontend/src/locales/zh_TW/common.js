@@ -249,6 +249,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "回應已達到最大輸出token限制。請增加模型的最大輸出token數量，以便產生更長的回應。",
+    no_response: "模型未能回應。",
   },
   "vector-workspace": {
     identifier: "向量資料庫識別碼",

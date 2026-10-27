@@ -262,6 +262,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Svaret nåede det maksimale tilladte antal tokens. Øg modellens maksimale antal tokens, så svaret kan være længere.",
+    no_response: "Modellen kunne ikke svare.",
   },
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",

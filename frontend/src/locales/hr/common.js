@@ -306,6 +306,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Odgovor je dostigao maksimalni limit za broj tokena. Povećajte maksimalni broj tokena koji model može generirati, kako biste omogućili duže odgovore.",
+    no_response: "Model nije uspio odgovoriti.",
   },
   "vector-workspace": {
     identifier: "Identifikator vektorske baze podataka",

@@ -296,6 +296,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Die Antwort hat das maximale Limit an Ausgabe-Token erreicht. Erhöhen Sie die maximale Anzahl an Ausgabe-Token des Modells, um längere Antworten zu ermöglichen.",
+    no_response: "Das Modell hat nicht geantwortet.",
   },
   "vector-workspace": {
     identifier: "Vektordatenbank-Identifikator",

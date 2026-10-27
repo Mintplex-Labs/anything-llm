@@ -301,6 +301,7 @@ const TRANSLATIONS = {
       },
     },
     token_limit_reached: null,
+    no_response: "ໂມເດວບໍ່ສາມາດຕອບໄດ້.",
   },
   "vector-workspace": {
     identifier: "ຕົວລະບຸຖານຂໍ້ມູນເວກເຕີ",
