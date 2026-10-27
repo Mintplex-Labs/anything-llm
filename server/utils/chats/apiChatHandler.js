@@ -509,6 +509,9 @@ async function chatSync({
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  contextDocuments: { title: string; pageContent: string }[],
+ *  agentEventListener: EphemeralEventListener|null,
+ *  onAgentReady: ((agentHandler: EphemeralAgentHandler) => Promise<void>|void)|null,
  *  reset: boolean,
  * }} parameters
  * @returns {Promise<VoidFunction>}
@@ -522,6 +525,9 @@ async function streamChat({
   thread = null,
   sessionId = null,
   attachments = [],
+  contextDocuments = [],
+  agentEventListener = null,
+  onAgentReady = null,
   reset = false,
 }) {
   const uuid = uuidv4();
@@ -561,6 +567,7 @@ async function streamChat({
   // both receive their contents as context, leaving only images as attachments.
   const { parsedDocuments, imageAttachments } =
     await processDocumentAttachments(attachments);
+  parsedDocuments.push(...contextDocuments);
   attachments = imageAttachments;
 
   if (
@@ -588,9 +595,10 @@ async function streamChat({
     // Establish event listener that emulates websocket calls
     // in Aibitat so that we can keep the same interface in Aibitat
     // but use HTTP.
-    const eventListener = new EphemeralEventListener();
+    const eventListener = agentEventListener ?? new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
+    await onAgentReady?.(agentHandler);
 
     agentHandler.startAgentCluster();
 
