@@ -342,6 +342,9 @@ class FilesystemManager {
           chunkLines.shift();
         }
 
+        if (position + size === fileSize && chunkLines.at(-1) === "")
+          chunkLines.pop();
+
         for (
           let i = chunkLines.length - 1;
           i >= 0 && linesFound < numLines;
@@ -642,6 +645,7 @@ class FilesystemManager {
       filePath,
       (content) => {
         const lines = this.#normalizeLineEndings(content).split("\n");
+        if (lines.at(-1) === "") lines.pop();
         return lines.slice(-numLines).join("\n");
       },
       () => this.#tailFileRaw(filePath, numLines)
