@@ -9,6 +9,20 @@ const { VectorDatabase } = require("../base");
 
 const COLLECTION_PREFIX = "anythingllm-";
 
+// Common English words dropped from keyword search; see TopK.keywordsOf.
+const STOPWORDS = new Set(
+  (
+    "a about above after again against all am an and any are as at be because been before being " +
+    "below between both but by can could did do does doing down during each few for from further " +
+    "had has have having he her here hers herself him himself his how i if in into is it its itself " +
+    "just me more most my myself no nor not now of off on once only or other our ours ourselves out " +
+    "over own same she should so some such than that the their theirs them themselves then there " +
+    "these they this those through to too under until up very was we were what when where which " +
+    "while who whom why will with would you your yours yourself yourselves tell explain describe " +
+    "summarize summary please show find give know"
+  ).split(" ")
+);
+
 class TopK extends VectorDatabase {
   constructor() {
     super();
@@ -28,10 +42,10 @@ class TopK extends VectorDatabase {
 
   /**
    * How much a keyword (BM25) match can add to a chunk's vector similarity.
-   * The BM25 score is squashed into [0, 1) first, so the boost is at most this value.
-   * Chunks with no keyword match keep their plain vector similarity.
+   * The best keyword match in a search gets this full boost, weaker matches a share of it,
+   * and chunks with no keyword match keep their plain vector similarity.
    */
-  keywordWeight = 0.3;
+  keywordWeight = 0.4;
 
   // Every workspace gets one collection per embedding dimension:
   //   anythingllm-<namespace>-d<dimension>
@@ -122,47 +136,82 @@ class TopK extends VectorDatabase {
   }
 
   /**
-   * Builds a hybrid query that ranks chunks by vector similarity plus a keyword (BM25) boost,
-   * in a single TopK query. `should()` scores keyword matches without excluding chunks that
-   * have none, so purely semantic matches are still returned.
-   * Without input text, this is a plain vector search.
+   * Builds the vector half of a search: the chunks most similar to the query vector.
    * @param {number[]} queryVector
-   * @param {string} input - The raw user query, used for keyword matching.
-   * @param {number} topN
+   * @param {number} limit
    */
-  hybridQuery(queryVector, input = "", topN = 4) {
-    const fields = {
-      text: query.field("text"),
-      metadata: query.field("metadata"),
-      vectorScore: query_fn.vectorDistance("embedding", queryVector),
-    };
-    if (!input?.trim())
-      return query.select(fields).topk(query.field("vectorScore"), topN, false);
-
-    const keywordScore = query.field("keywordScore");
+  vectorQuery(queryVector, limit) {
     return query
-      .select({ ...fields, keywordScore: query_fn.bm25Score() })
-      .filter(query.should(input, { field: "text" }))
-      .topk(
-        query
-          .field("vectorScore")
-          .add(keywordScore.div(keywordScore.add(1)).mul(this.keywordWeight)),
-        topN,
-        false
-      );
+      .select({
+        text: query.field("text"),
+        metadata: query.field("metadata"),
+        vectorScore: query_fn.vectorDistance("embedding", queryVector),
+      })
+      .topk(query.field("vectorScore"), limit, false);
   }
 
   /**
-   * Combines a chunk's vector similarity and BM25 score the same way `hybridQuery` ranks them.
-   * @param {{vectorScore: number, keywordScore?: number}} doc
-   * @returns {number} Score in [0, 1].
+   * Builds the keyword half of a search: the chunks with the best BM25 score for the keywords.
+   * The vector similarity is selected too, so keyword-only matches can be scored the same way.
+   * @param {number[]} queryVector
+   * @param {string} keywords
+   * @param {number} limit
    */
-  hybridScore({ vectorScore = null, keywordScore = 0 } = {}) {
-    const keywordBoost =
-      keywordScore > 0 ? keywordScore / (keywordScore + 1) : 0;
-    return this.normalizeScore(
-      (vectorScore ?? 0) + keywordBoost * this.keywordWeight
+  keywordQuery(queryVector, keywords, limit) {
+    return query
+      .select({
+        text: query.field("text"),
+        metadata: query.field("metadata"),
+        vectorScore: query_fn.vectorDistance("embedding", queryVector),
+        keywordScore: query_fn.bm25Score(),
+      })
+      .filter(query.match(keywords, { field: "text" }))
+      .topk(query.field("keywordScore"), limit, false);
+  }
+
+  /**
+   * Reduces a user query to the words worth matching on. Without this, the filler words of a
+   * question ("what", "is", "about") match most chunks and drown out the term that matters.
+   * @param {string} input
+   * @returns {string} Space-separated keywords, or "" when nothing is left.
+   */
+  keywordsOf(input = "") {
+    return String(input)
+      .toLowerCase()
+      .split(/[^\p{L}\p{N}_-]+/u)
+      .filter((word) => word && !STOPWORDS.has(word))
+      .join(" ");
+  }
+
+  /**
+   * Merges vector and keyword results into one ranking. Each chunk scores its vector similarity
+   * plus a keyword boost of up to `keywordWeight`, relative to the best keyword match in the
+   * results, so the strongest match gets the full boost and chunks with no match get none.
+   * @param {object[]} vectorResults
+   * @param {object[]} keywordResults
+   * @returns {object[]} Chunks with a `score` in [0, 1], best first.
+   */
+  fuseResults(vectorResults = [], keywordResults = []) {
+    const chunks = new Map();
+    for (const doc of [...vectorResults, ...keywordResults])
+      chunks.set(doc._id, { ...chunks.get(doc._id), ...doc });
+
+    const bestKeywordScore = Math.max(
+      0,
+      ...keywordResults.map((doc) => doc.keywordScore || 0)
     );
+    return [...chunks.values()]
+      .map((doc) => {
+        const keywordBoost =
+          bestKeywordScore > 0 ? (doc.keywordScore || 0) / bestKeywordScore : 0;
+        return {
+          ...doc,
+          score: this.normalizeScore(
+            (doc.vectorScore ?? 0) + keywordBoost * this.keywordWeight
+          ),
+        };
+      })
+      .sort((a, b) => b.score - a.score);
   }
 
   async similarityResponse({
@@ -183,33 +232,39 @@ class TopK extends VectorDatabase {
     const collection = client.collection(
       this.collectionName(namespace, queryVector.length)
     );
-    const search = (text) =>
-      collection.query(this.hybridQuery(queryVector, text, topN), {
-        consistency: "strong",
+    // Fetch more candidates than needed so the fused ranking has room to reorder them.
+    const limit = Math.max(topN * 4, 20);
+    const keywords = this.keywordsOf(input);
+    const search = (q) =>
+      collection.query(q, { consistency: "strong" }).catch((e) => {
+        if (this.isNotFound(e)) return [];
+        // Collections created without a keyword index fall back to vector search.
+        if (/keyword index/i.test(e?.message || "")) return [];
+        throw e;
       });
-    const docs = await search(input).catch((e) => {
-      if (this.isNotFound(e)) return [];
-      // Collections created without a keyword index fall back to vector search.
-      if (/keyword index/i.test(e?.message || "")) return search("");
-      throw e;
-    });
+    const [vectorResults, keywordResults] = await Promise.all([
+      search(this.vectorQuery(queryVector, limit)),
+      keywords
+        ? search(this.keywordQuery(queryVector, keywords, limit))
+        : Promise.resolve([]),
+    ]);
 
-    docs.forEach((doc) => {
-      const similarity = this.hybridScore(doc);
-      if (similarity < similarityThreshold) return;
+    for (const doc of this.fuseResults(vectorResults, keywordResults)) {
+      if (result.contextTexts.length >= topN) break;
+      if (doc.score < similarityThreshold) continue;
 
       const metadata = JSON.parse(doc.metadata || "{}");
       if (filterIdentifiers.includes(sourceIdentifier(metadata))) {
         this.logger(
           "A source was filtered from context as it's parent document is pinned."
         );
-        return;
+        continue;
       }
 
       result.contextTexts.push(doc.text);
       result.sourceDocuments.push({ ...metadata, id: doc._id });
-      result.scores.push(similarity);
-    });
+      result.scores.push(doc.score);
+    }
 
     return result;
   }
