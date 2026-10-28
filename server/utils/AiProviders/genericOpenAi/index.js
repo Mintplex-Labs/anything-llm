@@ -405,22 +405,24 @@ class GenericOpenAiLLM {
             message.finish_reason !== "" &&
             message.finish_reason !== null
           ) {
-            writeResponseChunk(response, {
-              uuid,
-              sources,
-              type: "textResponseChunk",
-              textResponse: "",
-              close: true,
-              error: false,
-            });
             this.#extractLlamaCppTimings(chunk, usage);
-
-            response.removeListener("close", handleAbort);
-            stream?.endMeasurement(usage);
-            resolve(fullText);
             break; // Break streaming when a valid finish_reason is first encountered
           }
         }
+
+        // Some OpenAI-compatible servers end the stream without ever sending a
+        // finish_reason, so the response is closed once the stream is done either way.
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+        response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
       } catch (e) {
         // Cancelling the upstream request rejects the iterator - that is the
         // client leaving, not a failure, so it is not reported as an error.

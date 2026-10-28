@@ -226,3 +226,49 @@ describe("GenericOpenAiLLM max_tokens payload", () => {
     expect(create.mock.calls[0][0].max_completion_tokens).toBe(256);
   });
 });
+
+describe("GenericOpenAiLLM handleStream", () => {
+  const { EventEmitter } = require("events");
+
+  function mockResponse() {
+    const response = new EventEmitter();
+    response.chunks = [];
+    response.write = (data) => {
+      response.chunks.push(JSON.parse(data.replace(/^data: /, "")));
+      return true;
+    };
+    return response;
+  }
+
+  function mockStream(chunks) {
+    async function* generate() {
+      for (const chunk of chunks) yield chunk;
+    }
+    const stream = generate();
+    stream.endMeasurement = jest.fn();
+    return stream;
+  }
+
+  it("closes the response when the stream ends without a finish_reason", async () => {
+    const provider = new GenericOpenAiLLM();
+    const response = mockResponse();
+    const stream = mockStream([
+      { choices: [{ delta: { content: "Hello" } }] },
+      { choices: [{ delta: { content: " world" } }] },
+    ]);
+
+    const result = await Promise.race([
+      provider.handleStream(response, stream, { uuid: "abc", sources: [] }),
+      new Promise((resolve) => setTimeout(() => resolve("timeout"), 500)),
+    ]);
+
+    expect(result).toBe("Hello world");
+    expect(response.chunks.at(-1)).toMatchObject({
+      uuid: "abc",
+      close: true,
+      error: false,
+    });
+    expect(stream.endMeasurement).toHaveBeenCalled();
+    expect(response.listenerCount("close")).toBe(0);
+  });
+});
