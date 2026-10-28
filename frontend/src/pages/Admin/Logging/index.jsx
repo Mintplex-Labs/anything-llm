@@ -15,13 +15,16 @@ export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const [multiUserMode, setMultiUserMode] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchLogs() {
-      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
+      const [{ logs: _logs, hasPages = false }, isMultiUser] =
+        await Promise.all([System.eventLogs(offset), System.isMultiUserMode()]);
       setLogs(_logs);
       setCanNext(hasPages);
+      setMultiUserMode(!!isMultiUser);
       setLoading(false);
     }
     fetchLogs();
@@ -85,6 +88,7 @@ export default function AdminLogs() {
               logs={logs}
               offset={offset}
               canNext={canNext}
+              multiUserMode={multiUserMode}
               handleNext={handleNext}
               handlePrevious={handlePrevious}
             />
@@ -100,6 +104,7 @@ function LogsContainer({
   logs,
   offset,
   canNext,
+  multiUserMode,
   handleNext,
   handlePrevious,
 }) {
@@ -126,9 +131,11 @@ function LogsContainer({
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("event.table.type")}
             </th>
-            <th scope="col" className="px-6 py-3">
-              {t("event.table.user")}
-            </th>
+            {multiUserMode && (
+              <th scope="col" className="px-6 py-3">
+                {t("event.table.user")}
+              </th>
+            )}
             <th scope="col" className="px-6 py-3">
               {t("event.table.occurred")}
             </th>
@@ -138,7 +145,10 @@ function LogsContainer({
           </tr>
         </thead>
         <tbody>
-          {!!logs && logs.map((log) => <LogRow key={log.id} log={log} />)}
+          {!!logs &&
+            logs.map((log) => (
+              <LogRow key={log.id} log={log} multiUserMode={multiUserMode} />
+            ))}
         </tbody>
       </table>
       <div className="flex w-full justify-between items-center mt-6">

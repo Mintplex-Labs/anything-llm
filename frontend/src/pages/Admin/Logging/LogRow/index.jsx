@@ -3,7 +3,7 @@ import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { safeJsonParse } from "@/utils/request";
 
-export default function LogRow({ log }) {
+export default function LogRow({ log, multiUserMode }) {
   const [expanded, setExpanded] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [hasMetadata, setHasMetadata] = useState(false);
@@ -32,9 +32,11 @@ export default function LogRow({ log }) {
         }`}
       >
         <EventBadge event={log.event} />
-        <td className="px-6 border-transparent transform transition-transform duration-200">
-          {log.user.username}
-        </td>
+        {multiUserMode && (
+          <td className="px-6 border-transparent transform transition-transform duration-200">
+            {log.user.username}
+          </td>
+        )}
         <td className="px-6 border-transparent transform transition-transform duration-200">
           {moment(log.occurredAt).format("lll")}
         </td>
