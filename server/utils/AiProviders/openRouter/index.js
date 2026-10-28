@@ -574,6 +574,10 @@ async function fetchOpenRouterModels() {
         };
       });
 
+      // An error response (429, 5xx) has no `data`. Caching that empty list
+      // would mark every model invalid until the week-long cache goes stale.
+      if (Object.keys(models).length === 0) return models;
+
       // Cache all response information
       if (!fs.existsSync(cacheFolder))
         fs.mkdirSync(cacheFolder, { recursive: true });

@@ -39,6 +39,16 @@ async function eagerLoadContextWindows() {
       await OMLXLLM.cacheContextWindows(true);
       log("OMLX");
       break;
+    case "openrouter":
+      // Without this cache the first chat after a fresh install assumes a
+      // 4096 token window and trims the prompt to fit. Not awaited so a slow
+      // network never holds up boot; failures are logged and the chat path
+      // retries the sync on its own.
+      const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
+      fetchOpenRouterModels().then((models) => {
+        if (Object.keys(models).length > 0) log("OpenRouter");
+      });
+      break;
   }
 }
 
