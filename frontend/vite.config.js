@@ -22,7 +22,10 @@ export default defineConfig({
     host: "localhost"
   },
   define: {
-    "process.env": process.env
+    // Only expose NODE_ENV to browser code. Passing the whole process.env here
+    // inlines every environment variable of the machine running the build
+    // (API keys, CI secrets) into the public JS bundle.
+    "process.env": { NODE_ENV: process.env.NODE_ENV ?? "production" }
   },
   css: {
     postcss
