@@ -19,12 +19,18 @@ export default function AdminLogs() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    async function fetchMultiUserMode() {
+      const enabled = await System.isMultiUserMode();
+      setMultiUserMode(!!enabled);
+    }
+    fetchMultiUserMode();
+  }, []);
+
+  useEffect(() => {
     async function fetchLogs() {
-      const [{ logs: _logs, hasPages = false }, isMultiUser] =
-        await Promise.all([System.eventLogs(offset), System.isMultiUserMode()]);
+      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
       setLogs(_logs);
       setCanNext(hasPages);
-      setMultiUserMode(!!isMultiUser);
       setLoading(false);
     }
     fetchLogs();

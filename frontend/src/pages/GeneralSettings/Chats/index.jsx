@@ -106,12 +106,19 @@ export default function WorkspaceChats() {
   }, []);
 
   useEffect(() => {
+    async function fetchMultiUserMode() {
+      const enabled = await System.isMultiUserMode();
+      setMultiUserMode(!!enabled);
+    }
+    fetchMultiUserMode();
+  }, []);
+
+  useEffect(() => {
     async function fetchChats() {
-      const [{ chats: _chats = [], hasPages = false }, isMultiUser] =
-        await Promise.all([System.chats(offset), System.isMultiUserMode()]);
+      const { chats: _chats = [], hasPages = false } =
+        await System.chats(offset);
       setChats(_chats);
       setCanNext(hasPages);
-      setMultiUserMode(!!isMultiUser);
       setLoading(false);
     }
     fetchChats();
