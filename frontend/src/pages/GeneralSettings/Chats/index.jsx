@@ -56,6 +56,7 @@ export default function WorkspaceChats() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const [multiUserMode, setMultiUserMode] = useState(false);
   const { t } = useTranslation();
 
   const handleDumpChats = async (exportType) => {
@@ -106,10 +107,11 @@ export default function WorkspaceChats() {
 
   useEffect(() => {
     async function fetchChats() {
-      const { chats: _chats = [], hasPages = false } =
-        await System.chats(offset);
+      const [{ chats: _chats = [], hasPages = false }, isMultiUser] =
+        await Promise.all([System.chats(offset), System.isMultiUserMode()]);
       setChats(_chats);
       setCanNext(hasPages);
+      setMultiUserMode(!!isMultiUser);
       setLoading(false);
     }
     fetchChats();
@@ -183,6 +185,7 @@ export default function WorkspaceChats() {
                 offset={offset}
                 setOffset={setOffset}
                 canNext={canNext}
+                multiUserMode={multiUserMode}
                 t={t}
               />
             </div>
@@ -200,6 +203,7 @@ function ChatsContainer({
   offset,
   setOffset,
   canNext,
+  multiUserMode,
   t,
 }) {
   const handlePrevious = () => {
@@ -236,9 +240,11 @@ function ChatsContainer({
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("recorded.table.id")}
             </th>
-            <th scope="col" className="px-6 py-3">
-              {t("recorded.table.by")}
-            </th>
+            {multiUserMode && (
+              <th scope="col" className="px-6 py-3">
+                {t("recorded.table.by")}
+              </th>
+            )}
             <th scope="col" className="px-6 py-3">
               {t("recorded.table.workspace")}
             </th>
@@ -259,7 +265,12 @@ function ChatsContainer({
         <tbody>
           {!!chats &&
             chats.map((chat) => (
-              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
+              <ChatRow
+                key={chat.id}
+                chat={chat}
+                multiUserMode={multiUserMode}
+                onDelete={handleDeleteChat}
+              />
             ))}
         </tbody>
       </table>
