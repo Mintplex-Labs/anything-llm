@@ -23,6 +23,22 @@ const MobileConnection = {
       .catch(() => false);
   },
 
+  getConnectionInfoForUser: async function (userId) {
+    return await fetch(`${API_BASE}/mobile/connect-info/${encodeURIComponent(userId)}`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ error: "Could not generate a pairing QR code." }));
+  },
+
+  getMyConnectionInfo: async function () {
+    return await fetch(`${API_BASE}/mobile/my-connect-info`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ error: "Could not generate a pairing QR code." }));
+  },
+
   /**
    * Get all the devices from the database.
    * @returns {Promise<MobileDevice[]>} The devices.

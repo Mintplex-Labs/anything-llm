@@ -179,7 +179,7 @@ export default {
       return `/settings/browser-extension`;
     },
     mobile: () => {
-      return `/settings/mobile-connections`;
+      return `/settings/mobile-app`;
     },
     experimental: () => {
       return `/settings/beta-features`;

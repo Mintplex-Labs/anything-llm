@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { List, Plus } from "@phosphor-icons/react";
+import { List, Plus, Plugs } from "@phosphor-icons/react";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -64,6 +64,7 @@ export default function Sidebar() {
                   <div className="flex flex-col gap-y-[14px]">
                     <SearchBox user={user} showNewWsModal={showNewWsModal} />
                     <ActiveWorkspaces />
+                    <MobileAppLink />
                   </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 pb-3 rounded-b-[16px] bg-zinc-925 light:bg-slate-200 bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
@@ -173,6 +174,7 @@ export function SidebarMobileHeader() {
                     user={user}
                     showNewWsModal={showNewWsModal}
                   />
+                  <MobileAppLink />
                   <ActiveWorkspaces />
                 </div>
               </div>
@@ -185,6 +187,21 @@ export function SidebarMobileHeader() {
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
     </>
+  );
+}
+
+
+function MobileAppLink() {
+  const { t } = useTranslation();
+
+  return (
+    <Link
+      to={paths.settings.mobile()}
+      className="flex items-center gap-x-3 w-full h-[44px] px-4 rounded-lg text-theme-text-secondary hover:bg-theme-sidebar-subitem-hover transition-all duration-200"
+    >
+      <Plugs className="h-5 w-5 flex-shrink-0" />
+      <span className="text-sm font-medium">{t("settings.mobile-app")}</span>
+    </Link>
   );
 }
 

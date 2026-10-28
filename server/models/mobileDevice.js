@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { v4: uuidv4 } = require("uuid");
+const { randomBytes } = require("crypto");
 const ip = require("ip");
 
 /**
@@ -68,7 +69,7 @@ const MobileDevice = {
     tokenData.createdAt = createdAt;
     tokenData.expiresAt = createdAt + 3 * 60_000;
 
-    const tempToken = uuidv4().split("-").slice(0, 3).join("");
+    const tempToken = randomBytes(32).toString("hex");
     TemporaryMobileDeviceRequests.set(tempToken, tokenData);
 
     // Run this on register since there is no BG task to do this.

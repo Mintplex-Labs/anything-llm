@@ -88,6 +88,9 @@ export default function MobileDevices() {
                       Device Name
                     </th>
                     <th scope="col" className="px-6 py-3">
+                      Owner
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       Registered
                     </th>
                     <th scope="col" className="px-6 py-3">

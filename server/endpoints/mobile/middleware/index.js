@@ -24,11 +24,20 @@ async function validDeviceToken(request, response, next) {
     if (!device.approved)
       return response.status(400).json({ error: "Device not approved" });
 
-    // If the device is associated with a user then we can associate it with the locals
-    // so we can reuse it later.
+    // In multi-user mode every mobile device MUST have a valid owner. Never let
+    // an orphaned device reach handlers that support single-user unrestricted reads.
+    const multiUserMode = await SystemSettings.isMultiUserMode();
+    response.locals.multiUserMode = multiUserMode;
+    if (multiUserMode && (!device.userId || !device.user)) {
+      return response.status(403).json({
+        error: "This mobile device is not assigned to an active user. Re-register it from the correct account.",
+      });
+    }
+
+    // Bind request identity to the device owner, never to the QR creator's later session.
     if (device.user) {
       if (device.user.suspended)
-        return response.status(400).json({ error: "User is suspended." });
+        return response.status(403).json({ error: "User is suspended." });
       response.locals.user = device.user;
     }
 

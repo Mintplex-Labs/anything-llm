@@ -44,21 +44,18 @@ export default function DeviceRow({ device, removeDevice }) {
           </div>
         </td>
         <td className="px-6">
-          <div className="flex items-center gap-x-2">
-            {moment(device.createdAt).format("lll")}
-            {device.user && (
-              <div className="flex items-center gap-x-1">
-                <span className="text-xs text-theme-text-secondary">by</span>
-                <Link
-                  to={paths.settings.users()}
-                  className="text-xs text-theme-text-secondary hover:underline hover:text-cta-button"
-                >
-                  {device.user.username}
-                </Link>
-              </div>
-            )}
-          </div>
+          {device.user ? (
+            <Link
+              to={paths.settings.users()}
+              className="text-xs text-theme-text-secondary hover:underline hover:text-cta-button"
+            >
+              {device.user.username}
+            </Link>
+          ) : (
+            <span className="text-xs text-theme-text-secondary">Unassigned</span>
+          )}
         </td>
+        <td className="px-6">{moment(device.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           {status ? (
             <button

@@ -432,12 +432,20 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin", "manager"],
             },
             {
-              btnText: t("settings.mobile-app"),
-              href: paths.settings.mobile(),
+              btnText: "Mobile Connections",
+              href: paths.settings.mobileConnections(),
               flex: true,
               roles: ["admin"],
             },
           ]}
+        />
+        <Option
+          btnText={t("settings.mobile-app")}
+          icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
+          href={paths.settings.mobile()}
+          user={user}
+          flex={true}
+          roles={["admin", "manager", "default"]}
         />
         <Option
           btnText={t("settings.security")}

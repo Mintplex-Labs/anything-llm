@@ -1,5 +1,6 @@
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 const { MobileDevice } = require("../../models/mobileDevice");
+const { User } = require("../../models/user");
 const { handleMobileCommand } = require("./utils");
 const { validDeviceToken, validRegistrationToken } = require("./middleware");
 const { reqBody } = require("../../utils/http");
@@ -74,6 +75,50 @@ function mobileEndpoints(app) {
           return response.status(404).json({ error: "Device not found" });
         await MobileDevice.delete(device.id);
         return response.status(200).json({ message: "Device deleted" });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Admin-only pairing QR for a specific account. The target user is resolved
+  // server-side; clients cannot set device ownership during registration.
+  app.get(
+    "/mobile/connect-info/:userId",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const userId = Number(request.params.userId);
+        if (!Number.isSafeInteger(userId) || userId <= 0)
+          return response.status(400).json({ error: "Invalid user id" });
+        const user = await User.get({ id: userId });
+        if (!user) return response.status(404).json({ error: "User not found" });
+        if (user.suspended)
+          return response.status(403).json({ error: "Cannot pair a device for a suspended user" });
+        return response.status(200).json({
+          connectionUrl: MobileDevice.connectionURL(user),
+        });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Any authenticated user can generate a pairing QR for their own account.
+  // In single-user mode validatedRequest does not populate locals.user, which is
+  // intentional: the legacy single-user QR behavior remains unchanged.
+  app.get(
+    "/mobile/my-connect-info",
+    [validatedRequest],
+    async (_request, response) => {
+      try {
+        if (response.locals.multiUserMode && !response.locals.user?.id)
+          return response.status(403).json({ error: "Authenticated user identity is required" });
+        return response.status(200).json({
+          connectionUrl: MobileDevice.connectionURL(response.locals?.user ?? null),
+        });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

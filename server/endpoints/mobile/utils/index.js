@@ -17,6 +17,11 @@ async function handleMobileCommand(request, response) {
   const { command } = request.params;
   const user = response.locals.user ?? null;
   const body = reqBody(request);
+  if (response.locals.multiUserMode && !user?.id) {
+    return response.status(403).json({
+      error: "Mobile access requires a valid assigned user in multi-user mode.",
+    });
+  }
 
   if (command === "workspaces") {
     const workspaces = user

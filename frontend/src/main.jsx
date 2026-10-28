@@ -399,6 +399,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/mobile-app",
+        lazy: async () => {
+          const { default: MobileApp } = await import(
+            "@/pages/GeneralSettings/MobileApp"
+          );
+          return { element: <PrivateRoute Component={MobileApp} /> };
+        },
+      },
+      {
         path: "/settings/external-connections/telegram",
         lazy: async () => {
           const { default: TelegramBotSettings } = await import(
