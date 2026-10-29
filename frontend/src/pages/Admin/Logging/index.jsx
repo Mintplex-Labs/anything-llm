@@ -1,5 +1,6 @@
 import Sidebar from "@/components/SettingsSidebar";
 import useQuery from "@/hooks/useQuery";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 import System from "@/models/system";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
@@ -15,16 +16,8 @@ export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
-  const [multiUserMode, setMultiUserMode] = useState(false);
+  const multiUserMode = useMultiUserMode();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    async function fetchMultiUserMode() {
-      const enabled = await System.isMultiUserMode();
-      setMultiUserMode(!!enabled);
-    }
-    fetchMultiUserMode();
-  }, []);
 
   useEffect(() => {
     async function fetchLogs() {

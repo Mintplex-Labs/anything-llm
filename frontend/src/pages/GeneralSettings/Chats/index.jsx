@@ -4,6 +4,7 @@ import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
@@ -56,7 +57,7 @@ export default function WorkspaceChats() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
-  const [multiUserMode, setMultiUserMode] = useState(false);
+  const multiUserMode = useMultiUserMode();
   const { t } = useTranslation();
 
   const handleDumpChats = async (exportType) => {
@@ -103,14 +104,6 @@ export default function WorkspaceChats() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  useEffect(() => {
-    async function fetchMultiUserMode() {
-      const enabled = await System.isMultiUserMode();
-      setMultiUserMode(!!enabled);
-    }
-    fetchMultiUserMode();
   }, []);
 
   useEffect(() => {
