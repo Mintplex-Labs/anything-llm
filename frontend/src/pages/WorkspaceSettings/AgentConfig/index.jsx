@@ -67,7 +67,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
       <AutosaveForm
         onSave={handleUpdate}
         id="agent-settings-form"
-        className="w-1/2 flex flex-col gap-y-6"
+        className="w-full xl:w-1/2 flex flex-col gap-y-6"
       >
         <AgentLLMSelection settings={settings} workspace={workspace} />
         {(!user || user?.role === "admin") && (
@@ -93,7 +93,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
 function LoadingSkeleton() {
   return (
     <div id="workspace-agent-settings-container">
-      <div className="w-1/2 flex flex-col gap-y-6">
+      <div className="w-full xl:w-1/2 flex flex-col gap-y-6">
         <Skeleton.default
           height={100}
           width="100%"
