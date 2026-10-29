@@ -51,6 +51,7 @@ const TRANSLATIONS = {
     selection: "模型选择",
     save: "保存更改",
     saving: "保存中...",
+    saved: "已保存",
     previous: "上一页",
     next: "下一页",
     optional: "可选",
@@ -64,6 +65,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "正在加载…",
     refresh: "重新开始；更新",
+    noResults: "未找到任何结果",
   },
   settings: {
     title: "设置",
@@ -134,6 +136,35 @@ const TRANSLATIONS = {
       uploadDocument: "上传文件",
     },
     greeting: "今天我能帮您什么？",
+    greetings: {
+      anytime: {
+        working_on: "我们要做些什么？",
+        on_your_mind: "您在想什么？",
+        where_to_start: "我们从哪里开始？",
+        ready: "随时为您待命。",
+        think_it_through: "我们来好好想一想。",
+      },
+      morning: {
+        good_morning: "早上好",
+        first_today: "早上好。今天先做什么？",
+        fresh_start: "新的开始。从哪里着手？",
+      },
+      afternoon: {
+        good_afternoon: "下午好",
+        tackling: "下午好。我们要处理什么？",
+        next_on_list: "清单上的下一项是什么？",
+        keep_moving: "我们继续推进吧。",
+      },
+      evening: {
+        good_evening: "晚上好",
+        finish_strong: "晚上好。我们漂亮收尾吧。",
+      },
+      night: {
+        midnight_oil: "还在挑灯夜战？",
+        late_one: "忙到这么晚？我们来好好想一想。",
+        still_up: "还没睡？随时为您待命。",
+      },
+    },
   },
   "new-workspace": {
     title: "新工作区",
@@ -236,7 +267,26 @@ const TRANSLATIONS = {
       title: "LLM 温度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
+      placeholder: "提供商默认值",
     },
+    reasoning_effort: {
+      title: "推理强度",
+      default: "提供商默认值",
+      cannot_disable: "此模型无法关闭推理。",
+      levels: {
+        off: "关闭",
+        on: "开启",
+        minimal: "最低",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "极高",
+        max: "最高",
+      },
+    },
+    token_limit_reached:
+      "回复已达到最大输出 token 限制。增加模型的最大输出 token 数量，以便生成更长的回复。",
+    no_response: "模型未能响应。",
   },
   "vector-workspace": {
     identifier: "向量数据库标识符",
@@ -692,7 +742,7 @@ const TRANSLATIONS = {
       "start-server": "启动 MCP 服务器",
       "delete-server": "删除 MCP 服务器",
       "tool-count-warning":
-        "这个 MCP 服务器启用了 <b> 工具，这些工具会在每次聊天中使用上下文信息。</b> 建议禁用不需要的工具，以节省上下文。<br />",
+        "这个 MCP 服务器启用了 <b>{{count}} 个工具</b>，这些工具会在每次聊天中消耗上下文。<br />建议禁用不需要的工具，以节省上下文。",
       "startup-command": "启动命令",
       command: "命令",
       arguments: "争论",
@@ -751,6 +801,12 @@ const TRANSLATIONS = {
     branding: {
       title: "品牌与白标设置",
       description: "使用自定义品牌对白标您的 AnythingLLM 实例。",
+      tabs: {
+        identity: "身份",
+        colors: "颜色",
+        sidebar: "侧边栏",
+        browser: "浏览器",
+      },
     },
     chat: {
       title: "聊天",
@@ -823,6 +879,32 @@ const TRANSLATIONS = {
       "disable-auto-scroll": {
         title: "关闭自动滚动功能",
         description: "在收到新消息时，取消自动滚动到聊天窗口底部的功能。",
+      },
+      palette: {
+        title: "调色板",
+        description: "选择一个调色板。它同时适用于浅色模式和深色模式。",
+        enforced: "您的管理员已为此实例设置了调色板。",
+        "default-badge": "默认",
+      },
+      "instance-palettes": {
+        title: "调色板",
+        description:
+          "点击调色板，将其设置为该实例中所有用户的默认设置。自定义调色板包含一个主色，用于着色背景、侧边栏和内容，以及用于按钮和链接的强调色。",
+        new: "新建调色板",
+        edit: "编辑调色板",
+        delete: "删除调色板",
+        name: "调色板名称",
+        "name-required": "为这个调色板起一个名字。",
+        colors: {
+          main: "主色",
+          accent: "强调色",
+        },
+        "preview-note": "在整个应用程序中预览更改，并在点击“完成”时保存。",
+        done: "完成",
+        cancel: "取消",
+        enforce: "强制使用默认调色板",
+        "enforce-description": "此实例中的所有人都使用默认调色板，且无法更改。",
+        "save-failed": "保存调色板失败：{{error}}",
       },
     },
   },
@@ -1201,7 +1283,7 @@ const TRANSLATIONS = {
     workspace_llm_manager: {
       search: "搜索",
       loading_workspace_settings: "正在载入工作区设置",
-      available_models: "可用模型",
+      available_models: "{{provider}} 的可用模型",
       available_models_description: "可用模型说明",
       save: "保存",
       saving: "正在保存",
@@ -1736,13 +1818,13 @@ const TRANSLATIONS = {
       "calculated-section-label": "计算规则——按照优先级顺序进行评估",
       "llm-section-label":
         "LLM 规则——如果没有任何规则计算结果与给定条件匹配，则作为批量进行评估",
-      "llm-rule-body": "匹配“{{description}}”后，然后将结果路由到“<route>”",
-      "calculated-no-conditions":
-        "无任何条件——前往<route>，{{route}}，</route>",
+      "llm-rule-body":
+        "匹配 <desc>“{{description}}”</desc> 后，路由到 <route>{{route}}</route>",
+      "calculated-no-conditions": "无条件——路由到 <route>{{route}}</route>",
       "calculated-single-condition":
         '如果满足条件：<prop> {{property}}，</prop> {{comparator}}，<val>"{{value}}"，</val>，则将路由到 <route>{{route}}</route>',
       "calculated-multi-condition":
-        "如果满足<cond>的条件，则将路径设置为<route>",
+        "如果满足 <cond>{{conditions}}</cond> 中的{{quantifier}}条件，则路由到 <route>{{route}}</route>",
       "comparator-contains": "包含",
       "comparator-matches": "比赛",
       "comparator-between": "之间",

@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "اسم مساحة العمل",
     selection: "اختيار النموذج",
     saving: "حفظ...",
+    saved: "تم الحفظ",
     save: "حفظ التغييرات",
     previous: "الصفحة السابقة",
     next: "الصفحة التالية",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
     stopped: "توقف",
     loading: "تحميل",
     refresh: "استعيد/جدد",
+    noResults: "لم يتم العثور على أي نتائج",
   },
   settings: {
     title: "إعدادات المثيل",
@@ -238,7 +240,26 @@ const TRANSLATIONS = {
       title: "حرارة نموذج التعلم العميق",
       "desc-end":
         "كلما زاد العدد كلما كان الإبداع أكبر. بالنسبة لبعض النماذج، قد يؤدي هذا إلى استجابات غير منسجمة عند ضبطها على رقم مرتفع للغاية.",
+      placeholder: "الافتراضي للمزوّد",
     },
+    reasoning_effort: {
+      title: "جهد الاستدلال",
+      default: "الافتراضي للمزوّد",
+      cannot_disable: "لا يمكن لهذا النموذج إيقاف الاستدلال.",
+      levels: {
+        off: "إيقاف",
+        on: "تشغيل",
+        minimal: "أدنى",
+        low: "منخفض",
+        medium: "متوسط",
+        high: "مرتفع",
+        xhigh: "مرتفع جدًا",
+        max: "أقصى",
+      },
+    },
+    token_limit_reached:
+      "وصلت الاستجابة إلى الحد الأقصى لعدد الرموز، لذا يجب زيادة الحد الأقصى لعدد الرموز التي يمكن للنموذج إنتاجها للسماح بإنتاج استجابات أطول.",
+    no_response: "فشل النموذج في الرد.",
   },
   "vector-workspace": {
     identifier: "معرف قاعدة بيانات المتجهة",
@@ -725,7 +746,7 @@ const TRANSLATIONS = {
       "start-server": "ابدأ خادم MCP",
       "delete-server": "حذف خادم MCP",
       "tool-count-warning":
-        "يحتوي هذا خادم MCP على <b> أدوات مُفعّلة</b> والتي ستستهلك السياق في كل محادثة. <br /> ضع في اعتبارك تعطيل الأدوات غير المرغوب فيها لتوفير السياق.",
+        "يحتوي خادم MCP هذا على <b>أدوات مُفعّلة ({{count}})</b> ستستهلك السياق في كل محادثة.<br />ضع في اعتبارك تعطيل الأدوات غير المرغوب فيها لتوفير السياق.",
       "startup-command": "أمر البدء",
       command: "الأمر",
       arguments: "حجج",
@@ -1323,6 +1344,12 @@ const TRANSLATIONS = {
       title: "التسويق بالعلامة التجارية ووضع العلامات التجارية",
       description:
         "قم بتخصيص نسخة AnythingLLM الخاصة بك باستخدام العلامات التجارية الخاصة بك.",
+      tabs: {
+        identity: "الهوية",
+        colors: "الألوان",
+        sidebar: "شريط جانبي",
+        browser: "متصفح الويب",
+      },
     },
     chat: {
       title: "دردشة",
@@ -1400,6 +1427,35 @@ const TRANSLATIONS = {
         description:
           "تعطيل التمرير التلقائي إلى أسفل نافذة الدردشة عند استلام رسائل جديدة.",
       },
+      palette: {
+        title: "مجموعة الألوان",
+        description:
+          "اختر مجموعة ألوان. وهي مناسبة لكل من الوضع الفاتح والوضع الداكن.",
+        enforced: "حدد المسؤول لوحة الألوان لهذا المثيل.",
+        "default-badge": "افتراضي",
+      },
+      "instance-palettes": {
+        title: "مجموعات الألوان",
+        description:
+          "انقر على لوحة الألوان لتكون هي الافتراضية للجميع في هذه النسخة. لوحات الألوان المخصصة تتكون من لون أساسي، والذي يلون الخلفية، الشريط الجانبي، والمحتوى، بالإضافة إلى لون مميز للأزرار والروابط.",
+        new: "لوحة ألوان جديدة",
+        edit: "تعديل لوحة الألوان",
+        delete: "حذف لوحة الألوان",
+        name: "اسم لوحة الألوان",
+        "name-required": "أعطِ لوحة الألوان اسمًا.",
+        colors: {
+          main: "اللون الأساسي",
+          accent: "لون التمييز",
+        },
+        "preview-note":
+          'عرض التغييرات في جميع أنحاء التطبيق، ويتم حفظها عند النقر على "تم".',
+        done: "تم",
+        cancel: "إلغاء",
+        enforce: "فرض لوحة الألوان الافتراضية",
+        "enforce-description":
+          "يستخدم الجميع في هذا المثيل لوحة الألوان الافتراضية ولا يمكنهم تغييرها.",
+        "save-failed": "فشل حفظ مجموعات الألوان: {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1409,6 +1465,35 @@ const TRANSLATIONS = {
       uploadDocument: "تحميل مستند",
     },
     greeting: "كيف يمكنني مساعدتك اليوم؟",
+    greetings: {
+      anytime: {
+        working_on: "على ماذا نعمل؟",
+        on_your_mind: "ما الذي يدور في ذهنك؟",
+        where_to_start: "من أين نبدأ؟",
+        ready: "جاهز متى كنت مستعدًا.",
+        think_it_through: "لنفكّر في الأمر جيدًا.",
+      },
+      morning: {
+        good_morning: "صباح الخير",
+        first_today: "صباح الخير. بماذا نبدأ اليوم؟",
+        fresh_start: "بداية جديدة. من أين نبدأ؟",
+      },
+      afternoon: {
+        good_afternoon: "طاب يومك",
+        tackling: "طاب يومك. ما الذي سننجزه؟",
+        next_on_list: "ما التالي في القائمة؟",
+        keep_moving: "لنواصل التقدّم.",
+      },
+      evening: {
+        good_evening: "مساء الخير",
+        finish_strong: "مساء الخير. لننهِ يومنا بقوة.",
+      },
+      night: {
+        midnight_oil: "تسهر على العمل؟",
+        late_one: "ليلة طويلة؟ لنفكّر في الأمر جيدًا.",
+        still_up: "ما زلت مستيقظًا؟ جاهز متى كنت مستعدًا.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "اختصارات لوحة المفاتيح",
@@ -1825,7 +1910,7 @@ const TRANSLATIONS = {
       "calculated-single-condition":
         'إذا كانت <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>، فقم بتوجيهها إلى <route>{{route}}</route>',
       "calculated-multi-condition":
-        "إذا كان {{quantifier}} من <cond>، فإن المسار يجب أن يكون إلى <route>، {{route}}، </route>",
+        "إذا تحقق {{quantifier}} من <cond>{{conditions}}</cond>، فقم بتوجيهها إلى <route>{{route}}</route>",
       "comparator-contains": "يحتوي على",
       "comparator-matches": "المباريات",
       "comparator-between": "بين",

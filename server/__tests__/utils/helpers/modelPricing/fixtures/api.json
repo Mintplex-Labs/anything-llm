@@ -6,21 +6,71 @@
       "gpt-4o": {
         "id": "gpt-4o",
         "name": "GPT-4o",
-        "cost": { "input": 2.5, "output": 10 }
+        "cost": {
+          "input": 2.5,
+          "output": 10
+        },
+        "reasoning": false
       },
       "gpt-4o-mini": {
         "id": "gpt-4o-mini",
         "name": "GPT-4o mini",
-        "cost": { "input": 0.15, "output": 0.6, "cache_read": 0.075 }
+        "cost": {
+          "input": 0.15,
+          "output": 0.6,
+          "cache_read": 0.075
+        }
       },
       "gpt-oss-free": {
         "id": "gpt-oss-free",
         "name": "Free model",
-        "cost": { "input": 0, "output": 0 }
+        "cost": {
+          "input": 0,
+          "output": 0
+        }
       },
       "gpt-subscription-only": {
         "id": "gpt-subscription-only",
-        "name": "No published pricing"
+        "name": "No published pricing",
+        "reasoning": true,
+        "reasoning_options": [
+          {
+            "type": "effort",
+            "values": [
+              "low",
+              "high"
+            ]
+          }
+        ]
+      },
+      "gpt-Reasoner": {
+        "id": "gpt-Reasoner",
+        "name": "Reasoning model",
+        "cost": {
+          "input": 1,
+          "output": 4
+        },
+        "reasoning": true,
+        "reasoning_options": [
+          {
+            "type": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ]
+      },
+      "gpt-reasoning-flag-only": {
+        "id": "gpt-reasoning-flag-only",
+        "name": "Reasoning without options",
+        "cost": {
+          "input": 1,
+          "output": 4
+        },
+        "reasoning": true
       }
     }
   },
@@ -38,11 +88,25 @@
             {
               "input": 2.5,
               "output": 15,
-              "tier": { "type": "context", "size": 200000 }
+              "tier": {
+                "type": "context",
+                "size": 200000
+              }
             }
           ],
-          "context_over_200k": { "input": 2.5, "output": 15 }
-        }
+          "context_over_200k": {
+            "input": 2.5,
+            "output": 15
+          }
+        },
+        "reasoning": true,
+        "reasoning_options": [
+          {
+            "type": "budget_tokens",
+            "min": 128,
+            "max": 32768
+          }
+        ]
       },
       "gemini-legacy-200k": {
         "id": "gemini-legacy-200k",
@@ -50,7 +114,10 @@
         "cost": {
           "input": 1,
           "output": 5,
-          "context_over_200k": { "input": 2, "output": 10 }
+          "context_over_200k": {
+            "input": 2,
+            "output": 10
+          }
         }
       },
       "gemini-garbage-tiers": {
@@ -62,8 +129,19 @@
           "tiers": [
             null,
             "junk",
-            { "tier": { "type": "context" } },
-            { "input": 99, "output": 99, "tier": { "type": "other", "size": 0 } }
+            {
+              "tier": {
+                "type": "context"
+              }
+            },
+            {
+              "input": 99,
+              "output": 99,
+              "tier": {
+                "type": "other",
+                "size": 0
+              }
+            }
           ]
         }
       },
@@ -76,7 +154,10 @@
           "tiers": [
             {
               "input": "not-a-number",
-              "tier": { "type": "context", "size": 10 }
+              "tier": {
+                "type": "context",
+                "size": 10
+              }
             }
           ]
         }
@@ -90,12 +171,18 @@
       "anthropic.claude-sonnet-4-5-20250929-v1:0": {
         "id": "anthropic.claude-sonnet-4-5-20250929-v1:0",
         "name": "Claude Sonnet 4.5",
-        "cost": { "input": 3, "output": 15 }
+        "cost": {
+          "input": 3,
+          "output": 15
+        }
       },
       "eu.anthropic.claude-sonnet-4-5-20250929-v1:0": {
         "id": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
         "name": "Claude Sonnet 4.5 (EU)",
-        "cost": { "input": 3.3, "output": 16.5 }
+        "cost": {
+          "input": 3.3,
+          "output": 16.5
+        }
       }
     }
   },
@@ -106,7 +193,10 @@
       "anthropic/claude-sonnet-4.5": {
         "id": "anthropic/claude-sonnet-4.5",
         "name": "Claude Sonnet 4.5",
-        "cost": { "input": 3, "output": 15 }
+        "cost": {
+          "input": 3,
+          "output": 15
+        }
       }
     }
   },

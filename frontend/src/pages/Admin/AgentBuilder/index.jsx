@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
+import { v4 } from "uuid";
 
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
@@ -129,7 +130,7 @@ export default function AgentBuilder() {
 
   const addBlock = (type) => {
     const newBlock = {
-      id: `block_${blocks.length}`,
+      id: `block_${v4()}`,
       type,
       config: { ...BLOCK_INFO[type].defaultConfig },
       isExpanded: true,

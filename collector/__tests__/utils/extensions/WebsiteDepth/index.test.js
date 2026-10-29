@@ -22,6 +22,18 @@ jest.mock("../../../../utils/files", () => {
   };
 });
 
+// Treat .pdf links as files, everything else as web pages
+jest.mock("../../../../processLink/helpers", () => ({
+  ...jest.requireActual("../../../../processLink/helpers"),
+  determineContentType: jest.fn(async (url) => ({
+    processVia: url.endsWith(".pdf") ? "file" : "web",
+  })),
+  processAsFile: jest.fn(async () => ({
+    success: true,
+    content: "pdf content",
+  })),
+}));
+
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -29,6 +41,7 @@ const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../../../utils/files");
+const { processAsFile } = require("../../../../processLink/helpers");
 const websiteScraper = require("../../../../utils/extensions/WebsiteDepth");
 const { extractLinks } = websiteScraper;
 
@@ -145,11 +158,13 @@ describe("WebsiteDepth extractLinks scope", () => {
     ).toEqual(["https://example.com/docs/Upper"]);
   });
 
-  it("keeps query strings and fragments on in-scope links", () => {
-    const html = '<a href="/docs/guide?page=2#install">in</a>';
+  it("keeps query strings but drops fragments on in-scope links", () => {
+    const html =
+      '<a href="/docs/guide?page=2#install">in</a>' +
+      '<a href="/docs/guide?page=2#usage">in</a>';
     expect(
       extractLinks(html, new URL("https://example.com/docs/page"))
-    ).toEqual(["https://example.com/docs/guide?page=2#install"]);
+    ).toEqual(["https://example.com/docs/guide?page=2"]);
   });
 });
 
@@ -267,6 +282,29 @@ describe("WebsiteDepth websiteScraper", () => {
     );
   });
 
+  it("resolves child-page relative links while keeping the start page's scope", async () => {
+    mockSite({
+      "https://example.com/docs/index.html":
+        '<a href="guide/intro.html">Guide</a>',
+      "https://example.com/docs/guide/intro.html":
+        '<a href="install.html">Install</a><a href="../api/index.html">API</a>',
+      "https://example.com/docs/guide/install.html": "install content",
+      "https://example.com/docs/api/index.html": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/index.html",
+      2
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/index.html",
+      "link://https://example.com/docs/guide/intro.html",
+      "link://https://example.com/docs/guide/install.html",
+      "link://https://example.com/docs/api/index.html",
+    ]);
+  });
+
   it("stops discovering once maxLinks is reached", async () => {
     mockSite({
       "https://example.com/docs/page":
@@ -282,6 +320,45 @@ describe("WebsiteDepth websiteScraper", () => {
 
     // The start URL counts toward the cap, leaving room for two links.
     expect(scraped).toHaveLength(3);
+  });
+
+  it("does not spend maxLinks on #fragment links to pages already found", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="#usage">u</a>' +
+        '<a href="/docs/api">a</a><a href="/docs/api#auth">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page", 1, 3);
+
+    // The in-page anchors are the start page itself, so the cap of 3 still
+    // has room for /docs/api, and each page is loaded and stored only once.
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
+    expect(fetchedUrls().filter((url) => url.includes("#"))).toEqual([]);
+    expect(writeToServerDocuments).toHaveBeenCalledTimes(2);
+  });
+
+  it("scrapes the start page once when the start URL has a #fragment", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="#install">i</a><a href="/docs/api">a</a>',
+      "https://example.com/docs/api": "api content",
+    });
+
+    const scraped = await websiteScraper(
+      "https://example.com/docs/page#intro",
+      1,
+      3
+    );
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/api",
+    ]);
   });
 
   it("skips a page that fails to load without aborting the crawl", async () => {
@@ -300,6 +377,24 @@ describe("WebsiteDepth websiteScraper", () => {
     ]);
   });
 
+  it("stores pages whose path cannot be percent-decoded", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="/docs/50%-off">d</a><a href="/docs/caf%E9">c</a>',
+      "https://example.com/docs/50%-off": "deal content",
+      "https://example.com/docs/caf%E9": "menu content",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/50%-off",
+      "link://https://example.com/docs/caf%E9",
+    ]);
+    expect(writeToServerDocuments).toHaveBeenCalledTimes(3);
+  });
+
   it("skips pages whose scraped content is empty", async () => {
     mockSite({
       "https://example.com/docs/page": '<a href="/docs/empty">e</a>',
@@ -312,6 +407,51 @@ describe("WebsiteDepth websiteScraper", () => {
       "link://https://example.com/docs/page",
     ]);
     expect(writeToServerDocuments).toHaveBeenCalledTimes(1);
+  });
+
+  it("writes pages that differ only by query string or non-Latin path to separate files with distinct titles", async () => {
+    mockSite({
+      "https://example.com/docs/page":
+        '<a href="/docs/item?id=1">1</a><a href="/docs/item?id=2">2</a>' +
+        '<a href="/docs/%E5%8C%97%E4%BA%AC">b</a><a href="/docs/%E4%B8%8A%E6%B5%B7">s</a>',
+      "https://example.com/docs/item?id=1": "item one",
+      "https://example.com/docs/item?id=2": "item two",
+      "https://example.com/docs/%E5%8C%97%E4%BA%AC": "beijing",
+      "https://example.com/docs/%E4%B8%8A%E6%B5%B7": "shanghai",
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(scraped).toHaveLength(5);
+    const filenames = writeToServerDocuments.mock.calls.map(
+      ([args]) => args.filename
+    );
+    expect(new Set(filenames).size).toBe(5);
+    expect(scraped.map((doc) => doc.title).sort()).toEqual([
+      "example.com_docs_item?id=1.html",
+      "example.com_docs_item?id=2.html",
+      "example.com_docs_page.html",
+      "example.com_docs_上海.html",
+      "example.com_docs_北京.html",
+    ]);
+  });
+
+  it("parses file links with the file converters instead of the browser", async () => {
+    mockSite({
+      "https://example.com/docs/page": '<a href="/docs/manual.pdf">pdf</a>',
+    });
+
+    const scraped = await websiteScraper("https://example.com/docs/page");
+
+    expect(processAsFile).toHaveBeenCalledWith(
+      expect.objectContaining({ uri: "https://example.com/docs/manual.pdf" })
+    );
+    expect(fetchedUrls()).not.toContain("https://example.com/docs/manual.pdf");
+    expect(scraped.map((d) => d.chunkSource)).toEqual([
+      "link://https://example.com/docs/page",
+      "link://https://example.com/docs/manual.pdf",
+    ]);
+    expect(scraped[1].pageContent).toBe("pdf content");
   });
 
   it("survives a start page that cannot be loaded at all", async () => {

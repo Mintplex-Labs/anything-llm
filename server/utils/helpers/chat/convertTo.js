@@ -3,6 +3,8 @@
 
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { EmbedChats } = require("../../../models/embedChats");
+const { Workspace } = require("../../../models/workspace");
+const { EmbedConfig } = require("../../../models/embedConfig");
 const { safeJsonParse } = require("../../http");
 const { SystemSettings } = require("../../../models/systemSettings");
 
@@ -115,6 +117,27 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
     return preparedData;
   }
 
+  // Chat rows only carry the workspace name; look up its prompt and id once.
+  const workspaces = {};
+  const chatsWithWorkspace = [];
+  for (const chat of chats) {
+    const key = chatType === "embed" ? chat.embed_id : chat.workspaceId;
+    if (!(key in workspaces)) {
+      workspaces[key] =
+        chatType === "embed"
+          ? (await EmbedConfig.getWithWorkspace({ id: chat.embed_id }))
+              ?.workspace
+          : await Workspace.get({ id: chat.workspaceId });
+    }
+    const workspace = workspaces[key];
+    chatsWithWorkspace.push({
+      ...chat,
+      workspace,
+      workspaceId: workspace?.id ?? chat.workspaceId,
+    });
+  }
+  chats = chatsWithWorkspace;
+
   // jsonAlpaca format does not support array outputs
   if (format === "jsonAlpaca") {
     const preparedData = chats.map((chat) => {
@@ -210,6 +233,8 @@ const exportMap = {
 
 function escapeCsv(str) {
   if (str === null || str === undefined) return '""';
+  // Prefix formula-leading characters so spreadsheets treat the cell as text (CWE-1236).
+  if (/^[=+\-@\t\r]/.test(str)) str = `'${str}`;
   return `"${str.replace(/"/g, '""').replace(/\n/g, " ")}"`;
 }
 

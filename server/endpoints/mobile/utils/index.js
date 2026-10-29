@@ -33,6 +33,7 @@ async function handleMobileCommand(request, response) {
         prisma.workspace_chats.count({
           where: {
             workspaceId: workspace.id,
+            thread_id: { not: null }, // the app only imports chats that belong to a thread
             include: true,
             ...(user ? { user_id: user.id } : {}),
           },
@@ -108,8 +109,8 @@ async function handleMobileCommand(request, response) {
 
     if (!workspace)
       return response.status(400).json({ error: "Workspace not found" });
-    // A threadSlug that does not resolve falls through to the default thread
-    // (threadId null), matching how stream-chat handles an unknown slug.
+    // No threadSlug is the default thread (threadId null) - older mobile clients rely on that.
+    // A threadSlug that does not resolve is rejected so a stale slug never resets the default thread.
     let threadId = null;
     if (threadSlug) {
       const thread = await prisma.workspace_threads.findFirst({
@@ -119,7 +120,9 @@ async function handleMobileCommand(request, response) {
           ...(user ? { user_id: user.id } : {}),
         },
       });
-      threadId = thread?.id ?? null;
+      if (!thread)
+        return response.status(404).json({ error: "Thread not found" });
+      threadId = thread.id;
     }
 
     await WorkspaceChats.markThreadHistoryInvalidV2({
@@ -164,6 +167,9 @@ async function handleMobileCommand(request, response) {
           },
         })
       : null;
+    // Same contract as reset-chat: no threadSlug is the default thread, an unknown one is rejected.
+    if (threadSlug && !thread)
+      return response.status(404).json({ error: "Thread not found" });
 
     response.setHeader("Cache-Control", "no-cache");
     response.setHeader("Content-Type", "text/event-stream");

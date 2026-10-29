@@ -82,13 +82,16 @@ async function processDocumentAttachments(attachments = []) {
       const filename = sanitizeFileName(
         normalizePath(attachment.name || `attachment-${uuidv4()}`)
       );
-      const filePath = normalizePath(path.join(hotdirPath, filename));
+      const hotdirFilename = `${uuidv4().split("-")[0]}-${filename}`;
+      const filePath = normalizePath(path.join(hotdirPath, hotdirFilename));
       if (!isWithin(hotdirPath, filePath))
         throw new Error(`Invalid file path for attachment ${filename}`);
       fs.writeFileSync(filePath, buffer);
 
-      const { success, reason, documents } =
-        await Collector.parseDocument(filename);
+      const { success, reason, documents } = await Collector.parseDocument(
+        hotdirFilename,
+        { originalFilename: filename }
+      );
       if (success && documents?.length > 0) parsedDocuments.push(...documents);
       else console.warn(`Failed to parse attachment ${filename}:`, reason);
     } catch (error) {
@@ -178,6 +181,12 @@ async function chatSync({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
+  // Document attachments are parsed to text up front so agent and normal chats
+  // both receive their contents as context, leaving only images as attachments.
+  const { parsedDocuments, imageAttachments } =
+    await processDocumentAttachments(attachments);
+  attachments = imageAttachments;
+
   if (
     await EphemeralAgentHandler.isAgentInvocation({
       message,
@@ -197,6 +206,7 @@ async function chatSync({
       threadId: thread?.id || null,
       sessionId,
       attachments,
+      parsedDocuments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -330,10 +340,7 @@ async function chatSync({
       });
     });
 
-  const processedAttachments = await processDocumentAttachments(attachments);
-  const parsedAttachments = processedAttachments.parsedDocuments;
-  attachments = processedAttachments.imageAttachments;
-  parsedAttachments.forEach((doc) => {
+  parsedDocuments.forEach((doc) => {
     if (doc.pageContent) {
       contextTexts.push(doc.pageContent);
       const { pageContent, ...metadata } = doc;
@@ -447,7 +454,6 @@ async function chatSync({
   // Send the text completion.
   const { textResponse, metrics: completionMetrics } =
     await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
   const performanceMetrics = addChatCostToMetrics(completionMetrics, {
@@ -554,6 +560,12 @@ async function streamChat({
   const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
+  // Document attachments are parsed to text up front so agent and normal chats
+  // both receive their contents as context, leaving only images as attachments.
+  const { parsedDocuments, imageAttachments } =
+    await processDocumentAttachments(attachments);
+  attachments = imageAttachments;
+
   if (
     await EphemeralAgentHandler.isAgentInvocation({
       message,
@@ -573,6 +585,7 @@ async function streamChat({
       threadId: thread?.id || null,
       sessionId,
       attachments,
+      parsedDocuments,
     });
 
     // Establish event listener that emulates websocket calls
@@ -718,10 +731,7 @@ async function streamChat({
       });
     });
 
-  const processedAttachments = await processDocumentAttachments(attachments);
-  const parsedAttachments = processedAttachments.parsedDocuments;
-  attachments = processedAttachments.imageAttachments;
-  parsedAttachments.forEach((doc) => {
+  parsedDocuments.forEach((doc) => {
     if (doc.pageContent) {
       contextTexts.push(doc.pageContent);
       const { pageContent, ...metadata } = doc;
@@ -841,7 +851,6 @@ async function streamChat({
     );
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
-        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
       });
     completeText = textResponse;
@@ -861,7 +870,6 @@ async function streamChat({
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
     });
     completeText = await LLMConnector.handleStream(response, stream, { uuid });

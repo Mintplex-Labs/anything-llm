@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class LocalAiLLM {
   /** @see LocalAiLLM.cacheContextWindows */
@@ -24,7 +27,6 @@ class LocalAiLLM {
     this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
     this.limits = null;
@@ -81,30 +83,86 @@ class LocalAiLLM {
       });
       if (!models.length) return;
 
-      // The VRAM-estimate endpoint returns the resolved context_length for a
-      // loaded model, including values auto-detected from GGUF metadata that
-      // never appear in the static config JSON.
+      // /v1/models/capabilities reports the resolved context_size (and the
+      // capabilities/modalities) of each model. Older LocalAI versions do not
+      // have it, so those fall back to the VRAM-estimate endpoint, which
+      // returns the context_length auto-detected from GGUF metadata.
+      const capabilities = await LocalAiLLM.#fetchModelCapabilities();
+      const needsEstimate = models.filter(
+        ({ id }) => !capabilities.find((m) => m.id === id)?.context_size
+      );
       const estimates = await Promise.all(
-        models.map(({ id }) =>
+        needsEstimate.map(({ id }) =>
           fetch(`${origin}/api/models/vram-estimate`, {
             method: "POST",
             headers: { ...headers, "Content-Type": "application/json" },
             body: JSON.stringify({ model: id }),
           })
             .then((res) => (res.ok ? res.json() : {}))
-            .then((est) => ({ id, ...est }))
+            .then((est) => ({ id, context_size: est.context_length }))
             .catch(() => ({ id }))
         )
       );
-      estimates.forEach(({ id, context_length }) => {
-        if (!context_length) return;
-        LocalAiLLM.modelContextWindows[id] = Number(context_length);
+      [...capabilities, ...estimates].forEach(({ id, context_size }) => {
+        if (!context_size) return;
+        LocalAiLLM.modelContextWindows[id] = Number(context_size);
       });
       LocalAiLLM.#slog(`Context windows cached for all models!`);
     } catch (e) {
       LocalAiLLM.#slog(`Error caching context windows`, e);
       return;
     }
+  }
+
+  /**
+   * Fetch the per-model capabilities LocalAI exposes.
+   * @see https://localai.io/docs/features/api-discovery/#model-capabilities
+   * @returns {Promise<{id: string, capabilities?: string[], input_modalities?: string[], context_size?: number}[]>}
+   * Empty when the endpoint is unavailable (older LocalAI versions).
+   */
+  static async #fetchModelCapabilities() {
+    try {
+      const apiKey = process.env.LOCAL_AI_API_KEY ?? null;
+      const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
+      const { origin } = new URL(process.env.LOCAL_AI_BASE_PATH);
+      const res = await fetch(`${origin}/v1/models/capabilities`, { headers });
+      if (!res.ok) return [];
+      const { data = [] } = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * LocalAI reports usecase strings (`chat`, `vision`, `tools`, `thinking`, ...)
+   * and the input modalities per model on /v1/models/capabilities.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    const unknown = {
+      tools: "unknown",
+      reasoning: "unknown",
+      reasoningOptions: [],
+      imageGeneration: "unknown",
+      vision: "unknown",
+    };
+    const model = (await LocalAiLLM.#fetchModelCapabilities()).find(
+      ({ id }) => id === this.model
+    );
+    if (!model) return unknown;
+
+    const capabilities = model.capabilities ?? [];
+    return {
+      tools: capabilities.includes("tools"),
+      reasoning: capabilities.includes("thinking"),
+      reasoningOptions: [],
+      imageGeneration: capabilities.includes("image"),
+      vision:
+        capabilities.includes("vision") ||
+        (model.input_modalities ?? []).includes("image"),
+    };
   }
 
   #appendContext(contextTexts = []) {
@@ -205,7 +263,10 @@ class LocalAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `LocalAI chat: ${this.model} is not valid for chat completion!`
@@ -215,7 +276,7 @@ class LocalAiLLM {
       this.openai.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -245,7 +306,10 @@ class LocalAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `LocalAi chat: ${this.model} is not valid for chat completion!`
@@ -257,7 +321,7 @@ class LocalAiLLM {
         stream: true,
         stream_options: { include_usage: true },
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: false,

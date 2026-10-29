@@ -51,7 +51,7 @@ class CollectorApi {
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
-    this.endpoint = `http://0.0.0.0:${CollectorApi.getCollectorPort()}`;
+    this.endpoint = `http://127.0.0.1:${CollectorApi.getCollectorPort()}`;
   }
 
   log(text, ...args) {
@@ -107,15 +107,20 @@ class CollectorApi {
    * - Will append the options and optional metadata to the request body
    * @param {string} filename - The filename of the document to process
    * @param {Object} metadata - Optional metadata key:value pairs
+   * @param {Object} processOptions - Additional options for processing
+   * @param {string} processOptions.originalFilename - The user-facing filename when `filename` is a unique hotdir name
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processDocument(filename = "", metadata = {}) {
+  async processDocument(filename = "", metadata = {}, processOptions = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
       metadata,
-      options: this.#attachOptions(),
+      options: {
+        ...this.#attachOptions(),
+        originalFilename: processOptions.originalFilename || null,
+      },
     });
 
     return await fetch(`${this.endpoint}/process`, {
@@ -327,6 +332,7 @@ class CollectorApi {
    * @param {string} filename - The filename of the document to parse
    * @param {Object} parseOptions - Additional options for parsing
    * @param {string} parseOptions.absolutePath - If provided, use this absolute path instead of looking in the hotdir
+   * @param {string} parseOptions.originalFilename - The user-facing filename when `filename` is a unique hotdir name
    * @returns {Promise<Object>} - The response from the collector API
    */
   async parseDocument(filename = "", parseOptions = {}) {
@@ -337,6 +343,7 @@ class CollectorApi {
       options: {
         ...this.#attachOptions(),
         absolutePath: parseOptions.absolutePath || null,
+        originalFilename: parseOptions.originalFilename || null,
       },
     });
 

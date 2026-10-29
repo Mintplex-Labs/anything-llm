@@ -9,11 +9,17 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 const RuntimeSettings = require("../../runtimeSettings");
+const { decodePathname } = require("../../url");
+const { scrapeGenericUrl } = require("../../../processLink/convert/generic");
+const { determineContentType } = require("../../../processLink/helpers");
 
 async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   const baseUrl = new URL(startUrl);
-  const discoveredLinks = new Set([startUrl]);
-  let queue = [[startUrl, 0]]; // [url, currentDepth]
+  // Matches extractLinks, so in-page anchors resolve to the start page itself.
+  baseUrl.hash = "";
+  const startHref = baseUrl.href;
+  const discoveredLinks = new Set([startHref]);
+  let queue = [[startHref, 0]]; // [url, currentDepth]
   const scrapedUrls = new Set();
 
   for (let currentDepth = 0; currentDepth < maxDepth; currentDepth++) {
@@ -47,6 +53,10 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
 
 async function getPageLinks(url, baseUrl) {
   try {
+    // Files have no links to follow, skip opening them in the browser
+    const { processVia } = await determineContentType(url);
+    if (processVia !== "web") return [];
+
     const runtimeSettings = new RuntimeSettings();
     /** @type {import('puppeteer').PuppeteerLaunchOptions} */
     let launchConfig = { headless: "new" };
@@ -78,7 +88,7 @@ async function getPageLinks(url, baseUrl) {
     });
     const docs = await loader.load();
     const html = docs[0].pageContent;
-    const links = extractLinks(html, baseUrl);
+    const links = extractLinks(html, baseUrl, new URL(url));
     return links;
   } catch (error) {
     console.error(`Failed to get page links from ${url}.`, error);
@@ -86,7 +96,7 @@ async function getPageLinks(url, baseUrl) {
   }
 }
 
-function extractLinks(html, baseUrl) {
+function extractLinks(html, baseUrl, pageUrl = baseUrl) {
   const root = parse(html);
   const links = root.querySelectorAll("a");
   const extractedLinks = new Set();
@@ -107,7 +117,7 @@ function extractLinks(html, baseUrl) {
     // extraction of the page's remaining links.
     let absoluteUrl;
     try {
-      absoluteUrl = new URL(href, baseUrl.href);
+      absoluteUrl = new URL(href, pageUrl.href);
     } catch {
       continue;
     }
@@ -118,6 +128,7 @@ function extractLinks(html, baseUrl) {
         absoluteUrl.pathname === scopePath ||
         absoluteUrl.pathname.startsWith(`${scopePath}/`));
     if (inScope) {
+      absoluteUrl.hash = "";
       extractedLinks.add(absoluteUrl.href);
     }
   }
@@ -151,35 +162,44 @@ async function bulkScrapePages(links, outFolderPath) {
     console.log(`Scraping ${i + 1}/${links.length}: ${link}`);
 
     try {
-      const loader = new PuppeteerWebBaseLoader(link, {
-        launchOptions: {
-          headless: launchConfig.headless,
-          ignoreHTTPSErrors: true,
-          args: runtimeSettings.get("browserLaunchArgs"),
-        },
-        gotoOptions: { waitUntil: "networkidle2" },
-        async evaluate(page, browser) {
-          const result = await page.evaluate(() => document.body.innerText);
-          await browser.close();
-          return result;
-        },
-      });
-      const docs = await loader.load();
-      const content = docs[0].pageContent;
+      let content;
+      const { processVia } = await determineContentType(link);
+      if (processVia === "web") {
+        const loader = new PuppeteerWebBaseLoader(link, {
+          launchOptions: {
+            headless: launchConfig.headless,
+            ignoreHTTPSErrors: true,
+            args: runtimeSettings.get("browserLaunchArgs"),
+          },
+          gotoOptions: { waitUntil: "networkidle2" },
+          async evaluate(page, browser) {
+            const result = await page.evaluate(() => document.body.innerText);
+            await browser.close();
+            return result;
+          },
+        });
+        const docs = await loader.load();
+        content = docs[0].pageContent;
+      } else {
+        // Puppeteer can't read files, parse them with the file converters
+        ({ content } = await scrapeGenericUrl({ link, saveAsDocument: false }));
+      }
 
-      if (!content.length) {
+      if (!content?.length) {
         console.warn(`Empty content for ${link}. Skipping.`);
         continue;
       }
 
       const url = new URL(link);
-      const decodedPathname = decodeURIComponent(url.pathname);
+      const decodedPathname = decodePathname(url.pathname);
       const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
 
       const data = {
         id: v4(),
         url: "file://" + slugify(filename) + ".html",
-        title: slugify(filename) + ".html",
+        // Unslugified so pages that differ only by query string or by
+        // non-Latin path segments stay distinguishable in the document picker.
+        title: `${filename}${url.search}.html`,
         docAuthor: "no author found",
         description: "No description found.",
         docSource: "URL link uploaded by the user.",
@@ -192,7 +212,7 @@ async function bulkScrapePages(links, outFolderPath) {
 
       writeToServerDocuments({
         data,
-        filename: data.title,
+        filename: `${slugify(filename)}-${data.id}`,
         destinationOverride: outFolderPath,
       });
       scrapedData.push(data);

@@ -1,3 +1,46 @@
+const FENCE_OPEN = /^[ \t]*(`{3,}|~{3,})(.*)$/;
+
+/**
+ * Replace each fenced code block that has a closing fence line with
+ * `replace(code)`. A block opens on a ``` or ~~~ line (a backtick fence's info
+ * string cannot contain a backtick) and closes on a line holding only a run of
+ * the same character that is at least as long, as in CommonMark. So ~~~ fences
+ * work, an info string such as `c++` stays out of the code, and a ```` fence
+ * can show a ``` example. Unclosed fences are left for the caller.
+ *
+ * @param {string} text
+ * @param {(code: string) => string} replace
+ * @returns {string}
+ */
+function replaceFencedCodeBlocks(text, replace) {
+  const lines = text.split("\n");
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    // A CRLF line keeps its \r after the split; `.` does not match it.
+    const open = lines[i].replace(/\r$/, "").match(FENCE_OPEN);
+    if (open && !(open[1][0] === "`" && open[2].includes("`"))) {
+      const fence = open[1];
+      let close = -1;
+      for (let j = i + 1; j < lines.length; j++) {
+        const run = lines[j].trim();
+        if (run.length >= fence.length && run === fence[0].repeat(run.length)) {
+          close = j;
+          break;
+        }
+      }
+      if (close !== -1) {
+        out.push(replace(lines.slice(i + 1, close).join("\n")));
+        i = close + 1;
+        continue;
+      }
+    }
+    out.push(lines[i]);
+    i++;
+  }
+  return out.join("\n");
+}
+
 /**
  * Convert standard markdown to Telegram HTML format.
  * Telegram HTML supports: <b>, <i>, <u>, <s>, <code>, <pre>, <a href="">, <tg-spoiler>
@@ -20,6 +63,7 @@ function markdownToTelegram(
   const codeBlocks = [];
   const inlineCode = [];
   const thinkBlocks = [];
+  const links = [];
 
   // Handle <think> blocks - including partial tags from split messages
   // Process complete blocks first, then handle partials
@@ -61,12 +105,17 @@ function markdownToTelegram(
     });
   }
 
-  // Extract fenced code blocks (```...```)
-  result = result.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+  // Extract fenced code blocks: first every ``` / ~~~ block that has a closing
+  // fence line, then one-line ```code``` and anything left unmatched.
+  const saveCodeBlock = (code) => {
     const placeholder = `\x00CODEBLOCK${codeBlocks.length}\x00`;
     codeBlocks.push(`<pre>${escapeHTML(code.trimEnd())}</pre>`);
     return placeholder;
-  });
+  };
+  result = replaceFencedCodeBlocks(result, saveCodeBlock);
+  result = result.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
+    saveCodeBlock(code)
+  );
 
   // Extract and convert markdown tables to preformatted text
   result = result.replace(
@@ -89,6 +138,17 @@ function markdownToTelegram(
   // Escape HTML in remaining text
   if (escapeHtml) result = escapeHTML(result);
 
+  // Convert links before emphasis so markdown characters in the URL (eg: `__init__`)
+  // are left alone. The URL may contain balanced parentheses (eg: Wikipedia links).
+  result = result.replace(
+    /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))+)\)/g,
+    (_, label, url) => {
+      const placeholder = `\x00LINK${links.length}\x00`;
+      links.push(url);
+      return `<a href="${placeholder}">${label}</a>`;
+    }
+  );
+
   // Convert markdown to HTML (order matters - do bold before italic)
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   result = result.replace(/__(.+?)__/g, "<b>$1</b>");
@@ -98,7 +158,6 @@ function markdownToTelegram(
     "<i>$1</i>"
   );
   result = result.replace(/~~(.+?)~~/g, "<s>$1</s>");
-  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
   result = result.replace(/^&gt;\s*(.+)$/gm, "<i>$1</i>");
   result = result.replace(/^[-*_]{3,}$/gm, "————————————");
   result = result.replace(/^#{1,6}\s+(.+)$/gm, "<b>$1</b>");
@@ -115,6 +174,9 @@ function markdownToTelegram(
   });
   inlineCode.forEach((code, i) => {
     result = result.replace(`\x00INLINECODE${i}\x00`, () => code);
+  });
+  links.forEach((url, i) => {
+    result = result.replace(`\x00LINK${i}\x00`, () => url);
   });
 
   // Close any unclosed HTML tags to prevent Telegram API errors during streaming

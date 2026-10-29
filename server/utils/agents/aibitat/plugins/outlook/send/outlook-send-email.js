@@ -142,10 +142,13 @@ module.exports.OutlookSendEmail = {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
                   payload: isReply
-                    ? { replyToMessageId, replyAll }
+                    ? { replyToMessageId, replyAll, body }
                     : {
                         to,
                         subject,
+                        body,
+                        ...(cc ? { cc } : {}),
+                        ...(bcc ? { bcc } : {}),
                         attachmentCount: preparedAttachments.length,
                       },
                   description,
@@ -166,7 +169,8 @@ module.exports.OutlookSendEmail = {
                 result = await outlookLib.replyToMessage(
                   replyToMessageId,
                   body,
-                  replyAll
+                  replyAll,
+                  { attachments: preparedAttachments }
                 );
               } else {
                 this.super.introspect(

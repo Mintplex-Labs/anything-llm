@@ -422,6 +422,9 @@ function adminEndpoints(app) {
             case "disabled_outlook_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
+            case "disabled_google_calendar_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
@@ -477,6 +480,7 @@ function adminEndpoints(app) {
             "support_email",
             "meta_page_title",
             "meta_page_favicon",
+            "theme_palettes",
           ];
           const filteredUpdates = {};
           for (const key of Object.keys(updates)) {

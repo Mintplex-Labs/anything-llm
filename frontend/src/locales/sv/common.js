@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Arbetsytans namn",
     selection: "Välj modell",
     saving: "Sparar …",
+    saved: "Sparat",
     save: "Spara ändringar",
     previous: "Föregående sida",
     next: "Nästa sida",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "Användarnamnet måste bestå av 2–64 tecken, börja med en liten bokstav och endast innehålla små bokstäver, siffror, understreck, bindestreck och punkter.",
     loading: "Läser in",
     refresh: "Uppdatera",
+    noResults: "Inga resultat hittades",
   },
   home: {
     welcome: "Välkommen",
@@ -145,6 +147,35 @@ const TRANSLATIONS = {
       createAgent: "Skapa en agent",
       editWorkspace: "Redigera arbetsyta",
       uploadDocument: "Ladda upp ett dokument",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Vad arbetar vi med?",
+        on_your_mind: "Vad tänker du på?",
+        where_to_start: "Var ska vi börja?",
+        ready: "Redo när du är.",
+        think_it_through: "Låt oss tänka igenom det.",
+      },
+      morning: {
+        good_morning: "God morgon",
+        first_today: "God morgon. Vad tar vi först i dag?",
+        fresh_start: "En nystart. Var börjar vi?",
+      },
+      afternoon: {
+        good_afternoon: "God eftermiddag",
+        tackling: "God eftermiddag. Vad ska vi ta itu med?",
+        next_on_list: "Vad står näst på listan?",
+        keep_moving: "Vi håller tempot uppe.",
+      },
+      evening: {
+        good_evening: "God kväll",
+        finish_strong: "God kväll. Nu avslutar vi starkt.",
+      },
+      night: {
+        midnight_oil: "Jobbar du sent?",
+        late_one: "Lång kväll? Låt oss tänka igenom det.",
+        still_up: "Fortfarande vaken? Redo när du är.",
+      },
     },
   },
   "new-workspace": {
@@ -254,7 +285,26 @@ const TRANSLATIONS = {
       title: "LLM-temperatur",
       "desc-end":
         "Ju högre värde, desto mer kreativa blir svaren. För vissa modeller kan ett alltför högt värde ge osammanhängande svar.",
+      placeholder: "Leverantörens standard",
     },
+    reasoning_effort: {
+      title: "Resonemangsinsats",
+      default: "Leverantörens standard",
+      cannot_disable: "Den här modellen kan inte stänga av resonemang.",
+      levels: {
+        off: "Av",
+        on: "På",
+        minimal: "Minimal",
+        low: "Låg",
+        medium: "Medel",
+        high: "Hög",
+        xhigh: "Extra hög",
+        max: "Max",
+      },
+    },
+    token_limit_reached:
+      "Svaret uppnådde den maximala tillåtna token-gränsen. Öka modellens maximala antal tillåtna tokens för att möjliggöra längre svar.",
+    no_response: "Modellen kunde inte svara.",
   },
   "vector-workspace": {
     identifier: "Identifierare för vektordatabas",
@@ -798,6 +848,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Varumärke och vitmärkning",
       description: "Vitmärka din AnythingLLM-instans med anpassad profilering.",
+      tabs: {
+        identity: "Identitet",
+        colors: "Färger",
+        sidebar: "Sidopanel",
+        browser: "Webbläsare",
+      },
     },
     chat: {
       title: "Chatt",
@@ -878,6 +934,36 @@ const TRANSLATIONS = {
         title: "Rendera HTML i chatten",
         description:
           "Rendera HTML-svar i assistentens svar.\nDet kan ge avsevärt bättre återgivning, men kan också medföra säkerhetsrisker.",
+      },
+      palette: {
+        title: "Färgpalett",
+        description:
+          "Välj en färgpalett. Den gäller både ljust och mörkt läge.",
+        enforced:
+          "Din administratör har ställt in färgpaletten för den här instansen.",
+        "default-badge": "Standard",
+      },
+      "instance-palettes": {
+        title: "Färgpaletter",
+        description:
+          "Klicka på en palett för att göra den standard för alla på denna instans. Anpassade paletter består av en huvudfärg, som ger en ton till bakgrunden, sidopanelen och innehållet, samt en accentfärg för knappar och länkar.",
+        new: "Ny palett",
+        edit: "Redigera palett",
+        delete: "Ta bort palett",
+        name: "Palettnamn",
+        "name-required": "Ge paletten ett namn.",
+        colors: {
+          main: "Huvudfärg",
+          accent: "Accentfärg",
+        },
+        "preview-note":
+          'Ändringar förhandsgranskas i hela appen och sparas när du klickar på "Klar".',
+        done: "Klar",
+        cancel: "Avbryt",
+        enforce: "Tillämpa standardpaletten",
+        "enforce-description":
+          "Alla på den här instansen använder standardpaletten och kan inte ändra den.",
+        "save-failed": "Misslyckades med att spara färgpaletter: {{error}}",
       },
     },
   },

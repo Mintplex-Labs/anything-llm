@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Numele spațiilor de lucru",
     selection: "Selecția modelului",
     saving: "Se salvează...",
+    saved: "Salvat",
     save: "Salvează modificările",
     previous: "Pagina anterioară",
     next: "Pagina următoare",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Oprit",
     loading: "Încărcare",
     refresh: "Reîmprospătează",
+    noResults: "Nu s-au găsit rezultate",
   },
   settings: {
     title: "Setările instanței",
@@ -139,6 +141,35 @@ const TRANSLATIONS = {
       uploadDocument: "Încărcați un document",
     },
     greeting: "Cu ce vă pot ajuta astăzi?",
+    greetings: {
+      anytime: {
+        working_on: "La ce lucrăm?",
+        on_your_mind: "La ce vă gândiți?",
+        where_to_start: "De unde începem?",
+        ready: "Sunt gata oricând doriți.",
+        think_it_through: "Haideți să ne gândim bine.",
+      },
+      morning: {
+        good_morning: "Bună dimineața",
+        first_today: "Bună dimineața. Cu ce începem azi?",
+        fresh_start: "Un nou început. De unde pornim?",
+      },
+      afternoon: {
+        good_afternoon: "Bună ziua",
+        tackling: "Bună ziua. Ce abordăm?",
+        next_on_list: "Ce urmează pe listă?",
+        keep_moving: "Să mergem mai departe.",
+      },
+      evening: {
+        good_evening: "Bună seara",
+        finish_strong: "Bună seara. Să încheiem în forță.",
+      },
+      night: {
+        midnight_oil: "Lucrați până târziu?",
+        late_one: "O seară lungă? Haideți să ne gândim bine.",
+        still_up: "Încă la lucru? Sunt gata oricând doriți.",
+      },
+    },
   },
   "new-workspace": {
     title: "Spațiu de lucru nou",
@@ -246,7 +277,26 @@ const TRANSLATIONS = {
       title: "Temperatura LLM",
       "desc-end":
         "Cu cât numărul e mai mare, cu atât mai creativ. Pentru unele modele poate duce la răspunsuri incoerente la valori mari.",
+      placeholder: "Valoarea implicită a furnizorului",
     },
+    reasoning_effort: {
+      title: "Efort de raționament",
+      default: "Valoarea implicită a furnizorului",
+      cannot_disable: "Acest model nu poate dezactiva raționamentul.",
+      levels: {
+        off: "Dezactivat",
+        on: "Activat",
+        minimal: "Minim",
+        low: "Scăzut",
+        medium: "Mediu",
+        high: "Ridicat",
+        xhigh: "Foarte ridicat",
+        max: "Maxim",
+      },
+    },
+    token_limit_reached:
+      "Răspunsul a atins limita maximă de token-uri pentru ieșire. Crește numărul maxim de token-uri pe care modelul le poate genera, pentru a permite răspunsuri mai lungi.",
+    no_response: "Modelul nu a putut răspunde.",
   },
   vector: {
     title: "Baza de date vectorială",
@@ -1306,7 +1356,7 @@ const TRANSLATIONS = {
       "start-server": "Pornește serverul MCP",
       "delete-server": "Șterge serverul MCP",
       "tool-count-warning":
-        "Acest server MCP are activate<b> instrumentele menționate</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
+        "Acest server MCP are <b>instrumente activate ({{count}})</b>, care vor consuma context în fiecare sesiune de chat.<br />Luați în considerare dezactivarea instrumentelor nedorite pentru a economisi context.",
       "startup-command": "Comanda de pornire",
       command: "Ordine",
       arguments: "Argumente",
@@ -1370,6 +1420,12 @@ const TRANSLATIONS = {
       title: "Branding & White-labeling",
       description:
         "Personalizează-ți instanța AnythingLLM cu branding personalizat.",
+      tabs: {
+        identity: "Identitate",
+        colors: "Culori",
+        sidebar: "Bară laterală",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -1454,6 +1510,36 @@ const TRANSLATIONS = {
         title: "Dezactivați derularea automată",
         description:
           "Dezactivați derularea automată până la sfârșitul conversației atunci când se primesc mesaje noi.",
+      },
+      palette: {
+        title: "Paletă de culori",
+        description:
+          "Alege o paletă de culori. Aceasta se aplică atât pentru modul luminos, cât și pentru cel întunecat.",
+        enforced:
+          "Administratorul dumneavoastră a stabilit paleta de culori pentru această instanță.",
+        "default-badge": "Implicită",
+      },
+      "instance-palettes": {
+        title: "Palete de culori",
+        description:
+          "Faceți clic pe o paletă pentru a o face implicită pentru toți utilizatorii de pe această instanță. Paletele personalizate includ o culoare principală, care colorează fundalul, bara laterală și conținutul, precum și o culoare accent pentru butoane și link-uri.",
+        new: "Nouă paletă",
+        edit: "Editează paleta",
+        delete: "Șterge paleta",
+        name: "Numele paletei",
+        "name-required": "Dați un nume paletei.",
+        colors: {
+          main: "Culoarea principală",
+          accent: "Culoare de accent",
+        },
+        "preview-note":
+          "Modificările sunt previzualizate în toată aplicația și se salvează când faceți clic pe „Terminat”.",
+        done: "Terminat",
+        cancel: "Anulează",
+        enforce: "Aplică paleta implicită",
+        "enforce-description":
+          "Toți utilizatorii acestei instanțe folosesc paleta implicită și nu o pot modifica.",
+        "save-failed": "Salvarea paletelor de culori a eșuat: {{error}}",
       },
     },
   },

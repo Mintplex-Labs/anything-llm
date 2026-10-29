@@ -369,7 +369,7 @@ const WorkspaceChats = {
         include: data.include,
       };
 
-      const { chat } = await prisma.workspace_chats.upsert({
+      const chat = await prisma.workspace_chats.upsert({
         where: {
           id: Number(chatId),
           user_id: data.user?.id || null,

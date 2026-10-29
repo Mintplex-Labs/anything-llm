@@ -55,6 +55,7 @@ const TRANSLATIONS = {
     "workspaces-name": "نام فضای کار",
     selection: "انتخاب مدل",
     saving: "در حال ذخیره...",
+    saved: "ذخیره شد",
     save: "ذخیره تغییرات",
     previous: "صفحه قبلی",
     next: "صفحه بعدی",
@@ -69,6 +70,7 @@ const TRANSLATIONS = {
     stopped: "متوقف شده",
     loading: "بارگذاری",
     refresh: "تازه‌سازی کردن",
+    noResults: "هیچ نتیجه‌ای یافت نشد",
   },
   settings: {
     title: "تنظیمات سامانه",
@@ -239,7 +241,26 @@ const TRANSLATIONS = {
       title: "دمای LLM",
       "desc-end":
         "هر چه عدد بالاتر باشد، خلاقیت بیشتر است. برای برخی مدل‌ها، تنظیم بسیار بالا می‌تواند منجر به پاسخ‌های نامفهوم شود.",
+      placeholder: "پیش‌فرض ارائه‌دهنده",
     },
+    reasoning_effort: {
+      title: "میزان استدلال",
+      default: "پیش‌فرض ارائه‌دهنده",
+      cannot_disable: "این مدل نمی‌تواند استدلال را خاموش کند.",
+      levels: {
+        off: "خاموش",
+        on: "روشن",
+        minimal: "حداقل",
+        low: "کم",
+        medium: "متوسط",
+        high: "زیاد",
+        xhigh: "خیلی زیاد",
+        max: "حداکثر",
+      },
+    },
+    token_limit_reached:
+      "پاسخ به حداکثر تعداد توکن‌های خروجی رسیده است. برای امکان تولید پاسخ‌های طولانی‌تر، حداکثر تعداد توکن‌های خروجی مدل را افزایش دهید.",
+    no_response: "مدل نتوانست پاسخ دهد.",
   },
   "vector-workspace": {
     identifier: "شناسه پایگاه داده برداری",
@@ -1330,6 +1351,12 @@ const TRANSLATIONS = {
       title: "برندسازی و ارائه خدمات با برچسب سفید",
       description:
         "با استفاده از برندسازی سفارشی، نمونه‌ی AnythingLLM خود را با برچسب سفید (White-label) ارائه دهید.",
+      tabs: {
+        identity: "هویت",
+        colors: "رنگ‌ها",
+        sidebar: "نوار کناری",
+        browser: "مرورگر",
+      },
     },
     chat: {
       title: "چت",
@@ -1409,6 +1436,35 @@ const TRANSLATIONS = {
         description:
           "غیرفعال کردن خودکار شدن اسکرول به انتهای چت هنگام دریافت پیام‌های جدید.",
       },
+      palette: {
+        title: "پالت رنگ",
+        description:
+          "یک پالت رنگی انتخاب کنید. این موضوع برای هر دو حالت روشن و تاریک اعمال می‌شود.",
+        enforced: "مدیر سیستم، پالت رنگی را برای این نمونه تنظیم کرده است.",
+        "default-badge": "پیش‌فرض",
+      },
+      "instance-palettes": {
+        title: "پالت‌های رنگ",
+        description:
+          "برای تعیین این پالت به عنوان پالت پیش‌فرض برای همه در این نمونه، روی یک پالت کلیک کنید. پالت‌های سفارشی شامل یک رنگ اصلی هستند که پس‌زمینه، نوار کناری و محتوا را رنگ‌آمیزی می‌کند، و همچنین یک رنگ برجسته برای دکمه‌ها و لینک‌ها است.",
+        new: "پالت رنگ جدید",
+        edit: "ویرایش پالت",
+        delete: "حذف پالت",
+        name: "نام پالت",
+        "name-required": "یک نام برای این پالت انتخاب کنید.",
+        colors: {
+          main: "رنگ اصلی",
+          accent: "رنگ تأکیدی",
+        },
+        "preview-note":
+          "تغییرات در کل برنامه پیش‌نمایش داده می‌شوند و با کلیک روی «انجام شد» ذخیره می‌شوند.",
+        done: "انجام شد",
+        cancel: "لغو",
+        enforce: "اجرای پالت پیش‌فرض",
+        "enforce-description":
+          "همه در این نمونه از پالت پیش‌فرض استفاده می‌کنند و نمی‌توانند آن را تغییر دهند.",
+        "save-failed": "ذخیره پالت‌های رنگ ناموفق بود: {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1418,6 +1474,35 @@ const TRANSLATIONS = {
       uploadDocument: "بارگذاری یک سند",
     },
     greeting: "امروز چگونه می‌توانم به شما کمک کنم؟",
+    greetings: {
+      anytime: {
+        working_on: "روی چه کاری کار می‌کنیم؟",
+        on_your_mind: "به چه فکر می‌کنید؟",
+        where_to_start: "از کجا شروع کنیم؟",
+        ready: "هر وقت آماده بودید، من آماده‌ام.",
+        think_it_through: "بیایید با دقت فکر کنیم.",
+      },
+      morning: {
+        good_morning: "صبح بخیر",
+        first_today: "صبح بخیر. امروز از چه کاری شروع کنیم؟",
+        fresh_start: "شروعی تازه. از کجا شروع کنیم؟",
+      },
+      afternoon: {
+        good_afternoon: "روز بخیر",
+        tackling: "روز بخیر. سراغ چه کاری برویم؟",
+        next_on_list: "مورد بعدی در فهرست چیست؟",
+        keep_moving: "بیایید ادامه دهیم.",
+      },
+      evening: {
+        good_evening: "عصر بخیر",
+        finish_strong: "عصر بخیر. بیایید کار را خوب تمام کنیم.",
+      },
+      night: {
+        midnight_oil: "تا دیروقت کار می‌کنید؟",
+        late_one: "شب طولانی است؟ بیایید با دقت فکر کنیم.",
+        still_up: "هنوز بیدارید؟ هر وقت آماده بودید، من آماده‌ام.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "کلیدهای میانبر",
@@ -1839,9 +1924,9 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "بدون هیچ شرط – مسیر به سمت <route>{{route}}</route>",
       "calculated-single-condition":
-        'اگر <prop>، {{property}}، </prop>، {{comparator}}، <val>، "{{value}}"، </val> باشد، مسیر را به <route>، {{route}}، </route> تعیین کنید.',
+        'اگر <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> باشد، مسیر را به <route>{{route}}</route> تغییر دهید.',
       "calculated-multi-condition":
-        "اگر {{quantifier}} از نوع <cond> باشد، مسیر را به <route>{{route}}</route> تغییر دهید.",
+        "اگر {{quantifier}} از <cond>{{conditions}}</cond> برقرار باشد، مسیر را به <route>{{route}}</route> تغییر دهید.",
       "comparator-contains": "شامل",
       "comparator-matches": "مسابقات",
       "comparator-between": "بین",

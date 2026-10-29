@@ -6,6 +6,9 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class PrivatemodeLLM {
   static contextWindows = {
@@ -35,7 +38,6 @@ class PrivatemodeLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Privatemode LLM initialized with ${this.model}. ctx: ${this.promptWindowLimit()}`
     );
@@ -140,7 +142,10 @@ class PrivatemodeLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `Privatemode chat: ${this.model} is not valid or defined model for chat completion!`
@@ -150,7 +155,7 @@ class PrivatemodeLLM {
       this.client.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -175,7 +180,10 @@ class PrivatemodeLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `Privatemode chat: ${this.model} is not valid or defined model for chat completion!`
@@ -186,7 +194,7 @@ class PrivatemodeLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: true,

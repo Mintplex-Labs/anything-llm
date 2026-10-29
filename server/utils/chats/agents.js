@@ -35,6 +35,24 @@ function getAndClearInvocationAttachments(uuid) {
   return attachments;
 }
 
+/**
+ * Reasoning effort chosen for the chat session that started an invocation,
+ * kept until AgentHandler picks it up when the websocket connects.
+ * @type {Map<string, string>}
+ */
+const invocationReasoningEffortCache = new Map();
+
+/**
+ * Retrieve and remove the session reasoning effort for an invocation UUID
+ * @param {string} uuid - The invocation UUID
+ * @returns {string|null}
+ */
+function getAndClearInvocationReasoningEffort(uuid) {
+  const reasoningEffort = invocationReasoningEffortCache.get(uuid) ?? null;
+  invocationReasoningEffortCache.delete(uuid);
+  return reasoningEffort;
+}
+
 async function grepAgents({
   uuid,
   response,
@@ -43,6 +61,7 @@ async function grepAgents({
   user = null,
   thread = null,
   attachments = [],
+  reasoningEffort = null,
 }) {
   let nativeToolingEnabled = false;
 
@@ -80,6 +99,8 @@ async function grepAgents({
 
     // Cache attachments for the websocket handler to retrieve later
     cacheInvocationAttachments(newInvocation.uuid, attachments);
+    if (reasoningEffort)
+      invocationReasoningEffortCache.set(newInvocation.uuid, reasoningEffort);
 
     writeResponseChunk(response, {
       id: uuid,
@@ -108,4 +129,8 @@ async function grepAgents({
   return false;
 }
 
-module.exports = { grepAgents, getAndClearInvocationAttachments };
+module.exports = {
+  grepAgents,
+  getAndClearInvocationAttachments,
+  getAndClearInvocationReasoningEffort,
+};

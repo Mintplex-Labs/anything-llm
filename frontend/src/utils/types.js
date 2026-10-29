@@ -1,7 +1,7 @@
 export function castToType(key, value) {
   const definitions = {
     openAiTemp: {
-      cast: (value) => Number(value),
+      cast: (value) => (value === "" ? null : Number(value)),
     },
     openAiHistory: {
       cast: (value) => Number(value),

@@ -51,6 +51,7 @@ const TRANSLATIONS = {
     "workspaces-name": "שם סביבת העבודה",
     selection: "בחירת מודל",
     saving: "שומר...",
+    saved: "נשמר",
     save: "שמור שינויים",
     previous: "עמוד קודם",
     next: "עמוד הבא",
@@ -65,6 +66,7 @@ const TRANSLATIONS = {
     stopped: "עצר",
     loading: "טעינה",
     refresh: "רענן",
+    noResults: "לא נמצאו תוצאות",
   },
   settings: {
     title: "הגדרות מופע",
@@ -135,6 +137,35 @@ const TRANSLATIONS = {
       uploadDocument: "העלה מסמך",
     },
     greeting: "במה אוכל לעזור לך היום?",
+    greetings: {
+      anytime: {
+        working_on: "על מה אנחנו עובדים?",
+        on_your_mind: "מה עובר לך בראש?",
+        where_to_start: "מאיפה נתחיל?",
+        ready: "מוכן כשאתה מוכן.",
+        think_it_through: "בוא נחשוב על זה לעומק.",
+      },
+      morning: {
+        good_morning: "בוקר טוב",
+        first_today: "בוקר טוב. מה הדבר הראשון היום?",
+        fresh_start: "התחלה חדשה. מאיפה מתחילים?",
+      },
+      afternoon: {
+        good_afternoon: "צהריים טובים",
+        tackling: "צהריים טובים. במה נטפל?",
+        next_on_list: "מה הבא ברשימה?",
+        keep_moving: "בוא נמשיך להתקדם.",
+      },
+      evening: {
+        good_evening: "ערב טוב",
+        finish_strong: "ערב טוב. בוא נסיים חזק.",
+      },
+      night: {
+        midnight_oil: "עובדים עד מאוחר?",
+        late_one: "לילה ארוך? בוא נחשוב על זה לעומק.",
+        still_up: "עדיין ער? מוכן כשאתה מוכן.",
+      },
+    },
   },
   "new-workspace": {
     title: "סביבת עבודה חדשה",
@@ -240,7 +271,26 @@ const TRANSLATIONS = {
       title: "טמפרטורת LLM",
       "desc-end":
         "ככל שהמספר גבוה יותר, כך התגובה יצירתית יותר. עבור מודלים מסוימים, הדבר עלול להוביל לתגובות לא קוהרנטיות כאשר הערך גבוה מדי.",
+      placeholder: "ברירת המחדל של הספק",
     },
+    reasoning_effort: {
+      title: "מאמץ חשיבה",
+      default: "ברירת המחדל של הספק",
+      cannot_disable: "מודל זה אינו יכול לכבות את החשיבה.",
+      levels: {
+        off: "כבוי",
+        on: "פעיל",
+        minimal: "מינימלי",
+        low: "נמוך",
+        medium: "בינוני",
+        high: "גבוה",
+        xhigh: "גבוה מאוד",
+        max: "מקסימלי",
+      },
+    },
+    token_limit_reached:
+      "התגובה הגיעה למגבלת מספר הטוקנים המקסימלי. הגדילו את מספר הטוקנים המקסימלי שהמודל יכול להפיק, כדי לאפשר תגובות ארוכות יותר.",
+    no_response: "המודל לא הצליח להגיב.",
   },
   "vector-workspace": {
     identifier: "מזהה מסד נתונים וקטורי",
@@ -773,6 +823,12 @@ const TRANSLATIONS = {
     branding: {
       title: "מיתוג והתאמה אישית (Whitelabeling)",
       description: "התאם אישית את מופע ה-AnythingLLM שלך עם מיתוג מותאם אישית.",
+      tabs: {
+        identity: "זהות",
+        colors: "צבעים",
+        sidebar: "סרגל צד",
+        browser: "דפדפן",
+      },
     },
     chat: {
       title: "צ'אט",
@@ -851,6 +907,34 @@ const TRANSLATIONS = {
         title: "השבת גלילה אוטומטית",
         description:
           "כבה את הקיפול האוטומטי לסוף החלון כאשר מתקבלות הודעות חדשות.",
+      },
+      palette: {
+        title: "ערכת צבעים",
+        description: "בחר/י פלטת צבעים. זה חל על שני מצבי התצוגה: בהיר וכהה.",
+        enforced: "מנהל המערכת הגדיר את ערכת הצבעים עבור מופע זה.",
+        "default-badge": "ברירת מחדל",
+      },
+      "instance-palettes": {
+        title: "ערכות צבעים",
+        description:
+          "לחצו על ערכת צבעים כדי להגדיר אותה כברירת המחדל לכל המשתמשים במופע זה. ערכות צבעים מותאמות אישית כוללות צבע ראשי, שצובע את הרקע, סרגל הצד והתוכן, וצבע הדגשה עבור כפתורים וקישורים.",
+        new: "ערכת צבעים חדשה",
+        edit: "עריכת ערכת הצבעים",
+        delete: "מחיקת ערכת הצבעים",
+        name: "שם ערכת הצבעים",
+        "name-required": "תנו שם לערכת הצבעים.",
+        colors: {
+          main: "צבע ראשי",
+          accent: "צבע הדגשה",
+        },
+        "preview-note":
+          'השינויים מוצגים בתצוגה מקדימה בכל האפליקציה ונשמרים כשלוחצים על "סיום".',
+        done: "סיום",
+        cancel: "בטל",
+        enforce: "אכיפת ערכת הצבעים המוגדרת כברירת מחדל",
+        "enforce-description":
+          "כל המשתמשים במופע זה משתמשים בערכת הצבעים המוגדרת כברירת מחדל ואינם יכולים לשנות אותה.",
+        "save-failed": "שמירת ערכות הצבעים נכשלה: {{error}}",
       },
     },
   },
@@ -1789,7 +1873,7 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "ללא תנאים – מסל הגעה ל<route>{{route}}</route>",
       "calculated-single-condition":
-        "אם <prop> נמצא במיקום {{property}} וגם </prop> נמצא במיקום {{comparator}} וגם <val> נמצא במיקום {{value}} אז, יש להעביר את המסלול ל-<route> במיקום {{route}}",
+        'אם <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, יש לנתב אל <route>{{route}}</route>',
       "calculated-multi-condition":
         "אם {{quantifier}} של <cond> נמצא ב{{conditions}} של </cond>, אז יש לכוון את המסלול ל<route> של {{route}} של </route>",
       "comparator-contains": "כולל",
@@ -1897,7 +1981,7 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "בחר/י נתב",
       "invalid-model": "בחירת מודל לא תקינה",
-      "routed-to": "מופנה ל-{{model}} בתוך <route>",
+      "routed-to": "נשלח אל <route>{{model}}</route>",
       "routed-to-rule":
         "נשלח דרך <route>{{model}}</route> באמצעות <rule>{{ruleTitle}}</rule>",
     },

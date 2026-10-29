@@ -91,6 +91,20 @@ export default function messageToSpeech(message = "") {
   // HTML tags: strip but keep their text content.
   text = text.replace(/<\/?[^>]+>/g, " ");
 
+  /*
+   * Emoji: TTS engines read these out by name ("smiling face with smiling
+   * eyes") or try to vocalize them, so drop them from the spoken text. This
+   * also removes the pieces that only exist to build an emoji: skin tone
+   * modifiers, flag letters, zero width joiners, variation selectors and the
+   * keycap mark (so a keycap 1 emoji is still read as "1"). The (c), (R)
+   * and TM signs are pictographic too but are kept, as they are ordinary
+   * text symbols.
+   */
+  text = text.replace(
+    /(?![\u00A9\u00AE\u2122])\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|\u200D|\uFE0E|\uFE0F|\u20E3/gu,
+    " "
+  );
+
   // Collapse repeated whitespace (newlines and spaces) to single spaces.
   text = text.replace(/\s+/g, " ").trim();
 

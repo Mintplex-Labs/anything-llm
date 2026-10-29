@@ -100,9 +100,9 @@ const generateImage = {
                   "Set true to edit an image already in the conversation - one the user attached or one generated earlier - instead of creating a new one. The image itself is found automatically.",
               },
             },
+            required: ["prompt"],
             additionalProperties: false,
           },
-          required: ["prompt"],
           handler: async function ({ prompt, size = null, edit = false }) {
             const { getImageGeneratorProvider } = require("../../../helpers");
             try {

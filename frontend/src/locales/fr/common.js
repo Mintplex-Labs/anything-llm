@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nom des espaces de travail",
     selection: "Sélection du modèle",
     saving: "Enregistrement...",
+    saved: "Enregistré",
     save: "Enregistrer les modifications",
     previous: "Page précédente",
     next: "Page suivante",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "Arrêté",
     loading: "Chargement",
     refresh: "Rafraîchir",
+    noResults: "Aucun résultat trouvé",
   },
   settings: {
     title: "Paramètres de l'instance",
@@ -238,7 +240,26 @@ const TRANSLATIONS = {
       title: "Température LLM",
       "desc-end":
         "Plus le nombre est élevé, plus la réponse sera créative. Pour certains modèles, cela peut entraîner des réponses incohérentes si la valeur est trop élevée.",
+      placeholder: "Valeur par défaut du fournisseur",
     },
+    reasoning_effort: {
+      title: "Effort de raisonnement",
+      default: "Valeur par défaut du fournisseur",
+      cannot_disable: "Ce modèle ne peut pas désactiver le raisonnement.",
+      levels: {
+        off: "Désactivé",
+        on: "Activé",
+        minimal: "Minimal",
+        low: "Faible",
+        medium: "Moyen",
+        high: "Élevé",
+        xhigh: "Très élevé",
+        max: "Maximal",
+      },
+    },
+    token_limit_reached:
+      "La réponse a atteint la limite maximale de tokens de sortie. Augmentez le nombre maximal de tokens de sortie autorisés pour le modèle afin de permettre des réponses plus longues.",
+    no_response: "Le modèle n'a pas pu répondre.",
   },
   "vector-workspace": {
     identifier: "Identifiant de la base de données vectorielle",
@@ -1089,7 +1110,7 @@ const TRANSLATIONS = {
       "delete-confirmation":
         "Êtes-vous sûr de vouloir supprimer ces fichiers et dossiers ?\nCela supprimera les fichiers du système et les retirera automatiquement de tout espace de travail existant.\nCette action est irréversible.",
       "removing-message":
-        "Suppression de {{count}} documents et dossiers. Veuillez patienter.",
+        "Suppression de {{count}} documents et {{folderCount}} dossiers. Veuillez patienter.",
       "move-success": "{{count}} documents déplacés avec succès.",
       no_docs: "Aucun document",
       select_all: "Tout sélectionner",
@@ -1141,7 +1162,7 @@ const TRANSLATIONS = {
       vault_location: "Emplacement du coffre",
       vault_description:
         "Sélectionnez le dossier racine de votre coffre Obsidian.",
-      selected_files: "fichiers sélectionnés",
+      selected_files: "{{count}} fichiers markdown trouvés",
       importing: "Importation...",
       import_vault: "Importer le coffre",
       processing_time:
@@ -1213,7 +1234,7 @@ const TRANSLATIONS = {
       search: "Rechercher des modèles",
       loading_workspace_settings:
         "Chargement des paramètres de l'espace de travail...",
-      available_models: "Modèles disponibles",
+      available_models: "Modèles disponibles pour {{provider}}",
       available_models_description:
         "Sélectionnez un modèle à utiliser pour cet espace de travail.",
       save: "Sauvegarder",
@@ -1350,11 +1371,11 @@ const TRANSLATIONS = {
     update_account: "Mettre à jour le compte",
     theme: "Thème",
     language: "Langue",
-    failed_upload: "Échec du téléchargement de l'image.",
+    failed_upload: "Échec du téléchargement de l'image : {{error}}",
     upload_success: "Image téléchargée avec succès.",
-    failed_remove: "Échec de la suppression de l'image.",
+    failed_remove: "Échec de la suppression de l'image : {{error}}",
     profile_updated: "Profil mis à jour avec succès.",
-    failed_update_user: "Échec de la mise à jour de l'utilisateur.",
+    failed_update_user: "Échec de la mise à jour de l'utilisateur : {{error}}",
     account: "Compte",
     support: "Support",
     signout: "Déconnexion",
@@ -1367,6 +1388,12 @@ const TRANSLATIONS = {
     branding: {
       title: "Personnalisation de la marque",
       description: "Personnalisez les éléments de marque de votre instance.",
+      tabs: {
+        identity: "Identité",
+        colors: "Couleurs",
+        sidebar: "Barre latérale",
+        browser: "Navigateur",
+      },
     },
     chat: {
       title: "Chat",
@@ -1447,6 +1474,37 @@ const TRANSLATIONS = {
         description:
           "Désactiver le défilement automatique vers la fin de la conversation lorsqu'un nouveau message est reçu.",
       },
+      palette: {
+        title: "Palette de couleurs",
+        description:
+          "Choisissez une palette de couleurs. Elle s'applique au mode clair comme au mode sombre.",
+        enforced:
+          "Votre administrateur a défini la palette de couleurs pour cette instance.",
+        "default-badge": "Par défaut",
+      },
+      "instance-palettes": {
+        title: "Palettes de couleurs",
+        description:
+          "Cliquez sur une palette pour la définir comme la palette par défaut pour tous les utilisateurs de cette instance. Les palettes personnalisées comprennent une couleur principale, qui colore l'arrière-plan, la barre latérale et le contenu, ainsi qu'une couleur d'accent pour les boutons et les liens.",
+        new: "Nouvelle palette",
+        edit: "Modifier la palette",
+        delete: "Supprimer la palette",
+        name: "Nom de la palette",
+        "name-required": "Donnez un nom à la palette.",
+        colors: {
+          main: "Couleur principale",
+          accent: "Couleur d'accent",
+        },
+        "preview-note":
+          "Les modifications sont prévisualisées dans toute l'application et enregistrées lorsque vous cliquez sur « Terminé ».",
+        done: "Terminé",
+        cancel: "Annuler",
+        enforce: "Appliquer la palette par défaut",
+        "enforce-description":
+          "Tous les utilisateurs de cette instance utilisent la palette par défaut et ne peuvent pas la modifier.",
+        "save-failed":
+          "Impossible d'enregistrer les palettes de couleurs : {{error}}",
+      },
     },
   },
   "main-page": {
@@ -1456,6 +1514,35 @@ const TRANSLATIONS = {
       uploadDocument: "Télécharger un document",
     },
     greeting: "Comment puis-je vous aider aujourd'hui ?",
+    greetings: {
+      anytime: {
+        working_on: "Sur quoi travaillons-nous ?",
+        on_your_mind: "Qu'avez-vous en tête ?",
+        where_to_start: "Par où commençons-nous ?",
+        ready: "Prêt quand vous l'êtes.",
+        think_it_through: "Prenons le temps d'y réfléchir.",
+      },
+      morning: {
+        good_morning: "Bonjour",
+        first_today: "Bonjour. Par quoi commence-t-on aujourd'hui ?",
+        fresh_start: "Nouveau départ. Par où commencer ?",
+      },
+      afternoon: {
+        good_afternoon: "Bon après-midi",
+        tackling: "Bon après-midi. À quoi s'attaque-t-on ?",
+        next_on_list: "Quelle est la suite de la liste ?",
+        keep_moving: "Gardons le rythme.",
+      },
+      evening: {
+        good_evening: "Bonsoir",
+        finish_strong: "Bonsoir. Finissons en beauté.",
+      },
+      night: {
+        midnight_oil: "Vous travaillez tard ?",
+        late_one: "Longue soirée ? Prenons le temps d'y réfléchir.",
+        still_up: "Encore debout ? Prêt quand vous l'êtes.",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "Raccourcis clavier",
@@ -1876,7 +1963,7 @@ const TRANSLATIONS = {
       "llm-section-label":
         "Règles LLM – évaluées par lots si aucune règle calculée ne correspond",
       "llm-rule-body":
-        'Correspondance avec "<desc>" puis redirection vers "<route>"{{route}}"</route>"',
+        'Correspondance avec <desc>"{{description}}"</desc> puis redirection vers <route>{{route}}</route>',
       "calculated-no-conditions":
         "Aucune condition – itinéraire vers <route>{{route}}</route>",
       "calculated-single-condition":

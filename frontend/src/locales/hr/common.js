@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Naziv radnog prostora",
     selection: "Odabir modela",
     saving: "Spremanje...",
+    saved: "Spremljeno",
     save: "Spremi promjene",
     previous: "Prethodna stranica",
     next: "Sljedeća stranica",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
       "Korisničko ime mora imati 2-64 znaka, započeti malim slovom te sadržavati samo mala slova, brojeve, podvlake, crtice i točke.",
     loading: "Učitavanje",
     refresh: "Osvježi",
+    noResults: "Nema rezultata",
   },
   home: {
     welcome: "Dobrodošli",
@@ -146,6 +148,35 @@ const TRANSLATIONS = {
       createAgent: "Stvori agenta",
       editWorkspace: "Uredi radni prostor",
       uploadDocument: "Prenesi dokument",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Na čemu radimo?",
+        on_your_mind: "O čemu razmišljate?",
+        where_to_start: "Odakle ćemo početi?",
+        ready: "Spreman sam kad god poželite.",
+        think_it_through: "Dobro razmislimo o tome.",
+      },
+      morning: {
+        good_morning: "Dobro jutro",
+        first_today: "Dobro jutro. Što je danas prvo na redu?",
+        fresh_start: "Novi početak. Odakle krećemo?",
+      },
+      afternoon: {
+        good_afternoon: "Dobar dan",
+        tackling: "Dobar dan. Čime ćemo se pozabaviti?",
+        next_on_list: "Što je sljedeće na popisu?",
+        keep_moving: "Nastavimo dalje.",
+      },
+      evening: {
+        good_evening: "Dobra večer",
+        finish_strong: "Dobra večer. Završimo snažno.",
+      },
+      night: {
+        midnight_oil: "Radite do kasno?",
+        late_one: "Duga večer? Dobro razmislimo o tome.",
+        still_up: "Još ste budni? Spreman sam kad god poželite.",
+      },
     },
   },
   "new-workspace": {
@@ -256,7 +287,26 @@ const TRANSLATIONS = {
       title: "LLM temperatura",
       "desc-end":
         "Što je broj veći, to je odgovor kreativniji. Kod nekih modela ovo može dovesti do nekoherentnih odgovora ako je postavljeno preveliko.",
+      placeholder: "Zadano od pružatelja",
     },
+    reasoning_effort: {
+      title: "Napor zaključivanja",
+      default: "Zadano od pružatelja",
+      cannot_disable: "Ovaj model ne može isključiti zaključivanje.",
+      levels: {
+        off: "Isključeno",
+        on: "Uključeno",
+        minimal: "Minimalno",
+        low: "Nisko",
+        medium: "Srednje",
+        high: "Visoko",
+        xhigh: "Vrlo visoko",
+        max: "Maksimalno",
+      },
+    },
+    token_limit_reached:
+      "Odgovor je dostigao maksimalni limit za broj tokena. Povećajte maksimalni broj tokena koji model može generirati, kako biste omogućili duže odgovore.",
+    no_response: "Model nije uspio odgovoriti.",
   },
   "vector-workspace": {
     identifier: "Identifikator vektorske baze podataka",
@@ -809,6 +859,12 @@ const TRANSLATIONS = {
       title: "Brendiranje i whitelabeling",
       description:
         "Bijeli žig (white-label) vaše AnythingLLM instance s prilagođenim brendiranjem.",
+      tabs: {
+        identity: "Identitet",
+        colors: "Boje",
+        sidebar: "Bočna traka",
+        browser: "Preglednik",
+      },
     },
     chat: {
       title: "Razgovor",
@@ -891,6 +947,35 @@ const TRANSLATIONS = {
         title: "Isključi automatsko pomicanje",
         description:
           "Isključi automatsko pomicanje na dno razgovora kada stignu nove poruke.",
+      },
+      palette: {
+        title: "Paleta boja",
+        description:
+          "Odaberite paletu boja. To se odnosi i na svjetli i tamni način rada.",
+        enforced: "Vaš administrator je postavio paletu boja za ovu instancu.",
+        "default-badge": "Zadano",
+      },
+      "instance-palettes": {
+        title: "Palete boja",
+        description:
+          "Kliknite na paletu kako biste je postavili kao zadanu za sve korisnike ove instance. Prilagođene palete sastoje se od glavne boje, koja boji pozadinu, bočnu traku i sadržaj, te boje naglaska za gumbe i poveznice.",
+        new: "Nova paleta",
+        edit: "Uredi paletu",
+        delete: "Izbriši paletu",
+        name: "Naziv palete",
+        "name-required": "Dajte paleti ime.",
+        colors: {
+          main: "Glavna boja",
+          accent: "Boja naglaska",
+        },
+        "preview-note":
+          'Pregled promjena u cijeloj aplikaciji i spremaju se kada kliknete na "Gotovo".',
+        done: "Gotovo",
+        cancel: "Odustani",
+        enforce: "Nametni zadanu paletu",
+        "enforce-description":
+          "Svi na ovoj instanci koriste zadanu paletu i ne mogu je promijeniti.",
+        "save-failed": "Spremanje paleta boja nije uspjelo: {{error}}",
       },
     },
   },

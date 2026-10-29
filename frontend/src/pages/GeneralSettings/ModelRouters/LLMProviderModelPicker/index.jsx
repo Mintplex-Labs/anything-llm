@@ -11,6 +11,7 @@ import Modal, {
 } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
+import { withEmbeddedLemonade } from "@/components/LLMSelection/EmbeddedLemonadeOptions";
 
 // Providers that can't be routing targets
 const EXCLUDED_PROVIDERS = ["anythingllm-router"];
@@ -40,9 +41,10 @@ export default function LLMProviderModelPicker({
     if (defaultModel && !selectedModel) setSelectedModel(defaultModel);
   }, [defaultModel]);
 
-  const availableProviders = AVAILABLE_LLM_PROVIDERS.filter(
-    (llm) => !EXCLUDED_PROVIDERS.includes(llm.value)
-  );
+  const availableProviders = withEmbeddedLemonade(
+    AVAILABLE_LLM_PROVIDERS,
+    settings
+  ).filter((llm) => !EXCLUDED_PROVIDERS.includes(llm.value));
 
   useEffect(() => {
     async function fetchSettings() {

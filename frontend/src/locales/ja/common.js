@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "ワークスペース名",
     selection: "モデル選択",
     saving: "保存中...",
+    saved: "保存済み",
     save: "変更を保存",
     previous: "前のページ",
     next: "次のページ",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     stopped: "停止",
     loading: "読み込み中",
     refresh: "リフレッシュ",
+    noResults: "検索結果はありません",
   },
   settings: {
     title: "インスタンス設定",
@@ -236,7 +238,26 @@ const TRANSLATIONS = {
       title: "LLM温度",
       "desc-end":
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
+      placeholder: "プロバイダーのデフォルト",
     },
+    reasoning_effort: {
+      title: "推論の強度",
+      default: "プロバイダーのデフォルト",
+      cannot_disable: "このモデルは推論をオフにできません。",
+      levels: {
+        off: "オフ",
+        on: "オン",
+        minimal: "最小",
+        low: "低",
+        medium: "中",
+        high: "高",
+        xhigh: "最高",
+        max: "最大",
+      },
+    },
+    token_limit_reached:
+      "応答が最大出力トークン数の上限に達しました。より長い応答を生成するには、モデルの最大出力トークン数を増やしてください。",
+    no_response: "モデルが応答できませんでした。",
   },
   "vector-workspace": {
     identifier: "ベクターデータベース識別子",
@@ -717,7 +738,7 @@ const TRANSLATIONS = {
       "start-server": "MCP サーバーを開始する",
       "delete-server": "MCP サーバーを削除",
       "tool-count-warning":
-        "このMCPサーバーには、<b>のツールが有効になっており、これらはチャットのコンテキストを消費します</b>。コンテキストを節約するために、不要なツールを無効にすることを検討してください。",
+        "このMCPサーバーでは<b>{{count}}個のツールが有効</b>になっており、すべてのチャットでコンテキストを消費します。<br />コンテキストを節約するために、不要なツールを無効にすることを検討してください。",
       "startup-command": "起動コマンド",
       command: "指示",
       arguments: "議論",
@@ -1321,6 +1342,12 @@ const TRANSLATIONS = {
       title: "ブランディングとホワイトレーベル化",
       description:
         "AnythingLLMインスタンスを、独自のブランドでカスタマイズしてください。",
+      tabs: {
+        identity: "アイデンティティ",
+        colors: "カラー",
+        sidebar: "サイドバー",
+        browser: "ブラウザ",
+      },
     },
     chat: {
       title: "チャット",
@@ -1404,6 +1431,36 @@ const TRANSLATIONS = {
         description:
           "新しいメッセージを受信した際に、チャットを自動的に最後までスクロールする機能を停止します。",
       },
+      palette: {
+        title: "カラーパレット",
+        description:
+          "色合いを選択してください。これは、ライトモードとダークモードの両方に適用されます。",
+        enforced:
+          "管理者は、このインスタンス用のカラーパレットを設定しています。",
+        "default-badge": "デフォルト",
+      },
+      "instance-palettes": {
+        title: "カラーパレット",
+        description:
+          "パレットをクリックすると、このインスタンスのすべてのユーザーでデフォルト設定になります。カスタムパレットは、背景、サイドバー、コンテンツの色を調整するためのメインカラーと、ボタンやリンクの色を強調するためのアクセントカラーで構成されています。",
+        new: "新しいカラーパレット",
+        edit: "パレットを編集",
+        delete: "パレットを削除",
+        name: "パレットの名前",
+        "name-required": "パレットに名前を付けてください。",
+        colors: {
+          main: "メインカラー",
+          accent: "アクセントカラー",
+        },
+        "preview-note":
+          "変更はアプリ全体でプレビューされ、「完了」をクリックすると保存されます。",
+        done: "完了",
+        cancel: "キャンセル",
+        enforce: "デフォルトのカラーパレットを適用する",
+        "enforce-description":
+          "このインスタンスでは、すべてのユーザーがデフォルトのカラーパレットを使用し、変更することはできません。",
+        "save-failed": "カラーパレットの保存に失敗しました：{{error}}",
+      },
     },
   },
   "main-page": {
@@ -1413,6 +1470,35 @@ const TRANSLATIONS = {
       uploadDocument: "ドキュメントをアップロードする",
     },
     greeting: "今日はどのようにお手伝いできますか？",
+    greetings: {
+      anytime: {
+        working_on: "何に取り組みましょうか？",
+        on_your_mind: "何を考えていますか？",
+        where_to_start: "どこから始めましょうか？",
+        ready: "準備ができたらどうぞ。",
+        think_it_through: "じっくり考えてみましょう。",
+      },
+      morning: {
+        good_morning: "おはようございます",
+        first_today: "おはようございます。今日はまず何から始めますか？",
+        fresh_start: "新しいスタートです。何から始めましょうか？",
+      },
+      afternoon: {
+        good_afternoon: "こんにちは",
+        tackling: "こんにちは。何に取りかかりましょうか？",
+        next_on_list: "リストの次は何ですか？",
+        keep_moving: "この調子で進めましょう。",
+      },
+      evening: {
+        good_evening: "こんばんは",
+        finish_strong: "こんばんは。最後までしっかり仕上げましょう。",
+      },
+      night: {
+        midnight_oil: "夜遅くまでお疲れさまです。",
+        late_one: "長い夜になりそうですか？じっくり考えてみましょう。",
+        still_up: "まだ起きていますか？準備ができたらどうぞ。",
+      },
+    },
   },
   "keyboard-shortcuts": {
     title: "キーボードショートカット",
@@ -1835,13 +1921,13 @@ const TRANSLATIONS = {
       "llm-section-label":
         "LLMのルール—計算されたルールに一致しない場合に、まとめて評価",
       "llm-rule-body":
-        "次に、<desc>「{{description}}」</desc> にマッチし、その後、<route>へルーティングします。",
+        "<desc>「{{description}}」</desc> にマッチした場合、<route>{{route}}</route> へルーティングします。",
       "calculated-no-conditions":
-        "条件なし—ルート：<route>へ、{{route}}、</route>",
+        "条件なし — <route>{{route}}</route> へルーティング",
       "calculated-single-condition":
-        'もし <prop>が条件{{property}}、</prop>が条件{{comparator}}、そして<val>が条件 "{{value}}"、</val>である場合、<route>へ移動する',
+        'もし <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val> の場合、<route>{{route}}</route> へルーティングします',
       "calculated-multi-condition":
-        "もし、[{{quantifier}}]が[<cond>]である場合、[{{conditions}}]、[</cond>]を通過して、[<route>]、[{{route}}]、[</route>]へ移動する。",
+        "<cond>{{conditions}}</cond> の{{quantifier}}に一致する場合、<route>{{route}}</route> へルーティングします",
       "comparator-contains": "これには",
       "comparator-matches": "試合",
       "comparator-between": "間、間隔",
@@ -1850,7 +1936,7 @@ const TRANSLATIONS = {
       "aria-drag-to-reorder": "ドラッグして並び順を変更",
       "aria-edit-rule": "編集規則",
       "aria-delete-rule": "ルールを削除する",
-      "quantifier-any": "何でも",
+      "quantifier-any": "いずれか",
       "quantifier-all": "すべて",
     },
     "rule-form": {
@@ -1951,7 +2037,7 @@ const TRANSLATIONS = {
       "invalid-model": "無効なモデルの選択",
       "routed-to": "<route>、{{model}}、</route> 宛にルーティング",
       "routed-to-rule":
-        "<route>～</route>を経由して、<rule>～</rule>へルーティング",
+        "<rule>{{ruleTitle}}</rule> により <route>{{model}}</route> へルーティング",
     },
   },
   imageGeneration: {

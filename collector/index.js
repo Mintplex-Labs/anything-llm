@@ -110,13 +110,18 @@ app.post(
   "/process-link",
   [verifyPayloadIntegrity],
   async function (request, response) {
-    const { link, scraperHeaders = {}, metadata = {} } = reqBody(request);
+    const {
+      link,
+      scraperHeaders = {},
+      metadata = {},
+      options = {},
+    } = reqBody(request);
     try {
       const {
         success,
         reason,
         documents = [],
-      } = await processLink(link, scraperHeaders, metadata);
+      } = await processLink(link, scraperHeaders, metadata, options);
       response.status(200).json({ url: link, success, reason, documents });
     } catch (e) {
       console.error(e);
@@ -135,9 +140,13 @@ app.post(
   "/util/get-link",
   [verifyPayloadIntegrity],
   async function (request, response) {
-    const { link, captureAs = "text" } = reqBody(request);
+    const { link, captureAs = "text", options = {} } = reqBody(request);
     try {
-      const { success, content = null } = await getLinkText(link, captureAs);
+      const { success, content = null } = await getLinkText(
+        link,
+        captureAs,
+        options
+      );
       response.status(200).json({ url: link, success, content });
     } catch (e) {
       console.error(e);

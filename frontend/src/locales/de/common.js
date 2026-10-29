@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Namen der Workspaces",
     selection: "Modellauswahl",
     saving: "Speichern...",
+    saved: "Gespeichert",
     save: "Änderungen speichern",
     previous: "Vorherige Seite",
     next: "Nächste Seite",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Gestoppt",
     loading: "Laden",
     refresh: "Erfrischen",
+    noResults: "Keine Ergebnisse gefunden",
   },
   settings: {
     title: "Instanzeinstellungen",
@@ -139,6 +141,35 @@ const TRANSLATIONS = {
       uploadDocument: "Ein Dokument hochladen",
     },
     greeting: "Wie kann ich Ihnen heute helfen?",
+    greetings: {
+      anytime: {
+        working_on: "Woran arbeiten wir?",
+        on_your_mind: "Was beschäftigt Sie?",
+        where_to_start: "Wo fangen wir an?",
+        ready: "Bereit, wenn Sie es sind.",
+        think_it_through: "Lassen Sie uns das durchdenken.",
+      },
+      morning: {
+        good_morning: "Guten Morgen",
+        first_today: "Guten Morgen. Was steht heute als Erstes an?",
+        fresh_start: "Neuer Tag, neuer Anfang. Wo fangen wir an?",
+      },
+      afternoon: {
+        good_afternoon: "Guten Tag",
+        tackling: "Guten Tag. Was nehmen wir uns vor?",
+        next_on_list: "Was steht als Nächstes auf der Liste?",
+        keep_moving: "Machen wir weiter.",
+      },
+      evening: {
+        good_evening: "Guten Abend",
+        finish_strong: "Guten Abend. Bringen wir es gut zu Ende.",
+      },
+      night: {
+        midnight_oil: "Noch spät bei der Arbeit?",
+        late_one: "Langer Abend? Lassen Sie uns das durchdenken.",
+        still_up: "Noch wach? Bereit, wenn Sie es sind.",
+      },
+    },
   },
   "new-workspace": {
     title: "Neuer Workspace",
@@ -246,7 +277,26 @@ const TRANSLATIONS = {
       title: "LLM-Temperatur",
       "desc-end":
         "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
+      placeholder: "Standard des Anbieters",
     },
+    reasoning_effort: {
+      title: "Denkaufwand",
+      default: "Standard des Anbieters",
+      cannot_disable: "Dieses Modell kann das Denken nicht deaktivieren.",
+      levels: {
+        off: "Aus",
+        on: "An",
+        minimal: "Minimal",
+        low: "Niedrig",
+        medium: "Mittel",
+        high: "Hoch",
+        xhigh: "Sehr hoch",
+        max: "Maximal",
+      },
+    },
+    token_limit_reached:
+      "Die Antwort hat das maximale Limit an Ausgabe-Token erreicht. Erhöhen Sie die maximale Anzahl an Ausgabe-Token des Modells, um längere Antworten zu ermöglichen.",
+    no_response: "Das Modell hat nicht geantwortet.",
   },
   "vector-workspace": {
     identifier: "Vektordatenbank-Identifikator",
@@ -819,6 +869,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "Individualisieren Sie Ihre AnythingLLM-Instanz durch eigenes Branding.",
+      tabs: {
+        identity: "Identität",
+        colors: "Farben",
+        sidebar: "Seitenleiste",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -901,6 +957,36 @@ const TRANSLATIONS = {
         title: "Automatische Scrollen deaktivieren",
         description:
           "Deaktivieren Sie das automatische Scrollen zum Ende des Chats, wenn neue Nachrichten empfangen werden.",
+      },
+      palette: {
+        title: "Farbpalette",
+        description:
+          "Wählen Sie eine Farbpalette. Diese gilt sowohl für den hellen als auch für den dunklen Modus.",
+        enforced:
+          "Ihr Administrator hat die Farbpalette für diese Instanz festgelegt.",
+        "default-badge": "Standard",
+      },
+      "instance-palettes": {
+        title: "Farbpaletten",
+        description:
+          "Klicken Sie auf eine Farbpalette, um sie für alle Benutzer dieser Instanz als Standard festzulegen. Benutzerdefinierte Farbpaletten bestehen aus einer Hauptfarbe, die Hintergrund, Seitenleiste und Inhalt einfärbt, sowie einer Akzentfarbe für Schaltflächen und Links.",
+        new: "Neue Farbpalette",
+        edit: "Farbpalette bearbeiten",
+        delete: "Palette löschen",
+        name: "Palettenname",
+        "name-required": "Geben Sie der Farbpalette einen Namen.",
+        colors: {
+          main: "Hauptfarbe",
+          accent: "Akzentfarbe",
+        },
+        "preview-note":
+          "Änderungen werden in der gesamten App als Vorschau angezeigt und beim Klick auf „Fertig“ gespeichert.",
+        done: "Fertig",
+        cancel: "Abbrechen",
+        enforce: "Die Standard-Farbpalette durchsetzen",
+        "enforce-description":
+          "Alle Benutzer dieser Instanz verwenden die Standard-Farbpalette und können sie nicht ändern.",
+        "save-failed": "Fehler beim Speichern der Farbpaletten: {{error}}",
       },
     },
   },

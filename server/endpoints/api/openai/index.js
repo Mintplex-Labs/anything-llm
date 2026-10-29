@@ -141,7 +141,7 @@ function apiOpenAICompatibleEndpoints(app) {
             history,
             prompt: extractTextContent(userMessage.content),
             attachments: extractAttachments(userMessage.content),
-            temperature: Number(temperature),
+            temperature,
           });
 
           await Telemetry.sendTelemetry("sent_chat", {
@@ -170,7 +170,7 @@ function apiOpenAICompatibleEndpoints(app) {
           history,
           prompt: extractTextContent(userMessage.content),
           attachments: extractAttachments(userMessage.content),
-          temperature: Number(temperature),
+          temperature,
           response,
         });
         await Telemetry.sendTelemetry("sent_chat", {

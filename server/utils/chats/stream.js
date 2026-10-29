@@ -14,6 +14,10 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const {
+  resolveReasoningEffort,
+  usesModelRouter,
+} = require("../helpers/reasoningEffort");
 
 const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
@@ -24,9 +28,13 @@ async function streamChatWithWorkspace(
   chatMode = "automatic",
   user = null,
   thread = null,
-  attachments = []
+  attachments = [],
+  sessionReasoningEffort = null
 ) {
   const uuid = uuidv4();
+  // Routed workspaces show no reasoning controls, so a stored effort is
+  // never applied to whichever model the router picks.
+  if (usesModelRouter(workspace)) sessionReasoningEffort = null;
   const updatedMessage = await grepCommand(message, user);
 
   if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
@@ -52,6 +60,7 @@ async function streamChatWithWorkspace(
     workspace,
     thread,
     attachments,
+    reasoningEffort: sessionReasoningEffort,
   });
   if (isAgentChat) return;
 
@@ -261,6 +270,16 @@ async function streamChatWithWorkspace(
     return;
   }
 
+  // Save the prompt before calling the LLM so it stays in the thread even if
+  // the response fails or the user leaves before it finishes.
+  const { chat } = await WorkspaceChats.new({
+    workspaceId: workspace.id,
+    prompt: message,
+    response: { text: "", sources: [], type: chatMode, attachments },
+    threadId: thread?.id || null,
+    user,
+  });
+
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   // Reuse the system prompt from routing pre-fetch when available.
@@ -281,6 +300,11 @@ async function streamChatWithWorkspace(
     rawHistory
   );
 
+  const reasoningEffort = await resolveReasoningEffort(
+    LLMConnector,
+    sessionReasoningEffort
+  );
+
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
@@ -289,8 +313,8 @@ async function streamChatWithWorkspace(
     );
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
-        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
+        reasoningEffort,
       });
 
     completeText = textResponse;
@@ -310,8 +334,8 @@ async function streamChatWithWorkspace(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      reasoningEffort,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
@@ -325,7 +349,7 @@ async function streamChatWithWorkspace(
   }
 
   if (completeText?.length > 0) {
-    const { chat } = await WorkspaceChats.new({
+    const completedChat = {
       workspaceId: workspace.id,
       prompt: message,
       response: {
@@ -337,14 +361,19 @@ async function streamChatWithWorkspace(
       },
       threadId: thread?.id || null,
       user,
-    });
+      include: true,
+    };
+    // The early save can fail, so fall back to creating the row here.
+    const { chat: savedChat } = chat
+      ? await WorkspaceChats.upsert(chat.id, completedChat)
+      : await WorkspaceChats.new(completedChat);
 
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
       close: true,
       error: false,
-      chatId: chat.id,
+      chatId: savedChat?.id,
       metrics,
     });
     return;

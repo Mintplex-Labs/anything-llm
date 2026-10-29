@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "워크스페이스 이름",
     selection: "모델 선택",
     saving: "저장 중...",
+    saved: "저장됨",
     save: "저장",
     previous: "이전",
     next: "다음",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
     stopped: "멈춤",
     loading: "로딩 중",
     refresh: "새롭게",
+    noResults: "결과가 없습니다",
   },
   settings: {
     title: "인스턴스 설정",
@@ -136,6 +138,35 @@ const TRANSLATIONS = {
       uploadDocument: "문서 업로드",
     },
     greeting: "오늘 어떻게 도와드릴까요?",
+    greetings: {
+      anytime: {
+        working_on: "어떤 작업을 해볼까요?",
+        on_your_mind: "무슨 생각을 하고 계신가요?",
+        where_to_start: "어디서부터 시작할까요?",
+        ready: "준비되시면 말씀하세요.",
+        think_it_through: "차근차근 생각해 봐요.",
+      },
+      morning: {
+        good_morning: "좋은 아침이에요",
+        first_today: "좋은 아침이에요. 오늘은 무엇부터 할까요?",
+        fresh_start: "새로운 시작이에요. 무엇부터 해볼까요?",
+      },
+      afternoon: {
+        good_afternoon: "좋은 오후예요",
+        tackling: "좋은 오후예요. 어떤 일을 처리해 볼까요?",
+        next_on_list: "다음 할 일은 무엇인가요?",
+        keep_moving: "계속 이어가 봐요.",
+      },
+      evening: {
+        good_evening: "좋은 저녁이에요",
+        finish_strong: "좋은 저녁이에요. 마무리를 잘해 봐요.",
+      },
+      night: {
+        midnight_oil: "늦게까지 일하고 계신가요?",
+        late_one: "긴 밤이 될까요? 차근차근 생각해 봐요.",
+        still_up: "아직 안 주무셨어요? 준비되시면 말씀하세요.",
+      },
+    },
   },
   "new-workspace": {
     title: "새 워크스페이스",
@@ -240,7 +271,26 @@ const TRANSLATIONS = {
       title: "LLM 온도",
       "desc-end":
         "숫자가 높을수록 창의적입니다. 일부 모델에서는 너무 높게 설정하면 일관성 없는 응답이 나올 수 있습니다.",
+      placeholder: "제공자 기본값",
     },
+    reasoning_effort: {
+      title: "추론 강도",
+      default: "제공자 기본값",
+      cannot_disable: "이 모델은 추론을 끌 수 없습니다.",
+      levels: {
+        off: "끄기",
+        on: "켜기",
+        minimal: "최소",
+        low: "낮음",
+        medium: "중간",
+        high: "높음",
+        xhigh: "매우 높음",
+        max: "최대",
+      },
+    },
+    token_limit_reached:
+      "응답이 최대 출력 토큰 제한에 도달했습니다. 모델의 최대 출력 토큰 수를 늘려 더 긴 답변을 생성할 수 있도록 합니다.",
+    no_response: "모델이 응답하지 못했습니다.",
   },
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",
@@ -778,6 +828,12 @@ const TRANSLATIONS = {
       title: "브랜딩 및 화이트라벨링",
       description:
         "AnythingLLM 인스턴스에 맞춤 브랜딩을 적용해 화이트라벨링할 수 있습니다.",
+      tabs: {
+        identity: "아이덴티티",
+        colors: "색상",
+        sidebar: "사이드바",
+        browser: "웹 브라우저",
+      },
     },
     chat: {
       title: "채팅",
@@ -857,6 +913,35 @@ const TRANSLATIONS = {
         title: "자동 스크롤 기능 끄기",
         description:
           "새 메시지가 도착할 때 자동으로 채팅 내용이 맨 아래로 스크롤되는 기능을 비활성화합니다.",
+      },
+      palette: {
+        title: "색상 팔레트",
+        description:
+          "색상 팔레트를 선택하세요. 이는 밝은 모드와 어두운 모드 모두에 적용됩니다.",
+        enforced: "관리자가 이 인스턴스에 대한 색상 팔레트를 설정했습니다.",
+        "default-badge": "기본값",
+      },
+      "instance-palettes": {
+        title: "색상 팔레트",
+        description:
+          "팔레트를 클릭하면 이 인스턴스의 모든 사용자에게 기본 팔레트로 설정됩니다. 사용자 정의 팔레트는 배경, 사이드바, 콘텐츠에 색을 입히는 메인 색상과 버튼 및 링크용 강조 색상으로 구성됩니다.",
+        new: "새로운 팔레트",
+        edit: "팔레트 편집",
+        delete: "색상 팔레트 삭제",
+        name: "색상 팔레트 이름",
+        "name-required": "팔레트에 이름을 지정해 주세요.",
+        colors: {
+          main: "메인 색상",
+          accent: "강조 색상",
+        },
+        "preview-note":
+          '앱 전체에서 변경 사항을 미리 확인하고, "완료" 버튼을 클릭하면 변경 사항이 저장됩니다.',
+        done: "완료",
+        cancel: "취소",
+        enforce: "기본 색상 팔레트 강제 적용",
+        "enforce-description":
+          "이 인스턴스의 모든 사용자가 기본 색상 팔레트를 사용하며 변경할 수 없습니다.",
+        "save-failed": "색상 팔레트 저장 실패: {{error}}",
       },
     },
   },
@@ -1806,11 +1891,12 @@ const TRANSLATIONS = {
         "LLM 규칙 — 계산된 규칙이 일치하는 경우 일괄적으로 평가",
       "llm-rule-body":
         '다음 단계는 <desc>"{{description}}"</desc>을 매칭한 후, <route>{{route}}</route>로 경로를 지정하는 것입니다.',
-      "calculated-no-conditions": "특정 조건 없음 – <route> 경로로 이동",
+      "calculated-no-conditions":
+        "특정 조건 없음 – <route>{{route}}</route> 경로로 이동",
       "calculated-single-condition":
         '만약 <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> 이면, <route> {{route}} </route>로 이동합니다.',
       "calculated-multi-condition":
-        "만약 {{quantifier}} (태그 0)가 {{conditions}} (태그 1)인 경우, <route> (태그 2)로 이동합니다.",
+        "만약 <cond>{{conditions}}</cond> 중 {{quantifier}} 조건을 충족하면, <route>{{route}}</route>로 이동합니다.",
       "comparator-contains": "포함",
       "comparator-matches": "경쟁",
       "comparator-between": "사이",
@@ -1916,8 +2002,9 @@ const TRANSLATIONS = {
     chat: {
       "select-router-error": "라우터를 선택하세요",
       "invalid-model": "유효하지 않은 모델 선택",
-      "routed-to": "<route> 정보가 {{model}}에 전달되었습니다.",
-      "routed-to-rule": "<route>에서 {{model}}를 통해 </route>로 연결",
+      "routed-to": "<route>{{model}}</route>(으)로 연결됨",
+      "routed-to-rule":
+        "<rule>{{ruleTitle}}</rule> 규칙을 통해 <route>{{model}}</route>(으)로 연결",
     },
   },
   imageGeneration: {

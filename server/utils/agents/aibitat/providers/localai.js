@@ -2,7 +2,11 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { LocalAiLLM } = require("../../../AiProviders/localAi/index.js");
 
@@ -37,6 +41,21 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * Whether the loaded model supports native OpenAI-compatible tool calling.
+   * Checks the LocalAI /v1/models/capabilities endpoint for the `tools` usecase.
+   * Falls back to native tool calling when LocalAI cannot report it (older versions).
+   * @returns {Promise<boolean>}
+   */
+  async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
+    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
+    const localai = new LocalAiLLM(null, this.model);
+    const capabilities = await localai.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools !== false;
+    return this._supportsToolCalling;
+  }
+
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----
 
   async #handleFunctionCallChat({ messages = [] }) {
@@ -44,6 +63,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
       })
       .then((result) => {
@@ -62,6 +82,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     await LocalAiLLM.cacheContextWindows();
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       stream_options: { include_usage: true },
       messages,

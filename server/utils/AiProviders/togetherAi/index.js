@@ -8,7 +8,10 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const fs = require("fs");
 const path = require("path");
-const { safeJsonParse } = require("../../http");
+const { safeJsonParse, toValidNumber } = require("../../http");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -98,6 +101,9 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
+    this.maxTokens = process.env.TOGETHER_AI_MAX_TOKENS
+      ? toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null)
+      : null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -105,7 +111,6 @@ class TogetherAiLLM {
     };
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized with model: ${this.model} (context window: ${this.promptWindowLimit()})`
     );
@@ -195,7 +200,10 @@ class TogetherAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
@@ -206,7 +214,8 @@ class TogetherAiLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
+          ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -234,7 +243,10 @@ class TogetherAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
@@ -245,7 +257,8 @@ class TogetherAiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
+        ...(this.maxTokens ? { max_tokens: this.maxTokens } : {}),
       }),
       messages,
       runPromptTokenCalculation: false,

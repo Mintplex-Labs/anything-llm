@@ -244,6 +244,22 @@ describe("scrapeGenericUrl", () => {
       expect(filename).toBe(`url-example.com_docs_intro-page-${data.id}`);
     });
 
+    it.each([
+      ["a % that starts no escape", "https://example.com/deals/50%-off"],
+      ["a Latin-1 escape", "https://example.com/menu/caf%E9"],
+    ])("saves a page whose path has %s", async (_case, link) => {
+      mockFetch();
+      writeToServerDocuments.mockImplementation(({ data }) => data);
+
+      const result = await scrapeGenericUrl({ link, captureAs: "html" });
+
+      expect(result.success).toBe(true);
+      expect(writeToServerDocuments).toHaveBeenCalledTimes(1);
+      const { data } = writeToServerDocuments.mock.calls[0][0];
+      expect(data.chunkSource).toBe(`link://${link}`);
+      expect(data.pageContent).toBe(PAGE);
+    });
+
     it("falls back to defaults when metadata is not provided", async () => {
       mockFetch();
       writeToServerDocuments.mockImplementation(({ data }) => data);
@@ -262,13 +278,15 @@ describe("scrapeGenericUrl", () => {
       const expected = { success: true, content: "pdf text" };
       processAsFile.mockResolvedValue(expected);
 
-      const result = await scrape("text");
+      const options = { whisperProvider: "openai", ocr: { langList: "deu" } };
+      const result = await scrape("text", { options });
 
       expect(result).toBe(expected);
       expect(processAsFile).toHaveBeenCalledWith({
         uri: LINK,
         saveAsDocument: false,
         metadata: {},
+        options,
       });
       expect(PuppeteerWebBaseLoader).not.toHaveBeenCalled();
     });

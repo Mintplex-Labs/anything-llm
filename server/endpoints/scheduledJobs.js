@@ -100,8 +100,9 @@ function scheduledJobEndpoints(app) {
             });
           }
 
-          const killed = backgroundService.killRun(run.jobId, run.id);
-          if (!killed) await ScheduledJobRun.kill(run.id);
+          backgroundService.killRun(run.jobId, run.id);
+          // Windows terminates workers without running their SIGTERM handler.
+          await ScheduledJobRun.kill(run.id);
           return response.status(200).json({ success: true });
         }
       } catch {

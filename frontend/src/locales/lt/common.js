@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Darbo srities pavadinimas",
     selection: "Modelio pasirinkimas",
     saving: "Saugoma...",
+    saved: "Išsaugota",
     save: "Išsaugoti pakeitimus",
     previous: "Ankstesnis puslapis",
     next: "Kitas puslapis",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
       "Vartotojo vardą turi sudaryti 2–64 simboliai, jis turi prasidėti mažąja raide ir susidėti tik iš mažųjų raidžių, skaičių, pabraukimo brūkšnių, brūkšnelių ir taškų.",
     loading: "Kraunama",
     refresh: "Atnaujinti",
+    noResults: "Nėra rezultatų",
   },
   home: {
     welcome: "Sveiki",
@@ -144,6 +146,35 @@ const TRANSLATIONS = {
       createAgent: "Sukurti agentą",
       editWorkspace: "Redaguoti darbo sritį",
       uploadDocument: "Įkelti dokumentą",
+    },
+    greetings: {
+      anytime: {
+        working_on: "Prie ko dirbame?",
+        on_your_mind: "Apie ką galvojate?",
+        where_to_start: "Nuo ko pradėsime?",
+        ready: "Esu pasiruošęs, kai tik norėsite.",
+        think_it_through: "Gerai tai apgalvokime.",
+      },
+      morning: {
+        good_morning: "Labas rytas",
+        first_today: "Labas rytas. Nuo ko šiandien pradedame?",
+        fresh_start: "Nauja pradžia. Nuo ko pradėsime?",
+      },
+      afternoon: {
+        good_afternoon: "Laba diena",
+        tackling: "Laba diena. Ko imsimės?",
+        next_on_list: "Kas toliau sąraše?",
+        keep_moving: "Judėkime toliau.",
+      },
+      evening: {
+        good_evening: "Labas vakaras",
+        finish_strong: "Labas vakaras. Užbaikime dieną stipriai.",
+      },
+      night: {
+        midnight_oil: "Dirbate iki vėlumos?",
+        late_one: "Ilgas vakaras? Gerai tai apgalvokime.",
+        still_up: "Dar nemiegate? Esu pasiruošęs, kai tik norėsite.",
+      },
     },
   },
   "new-workspace": {
@@ -252,7 +283,26 @@ const TRANSLATIONS = {
       title: "LLM temperatūra",
       "desc-end":
         "Kuo didesnis skaičius, tuo atsakymai kūrybiškesni. Kai kuriems modeliams nustačius per didelę reikšmę atsakymai gali tapti nerišlūs.",
+      placeholder: "Teikėjo numatytoji reikšmė",
     },
+    reasoning_effort: {
+      title: "Samprotavimo pastangos",
+      default: "Teikėjo numatytoji reikšmė",
+      cannot_disable: "Šis modelis negali išjungti samprotavimo.",
+      levels: {
+        off: "Išjungta",
+        on: "Įjungta",
+        minimal: "Minimalios",
+        low: "Mažos",
+        medium: "Vidutinės",
+        high: "Didelės",
+        xhigh: "Labai didelės",
+        max: "Maksimalios",
+      },
+    },
+    token_limit_reached:
+      "Atsakymas pasiekė maksimalų išvesties žetonų limitą. Padidinkite modelio maksimalų išvesties žetonų skaičių, kad būtų galimi ilgesni atsakymai.",
+    no_response: "Modelis nesugebėjo atsakyti.",
   },
   "vector-workspace": {
     identifier: "Vektorių duomenų bazės identifikatorius",
@@ -808,6 +858,12 @@ const TRANSLATIONS = {
       title: "Prekės ženklas",
       description:
         "Pritaikykite savo AnythingLLM instanciją naudodami savo prekės ženklą.",
+      tabs: {
+        identity: "Identitetas",
+        colors: "Spalvos",
+        sidebar: "Šoninė juosta",
+        browser: "Naršyklė",
+      },
     },
     chat: {
       title: "Pokalbiai",
@@ -889,6 +945,36 @@ const TRANSLATIONS = {
         title: "Išjunkite automatinį rolį",
         description:
           "Išjunkite automatinį skryptą į apačią, kai gaunamos naujos žinios.",
+      },
+      palette: {
+        title: "Spalvų paleta",
+        description:
+          "Pasirinkite spalvų paletę. Ji tinka tiek šviesiam, tiek tamsiam režimui.",
+        enforced:
+          "Jūsų administratorius nustatė šios instancijos spalvų paletę.",
+        "default-badge": "Numatytasis",
+      },
+      "instance-palettes": {
+        title: "Spalvų paletės",
+        description:
+          "Spustelėkite paletę, kad ji taptų numatytąja visiems šios instancijos naudotojams. Pasirinktines paletes sudaro pagrindinė spalva, kuria nuspalvinamas fonas, šoninė juosta ir turinys, ir akcento spalva mygtukams bei nuorodoms.",
+        new: "Nauja spalvų paleta",
+        edit: "Redaguoti paletę",
+        delete: "Ištrinti paletę",
+        name: "Paletės pavadinimas",
+        "name-required": "Pavadinkite paletę.",
+        colors: {
+          main: "Pagrindinė spalva",
+          accent: "Akcento spalva",
+        },
+        "preview-note":
+          "Pakeitimai peržiūrimi visoje programoje ir išsaugomi spustelėjus „Atlikta“.",
+        done: "Atlikta",
+        cancel: "Atšaukti",
+        enforce: "Taikyti numatytąją paletę",
+        "enforce-description":
+          "Visi šios instancijos naudotojai naudoja numatytąją paletę ir negali jos pakeisti.",
+        "save-failed": "Nepavyko išsaugoti spalvų palečių: {{error}}",
       },
     },
   },
@@ -1855,7 +1941,7 @@ const TRANSLATIONS = {
       "calculated-no-conditions":
         "Nėra sąlygų – maršrutas į <route>{{route}}</route>",
       "calculated-single-condition":
-        "Jei <prop> yra {{property}} ir </prop>, o {{comparator}} yra <val> ir {{value}}, o </val> yra, tada kelias yra į <route> ir {{route}}",
+        'Jei <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, nukreipti į <route>{{route}}</route>',
       "calculated-multi-condition":
         "Jei {{quantifier}} yra <cond> ir {{conditions}} yra </cond>, tuomet keliauti į <route> ir {{route}} yra </route>",
       "comparator-contains": "apima",

@@ -40,60 +40,83 @@ async function validEmbedConfigId(request, response, next) {
   next();
 }
 
+// Shared access checks for any request that touches an embed's chat data.
+// Responds and returns false if the request should not proceed.
+function passesEmbedAccessControl(request, response) {
+  const embed = response.locals.embedConfig;
+  if (!embed) {
+    response.sendStatus(404).end();
+    return false;
+  }
+
+  // Block if disabled by admin.
+  if (!embed.enabled) {
+    response.status(503).json({
+      id: uuidv4(),
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error:
+        "This chat has been disabled by the administrator - try again later.",
+    });
+    return false;
+  }
+
+  // Check if requester hostname is in the valid allowlist of domains.
+  const host = request.headers.origin ?? "";
+  const allowedHosts = EmbedConfig.parseAllowedHosts(embed);
+
+  // Optional hardening for when an embed with no allowlist is created.
+  // This would mean the embed will accept requests from ANY origin (parseAllowedHosts returns
+  // null). When EMBED_REQUIRE_ALLOWLIST is enabled, treat "no allowlist" as
+  // deny-all instead of allow-all, so an embed cannot be queried cross-origin
+  // until its owner explicitly sets the allowed domains.
+  if (allowedHosts === null && "EMBED_REQUIRE_ALLOWLIST" in process.env) {
+    response.status(401).json({
+      id: uuidv4(),
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: "Invalid request.",
+    });
+    return false;
+  }
+
+  if (allowedHosts !== null && !allowedHosts.includes(host)) {
+    response.status(401).json({
+      id: uuidv4(),
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: "Invalid request.",
+    });
+    return false;
+  }
+
+  return true;
+}
+
+// Access control for the embed history routes (read/invalidate) where the
+// sessionId is a URL param and there is no message body.
+function canAccessHistory(request, response, next) {
+  if (!passesEmbedAccessControl(request, response)) return;
+
+  const { sessionId } = request.params;
+  if (typeof sessionId !== "string" || !validate(sessionId)) {
+    response.status(404).json({ error: "Invalid session ID." });
+    return;
+  }
+
+  next();
+}
+
 async function canRespond(request, response, next) {
   try {
+    if (!passesEmbedAccessControl(request, response)) return;
     const embed = response.locals.embedConfig;
-    if (!embed) {
-      response.sendStatus(404).end();
-      return;
-    }
-
-    // Block if disabled by admin.
-    if (!embed.enabled) {
-      response.status(503).json({
-        id: uuidv4(),
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error:
-          "This chat has been disabled by the administrator - try again later.",
-      });
-      return;
-    }
-
-    // Check if requester hostname is in the valid allowlist of domains.
-    const host = request.headers.origin ?? "";
-    const allowedHosts = EmbedConfig.parseAllowedHosts(embed);
-
-    // Optional hardening for when an embed with no allowlist is created.
-    // This would mean the embed will accept requests from ANY origin (parseAllowedHosts returns
-    // null). When EMBED_REQUIRE_ALLOWLIST is enabled, treat "no allowlist" as
-    // deny-all instead of allow-all, so an embed cannot be queried cross-origin
-    // until its owner explicitly sets the allowed domains.
-    if (allowedHosts === null && "EMBED_REQUIRE_ALLOWLIST" in process.env) {
-      response.status(401).json({
-        id: uuidv4(),
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error: "Invalid request.",
-      });
-      return;
-    }
-
-    if (allowedHosts !== null && !allowedHosts.includes(host)) {
-      response.status(401).json({
-        id: uuidv4(),
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error: "Invalid request.",
-      });
-      return;
-    }
 
     const { sessionId, message } = reqBody(request);
     if (typeof sessionId !== "string" || !validate(String(sessionId))) {
@@ -193,4 +216,5 @@ module.exports = {
   validEmbedConfig,
   validEmbedConfigId,
   canRespond,
+  canAccessHistory,
 };

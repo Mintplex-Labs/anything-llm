@@ -52,6 +52,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Workspace Name",
     selection: "Model Selection",
     saving: "Saving...",
+    saved: "Saved",
     save: "Save changes",
     previous: "Previous Page",
     next: "Next Page",
@@ -66,6 +67,7 @@ const TRANSLATIONS = {
       "Username must be 2-64 characters, start with a lowercase letter, and only contain lowercase letters, numbers, underscores, hyphens, and periods.",
     loading: "Loading",
     refresh: "Refresh",
+    noResults: "No results found",
   },
   home: {
     welcome: "Welcome",
@@ -140,6 +142,37 @@ const TRANSLATIONS = {
   },
   "main-page": {
     greeting: "How can I help you today?",
+    // Empty chat headline. Each visit picks one line from the current time of day
+    // bucket plus `anytime`. Keys only identify a line - add or remove freely.
+    greetings: {
+      anytime: {
+        working_on: "What are we working on?",
+        on_your_mind: "What's on your mind?",
+        where_to_start: "Where should we start?",
+        ready: "Ready when you are.",
+        think_it_through: "Let's think it through.",
+      },
+      morning: {
+        good_morning: "Good morning",
+        first_today: "Morning. What's first today?",
+        fresh_start: "Fresh start. Where should we begin?",
+      },
+      afternoon: {
+        good_afternoon: "Good afternoon",
+        tackling: "Afternoon. What are we tackling?",
+        next_on_list: "What's next on the list?",
+        keep_moving: "Let's keep it moving.",
+      },
+      evening: {
+        good_evening: "Good evening",
+        finish_strong: "Evening. Let's finish strong.",
+      },
+      night: {
+        midnight_oil: "Burning the midnight oil?",
+        late_one: "Late one? Let's think it through.",
+        still_up: "Still up? Ready when you are.",
+      },
+    },
     quickActions: {
       createAgent: "Create an Agent",
       editWorkspace: "Edit Workspace",
@@ -248,10 +281,29 @@ const TRANSLATIONS = {
       "tooltip-description":
         "You are in query mode, which only uses information from your documents. Switch to chat mode for more flexible conversations, or click here to visit our documentation to learn more about chat modes.",
     },
+    no_response: "Model failed to respond.",
+    token_limit_reached:
+      "Response hit the max output token limit. Increase the model's max output tokens to allow longer responses.",
     temperature: {
       title: "LLM Temperature",
       "desc-end":
-        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
+        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high. Leave blank to use your model provider's default.",
+      placeholder: "Provider default",
+    },
+    reasoning_effort: {
+      title: "Reasoning Effort",
+      default: "Provider default",
+      cannot_disable: "This model cannot turn reasoning off.",
+      levels: {
+        off: "Off",
+        on: "On",
+        minimal: "Minimal",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        xhigh: "Extra high",
+        max: "Max",
+      },
     },
   },
   "vector-workspace": {
@@ -795,6 +847,12 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "White-label your AnythingLLM instance with custom branding.",
+      tabs: {
+        identity: "Identity",
+        colors: "Colors",
+        sidebar: "Sidebar",
+        browser: "Browser",
+      },
     },
     chat: {
       title: "Chat",
@@ -817,6 +875,36 @@ const TRANSLATIONS = {
       theme: {
         title: "Theme",
         description: "Select your preferred color theme for the application.",
+      },
+      palette: {
+        title: "Color palette",
+        description:
+          "Choose a color palette. It applies to both light and dark mode.",
+        enforced:
+          "Your administrator has set the color palette for this instance.",
+        "default-badge": "Default",
+      },
+      "instance-palettes": {
+        title: "Color palettes",
+        description:
+          "Click a palette to make it the default for everyone on this instance. Custom palettes are a main color, which tints the background, sidebar and content, and an accent for buttons and links.",
+        new: "New palette",
+        edit: "Edit palette",
+        delete: "Delete palette",
+        name: "Palette name",
+        "name-required": "Give the palette a name.",
+        colors: {
+          main: "Main color",
+          accent: "Accent",
+        },
+        "preview-note":
+          "Changes preview across the app and are saved when you click Done.",
+        done: "Done",
+        cancel: "Cancel",
+        enforce: "Enforce the default palette",
+        "enforce-description":
+          "Everyone on this instance uses the default palette and cannot change it.",
+        "save-failed": "Failed to save color palettes: {{error}}",
       },
       "show-scrollbar": {
         title: "Show Scrollbar",

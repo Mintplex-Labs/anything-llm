@@ -19,10 +19,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
-        xdg-utils git build-essential ffmpeg && \
+        xdg-utils git build-essential ffmpeg \
+        # Vulkan loader + Mesa drivers so the embedded Lemonade engine (ENABLE_BUILT_IN_LLM) can use AMD/Intel GPUs
+        libvulkan1 mesa-vulkan-drivers && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     # Install node and yarn
     apt-get install -yq --no-install-recommends nodejs && \
@@ -88,10 +90,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release \
-        xdg-utils git build-essential ffmpeg && \
+        xdg-utils git build-essential ffmpeg \
+        # Vulkan loader + Mesa drivers so the embedded Lemonade engine (ENABLE_BUILT_IN_LLM) can use AMD/Intel GPUs
+        libvulkan1 mesa-vulkan-drivers && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     # Install node and yarn
     apt-get install -yq --no-install-recommends nodejs && \
@@ -138,7 +142,7 @@ WORKDIR /app
 # Use BUILDPLATFORM to run on the native host architecture (not emulated).
 # This avoids esbuild crashing under QEMU when cross-compiling.
 # The output (static HTML/CSS/JS) is platform-independent.
-FROM --platform=$BUILDPLATFORM node:18-slim AS frontend-build
+FROM --platform=$BUILDPLATFORM node:24-slim AS frontend-build
 WORKDIR /app/frontend
 COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn install --network-timeout 100000 && yarn cache clean
@@ -171,7 +175,7 @@ COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /a
 # Setup the environment
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
-ENV DEPLOYMENT_VERSION=1.16.2
+ENV DEPLOYMENT_VERSION=1.19.0
 
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \

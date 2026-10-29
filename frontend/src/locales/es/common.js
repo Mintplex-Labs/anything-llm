@@ -54,6 +54,7 @@ const TRANSLATIONS = {
     "workspaces-name": "Nombre de los espacios de trabajo",
     selection: "Selección de modelo",
     saving: "Guardando...",
+    saved: "Guardado",
     save: "Guardar cambios",
     previous: "Página anterior",
     next: "Página siguiente",
@@ -68,6 +69,7 @@ const TRANSLATIONS = {
     stopped: "Parado",
     loading: "Cargando",
     refresh: "Renovar; revitalizar",
+    noResults: "No se encontraron resultados",
   },
   settings: {
     title: "Ajustes de la instancia",
@@ -139,6 +141,35 @@ const TRANSLATIONS = {
       uploadDocument: "Cargar un documento",
     },
     greeting: "¿Cómo puedo ayudarte hoy?",
+    greetings: {
+      anytime: {
+        working_on: "¿En qué estamos trabajando?",
+        on_your_mind: "¿Qué tienes en mente?",
+        where_to_start: "¿Por dónde empezamos?",
+        ready: "Listo cuando tú lo estés.",
+        think_it_through: "Pensémoslo bien.",
+      },
+      morning: {
+        good_morning: "Buenos días",
+        first_today: "Buenos días. ¿Qué hacemos primero hoy?",
+        fresh_start: "Un nuevo comienzo. ¿Por dónde arrancamos?",
+      },
+      afternoon: {
+        good_afternoon: "Buenas tardes",
+        tackling: "Buenas tardes. ¿Qué abordamos?",
+        next_on_list: "¿Qué sigue en la lista?",
+        keep_moving: "Sigamos avanzando.",
+      },
+      evening: {
+        good_evening: "Buenas noches",
+        finish_strong: "Buenas noches. Terminemos con fuerza.",
+      },
+      night: {
+        midnight_oil: "¿Trabajando hasta tarde?",
+        late_one: "¿Noche larga? Pensémoslo bien.",
+        still_up: "¿Todavía por aquí? Listo cuando tú lo estés.",
+      },
+    },
   },
   "new-workspace": {
     title: "Nuevo espacio de trabajo",
@@ -248,7 +279,26 @@ const TRANSLATIONS = {
       title: "Temperatura del LLM",
       "desc-end":
         "Cuanto mayor sea el número, más creativo. Para algunos modelos, esto puede llevar a respuestas incoherentes si se establece un valor demasiado alto.",
+      placeholder: "Predeterminado del proveedor",
     },
+    reasoning_effort: {
+      title: "Esfuerzo de razonamiento",
+      default: "Predeterminado del proveedor",
+      cannot_disable: "Este modelo no puede desactivar el razonamiento.",
+      levels: {
+        off: "Desactivado",
+        on: "Activado",
+        minimal: "Mínimo",
+        low: "Bajo",
+        medium: "Medio",
+        high: "Alto",
+        xhigh: "Muy alto",
+        max: "Máximo",
+      },
+    },
+    token_limit_reached:
+      "La respuesta alcanzó el límite máximo de tokens de salida. Aumente el número máximo de tokens de salida del modelo para permitir respuestas más largas.",
+    no_response: "El modelo no pudo responder.",
   },
   "vector-workspace": {
     identifier: "Identificador de la base de datos vectorial",
@@ -763,7 +813,7 @@ const TRANSLATIONS = {
       "start-server": "Iniciar el servidor MCP",
       "delete-server": "Eliminar el servidor MCP",
       "tool-count-warning":
-        "Este servidor de MCP tiene <b> herramientas habilitadas</b> que consumirán contexto en cada conversación.<br /> Considere desactivar las herramientas no deseadas para ahorrar contexto.",
+        "Este servidor de MCP tiene <b>{{count}} herramientas habilitadas</b> que consumirán contexto en cada conversación.<br />Considere desactivar las herramientas no deseadas para ahorrar contexto.",
       "startup-command": "Comando inicial",
       command: "Órden",
       arguments: "Argumentos",
@@ -826,6 +876,12 @@ const TRANSLATIONS = {
       title: "Marca y marca blanca",
       description:
         "Personaliza tu instancia de AnythingLLM con tu propia marca.",
+      tabs: {
+        identity: "Identidad",
+        colors: "Colores",
+        sidebar: "Barra lateral",
+        browser: "Navegador",
+      },
     },
     chat: {
       title: "Chat",
@@ -911,6 +967,37 @@ const TRANSLATIONS = {
         title: "Desactivar el desplazamiento automático",
         description:
           "Desactivar la función de desplazamiento automático hacia el final del chat cuando se reciben nuevos mensajes.",
+      },
+      palette: {
+        title: "Paleta de colores",
+        description:
+          "Seleccione una paleta de colores. Esto se aplica tanto al modo claro como al modo oscuro.",
+        enforced:
+          "El administrador ha configurado la paleta de colores para esta instancia.",
+        "default-badge": "Predeterminada",
+      },
+      "instance-palettes": {
+        title: "Paletas de colores",
+        description:
+          "Haga clic en una paleta para que se convierta en la predeterminada para todos en esta instancia. Las paletas personalizadas incluyen un color principal, que se aplica al fondo, la barra lateral y el contenido, y un color de acento para los botones y los enlaces.",
+        new: "Nueva paleta",
+        edit: "Editar paleta",
+        delete: "Eliminar paleta",
+        name: "Nombre de la paleta",
+        "name-required": "Asigne un nombre a la paleta.",
+        colors: {
+          main: "Color principal",
+          accent: "Color de acento",
+        },
+        "preview-note":
+          'Los cambios se muestran en toda la aplicación y se guardan al hacer clic en "Listo".',
+        done: "Listo",
+        cancel: "Cancelar",
+        enforce: "Aplicar la paleta predeterminada",
+        "enforce-description":
+          "En esta instancia, todos utilizan la paleta predeterminada y no pueden modificarla.",
+        "save-failed":
+          "No se pudieron guardar las paletas de colores: {{error}}",
       },
     },
   },

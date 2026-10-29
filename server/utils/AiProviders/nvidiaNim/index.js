@@ -6,6 +6,9 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class NvidiaNimLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -27,7 +30,6 @@ class NvidiaNimLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.#log(
       `Loaded with model: ${this.model} with context window: ${this.promptWindowLimit()}`
     );
@@ -152,7 +154,10 @@ class NvidiaNimLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `NVIDIA NIM chat: ${this.model} is not valid or defined model for chat completion!`
@@ -163,7 +168,7 @@ class NvidiaNimLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -191,7 +196,10 @@ class NvidiaNimLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         `NVIDIA NIM chat: ${this.model} is not valid or defined model for chat completion!`
@@ -202,7 +210,7 @@ class NvidiaNimLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
       runPromptTokenCalculation: true,

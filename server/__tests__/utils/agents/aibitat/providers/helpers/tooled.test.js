@@ -2,8 +2,12 @@ const {
   formatMessagesForTools,
   tooledStream,
   tooledComplete,
+  temperatureParam,
   serviceTierParam,
 } = require("../../../../../../utils/agents/aibitat/providers/helpers/tooled.js");
+const {
+  rechart,
+} = require("../../../../../../utils/agents/aibitat/plugins/rechart.js");
 
 describe("formatMessagesForTools attachment content (native tool path)", () => {
   it("sends audio attachments as input_audio and keeps images as image_url", () => {
@@ -156,6 +160,70 @@ describe("max_tokens forwarding from the tooled maxTokens option", () => {
   });
 });
 
+describe("temperatureParam", () => {
+  it("omits the field when temperature is unset or not a finite number", () => {
+    expect(temperatureParam(undefined)).toEqual({});
+    expect(temperatureParam(null)).toEqual({});
+    expect(temperatureParam("0.5")).toEqual({});
+    expect(temperatureParam(NaN)).toEqual({});
+  });
+
+  it("sends the field for finite numbers, including 0", () => {
+    expect(temperatureParam(0)).toEqual({ temperature: 0 });
+    expect(temperatureParam(0.7)).toEqual({ temperature: 0.7 });
+  });
+});
+
+describe("temperature forwarding from the provider", () => {
+  const messages = [{ role: "user", content: "hi" }];
+
+  function fakeClient({ stream = false } = {}) {
+    const create = jest.fn(async () => {
+      if (!stream) {
+        return {
+          choices: [{ message: { role: "assistant", content: "ok" } }],
+          usage: null,
+        };
+      }
+      return (async function* () {
+        yield { choices: [{ delta: { content: "ok" } }] };
+      })();
+    });
+    return { client: { chat: { completions: { create } } }, create };
+  }
+
+  it.each([0, 0.3])(
+    "sends temperature %p on complete and stream",
+    async (temperature) => {
+      const complete = fakeClient();
+      await tooledComplete(complete.client, "m", messages, [], () => 0, {
+        provider: { temperature },
+      });
+      expect(complete.create.mock.calls[0][0].temperature).toBe(temperature);
+
+      const streamed = fakeClient({ stream: true });
+      await tooledStream(streamed.client, "m", messages, [], null, {
+        provider: { temperature },
+      });
+      expect(streamed.create.mock.calls[0][0].temperature).toBe(temperature);
+    }
+  );
+
+  it("omits temperature entirely when the provider has none", async () => {
+    const complete = fakeClient();
+    await tooledComplete(complete.client, "m", messages, [], () => 0, {
+      provider: {},
+    });
+    expect(complete.create.mock.calls[0][0]).not.toHaveProperty("temperature");
+
+    const streamed = fakeClient({ stream: true });
+    await tooledStream(streamed.client, "m", messages, [], null, {
+      provider: { temperature: undefined },
+    });
+    expect(streamed.create.mock.calls[0][0]).not.toHaveProperty("temperature");
+  });
+});
+
 describe("serviceTierParam", () => {
   it("passes a tier straight through", () => {
     expect(serviceTierParam("flex")).toEqual({ service_tier: "flex" });
@@ -188,21 +256,24 @@ describe("service_tier forwarding from the tooled serviceTier option", () => {
     return { client: { chat: { completions: { create } } }, create };
   }
 
-  it.each(["flex", "priority"])("forwards %s on complete and stream", async (serviceTier) => {
-    const complete = fakeClient();
-    await tooledComplete(complete.client, "m", messages, [], () => 0, {
-      provider: {},
-      serviceTier,
-    });
-    expect(complete.create.mock.calls[0][0].service_tier).toBe(serviceTier);
+  it.each(["flex", "priority"])(
+    "forwards %s on complete and stream",
+    async (serviceTier) => {
+      const complete = fakeClient();
+      await tooledComplete(complete.client, "m", messages, [], () => 0, {
+        provider: {},
+        serviceTier,
+      });
+      expect(complete.create.mock.calls[0][0].service_tier).toBe(serviceTier);
 
-    const streamed = fakeClient({ stream: true });
-    await tooledStream(streamed.client, "m", messages, [], null, {
-      provider: {},
-      serviceTier,
-    });
-    expect(streamed.create.mock.calls[0][0].service_tier).toBe(serviceTier);
-  });
+      const streamed = fakeClient({ stream: true });
+      await tooledStream(streamed.client, "m", messages, [], null, {
+        provider: {},
+        serviceTier,
+      });
+      expect(streamed.create.mock.calls[0][0].service_tier).toBe(serviceTier);
+    }
+  );
 
   it("omits service_tier entirely when the option is not passed", async () => {
     const complete = fakeClient();
@@ -216,5 +287,108 @@ describe("service_tier forwarding from the tooled serviceTier option", () => {
       provider: {},
     });
     expect(streamed.create.mock.calls[0][0]).not.toHaveProperty("service_tier");
+  });
+});
+
+describe("required parameters of bundled plugins", () => {
+  it("tooledComplete sends create-chart's required list in the tool schema", async () => {
+    const functions = [];
+    rechart.plugin.call(rechart).setup({
+      function: (definition) => functions.push(definition),
+    });
+
+    const create = jest.fn(async () => ({
+      choices: [{ message: { role: "assistant", content: "ok" } }],
+      usage: null,
+    }));
+    await tooledComplete(
+      { chat: { completions: { create } } },
+      "m",
+      [{ role: "user", content: "chart this" }],
+      functions,
+      () => 0,
+      { provider: {} }
+    );
+
+    const [tool] = create.mock.calls[0][0].tools;
+    expect(tool.function.name).toBe("create-chart");
+    expect(tool.function.parameters.required).toEqual([
+      "type",
+      "title",
+      "dataset",
+    ]);
+  });
+});
+
+describe("tooledComplete tool call arguments", () => {
+  function fakeClient(args) {
+    const create = jest.fn(async () => ({
+      choices: [
+        {
+          message: {
+            role: "assistant",
+            content: null,
+            tool_calls: [
+              {
+                id: "call_1",
+                type: "function",
+                function: { name: "get-time", arguments: args },
+              },
+            ],
+          },
+        },
+      ],
+      usage: null,
+    }));
+    return { chat: { completions: { create } } };
+  }
+
+  it.each([
+    ["empty", ""],
+    ["whitespace", " \n"],
+    ["null", null],
+    ["missing", undefined],
+  ])("treats %s arguments of a zero-arg tool as {}", async (_label, args) => {
+    const result = await tooledComplete(
+      fakeClient(args),
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      () => 0,
+      { provider: {} }
+    );
+    expect(result.retryWithError).toBeUndefined();
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "get-time",
+      arguments: {},
+    });
+  });
+
+  it("parses JSON arguments", async () => {
+    const result = await tooledComplete(
+      fakeClient('{"tz":"UTC"}'),
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      () => 0,
+      { provider: {} }
+    );
+    expect(result.functionCall.arguments).toEqual({ tz: "UTC" });
+  });
+
+  it("still asks the model to retry on unparseable arguments", async () => {
+    const result = await tooledComplete(
+      fakeClient("not json"),
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      () => 0,
+      { provider: {} }
+    );
+    expect(result.functionCall).toBeUndefined();
+    expect(result.retryWithError.content).toBe(
+      "Failed to parse tool call arguments as JSON. Raw arguments: not json"
+    );
   });
 });

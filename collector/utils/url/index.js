@@ -96,6 +96,22 @@ function validateURL(url) {
 }
 
 /**
+ * Decodes a URL pathname so filenames built from it stay readable
+ * (eg: /docs/caf%C3%A9 -> /docs/café). A path with a % that is not part of a
+ * UTF-8 escape (eg: /50%-off, or the Latin-1 /caf%E9) cannot be decoded, so it
+ * is returned as-is instead of throwing.
+ * @param {string} pathname
+ * @returns {string}
+ */
+function decodePathname(pathname = "") {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return pathname;
+  }
+}
+
+/**
  * Validate if a link is a valid YouTube video URL
  * - Checks youtu.be, youtube.com, m.youtube.com, music.youtube.com
  * - Embed video URLs
@@ -120,7 +136,7 @@ function validYoutubeVideoUrl(link, returnVideoId = false) {
     }
 
     const regex =
-      /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|(?:live\/)?|shorts\/))([\w-]{11})(?:\S+)?$/;
+      /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|live\/|shorts\/))([\w-]{11})(?:[?&#/]\S*)?$/;
     const match = urlToValidate.match(regex);
     if (returnVideoId) return match?.[1] ?? null;
     return !!match?.[1];
@@ -134,4 +150,5 @@ module.exports = {
   validURL,
   validateURL,
   validYoutubeVideoUrl,
+  decodePathname,
 };

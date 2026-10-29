@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> 我们同时也在开发 [Open Computer](../open-computer)，为 AI 智能体提供完整的计算机运行环境。
->
-> 这将把 AnythingLLM 的智能体能力提升到新的高度，并带来全新的 AI 智能体使用范式。
->
-> ⭐ 为本仓库点亮 Star 以获取最新动态！
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -263,7 +256,7 @@ Mintplex Labs 与社区维护了多种部署方式、脚本和模板，您可以
 
 ## 🔗 更多产品
 
-- **[AnythingLLM Mobile（MIT 许可）][anythingllm-mobile]：** 让您在移动设备上使用 AnythingLLM 的移动应用。
+- **[AnythingLLM Mobile（开源许可）][anythingllm-mobile]：** 同样的 AnythingLLM 本地设备体验，现在就在您的手机上。
 - **[AnythingLLM 浏览器扩展][anythingllm-extension]：** 让您在浏览器中使用 AnythingLLM 的浏览器扩展。
 - **[AnythingLLM Embed][anythingllm-embed]：** 让您将 AnythingLLM 嵌入自己网站的组件。
 

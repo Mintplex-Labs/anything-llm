@@ -702,7 +702,8 @@ async function searchDocuments(searchTerm = "") {
  * Ensures a target folder exists under the documents storage path and moves
  * processed collector documents into it, updating each document's `location`
  * and `name` in-place. If the folder already exists, documents are merged
- * into it so repeated uploads to the same folder are idempotent.
+ * into it so repeated uploads to the same folder are idempotent. Source
+ * folders left empty by the move are removed, except custom-documents.
  *
  * The folder must be a single path segment - see the note below on why.
  * @param {Array<{location: string, name: string}>} documents - documents returned by Collector.processDocument
@@ -734,6 +735,7 @@ function moveProcessedDocsToFolder(
   if (!fs.existsSync(targetFolderPath))
     fs.mkdirSync(targetFolderPath, { recursive: true });
 
+  const sourceFolders = new Set();
   for (const doc of documents) {
     const currentFolder = path.dirname(doc.location);
     if (currentFolder === folder) continue;
@@ -748,8 +750,20 @@ function moveProcessedDocsToFolder(
       throw new Error("Invalid file location.");
 
     fs.renameSync(sourcePath, destinationPath);
+    sourceFolders.add(path.dirname(sourcePath));
     doc.location = path.join(folder, path.basename(doc.location));
     doc.name = path.basename(doc.location);
+  }
+
+  // The collector writes multi-document uploads (e.g. each sheet of an XLSX)
+  // into a folder of their own. Once those documents live in the target
+  // folder that folder is empty and would show up in the picker as a stray.
+  // custom-documents is the default upload folder, so it is always kept.
+  const defaultFolder = path.resolve(basePath, "custom-documents");
+  for (const sourceFolder of sourceFolders) {
+    const resolved = path.resolve(sourceFolder);
+    if (resolved === defaultFolder || !isWithin(basePath, resolved)) continue;
+    if (fs.readdirSync(resolved).length === 0) fs.rmdirSync(resolved);
   }
 
   return folder;
@@ -949,6 +963,24 @@ function generatedImageAttachments(outputs = []) {
   return attachments;
 }
 
+/**
+ * Collects the images tied to a stored chat so they can be replayed into chat
+ * history as vision context: the images the user uploaded plus any `/img`
+ * generated images re-read off disk. Only `image/*` attachments are kept, since
+ * the developer API can store `application/anythingllm-document` attachments
+ * that no LLM can accept as an image.
+ * @param {{attachments?: import("../helpers").Attachment[], outputs?: object[]}} response - a parsed chat response
+ * @returns {import("../helpers").Attachment[]}
+ */
+function chatHistoryAttachments(response = {}) {
+  return [
+    ...(response?.attachments || []).filter((attachment) =>
+      attachment?.mime?.toLowerCase().startsWith("image/")
+    ),
+    ...generatedImageAttachments(response?.outputs),
+  ];
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -968,6 +1000,7 @@ module.exports = {
   generatedImagesPath,
   saveGeneratedImage,
   generatedImageAttachments,
+  chatHistoryAttachments,
   GENERATED_IMAGE_FILENAME_PATTERN,
   moveProcessedDocsToFolder,
   viewLocalFiles,

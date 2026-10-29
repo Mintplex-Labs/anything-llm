@@ -9,10 +9,11 @@
 const DEFAULT_IMAGE_SIZE = "1024x1024";
 
 /**
- * Shared base for all image generation providers. Every supported provider
- * (OpenAI, Ollama, Lemonade, OpenRouter) speaks the OpenAI
- * `images.generate` API, so the only per-provider difference is the client
- * configuration (baseURL/apiKey) and the selected model.
+ * Shared base for all image generation providers. Most supported providers
+ * (OpenAI, Ollama, Lemonade) speak the OpenAI `images.generate` API, so the
+ * only per-provider difference is the client configuration (baseURL/apiKey)
+ * and the selected model. OpenRouter and Gemini override generate/edit to use
+ * their native multimodal endpoints instead.
  */
 class BaseImageGenerator {
   /**

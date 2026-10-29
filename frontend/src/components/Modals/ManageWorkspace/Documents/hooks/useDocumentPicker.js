@@ -17,9 +17,11 @@ const UNLOADED = Object.freeze({
   items: [],
   hasMore: false,
   totalCount: 0,
+  fetched: 0,
 });
 
 const EMPTY_SET = Object.freeze(new Set());
+const EMPTY_MAP = Object.freeze(new Map());
 
 /**
  * Single source of truth for the "My Documents" file picker.
@@ -47,8 +49,8 @@ const initialState = {
   expanded: EMPTY_SET,
   /** @type {Set<string>} folder names selected wholesale */
   selectedFolders: EMPTY_SET,
-  /** @type {Set<string>} individually selected file ids */
-  selectedFiles: EMPTY_SET,
+  /** @type {Map<string, object & {folderName: string}>} selected file records, including search-only hits */
+  selectedFiles: EMPTY_MAP,
   /** @type {Set<string>} files opted out of an otherwise-selected folder */
   deselectedFiles: EMPTY_SET,
   /** @type {Array<{name, fileCount, items}>|null} null when not searching */
@@ -159,6 +161,10 @@ function reducer(state, action) {
               : action.items,
             hasMore: action.hasMore,
             totalCount: action.totalCount,
+            // Server offset of the next page. Pages are windows over the
+            // folder's full file list and embedded files are filtered out of
+            // each one, so this tracks windows fetched, not items shown.
+            fetched: (action.append ? prev.fetched : 0) + PAGE_SIZE,
           },
         },
       };
@@ -196,14 +202,18 @@ function reducer(state, action) {
       };
 
     case "toggle-file": {
-      const { id, folderName } = action;
+      const { file, folderName } = action;
+      const { id } = file;
       const inSelectedFolder = state.selectedFolders.has(folderName);
       const isOn =
         (inSelectedFolder && !state.deselectedFiles.has(id)) ||
         state.selectedFiles.has(id);
+      const selectedFiles = new Map(state.selectedFiles);
+      if (isOn) selectedFiles.delete(id);
+      else selectedFiles.set(id, { ...file, folderName });
       return {
         ...state,
-        selectedFiles: withToggled(state.selectedFiles, id, !isOn),
+        selectedFiles,
         // Turning a file off inside a wholesale-selected folder records an
         // exception; turning it back on clears that exception.
         deselectedFiles: withToggled(
@@ -224,12 +234,18 @@ function reducer(state, action) {
       // selected (how a fresh upload arrives) renders as checked, and clicking
       // a checked box has to uncheck it. Anything short of fully checked
       // selects the whole folder, so a partial box fills in on one click.
+      // Individual selections cannot cover pages not fetched yet, so a folder
+      // with more pages is never fully selected that way (search match lists
+      // are complete, so they are exempt).
+      const partiallyLoaded =
+        !state.searchResults && (state.contents[name] ?? UNLOADED).hasMore;
       const fullySelected = state.selectedFolders.has(name)
         ? !items.some((file) => state.deselectedFiles.has(file.id))
         : items.length > 0 &&
+          !partiallyLoaded &&
           items.every((file) => state.selectedFiles.has(file.id));
       const turningOn = !fullySelected;
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       // Individual entries are redundant once the folder itself carries the
       // selection, so drop them either way to keep the sets canonical.
@@ -237,6 +253,8 @@ function reducer(state, action) {
         selectedFiles.delete(file.id);
         deselectedFiles.delete(file.id);
       }
+      for (const [id, file] of selectedFiles)
+        if (file.folderName === name) selectedFiles.delete(id);
       return {
         ...state,
         selectedFolders: withToggled(state.selectedFolders, name, turningOn),
@@ -249,7 +267,7 @@ function reducer(state, action) {
       return {
         ...state,
         selectedFolders: new Set(state.folders.map((f) => f.name)),
-        selectedFiles: EMPTY_SET,
+        selectedFiles: EMPTY_MAP,
         deselectedFiles: EMPTY_SET,
       };
 
@@ -257,19 +275,38 @@ function reducer(state, action) {
       return {
         ...state,
         selectedFolders: EMPTY_SET,
-        selectedFiles: EMPTY_SET,
+        selectedFiles: EMPTY_MAP,
         deselectedFiles: EMPTY_SET,
       };
 
     case "select-files": {
-      if (!action.ids.length) return state;
-      const selectedFiles = new Set(state.selectedFiles);
+      if (!action.files.length) return state;
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
-      for (const id of action.ids) {
-        selectedFiles.add(id);
-        deselectedFiles.delete(id);
+      for (const file of action.files) {
+        selectedFiles.set(file.id, file);
+        deselectedFiles.delete(file.id);
       }
       return { ...state, selectedFiles, deselectedFiles };
+    }
+
+    // Wholesale selection, so files on pages not fetched yet are included.
+    case "select-folders": {
+      if (!action.names.length) return state;
+      const selectedFolders = new Set(state.selectedFolders);
+      const selectedFiles = new Map(state.selectedFiles);
+      const deselectedFiles = new Set(state.deselectedFiles);
+      for (const name of action.names) {
+        selectedFolders.add(name);
+        for (const file of (state.contents[name] ?? UNLOADED).items) {
+          selectedFiles.delete(file.id);
+          deselectedFiles.delete(file.id);
+        }
+        // Search-only selections from unloaded pages are not in `items`.
+        for (const [id, file] of selectedFiles)
+          if (file.folderName === name) selectedFiles.delete(id);
+      }
+      return { ...state, selectedFolders, selectedFiles, deselectedFiles };
     }
 
     // Optimistically drop files from the picker (moved into the workspace or
@@ -291,9 +328,14 @@ function reducer(state, action) {
                   0,
                   entry.totalCount - removedPerFolder[name]
                 ),
+                // Deleted files leave the folder's file list; files only staged
+                // for the workspace are still on disk, so the window stays put.
+                fetched: action.deleted
+                  ? Math.max(0, entry.fetched - removedPerFolder[name])
+                  : entry.fetched,
               };
       }
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       for (const id of removed) {
         selectedFiles.delete(id);
@@ -393,7 +435,7 @@ export default function useDocumentPicker({ slug }) {
     if (entry.status === "loaded" && !append) return;
 
     dispatch({ type: "folder-loading", name });
-    const offset = append ? entry.items.length : 0;
+    const offset = append ? entry.fetched : 0;
     const result = await System.localFiles(name, offset, PAGE_SIZE);
     if (!result) return dispatch({ type: "folder-failed", name });
 
@@ -446,8 +488,13 @@ export default function useDocumentPicker({ slug }) {
    */
   const folderSelectionState = useCallback(
     (name, visibleFiles) => {
-      const { selectedFolders, deselectedFiles, selectedFiles, contents } =
-        state;
+      const {
+        selectedFolders,
+        deselectedFiles,
+        selectedFiles,
+        contents,
+        searchResults,
+      } = state;
       const items = visibleFiles ?? (contents[name] ?? UNLOADED).items;
       if (selectedFolders.has(name)) {
         const opted = items.some((f) => deselectedFiles.has(f.id));
@@ -456,7 +503,11 @@ export default function useDocumentPicker({ slug }) {
       if (items.length === 0) return "none";
       const hits = items.filter((f) => selectedFiles.has(f.id)).length;
       if (hits === 0) return "none";
-      return hits === items.length ? "all" : "some";
+      // Mirrors `toggle-folder`: individual selections cannot make a folder
+      // with unfetched pages "all".
+      const partiallyLoaded =
+        !searchResults && (contents[name] ?? UNLOADED).hasMore;
+      return hits === items.length && !partiallyLoaded ? "all" : "some";
     },
     [state]
   );
@@ -485,7 +536,7 @@ export default function useDocumentPicker({ slug }) {
       count += Math.max(0, total - opted);
       entry.items.forEach((f) => counted.add(f.id));
     }
-    for (const id of selectedFiles) if (!counted.has(id)) count += 1;
+    for (const id of selectedFiles.keys()) if (!counted.has(id)) count += 1;
     return count;
   }, [state]);
 
@@ -501,8 +552,7 @@ export default function useDocumentPicker({ slug }) {
     state.selectedFolders.size > 0 || state.selectedFiles.size > 0;
 
   const toggleFile = useCallback(
-    (file, folderName) =>
-      dispatch({ type: "toggle-file", id: file.id, folderName }),
+    (file, folderName) => dispatch({ type: "toggle-file", file, folderName }),
     []
   );
   const toggleFolder = useCallback(
@@ -554,14 +604,21 @@ export default function useDocumentPicker({ slug }) {
           seen.add(file.id);
           resolved.push({ ...file, folderName: folder.name });
         }
-        continue;
       }
+    }
 
-      for (const file of items) {
-        if (!selectedFiles.has(file.id) || seen.has(file.id)) continue;
-        seen.add(file.id);
-        resolved.push({ ...file, folderName: folder.name });
-      }
+    // Individual selections may come from search results outside loaded pages.
+    const folderNames = new Set(folders.map((folder) => folder.name));
+    for (const file of selectedFiles.values()) {
+      if (
+        selectedFolders.has(file.folderName) ||
+        !folderNames.has(file.folderName) ||
+        workspaceDocpaths.has(`${file.folderName}/${file.name}`) ||
+        seen.has(file.id)
+      )
+        continue;
+      seen.add(file.id);
+      resolved.push(file);
     }
     return resolved;
   }, []);
@@ -587,7 +644,8 @@ export default function useDocumentPicker({ slug }) {
     [loadFolder]
   );
   const removeFiles = useCallback(
-    (ids) => dispatch({ type: "remove-files", ids }),
+    (ids, { deleted = false } = {}) =>
+      dispatch({ type: "remove-files", ids, deleted }),
     []
   );
   const addFolder = useCallback(
@@ -628,6 +686,8 @@ export default function useDocumentPicker({ slug }) {
    * Reconcile the picker after an upload finishes. Refreshes shells in place,
    * pulls the pages of any folder whose file count grew, and pre-selects the
    * files that are genuinely new so the user can embed them immediately.
+   * A folder that was empty before the upload is selected wholesale instead,
+   * since every file in it is new and only its first page is fetched here.
    * Never touches `status`, so the tree stays on screen throughout.
    */
   const syncAfterUpload = useCallback(async () => {
@@ -654,7 +714,8 @@ export default function useDocumentPicker({ slug }) {
       changed.map((folder) => System.localFiles(folder.name, 0, PAGE_SIZE))
     );
 
-    const freshIds = [];
+    const freshFiles = [];
+    const freshFolders = [];
     changed.forEach((folder, i) => {
       const result = pages[i];
       if (!result) return;
@@ -670,11 +731,18 @@ export default function useDocumentPicker({ slug }) {
         totalCount: result.totalCount ?? items.length,
       });
       dispatch({ type: "set-expanded", name: folder.name, value: true });
+      // Wholesale selection would also pick up a non-empty folder's old files.
+      if (!before.get(folder.name)) {
+        freshFolders.push(folder.name);
+        return;
+      }
       for (const file of items)
-        if (!knownIds.has(file.id)) freshIds.push(file.id);
+        if (!knownIds.has(file.id))
+          freshFiles.push({ ...file, folderName: folder.name });
     });
 
-    dispatch({ type: "select-files", ids: freshIds });
+    dispatch({ type: "select-folders", names: freshFolders });
+    dispatch({ type: "select-files", files: freshFiles });
   }, [refresh]);
 
   return {

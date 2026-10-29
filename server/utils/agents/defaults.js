@@ -42,6 +42,11 @@ const SKILL_FILTER_CONFIG = {
       require("./aibitat/plugins/outlook/lib").OutlookBridge.isToolAvailable(),
     disabledSettingKey: "disabled_outlook_skills",
   },
+  "google-calendar-agent": {
+    getAvailability: async () =>
+      require("./aibitat/plugins/google-calendar/lib").GoogleCalendarBridge.isToolAvailable(),
+    disabledSettingKey: "disabled_google_calendar_skills",
+  },
 };
 
 const USER_AGENT = {

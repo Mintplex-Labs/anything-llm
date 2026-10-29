@@ -1,7 +1,10 @@
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
-const { formatFunctionsToTools } = require("./helpers/tooled.js");
+const {
+  formatFunctionsToTools,
+  temperatureParam,
+} = require("./helpers/tooled.js");
 const { LlmmanLLM } = require("../../../AiProviders/llmman");
 const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
@@ -34,6 +37,9 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     this.model = model;
     this.verbose = true;
     this._supportsToolCalling = null;
+    this.keepAlive = process.env.LLMMAN_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.LLMMAN_KEEP_ALIVE_TIMEOUT)
+      : undefined; // Unset: the llmman server applies its own default.
   }
 
   get client() {
@@ -64,6 +70,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     );
     return {
       num_ctx: LlmmanLLM.promptWindowLimit(this.model),
+      ...temperatureParam(this.temperature),
     };
   }
 
@@ -77,9 +84,11 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     await LlmmanLLM.cacheContextWindows();
     const response = await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       options: this.queryOptions,
     });
+    this.watchTokenLimit(response);
     return response?.message?.content || null;
   }
 
@@ -87,6 +96,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     await LlmmanLLM.cacheContextWindows();
     return await this.client.chat({
       model: this.model,
+      keep_alive: this.keepAlive,
       messages,
       stream: true,
       options: this.queryOptions,
@@ -208,6 +218,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
     let reasoningText = "";
     const historyMessages = this.buildToolCallMessages(history, functions);
     const stream = await chatCb({ messages: historyMessages });
+    this.watchTokenLimit(stream);
 
     eventHandler?.("reportStreamEvent", {
       type: "statusResponse",
@@ -309,11 +320,13 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const stream = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         stream: true,
         options: this.queryOptions,
       });
+      this.watchTokenLimit(stream);
 
       let textResponse = "";
       let toolCalls = null;
@@ -443,6 +456,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
         const stream = await this.#handleFunctionCallStream({
           messages: this.cleanMsgs(messages),
         });
+        this.watchTokenLimit(stream);
 
         for await (const chunk of stream) {
           if (!chunk.hasOwnProperty("message")) continue;
@@ -504,10 +518,12 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
 
       const response = await this.client.chat({
         model: this.model,
+        keep_alive: this.keepAlive,
         messages: formattedMessages,
         ...(tools.length > 0 ? { tools } : {}),
         options: this.queryOptions,
       });
+      this.watchTokenLimit(response);
 
       // Record usage (the Ollama API reports prompt_eval_count/eval_count)
       this.recordUsage({

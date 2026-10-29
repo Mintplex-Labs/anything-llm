@@ -182,6 +182,18 @@ class FilesystemManager {
   }
 
   /**
+   * Detects the line ending a file predominantly uses: CRLF when more of its
+   * line breaks are CRLF than bare LF, otherwise LF.
+   * @param {string} text - Text to inspect
+   * @returns {"\r\n"|"\n"} The predominant line ending
+   */
+  #detectLineEnding(text) {
+    const crlf = text.match(/\r\n/g)?.length ?? 0;
+    const lf = (text.match(/\n/g)?.length ?? 0) - crlf;
+    return crlf > lf ? "\r\n" : "\n";
+  }
+
+  /**
    * Writes content to a file atomically using a temp file and rename.
    * @param {string} filePath - Path to the file
    * @param {string} content - Content to write
@@ -329,6 +341,9 @@ class FilesystemManager {
           remainingText = chunkLines[0];
           chunkLines.shift();
         }
+
+        if (position + size === fileSize && chunkLines.at(-1) === "")
+          chunkLines.pop();
 
         for (
           let i = chunkLines.length - 1;
@@ -533,9 +548,9 @@ class FilesystemManager {
    * @returns {Promise<string>} Diff of changes
    */
   async applyFileEdits(filePath, edits, dryRun = false) {
-    const content = this.#normalizeLineEndings(
-      await fs.readFile(filePath, "utf-8")
-    );
+    const originalContent = await fs.readFile(filePath, "utf-8");
+    const lineEnding = this.#detectLineEnding(originalContent);
+    const content = this.#normalizeLineEndings(originalContent);
 
     let modifiedContent = content;
     for (const edit of edits) {
@@ -543,7 +558,10 @@ class FilesystemManager {
       const normalizedNew = this.#normalizeLineEndings(edit.newText);
 
       if (modifiedContent.includes(normalizedOld)) {
-        modifiedContent = modifiedContent.replace(normalizedOld, normalizedNew);
+        modifiedContent = modifiedContent.replace(
+          normalizedOld,
+          () => normalizedNew
+        );
         continue;
       }
 
@@ -603,7 +621,14 @@ class FilesystemManager {
     const formattedDiff = `${"`".repeat(numBackticks)}diff\n${diffResult}${"`".repeat(numBackticks)}\n\n`;
 
     if (!dryRun) {
-      await this.#atomicWrite(filePath, modifiedContent);
+      // Edits are matched against LF-normalized text; restore the file's
+      // predominant line ending so untouched lines keep their bytes.
+      await this.#atomicWrite(
+        filePath,
+        lineEnding === "\n"
+          ? modifiedContent
+          : modifiedContent.replace(/\n/g, lineEnding)
+      );
     }
 
     return formattedDiff;
@@ -620,6 +645,7 @@ class FilesystemManager {
       filePath,
       (content) => {
         const lines = this.#normalizeLineEndings(content).split("\n");
+        if (lines.at(-1) === "") lines.pop();
         return lines.slice(-numLines).join("\n");
       },
       () => this.#tailFileRaw(filePath, numLines)

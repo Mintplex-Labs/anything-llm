@@ -95,9 +95,7 @@ const {
   getVectorDbClass,
   resolveProviderConnector,
 } = require("../../../utils/helpers");
-const {
-  writeResponseChunk,
-} = require("../../../utils/helpers/chat/responses");
+const { writeResponseChunk } = require("../../../utils/helpers/chat/responses");
 const {
   EphemeralAgentHandler,
   __mocks: ephemeralMocks,
@@ -308,9 +306,7 @@ describe("ApiChatHandler @agent persistence", () => {
           attachments,
         });
       }
-      expect(WorkspaceChats.new).toHaveBeenCalledTimes(
-        REAL_WORLD_CASES.length
-      );
+      expect(WorkspaceChats.new).toHaveBeenCalledTimes(REAL_WORLD_CASES.length);
       for (const call of WorkspaceChats.new.mock.calls) {
         expect(call[0].include).toBe(true);
       }
@@ -363,6 +359,84 @@ describe("ApiChatHandler @agent persistence", () => {
           response: expect.objectContaining({
             outputs: [{ type: "text", payload: "inline" }, pendingOutput],
           }),
+        })
+      );
+    });
+  });
+
+  describe("document attachments", () => {
+    const fs = require("fs");
+    const { CollectorApi } = require("../../../utils/collectorApi");
+    const documentAttachment = {
+      name: "report.pdf",
+      mime: "application/anythingllm-document",
+      contentString: Buffer.from("pdf-bytes").toString("base64"),
+    };
+    const parsedDocument = {
+      id: "doc-1",
+      title: "report.pdf",
+      pageContent: "Quarterly revenue was up 12%.",
+    };
+
+    beforeEach(() => {
+      jest.spyOn(fs, "existsSync").mockReturnValue(true);
+      jest.spyOn(fs, "writeFileSync").mockImplementation(() => {});
+      CollectorApi.mockImplementation(function () {
+        this.online = jest.fn().mockResolvedValue(true);
+        this.parseDocument = jest
+          .fn()
+          .mockResolvedValue({ success: true, documents: [parsedDocument] });
+      });
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    test.each(["chatSync", "streamChat"])(
+      "%s hands the agent parsed document text and saves only the images",
+      async (handler) => {
+        await ApiChatHandler[handler]({
+          response: {},
+          workspace,
+          message: "@agent summarize this",
+          mode: "chat",
+          attachments: [...attachments, documentAttachment],
+        });
+
+        expect(EphemeralAgentHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            attachments,
+            parsedDocuments: [parsedDocument],
+          })
+        );
+        expect(WorkspaceChats.new).toHaveBeenCalledWith(
+          expect.objectContaining({
+            response: expect.objectContaining({ attachments }),
+          })
+        );
+      }
+    );
+
+    test("the query-mode refusal saves only the images", async () => {
+      EphemeralAgentHandler.isAgentInvocation.mockResolvedValue(false);
+      resolveProviderConnector.mockResolvedValue({
+        connector: { promptWindowLimit: () => 8000 },
+        routingMetadata: null,
+      });
+      getVectorDbClass.mockReturnValue({
+        hasNamespace: jest.fn().mockResolvedValue(false),
+        namespaceCount: jest.fn().mockResolvedValue(0),
+      });
+
+      await ApiChatHandler.chatSync({
+        workspace,
+        message: "anything",
+        mode: "query",
+        attachments: [...attachments, documentAttachment],
+      });
+
+      expect(WorkspaceChats.new).toHaveBeenCalledWith(
+        expect.objectContaining({
+          response: expect.objectContaining({ attachments }),
         })
       );
     });

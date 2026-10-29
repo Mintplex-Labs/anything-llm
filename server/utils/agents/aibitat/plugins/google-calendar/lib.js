@@ -57,8 +57,6 @@ class GoogleCalendarBridge {
    * @returns {Promise<{success: boolean, error?: string}>}
    */
   async initialize() {
-    if (this.#isInitialized) return { success: true };
-
     try {
       const isMultiUser = await SystemSettings.isMultiUserMode();
       if (isMultiUser) {
@@ -68,6 +66,8 @@ class GoogleCalendarBridge {
             "Google Calendar integration is not available in multi-user mode for security reasons.",
         };
       }
+
+      if (this.#isInitialized) return { success: true };
 
       const config = await GoogleCalendarBridge.getConfig();
       if (!config.deploymentId || !config.apiKey) {

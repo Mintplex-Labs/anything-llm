@@ -143,10 +143,13 @@ module.exports.OutlookCreateDraft = {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
                   payload: isReply
-                    ? { replyToMessageId, replyAll }
+                    ? { replyToMessageId, replyAll, body }
                     : {
                         to,
                         subject,
+                        body,
+                        ...(cc ? { cc } : {}),
+                        ...(bcc ? { bcc } : {}),
                         attachmentCount: preparedAttachments.length,
                       },
                   description,
@@ -167,7 +170,8 @@ module.exports.OutlookCreateDraft = {
                 result = await outlookLib.createDraftReply(
                   replyToMessageId,
                   body,
-                  replyAll
+                  replyAll,
+                  { attachments: preparedAttachments }
                 );
               } else {
                 this.super.introspect(

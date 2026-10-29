@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> 私たちは [Open Computer](../open-computer) も開発しています。これは AI エージェントが利用できる完全なコンピュータ環境を提供するものです。
->
-> これにより AnythingLLM のエージェント機能は新たな段階に到達し、AI エージェント利用における新しい UX パラダイムをもたらします。
->
-> ⭐ 最新情報を受け取るにはリポジトリに Star を付けてください！
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -263,7 +256,7 @@ Mintplex Labs Inc による AnythingLLM には、匿名の使用情報を収集�
 
 ## 🔗 その他の製品
 
-- **[AnythingLLM Mobile（MIT ライセンス）][anythingllm-mobile]：** モバイル端末で AnythingLLM を利用できるモバイルアプリケーション。
+- **[AnythingLLM Mobile（オープンソースライセンス）][anythingllm-mobile]：** デバイス上で動く AnythingLLM と同じ体験を、スマートフォンで。
 - **[AnythingLLM ブラウザ拡張機能][anythingllm-extension]：** ブラウザ内で AnythingLLM を利用できるブラウザ拡張機能。
 - **[AnythingLLM Embed][anythingllm-embed]：** 自分のウェブサイトに AnythingLLM を埋め込めるウィジェット。
 

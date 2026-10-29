@@ -6,6 +6,9 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -39,7 +42,6 @@ class AzureOpenAiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.#log(
       `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
     );
@@ -63,6 +65,15 @@ class AzureOpenAiLLM {
         `"${azureOpenAiEndpoint}" is not a valid URL. Check your settings for the Azure OpenAI provider and set a valid endpoint URL.`
       );
     }
+  }
+
+  /**
+   * Whether the deployment supports the temperature parameter. Azure does not
+   * expose model metadata, so this relies on the user-declared AZURE_OPENAI_MODEL_TYPE.
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature() {
+    return process.env.AZURE_OPENAI_MODEL_TYPE !== "reasoning";
   }
 
   #log(text, ...args) {
@@ -150,7 +161,10 @@ class AzureOpenAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = [], { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = [],
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         "No AZURE_OPENAI_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
@@ -160,7 +174,7 @@ class AzureOpenAiLLM {
       this.openai.chat.completions.create({
         messages,
         model: this.model,
-        ...(this.isOTypeModel ? {} : { temperature }),
+        ...(this.isOTypeModel ? {} : temperatureParam(temperature)),
       })
     );
 
@@ -185,7 +199,10 @@ class AzureOpenAiLLM {
     };
   }
 
-  async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = [],
+    { temperature = this.temperature } = {}
+  ) {
     if (!this.model)
       throw new Error(
         "No AZURE_OPENAI_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
@@ -195,7 +212,7 @@ class AzureOpenAiLLM {
       func: await this.openai.chat.completions.create({
         messages,
         model: this.model,
-        ...(this.isOTypeModel ? {} : { temperature }),
+        ...(this.isOTypeModel ? {} : temperatureParam(temperature)),
         n: 1,
         stream: true,
       }),

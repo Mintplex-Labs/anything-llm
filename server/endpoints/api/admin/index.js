@@ -623,16 +623,16 @@ function apiAdminEndpoints(app) {
           await User.where({ id: { in: _uids.map(Number) } })
         ).map((user) => user.id);
         const workspace = await Workspace.get({ slug: String(workspaceSlug) });
-        const workspaceUsers = await Workspace.workspaceUsers(workspace.id);
-
         if (!workspace) {
           response.status(404).json({
             success: false,
             error: `Workspace ${workspaceSlug} not found`,
-            users: workspaceUsers,
+            users: [],
           });
           return;
         }
+
+        const workspaceUsers = await Workspace.workspaceUsers(workspace.id);
 
         if (userIds.length === 0) {
           response.status(404).json({

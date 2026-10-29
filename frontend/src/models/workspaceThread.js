@@ -91,7 +91,8 @@ const WorkspaceThread = {
     { workspaceSlug, threadSlug },
     message,
     handleChat,
-    attachments = []
+    attachments = [],
+    reasoningEffort = null
   ) {
     const ctrl = new AbortController();
 
@@ -110,7 +111,7 @@ const WorkspaceThread = {
         `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
         {
           method: "POST",
-          body: JSON.stringify({ message, attachments }),
+          body: JSON.stringify({ message, attachments, reasoningEffort }),
           headers: baseHeaders(),
           signal: ctrl.signal,
           openWhenHidden: true,

@@ -1,12 +1,5 @@
 <a name="readme-top"></a>
 
-> [!NOTE]
-> ما همچنین روی [Open Computer](../open-computer) کار می‌کنیم که یک محیط کامل کامپیوتری در اختیار عامل‌های هوش مصنوعی قرار می‌دهد.
->
-> این قابلیت‌های عاملِ AnythingLLM را به سطح تازه‌ای می‌رساند و الگوی جدیدی برای تجربه کاربری عامل‌های هوش مصنوعی ارائه می‌کند.
->
-> ⭐ برای دریافت آخرین اخبار به مخزن ستاره بدهید!
-
 <p align="center">
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -288,7 +281,7 @@ AnythingLLM توسط Mintplex Labs Inc دارای ویژگی تله‌متری �
 
 ## 🔗 محصولات بیشتر
 
-- **[AnythingLLM Mobile (با مجوز MIT)][anythingllm-mobile]:** اپلیکیشن موبایلی که به شما امکان استفاده از AnythingLLM روی دستگاه همراهتان را می‌دهد.
+- **[AnythingLLM Mobile (با مجوز متن‌باز)][anythingllm-mobile]:** همان تجربه‌ی AnythingLLM روی دستگاه، اما این بار روی گوشی شما.
 - **[افزونه مرورگر AnythingLLM][anythingllm-extension]:** افزونه مرورگری که امکان استفاده از AnythingLLM در مرورگر را فراهم می‌کند.
 - **[AnythingLLM Embed][anythingllm-embed]:** ویجتی که امکان جاسازی AnythingLLM در وب‌سایت شما را فراهم می‌کند.
 
