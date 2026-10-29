@@ -258,10 +258,15 @@ const Document = {
         workspaceId: workspace.id,
       });
       if (!document) continue;
-      await VectorDb.deleteDocumentFromNamespace(
+      const deleted = await VectorDb.deleteDocumentFromNamespace(
         workspace.slug,
         document.docId
       );
+      // Some providers return undefined for a no-op; only false means failure.
+      if (deleted === false)
+        throw new Error(
+          `Failed to remove document ${path} from vector database.`
+        );
 
       try {
         await prisma.workspace_documents.delete({
