@@ -12,7 +12,7 @@ Welcome to the AnythingLLM development container configuration, designed to crea
 
 ## Features
 
-- **Base Image**: Built on `mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm`, thus Node.JS LTS v18.
+- **Base Image**: Built on `mcr.microsoft.com/devcontainers/javascript-node:24-bookworm`, thus Node.JS LTS v24.
 - **Additional Tools**: Includes `hadolint`, and essential apt-packages such as `curl`, `gnupg`, and more.
 - **Ports**: Configured to auto-forward ports `3000` (Frontend) and `3001` (Backend).
 - **Environment Variables**: Sets `NODE_ENV` to `development` and `ESLINT_USE_FLAT_CONFIG` to `true`.
