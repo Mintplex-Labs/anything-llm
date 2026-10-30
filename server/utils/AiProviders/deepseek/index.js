@@ -89,6 +89,10 @@ class DeepSeekLLM {
     return MODEL_MAP.get("deepseek", this.model) ?? 8192;
   }
 
+  async isValidChatCompletionModel(_modelName = "") {
+    return true;
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
