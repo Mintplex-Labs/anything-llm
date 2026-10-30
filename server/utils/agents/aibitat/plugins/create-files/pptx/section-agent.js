@@ -154,7 +154,6 @@ async function runSectionAgent({
   );
   provider.attachHandlerProps(childAibitat.handlerProps);
 
-  // handleAsyncExecution/handleExecution read the provider from providerInstance.
   childAibitat.providerInstance = provider;
 
   log(
