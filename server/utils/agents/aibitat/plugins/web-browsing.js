@@ -1899,6 +1899,7 @@ const webBrowsing = {
            * Use DeepSeek's search tool API to search the web.
            * https://api-docs.deepseek.com/guides/search
            * Each result has title, url, snippet, summary (long markdown), date, rerank_score & authority.
+           * Only results with a rerank_score of 1.5 or above are returned.
            * @param {string} query
            * @returns {Promise<string>}
            */
@@ -1950,8 +1951,12 @@ const webBrowsing = {
 
             const data = [];
             response?.results?.forEach((searchResult) => {
-              const { title, url, snippet, summary, date } = searchResult;
+              const { title, url, snippet, summary, date, rerank_score } =
+                searchResult;
               if (!url) return; // skip rows without a link
+              // DeepSeek considers a rerank_score of 1.5+ (out of 3) a high-quality result.
+              // https://api-docs.deepseek.com/guides/search#response
+              if (!(rerank_score >= 1.5)) return;
               const text = String(snippet || summary || "")
                 .replace(/\s+/g, " ")
                 .trim()
