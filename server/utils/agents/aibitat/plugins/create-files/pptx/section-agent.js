@@ -42,12 +42,17 @@ async function runSectionAgent({
   const log = parentAibitat.handlerProps?.log || console.log;
 
   const childAibitat = new AIbitat({
-    provider: parentAibitat.defaultProvider.provider,
-    model: parentAibitat.defaultProvider.model,
+    ...parentAibitat.defaultProvider,
     chats: [],
     handlerProps: parentAibitat.handlerProps,
     maxToolCalls: 5,
   });
+
+  // Stopping the parent session also stops this sub-agent.
+  const abortChild = () => childAibitat.abort();
+  const parentSignal = parentAibitat.abortController.signal;
+  if (parentSignal.aborted) childAibitat.abort();
+  else parentSignal.addEventListener("abort", abortChild, { once: true });
 
   // Share introspect so tool activity (web-search status, etc.) streams to the frontend
   childAibitat.introspect = parentAibitat.introspect;
@@ -154,6 +159,8 @@ async function runSectionAgent({
   );
   provider.attachHandlerProps(childAibitat.handlerProps);
 
+  childAibitat.providerInstance = provider;
+
   log(
     `[SectionAgent] Running sub-agent for section: "${section.title}" with ${functions.length} tools`
   );
@@ -162,23 +169,15 @@ async function runSectionAgent({
   if (sectionPrefix) agentName = `[${sectionPrefix}] ${agentName}`;
   try {
     if (provider.supportsAgentStreaming) {
-      await childAibitat.handleAsyncExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
+      await childAibitat.handleAsyncExecution(messages, functions, agentName);
     } else {
-      await childAibitat.handleExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
+      await childAibitat.handleExecution(messages, functions, agentName);
     }
   } catch (error) {
     log(`[SectionAgent] Error in section "${section.title}": ${error.message}`);
     return { ...buildFallbackSlides(section), citations: [] };
+  } finally {
+    parentSignal.removeEventListener("abort", abortChild);
   }
 
   // Collect any citations the child accumulated (from web-search, web-scrape, etc.)
