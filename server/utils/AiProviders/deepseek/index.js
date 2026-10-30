@@ -27,7 +27,7 @@ class DeepSeekLLM {
       baseURL: "https://api.deepseek.com/v1",
     });
     this.model =
-      modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-chat";
+      modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-flash";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -56,6 +56,27 @@ class DeepSeekLLM {
     );
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * Models without image input (eg: deepseek-v4-pro) ignore the image blocks.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) return userPrompt;
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content.flat();
+  }
+
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
@@ -78,6 +99,7 @@ class DeepSeekLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
@@ -85,8 +107,11 @@ class DeepSeekLLM {
     };
     return [
       prompt,
-      ...formatChatHistory(chatHistory, ({ userPrompt }) => userPrompt),
-      { role: "user", content: userPrompt },
+      ...formatChatHistory(chatHistory, this.#generateContent),
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
     ];
   }
 

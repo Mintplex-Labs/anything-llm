@@ -16,7 +16,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
-    const { model = "deepseek-chat", reasoningEffort = null } = config;
+    const { model = "deepseek-flash", reasoningEffort = null } = config;
     const client = new OpenAI({
       baseURL: "https://api.deepseek.com/v1",
       apiKey: process.env.DEEPSEEK_API_KEY ?? null,
@@ -47,17 +47,6 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get supportsAgentStreaming() {
     return true;
-  }
-
-  /**
-   * DeepSeek models do not support vision/image inputs.
-   * Strip attachments from messages to prevent API errors.
-   * @param {Object} message - Message with potential attachments
-   * @returns {Object} Message without attachments
-   */
-  formatMessageWithAttachments(message) {
-    const { attachments: _, ...rest } = message;
-    return rest;
   }
 
   /**
