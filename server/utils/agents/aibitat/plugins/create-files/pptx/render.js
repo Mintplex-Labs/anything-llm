@@ -37,14 +37,43 @@ const points = (px) => px / 2;
  * @returns {number}
  */
 function lineCount(paragraphs, size, w, glyph) {
-  const charsPerLine = Math.max(
-    1,
-    Math.floor((w / (size * GLYPH_W[glyph])) * WRAP_SLACK)
-  );
+  const perLine = charsPerLine(size, w, glyph);
   return paragraphs.reduce(
-    (sum, p) => sum + Math.max(1, Math.ceil(String(p).length / charsPerLine)),
+    (sum, p) => sum + wrappedLines(String(p), perLine),
     0
   );
+}
+
+/**
+ * Characters that fit on one line at a font size.
+ * @param {number} size - Font size in px
+ * @param {number} w - Box width in px
+ * @param {"regular"|"bold"|"caps"} glyph
+ * @returns {number}
+ */
+function charsPerLine(size, w, glyph) {
+  return Math.max(1, Math.floor((w / (size * GLYPH_W[glyph])) * WRAP_SLACK));
+}
+
+/**
+ * Lines one paragraph wraps to when breaking between words. A word longer
+ * than a line is split across as many lines as it needs.
+ * @param {string} paragraph
+ * @param {number} perLine - Characters per line
+ * @returns {number}
+ */
+function wrappedLines(paragraph, perLine) {
+  let lines = 0;
+  let used = perLine;
+  for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+    if (used + 1 + word.length <= perLine) {
+      used += 1 + word.length;
+      continue;
+    }
+    lines += Math.ceil(word.length / perLine);
+    used = word.length % perLine || perLine;
+  }
+  return Math.max(1, lines);
 }
 
 /**
@@ -72,10 +101,17 @@ function fitText(
   { w, h, max, min = 12, lineGap = 0, maxLines = 99, glyph = "regular" }
 ) {
   const paragraphs = Array.isArray(text) ? text : [text];
+  const longestWord = Math.max(
+    ...paragraphs
+      .flatMap((p) => String(p).split(/\s+/))
+      .map((word) => word.length)
+  );
   for (let size = max; size > min; size -= 2) {
     const lines = lineCount(paragraphs, size, w, glyph);
     const height = textHeight(paragraphs, size, { w, lineGap, glyph });
-    if (lines <= maxLines && height <= h) return size;
+    // A word wider than the box would be broken mid-word.
+    const wordFits = longestWord <= charsPerLine(size, w, glyph);
+    if (lines <= maxLines && height <= h && wordFits) return size;
   }
   return min;
 }
@@ -390,10 +426,20 @@ function renderStatsList(slide, pptx, data, t, meta) {
   const cardH = Math.min(220, (700 - 20 * (items.length - 1)) / items.length);
   const stackH = items.length * cardH + (items.length - 1) * 20;
   const top = 580 - stackH / 2;
-  const numberW = 400;
   const numberSize = sharedSize(
     items.map((item) => item.title),
-    { w: numberW, h: cardH, max: 100, min: 40, maxLines: 1, glyph: "bold" }
+    { w: 400, h: cardH, max: 100, min: 40, maxLines: 1, glyph: "bold" }
+  );
+  // Short numbers hand their unused width to the labels.
+  const longest = Math.max(...items.map((item) => String(item.title).length));
+  const numberW = Math.min(
+    400,
+    (longest * numberSize * GLYPH_W.bold) / WRAP_SLACK + 40
+  );
+  const labelW = 700 - 60 - numberW - 20 - 40;
+  const labelSize = sharedSize(
+    items.map((item) => item.text),
+    { w: labelW, h: cardH - 32, max: 24, min: 13 }
   );
   items.forEach((item, i) => {
     const y = top + i * (cardH + 20);
@@ -418,9 +464,9 @@ function renderStatsList(slide, pptx, data, t, meta) {
     addText(slide, item.text, {
       x: 1148 + numberW + 20,
       y: y + 16,
-      w: 700 - 60 - numberW - 20 - 40,
+      w: labelW,
       h: cardH - 32,
-      fit: { max: 24, min: 13 },
+      size: labelSize,
       color: t.scale[600],
       valign: "middle",
     });
@@ -780,6 +826,8 @@ function renderChart(slide, pptx, data, t) {
       dataLabelFontBold: true,
       dataLabelFormatCode: "0%",
       valAxisLabelFormatCode: "General",
+      // Bars are compared by length, so a cropped axis exaggerates gaps.
+      ...(type === "bar" && Math.min(...values) >= 0 && { valAxisMinVal: 0 }),
       valAxisLabelColor: val.color,
       valAxisLabelFontFace: val.fontFace,
       valAxisLabelFontSize: val.fontSize,
@@ -979,4 +1027,4 @@ async function renderDeck(
   return pptx.write({ outputType: "nodebuffer" });
 }
 
-module.exports = { renderDeck };
+module.exports = { renderDeck, fitText };

@@ -258,7 +258,7 @@ module.exports.CreatePptxPresentation = {
               );
 
               say(`Successfully created presentation "${title}"`);
-              return `Successfully created presentation "${title}" with ${slides.length} slides across ${sections.length} sections using the ${theme.name} theme.`;
+              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme. Sections built: ${sections.map((s) => s.title).join(", ")}. A presentation holds at most ${MAX_SECTIONS} sections, so tell the user if anything they asked for was left out.`;
             } catch (e) {
               this.super.handlerProps.log(
                 `create-pptx-presentation error: ${e.message}`

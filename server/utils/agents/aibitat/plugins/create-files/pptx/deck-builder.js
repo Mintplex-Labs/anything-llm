@@ -35,6 +35,7 @@ RULES:
 - Never write placeholders like "(insert %)" or "TBD"; if a figure is unknown, describe it in words instead
 - Tables: at most 6 rows and 4 columns, short cell text
 - Charts only for real numeric data with at least 3 differing values; never chart concepts or placeholder values
+- Every value in one chart must use the same unit; never mix money, counts and percentages in one chart
 
 Layouts and the fields each one uses:
 ${Object.entries(LAYOUTS)
