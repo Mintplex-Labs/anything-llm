@@ -514,7 +514,7 @@ function HoldToReveal({ children, holdForMs = 3_000 }) {
 
 function AppVersion() {
   const { version, isLoading } = useAppVersion();
-  if (isLoading) return null;
+  if (isLoading || !version) return null;
   return (
     <Link
       to={`https://github.com/Mintplex-Labs/anything-llm/releases/tag/v${version}`}

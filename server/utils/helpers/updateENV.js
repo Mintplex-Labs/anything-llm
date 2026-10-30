@@ -1619,6 +1619,7 @@ function dumpENV() {
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
     "DISABLE_SWAGGER_DOCS",
+    "DISABLE_METRICS_ENDPOINT",
     "WORKSPACE_DELETION_PROTECTION",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
