@@ -120,6 +120,9 @@ const webBrowsing = {
               case "firecrawl-search":
                 engine = "_firecrawlSearch";
                 break;
+              case "deepseek-search":
+                engine = "_deepSeekSearch";
+                break;
               default:
                 // No provider configured - use You.com's keyless free tier,
                 // which falls back to DuckDuckGo on any failure.
@@ -1878,6 +1881,91 @@ const webBrowsing = {
                 title: String(title || url).slice(0, 100),
                 link: url,
                 snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Use DeepSeek's search tool API to search the web.
+           * https://api-docs.deepseek.com/guides/search
+           * Each result has title, url, snippet, summary (long markdown), date, rerank_score & authority.
+           * Only results with a rerank_score of 1.5 or above are returned.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _deepSeekSearch: async function (query) {
+            const apiKey = (process.env.AGENT_DEEPSEEK_API_KEY || "").trim();
+            if (!apiKey) {
+              this.super.introspect(
+                `${this.caller}: I can't use DeepSeek searching because the user has not defined the required API key.\nVisit: https://platform.deepseek.com/api_keys to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using DeepSeek to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.deepseek.com/v1/tools/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({ query: String(query), count: 10 }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // Surface DeepSeek's {error: {message}} (e.g. 401 "Authentication Fails").
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.error?.message) message = body.error.message;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => ({ response: data, error: null }))
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `DeepSeek Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.results?.forEach((searchResult) => {
+              const { title, url, snippet, summary, date, rerank_score } =
+                searchResult;
+              if (!url) return; // skip rows without a link
+              // DeepSeek considers a rerank_score of 1.5+ (out of 3) a high-quality result.
+              // https://api-docs.deepseek.com/guides/search#response
+              if (!(rerank_score >= 1.5)) return;
+              const text = String(snippet || summary || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+                ...(date ? { date } : {}),
               });
             });
 
