@@ -1,4 +1,9 @@
 function getSTTProvider() {
+  const { Observability } = require("../observability");
+  return Observability.wrapSTT(selectSTTProvider());
+}
+
+function selectSTTProvider() {
   const provider = process.env.STT_PROVIDER || "native";
   switch (provider) {
     case "openai":

@@ -311,6 +311,11 @@ function getLLMProviderConnector({ provider = null, model = null } = {}) {
  * @returns {BaseEmbedderProvider}
  */
 function getEmbeddingEngineSelection() {
+  const { Observability } = require("../observability");
+  return Observability.wrapEmbedder(selectEmbeddingEngine());
+}
+
+function selectEmbeddingEngine() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
@@ -740,12 +745,17 @@ async function resolveProviderConnector({
   const temperatureOverride = parseFloat(temperature) >= 0 ? temperature : null;
 
   if (effectiveProvider !== "anythingllm-router") {
+    const connector = getLLMProvider({
+      provider: workspace?.chatProvider,
+      model: workspace?.chatModel,
+      temperature: temperatureOverride ?? workspace?.openAiTemp,
+    });
+    // Stamp the acting user on the embedder so query-embedding traces can be
+    // attributed - the embedder has no request context of its own.
+    if (connector?.embedder)
+      connector.embedder._traceUser = user?.username || null;
     return {
-      connector: getLLMProvider({
-        provider: workspace?.chatProvider,
-        model: workspace?.chatModel,
-        temperature: temperatureOverride ?? workspace?.openAiTemp,
-      }),
+      connector,
       routingMetadata: null,
       prefetchedContext: null,
     };

@@ -182,6 +182,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/observability",
+        lazy: async () => {
+          const { default: ObservabilitySettings } = await import(
+            "@/pages/Admin/Observability"
+          );
+          return { element: <AdminRoute Component={ObservabilitySettings} /> };
+        },
+      },
+      {
         path: "/settings/embed-chat-widgets",
         lazy: async () => {
           const { default: ChatEmbedWidgets } = await import(

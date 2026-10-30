@@ -408,6 +408,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.observability"),
+              href: paths.settings.observability(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.scheduled-jobs"),
               href: paths.settings.scheduledJobs(),
               flex: true,
