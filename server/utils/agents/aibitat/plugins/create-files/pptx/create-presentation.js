@@ -35,7 +35,7 @@ module.exports.CreatePptxPresentation = {
               call: JSON.stringify({
                 filename: "project-updates.pptx",
                 title: "Q1 Project Updates",
-                theme: "corporate",
+                theme: "blue",
                 sections: [
                   {
                     title: "Overview",
@@ -63,7 +63,7 @@ module.exports.CreatePptxPresentation = {
               call: JSON.stringify({
                 filename: "ai-trends.pptx",
                 title: "AI Trends 2025",
-                theme: "carbon",
+                theme: "violet",
                 sections: [
                   {
                     title: "Large Language Models",

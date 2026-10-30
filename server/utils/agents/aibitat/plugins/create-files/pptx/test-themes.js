@@ -42,6 +42,18 @@ const SAMPLE_SLIDES = [
     ],
   },
   {
+    layout: "stats",
+    title: "Operating Metrics",
+    items: [
+      { title: "+200%", text: "Partner integrations" },
+      { title: "$80k", text: "Average contract value" },
+      { title: "$1.8M", text: "Net new ARR in Q4" },
+      { title: "12", text: "New markets" },
+      { title: "4.8/5", text: "Customer satisfaction" },
+      { title: "38%", text: "Gross margin uplift" },
+    ],
+  },
+  {
     layout: "two-column",
     title: "Opportunities vs. Risks",
     items: [
@@ -96,6 +108,19 @@ const SAMPLE_SLIDES = [
     ],
   },
   {
+    layout: "steps",
+    title: "How We Ship",
+    items: [
+      { title: "Discover", text: "Interview customers and size the problem" },
+      {
+        title: "Design",
+        text: "Prototype the flow and test it with five users",
+      },
+      { title: "Build", text: "Ship behind a flag to a pilot group" },
+      { title: "Launch", text: "Roll out to everyone with docs and training" },
+    ],
+  },
+  {
     layout: "chart",
     title: "Revenue by Quarter",
     chart: {
@@ -136,6 +161,11 @@ const SAMPLE_SLIDES = [
     title:
       "The best way to predict the future is to build it. This year we built more than ever.",
     subtitle: "Jane Doe, Chief Executive Officer",
+  },
+  {
+    layout: "quote",
+    title: "Customers do not buy features, they buy outcomes.",
+    subtitle: "Head of Customer Success",
   },
 ];
 

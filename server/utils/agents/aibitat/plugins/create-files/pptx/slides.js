@@ -44,7 +44,7 @@ const LAYOUTS = {
     fits: (s) => s.items.length > 1,
   },
   stats: {
-    hint: 'real measured figures only (money, percentages, counts with a source), e.g. "42%" or "$1.2B". title + items (2-4, each title is the number, text is the label). Never use it for wordplay like "0", "1 app" or "∞"',
+    hint: 'real measured figures only (money, percentages, counts with a source), e.g. "42%" or "$1.2B". title + items (2-6, each title is the number, text is the label). Never use it for wordplay like "0", "1 app" or "∞"',
     fits: (s) => s.items.length > 0 && s.items.every(isStat),
   },
   cards: {
