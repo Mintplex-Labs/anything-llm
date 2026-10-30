@@ -131,11 +131,26 @@ class DeepSeekLLM {
   }
 
   /**
-   * Returns the reasoning capabilities models.dev lists for the model.
-   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   * Returns the reasoning capabilities models.dev lists for the model and
+   * vision support from the `input_modalities` DeepSeek's /models returns.
+   * Vision is "unknown" when the model is not listed (eg: legacy aliases).
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[], vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
-    return modelsDevReasoningCapabilities("deepseek", this.model);
+    const [reasoning, models] = await Promise.all([
+      modelsDevReasoningCapabilities("deepseek", this.model),
+      this.openai.models.list().catch(() => ({ data: [] })),
+    ]);
+    const modalities = models.data.find(
+      (model) => model.id === this.model
+    )?.input_modalities;
+
+    return {
+      ...reasoning,
+      vision: Array.isArray(modalities)
+        ? modalities.includes("image")
+        : "unknown",
+    };
   }
 
   async getChatCompletion(
