@@ -8,6 +8,7 @@ import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import UserMenu from "../UserMenu";
 import { KeyboardShortcutWrapper } from "@/utils/keyboardShortcuts";
+import { MultiUserModeContext } from "@/hooks/useMultiUserMode";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
@@ -21,7 +22,7 @@ function useIsAuthenticated() {
     const validateSession = async () => {
       const onboardingComplete = await System.isOnboardingComplete();
       const { MultiUserMode, RequiresAuth } = await System.keys();
-      setMultiUserMode(MultiUserMode);
+      setMultiUserMode(!!MultiUserMode);
 
       // Check for the onboarding redirect condition
       if (onboardingComplete === false) {
@@ -88,15 +89,19 @@ export function AdminRoute({ Component, hideUserMenu = false }) {
   const user = userFromStorage();
   return isAuthd && (user?.role === "admin" || !multiUserMode) ? (
     hideUserMenu ? (
-      <KeyboardShortcutWrapper>
-        <Component />
-      </KeyboardShortcutWrapper>
-    ) : (
-      <KeyboardShortcutWrapper>
-        <UserMenu>
+      <MultiUserModeContext.Provider value={multiUserMode}>
+        <KeyboardShortcutWrapper>
           <Component />
-        </UserMenu>
-      </KeyboardShortcutWrapper>
+        </KeyboardShortcutWrapper>
+      </MultiUserModeContext.Provider>
+    ) : (
+      <MultiUserModeContext.Provider value={multiUserMode}>
+        <KeyboardShortcutWrapper>
+          <UserMenu>
+            <Component />
+          </UserMenu>
+        </KeyboardShortcutWrapper>
+      </MultiUserModeContext.Provider>
     )
   ) : (
     <Navigate to={paths.home()} />
@@ -116,11 +121,13 @@ export function ManagerRoute({ Component }) {
 
   const user = userFromStorage();
   return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
-    <KeyboardShortcutWrapper>
-      <UserMenu>
-        <Component />
-      </UserMenu>
-    </KeyboardShortcutWrapper>
+    <MultiUserModeContext.Provider value={multiUserMode}>
+      <KeyboardShortcutWrapper>
+        <UserMenu>
+          <Component />
+        </UserMenu>
+      </KeyboardShortcutWrapper>
+    </MultiUserModeContext.Provider>
   ) : (
     <Navigate to={paths.home()} />
   );
@@ -137,16 +144,19 @@ export function SingleUserRoute({ Component }) {
   }
 
   return isAuthd && !multiUserMode ? (
-    <KeyboardShortcutWrapper>
-      <Component />
-    </KeyboardShortcutWrapper>
+    <MultiUserModeContext.Provider value={multiUserMode}>
+      <KeyboardShortcutWrapper>
+        <Component />
+      </KeyboardShortcutWrapper>
+    </MultiUserModeContext.Provider>
   ) : (
     <Navigate to={paths.home()} />
   );
 }
 
 export default function PrivateRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
@@ -154,11 +164,13 @@ export default function PrivateRoute({ Component }) {
   }
 
   return isAuthd ? (
-    <KeyboardShortcutWrapper>
-      <UserMenu>
-        <Component />
-      </UserMenu>
-    </KeyboardShortcutWrapper>
+    <MultiUserModeContext.Provider value={multiUserMode}>
+      <KeyboardShortcutWrapper>
+        <UserMenu>
+          <Component />
+        </UserMenu>
+      </KeyboardShortcutWrapper>
+    </MultiUserModeContext.Provider>
   ) : (
     <Navigate to={paths.login(true)} />
   );

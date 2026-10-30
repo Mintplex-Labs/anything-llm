@@ -100,11 +100,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
       return {
         ...baseData,
         workspace: chat.workspace ? chat.workspace.name : "unknown workspace",
-        username: chat.user
-          ? chat.user.username
-          : chat.api_session_id !== null
-            ? "API"
-            : "unknown user",
+        username: chat.user?.username ?? null,
         rating:
           chat.feedbackScore === null
             ? "--"
