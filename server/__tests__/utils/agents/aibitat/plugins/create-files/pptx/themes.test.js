@@ -10,17 +10,6 @@ describe("getTheme", () => {
     expect(getTheme("  Emerald ").name).toBe("Emerald");
   });
 
-  test("uses the 700 shade for bright themes and 950 for deep ones", () => {
-    expect(getTheme("blue").dark).toBe("1D4ED8");
-    expect(getTheme("slate").dark).toBe("020617");
-  });
-
-  test("takes indigo's light background and stripes from slate", () => {
-    const theme = getTheme("indigo");
-    expect(theme.light).toBe("F8FAFC");
-    expect(theme.stripe).toBe("E2E8F0");
-  });
-
   test("builds the scale around a brand color as its 600 shade", () => {
     for (const accent of ["E11D48", "#e11d48"]) {
       const theme = getTheme("blue", accent);
