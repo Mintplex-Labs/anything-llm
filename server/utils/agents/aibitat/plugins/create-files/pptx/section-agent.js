@@ -154,10 +154,7 @@ async function runSectionAgent({
   );
   provider.attachHandlerProps(childAibitat.handlerProps);
 
-  // getProviderForConfig is a factory only: it does not store the instance,
-  // and handleAsyncExecution/handleExecution read this.providerInstance.
-  // Without this assignment the sub-agent crashes on providerInstance.stream
-  // (or .complete) and every section silently falls back to placeholder slides.
+  // handleAsyncExecution/handleExecution read the provider from providerInstance.
   childAibitat.providerInstance = provider;
 
   log(
