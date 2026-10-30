@@ -89,9 +89,7 @@ const EventLogs = {
 
       for (const res of results) {
         const user = res.userId ? await User.get({ id: res.userId }) : null;
-        res.user = user
-          ? { username: user.username }
-          : { username: "unknown user" };
+        res.user = user ? { username: user.username } : { username: null };
       }
 
       return results;

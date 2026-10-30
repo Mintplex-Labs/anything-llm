@@ -367,7 +367,7 @@ class AgentHandler {
       case "fireworksai":
         return process.env.FIREWORKS_AI_LLM_MODEL_PREF ?? null;
       case "deepseek":
-        return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-chat";
+        return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-flash";
       case "litellm":
         return process.env.LITE_LLM_MODEL_PREF ?? null;
       case "moonshotai":

@@ -59,12 +59,19 @@ const SUBMIT_TOOL = {
  */
 function childOf(parent) {
   const child = new AIbitat({
-    provider: parent.defaultProvider.provider,
-    model: parent.defaultProvider.model,
+    ...parent.defaultProvider,
     chats: [],
     handlerProps: parent.handlerProps,
     maxToolCalls: 1,
   });
+  // Stopping the parent session also stops this sub-agent.
+  if (parent._aborted) child.abort();
+  else
+    parent.abortController.signal.addEventListener(
+      "abort",
+      () => child.abort(),
+      { once: true }
+    );
   child.introspect = parent.introspect;
   child.socket = {
     send: (type, content) => {
@@ -242,6 +249,7 @@ async function buildDeck(
   const slides = [];
   const used = {};
   for (const [i, section] of sections.entries()) {
+    if (parent._aborted) break;
     const label = `${i + 1}/${sections.length}`;
     say(`[${label}] Building section "${section.title}"…`);
     // A section with its own instructions asks for facts the deck-level

@@ -815,13 +815,13 @@ async function getDeepSeekModels(apiKey = null) {
       console.error(`DeepSeek:listModels`, e.message);
       return [
         {
-          id: "deepseek-chat",
-          name: "deepseek-chat",
+          id: "deepseek-flash",
+          name: "deepseek-flash",
           organization: "deepseek",
         },
         {
-          id: "deepseek-reasoner",
-          name: "deepseek-reasoner",
+          id: "deepseek-v4-pro",
+          name: "deepseek-v4-pro",
           organization: "deepseek",
         },
       ];

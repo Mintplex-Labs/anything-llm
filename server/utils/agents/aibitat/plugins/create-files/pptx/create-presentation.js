@@ -220,6 +220,8 @@ module.exports.CreatePptxPresentation = {
                 research,
                 context,
               });
+              if (this.super._aborted)
+                return "Presentation generation was cancelled.";
               if (citations.length) this.super.addCitation(citations);
 
               say(

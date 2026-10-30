@@ -564,6 +564,41 @@ export function FirecrawlSearchOptions({ settings }) {
   );
 }
 
+export function DeepSeekSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        DeepSeek search is billed per request and uses your{" "}
+        <a
+          href="https://platform.deepseek.com/api_keys"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          DeepSeek API key.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentDeepSeekApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="DeepSeek API Key"
+            required={true}
+            defaultValue={settings?.AgentDeepSeekApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function ExaSearchOptions({ settings }) {
   return (
     <>

@@ -105,7 +105,6 @@ class LanceDb extends VectorDatabase {
     similarityThreshold = 0.25,
     filterIdentifiers = [],
   }) {
-    const reranker = new NativeEmbeddingReranker();
     const collection = await client.openTable(namespace);
     const totalEmbeddings = await this.namespaceCount(namespace);
     const result = {
@@ -137,19 +136,26 @@ class LanceDb extends VectorDatabase {
       .limit(searchLimit)
       .toArray();
 
+    // Drop pinned and below-threshold chunks first so they cannot take the reranker's topK slots.
+    const eligibleResults = vectorSearchResults.filter((item) => {
+      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+        return false;
+      if (filterIdentifiers.includes(sourceIdentifier(item))) {
+        this.logger(
+          "A source was filtered from context as it's parent document is pinned."
+        );
+        return false;
+      }
+      return true;
+    });
+    if (eligibleResults.length === 0) return result;
+
+    const reranker = new NativeEmbeddingReranker();
     await reranker
-      .rerank(query, vectorSearchResults, { topK: topN })
+      .rerank(query, eligibleResults, { topK: topN })
       .then((rerankResults) => {
         rerankResults.forEach((item) => {
-          if (this.distanceToSimilarity(item._distance) < similarityThreshold)
-            return;
           const { vector: _, ...rest } = item;
-          if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-            this.logger(
-              "A source was filtered from context as it's parent document is pinned."
-            );
-            return;
-          }
           const score =
             item?.rerank_score || this.distanceToSimilarity(item._distance);
 
