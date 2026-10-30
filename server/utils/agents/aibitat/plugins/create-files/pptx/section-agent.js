@@ -154,6 +154,12 @@ async function runSectionAgent({
   );
   provider.attachHandlerProps(childAibitat.handlerProps);
 
+  // getProviderForConfig is a factory only: it does not store the instance,
+  // and handleAsyncExecution/handleExecution read this.providerInstance.
+  // Without this assignment the sub-agent crashes on providerInstance.stream
+  // (or .complete) and every section silently falls back to placeholder slides.
+  childAibitat.providerInstance = provider;
+
   log(
     `[SectionAgent] Running sub-agent for section: "${section.title}" with ${functions.length} tools`
   );
@@ -162,19 +168,9 @@ async function runSectionAgent({
   if (sectionPrefix) agentName = `[${sectionPrefix}] ${agentName}`;
   try {
     if (provider.supportsAgentStreaming) {
-      await childAibitat.handleAsyncExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
+      await childAibitat.handleAsyncExecution(messages, functions, agentName);
     } else {
-      await childAibitat.handleExecution(
-        provider,
-        messages,
-        functions,
-        agentName
-      );
+      await childAibitat.handleExecution(messages, functions, agentName);
     }
   } catch (error) {
     log(`[SectionAgent] Error in section "${section.title}": ${error.message}`);
