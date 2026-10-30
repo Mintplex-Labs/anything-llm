@@ -136,8 +136,7 @@ class LanceDb extends VectorDatabase {
       .limit(searchLimit)
       .toArray();
 
-    // Exclude ineligible chunks before they can consume the reranker's topK.
-    // Keep the existing bounded search pool rather than expanding retrieval.
+    // Drop pinned and below-threshold chunks first so they cannot take the reranker's topK slots.
     const eligibleResults = vectorSearchResults.filter((item) => {
       if (this.distanceToSimilarity(item._distance) < similarityThreshold)
         return false;
