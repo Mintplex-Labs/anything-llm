@@ -57,7 +57,6 @@ export default function WorkspaceChats() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
-  const multiUserMode = useMultiUserMode();
   const { t } = useTranslation();
 
   const handleDumpChats = async (exportType) => {
@@ -185,7 +184,6 @@ export default function WorkspaceChats() {
                 offset={offset}
                 setOffset={setOffset}
                 canNext={canNext}
-                multiUserMode={multiUserMode}
                 t={t}
               />
             </div>
@@ -203,9 +201,9 @@ function ChatsContainer({
   offset,
   setOffset,
   canNext,
-  multiUserMode,
   t,
 }) {
+  const multiUserMode = useMultiUserMode();
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
   };
@@ -265,12 +263,7 @@ function ChatsContainer({
         <tbody>
           {!!chats &&
             chats.map((chat) => (
-              <ChatRow
-                key={chat.id}
-                chat={chat}
-                multiUserMode={multiUserMode}
-                onDelete={handleDeleteChat}
-              />
+              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
             ))}
         </tbody>
       </table>

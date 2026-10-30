@@ -16,7 +16,6 @@ export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
-  const multiUserMode = useMultiUserMode();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -87,7 +86,6 @@ export default function AdminLogs() {
               logs={logs}
               offset={offset}
               canNext={canNext}
-              multiUserMode={multiUserMode}
               handleNext={handleNext}
               handlePrevious={handlePrevious}
             />
@@ -103,11 +101,11 @@ function LogsContainer({
   logs,
   offset,
   canNext,
-  multiUserMode,
   handleNext,
   handlePrevious,
 }) {
   const { t } = useTranslation();
+  const multiUserMode = useMultiUserMode();
   if (loading) {
     return (
       <Skeleton.default
@@ -144,10 +142,7 @@ function LogsContainer({
           </tr>
         </thead>
         <tbody>
-          {!!logs &&
-            logs.map((log) => (
-              <LogRow key={log.id} log={log} multiUserMode={multiUserMode} />
-            ))}
+          {!!logs && logs.map((log) => <LogRow key={log.id} log={log} />)}
         </tbody>
       </table>
       <div className="flex w-full justify-between items-center mt-6">

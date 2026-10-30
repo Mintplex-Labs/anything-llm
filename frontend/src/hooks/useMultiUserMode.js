@@ -1,16 +1,9 @@
-import { useEffect, useState } from "react";
-import System from "@/models/system";
+import { createContext, useContext } from "react";
+
+// Provided by the route wrappers in components/PrivateRoute, which resolve
+// multi user mode before rendering the page.
+export const MultiUserModeContext = createContext(false);
 
 export default function useMultiUserMode() {
-  const [multiUserMode, setMultiUserMode] = useState(false);
-
-  useEffect(() => {
-    async function fetchMultiUserMode() {
-      const enabled = await System.isMultiUserMode();
-      setMultiUserMode(!!enabled);
-    }
-    fetchMultiUserMode();
-  }, []);
-
-  return multiUserMode;
+  return useContext(MultiUserModeContext);
 }

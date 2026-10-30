@@ -2,8 +2,10 @@ import moment from "moment";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { safeJsonParse } from "@/utils/request";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 
-export default function LogRow({ log, multiUserMode }) {
+export default function LogRow({ log }) {
+  const multiUserMode = useMultiUserMode();
   const [expanded, setExpanded] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [hasMetadata, setHasMetadata] = useState(false);

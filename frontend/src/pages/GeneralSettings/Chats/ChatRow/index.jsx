@@ -6,8 +6,10 @@ import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 
-export default function ChatRow({ chat, multiUserMode, onDelete }) {
+export default function ChatRow({ chat, onDelete }) {
+  const multiUserMode = useMultiUserMode();
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
