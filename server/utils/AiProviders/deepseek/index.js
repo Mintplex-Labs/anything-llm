@@ -89,11 +89,6 @@ class DeepSeekLLM {
     return MODEL_MAP.get("deepseek", this.model) ?? 8192;
   }
 
-  async isValidChatCompletionModel(modelName = "") {
-    const models = await this.openai.models.list().catch(() => ({ data: [] }));
-    return models.data.some((model) => model.id === modelName);
-  }
-
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
@@ -157,11 +152,6 @@ class DeepSeekLLM {
     messages = null,
     { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `DeepSeek chat: ${this.model} is not valid for chat completion!`
-      );
-
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -202,11 +192,6 @@ class DeepSeekLLM {
     messages = null,
     { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `DeepSeek chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,
