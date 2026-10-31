@@ -2,6 +2,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const os = require("os");
 const { randomBytes } = require("crypto");
+const { StringDecoder } = require("string_decoder");
 const { createTwoFilesPatch } = require("diff");
 const { humanFileSize } = require("../../../../helpers");
 
@@ -323,7 +324,7 @@ class FilesystemManager {
       let position = fileSize;
       const chunk = Buffer.alloc(FilesystemManager.FILE_READ_CHUNK_SIZE);
       let linesFound = 0;
-      let remainingText = "";
+      let remainingBytes = Buffer.alloc(0);
 
       while (position > 0 && linesFound < numLines) {
         const size = Math.min(FilesystemManager.FILE_READ_CHUNK_SIZE, position);
@@ -332,15 +333,24 @@ class FilesystemManager {
         const { bytesRead } = await fileHandle.read(chunk, 0, size, position);
         if (!bytesRead) break;
 
-        const readData = chunk.slice(0, bytesRead).toString("utf-8");
-        const chunkText = readData + remainingText;
-
-        const chunkLines = this.#normalizeLineEndings(chunkText).split("\n");
-
+        let data = Buffer.concat([
+          chunk.subarray(0, bytesRead),
+          remainingBytes,
+        ]);
         if (position > 0) {
-          remainingText = chunkLines[0];
-          chunkLines.shift();
+          // Keep the first line as bytes until the previous chunk is read, so a
+          // character split by the chunk boundary is decoded whole.
+          let cut = data.indexOf(0x0a);
+          if (cut === -1) cut = data.length;
+          else if (cut > 0 && data[cut - 1] === 0x0d) cut--;
+          remainingBytes = data.subarray(0, cut);
+          data = data.subarray(cut);
         }
+
+        const chunkLines = this.#normalizeLineEndings(
+          data.toString("utf-8")
+        ).split("\n");
+        if (position > 0) chunkLines.shift();
 
         if (position + size === fileSize && chunkLines.at(-1) === "")
           chunkLines.pop();
@@ -374,12 +384,13 @@ class FilesystemManager {
       let buffer = "";
       let bytesRead = 0;
       const chunk = Buffer.alloc(FilesystemManager.FILE_READ_CHUNK_SIZE);
+      const decoder = new StringDecoder("utf-8");
 
       while (lines.length < numLines) {
         const result = await fileHandle.read(chunk, 0, chunk.length, bytesRead);
         if (result.bytesRead === 0) break;
         bytesRead += result.bytesRead;
-        buffer += chunk.slice(0, result.bytesRead).toString("utf-8");
+        buffer += decoder.write(chunk.subarray(0, result.bytesRead));
 
         const newLineIndex = buffer.lastIndexOf("\n");
         if (newLineIndex !== -1) {
@@ -392,6 +403,7 @@ class FilesystemManager {
         }
       }
 
+      buffer += decoder.end();
       if (buffer.length > 0 && lines.length < numLines) {
         lines.push(buffer);
       }
