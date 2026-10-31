@@ -190,6 +190,12 @@ async function responsesTooledStream(
     };
 
     for await (const chunk of response) {
+      if (chunk.type === "response.failed") {
+        throw new Error(
+          chunk.response?.error?.message || "Responses API request failed"
+        );
+      }
+
       if (chunk.type === "response.reasoning_summary_text.delta") {
         if (!chunk.delta) continue;
         reportText(
