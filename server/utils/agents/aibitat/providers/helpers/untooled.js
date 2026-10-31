@@ -16,9 +16,15 @@ class UnTooled {
     const modifiedMessages = [];
     messages.forEach((msg) => {
       if (msg.role === "function") {
-        const prevMsg = modifiedMessages[modifiedMessages.length - 1].content;
-        modifiedMessages[modifiedMessages.length - 1].content =
-          `${prevMsg}\n${msg.content}`;
+        const prevMsg = modifiedMessages[modifiedMessages.length - 1];
+        if (Array.isArray(prevMsg.content)) {
+          prevMsg.content = [
+            ...prevMsg.content,
+            { type: "text", text: String(msg.content) },
+          ];
+        } else {
+          prevMsg.content = `${prevMsg.content}\n${msg.content}`;
+        }
         return;
       }
       // Format messages with attachments for multimodal support
