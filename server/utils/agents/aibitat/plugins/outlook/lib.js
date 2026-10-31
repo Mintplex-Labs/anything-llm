@@ -49,6 +49,7 @@ function mapGraphMessage(msg, options = {}) {
   const base = {
     id: msg.id,
     conversationId: msg.conversationId,
+    webLink: msg.webLink,
     subject: msg.subject,
     from: msg.from?.emailAddress?.address || "Unknown",
     fromName: msg.from?.emailAddress?.name || "",
@@ -1018,7 +1019,7 @@ class OutlookBridge {
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
   async readThread(conversationId) {
-    const endpoint = `/me/messages?$filter=conversationId eq '${conversationId}'&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,body,attachments&$expand=attachments`;
+    const endpoint = `/me/messages?$filter=conversationId eq '${conversationId}'&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,body,webLink,attachments&$expand=attachments`;
 
     const result = await this.request(endpoint);
     if (!result.success) return result;
@@ -1042,6 +1043,8 @@ class OutlookBridge {
         conversationId,
         subject: messages[0]?.subject || "No Subject",
         messageCount: messages.length,
+        permalink:
+          messages[messages.length - 1]?.webLink || messages[0]?.webLink,
         messages: messages.map((msg) =>
           mapGraphMessage(msg, { includeBody: true, includeAttachments: true })
         ),

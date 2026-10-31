@@ -100,7 +100,7 @@ module.exports.OutlookReadThread = {
                 id: `outlook-thread-${thread.conversationId}`,
                 title: thread.subject,
                 text: `Subject: "${thread.subject}"\n\n${messagesFormatted}`,
-                chunkSource: `outlook-thread://${this._generatePermalink(thread.conversationId)}`,
+                chunkSource: `outlook-thread://${thread.permalink}`,
                 score: null,
               });
 
@@ -115,14 +115,6 @@ module.exports.OutlookReadThread = {
             } catch (e) {
               return handleSkillError(this, "outlook-read-thread", e);
             }
-          },
-          _generatePermalink: function (conversationId) {
-            if (!conversationId) return null;
-            let encodedId = encodeURIComponent(conversationId);
-            // For outlook, this needs to be specifically encoded
-            // as the webpage does not respect it like traditional URL encoding
-            encodedId = encodedId.replace(/-/g, "%2F");
-            return `https://outlook.live.com/mail/inbox/id/${encodedId}`;
           },
         });
       },
