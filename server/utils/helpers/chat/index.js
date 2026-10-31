@@ -194,7 +194,14 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
     compressedHistory,
     compressedPrompt,
   ]);
-  return [cSystem, ...cHistory, cPrompt];
+  const formattedHistory = cHistory.some(
+    (message) => message.attachments?.length
+  )
+    ? llm
+        .constructPrompt({ chatHistory: cHistory })
+        .slice(-cHistory.length - 1, -1)
+    : cHistory;
+  return [cSystem, ...formattedHistory, cPrompt];
 }
 
 /**
