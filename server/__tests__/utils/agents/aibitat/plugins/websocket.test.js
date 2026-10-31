@@ -5,6 +5,9 @@ jest.mock("../../../../../models/telemetry", () => ({
 jest.mock("../../../../../models/systemSettings", () => ({
   SystemSettings: { isMultiUserMode: jest.fn().mockResolvedValue(false) },
 }));
+jest.mock("../../../../../models/workspaceChats", () => ({
+  WorkspaceChats: { count: jest.fn() },
+}));
 
 const {
   websocket,
@@ -216,5 +219,70 @@ describe("websocket plugin session reasoning effort", () => {
     });
     expect(aibitat.updateReasoningEffort).not.toHaveBeenCalled();
     expect(aibitat.continue).not.toHaveBeenCalled();
+  });
+});
+
+describe("websocket plugin follow-up chat quota", () => {
+  const {
+    SystemSettings,
+  } = require("../../../../../models/systemSettings");
+  const {
+    WorkspaceChats,
+  } = require("../../../../../models/workspaceChats");
+  const { User } = require("../../../../../models/user");
+
+  const overLimitUser = { id: 7, role: "default", dailyMessageLimit: 3 };
+
+  /** Runs one interrupt round trip for an invocation owned by user 7. */
+  async function replyWithQuota(feedback = "next") {
+    const { socket, aibitat } = setupPlugin();
+    aibitat.handlerProps = { invocation: { user_id: 7 } };
+    aibitat.continue = jest.fn(async () => {});
+
+    const onInterrupt = aibitat.onInterrupt.mock.calls[0][0];
+    const done = onInterrupt({ from: "USER", to: "@agent" });
+    await flushPromises();
+    await socket.handleFeedback(
+      JSON.stringify({ type: "awaitingFeedback", feedback })
+    );
+    await done;
+    return { socket, aibitat };
+  }
+
+  beforeEach(() => {
+    SystemSettings.isMultiUserMode.mockResolvedValue(true);
+    WorkspaceChats.count.mockResolvedValue(5);
+    jest.spyOn(User, "get").mockResolvedValue(overLimitUser);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    SystemSettings.isMultiUserMode.mockResolvedValue(false);
+  });
+
+  it("refuses the follow-up and ends the session once the 24-hour quota is met", async () => {
+    const { socket, aibitat } = await replyWithQuota();
+
+    expect(aibitat.continue).not.toHaveBeenCalled();
+    const sent = JSON.parse(socket.send.mock.calls.at(-1)[0]);
+    expect(sent.content).toBe(
+      "You have met your maximum 24 hour chat quota of 3 chats. Try again later."
+    );
+    expect(socket.close).toHaveBeenCalled();
+  });
+
+  it("continues the session while the user is under quota", async () => {
+    WorkspaceChats.count.mockResolvedValue(1);
+    const { aibitat } = await replyWithQuota();
+
+    expect(aibitat.continue).toHaveBeenCalledWith("next", []);
+  });
+
+  it("does not enforce the quota in single-user mode", async () => {
+    SystemSettings.isMultiUserMode.mockResolvedValue(false);
+    const { aibitat } = await replyWithQuota();
+
+    expect(User.get).not.toHaveBeenCalled();
+    expect(aibitat.continue).toHaveBeenCalledWith("next", []);
   });
 });

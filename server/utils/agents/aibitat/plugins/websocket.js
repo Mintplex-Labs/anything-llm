@@ -23,6 +23,33 @@ async function userCanToggleTools(userId = null) {
 }
 
 /**
+ * Enforces the 24-hour message limit for agent follow-ups. The HTTP chat
+ * routes check User.canSendChat per incoming message, but follow-ups in an
+ * agent session arrive over this socket instead, so the same check runs here
+ * before the agent's next turn. Single-user mode, and users without a limit
+ * or with an admin role (handled by canSendChat), always pass.
+ * @param {object} aibitat - The running aibitat instance carrying handlerProps.
+ * @returns {Promise<{ allowed: boolean, dailyMessageLimit: number|null }>}
+ */
+async function agentFollowUpWithinQuota(aibitat) {
+  const userId = aibitat?.handlerProps?.invocation?.user_id;
+  if (!userId) return { allowed: true, dailyMessageLimit: null };
+
+  const { SystemSettings } = require("../../../../models/systemSettings");
+  if (!(await SystemSettings.isMultiUserMode()))
+    return { allowed: true, dailyMessageLimit: null };
+
+  const { User } = require("../../../../models/user");
+  const user = await User.get({ id: Number(userId) });
+  if (!user) return { allowed: true, dailyMessageLimit: null };
+
+  return {
+    allowed: await User.canSendChat(user),
+    dailyMessageLimit: user.dailyMessageLimit,
+  };
+}
+
+/**
  * Returns the timeout in ms for agent tool-call approval prompts.
  * Reads from `TOOL_CALL_APPROVAL_TIMEOUT_MS` env var; defaults to 120 000 ms (2 min).
  * @returns {number}
@@ -451,6 +478,23 @@ const websocket = {
           const { feedback, attachments, reasoningEffort } =
             await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
+            socket.close();
+            return;
+          }
+
+          // A follow-up message in an agent session counts against the user's
+          // 24-hour chat quota the same as a new message over the HTTP chat
+          // routes. Refuse and end the session once the quota is met.
+          const { allowed, dailyMessageLimit } =
+            await agentFollowUpWithinQuota(aibitat);
+          if (!allowed) {
+            socket.send(
+              JSON.stringify({
+                from: "@agent",
+                to: "USER",
+                content: `You have met your maximum 24 hour chat quota of ${dailyMessageLimit} chats. Try again later.`,
+              })
+            );
             socket.close();
             return;
           }
