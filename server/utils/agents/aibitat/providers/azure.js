@@ -2,11 +2,16 @@ const { OpenAI } = require("openai");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
 const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the Azure OpenAI API.
- * Uses the shared native tool calling helper for OpenAI-compatible tool calling.
+ * Uses the shared native tool calling helper for OpenAI-compatible tool calling,
+ * and the Responses API with native tool calling for reasoning deployments.
  */
 class AzureOpenAiProvider extends Provider {
   model;
@@ -30,6 +35,17 @@ class AzureOpenAiProvider extends Provider {
   }
 
   /**
+   * Reasoning deployments (eg: GPT-6) reject function tools on Chat Completions
+   * unless reasoning_effort is "none", and only support them via the Responses API.
+   * Azure does not expose model metadata, so this relies on the user-declared
+   * AZURE_OPENAI_MODEL_TYPE, same as the Azure OpenAI LLM provider.
+   * @returns {boolean}
+   */
+  get #usesResponsesAPI() {
+    return process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning";
+  }
+
+  /**
    * Stream a chat completion from Azure OpenAI with tool calling.
    *
    * @param {any[]} messages
@@ -38,6 +54,20 @@ class AzureOpenAiProvider extends Provider {
    * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
    */
   async stream(messages, functions = [], eventHandler = null) {
+    if (this.#usesResponsesAPI) {
+      this.providerLog(
+        "Provider.stream (responses) - will process this chat completion."
+      );
+      return await responsesTooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    }
+
     this.providerLog("Provider.stream - will process this chat completion.");
 
     try {
@@ -71,6 +101,16 @@ class AzureOpenAiProvider extends Provider {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    if (this.#usesResponsesAPI) {
+      return await responsesTooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        { provider: this }
+      );
+    }
+
     try {
       const result = await tooledComplete(
         this.client,

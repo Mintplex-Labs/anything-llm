@@ -10,7 +10,8 @@ const {
 /**
  * Shared OpenAI Responses API tool-calling utilities.
  * Mirrors the pattern of tooled.js but for providers that EXACTLY implement
- * the OpenAI Responses API (native OpenAI, OpenAI GPT models on Bedrock).
+ * the OpenAI Responses API (native OpenAI, OpenAI GPT models on Bedrock,
+ * Azure OpenAI reasoning deployments).
  * Do not use for providers that only implement Chat Completions.
  */
 
