@@ -258,9 +258,8 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: `MCP server ${name} not found in config file.`,
       };
 
-    const mcp = this.mcps[name];
-    const online = mcp ? await isMCPServerReachable(mcp) : false; // If the server is not in the mcps object, it is not running
-    if (online) this.pruneMCPServer(name);
+    // Removing local configuration must not depend on the server being reachable.
+    this.pruneMCPServer(name);
     this.removeMCPServerFromConfig(name);
 
     delete this.mcps[name];
