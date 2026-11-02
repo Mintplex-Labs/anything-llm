@@ -49,7 +49,6 @@ function mapGraphMessage(msg, options = {}) {
   const base = {
     id: msg.id,
     conversationId: msg.conversationId,
-    webLink: msg.webLink,
     subject: msg.subject,
     from: msg.from?.emailAddress?.address || "Unknown",
     fromName: msg.from?.emailAddress?.name || "",
