@@ -133,8 +133,6 @@ if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");
   const IndexPage = new MetaGenerator();
 
-  // Must be registered before express.static, which would otherwise serve the
-  // build's static public/manifest.json and ignore the configured meta_page_title.
   app.get("/manifest.json", async function (_, response) {
     IndexPage.generateManifest(response);
     return;
