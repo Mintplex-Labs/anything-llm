@@ -1036,6 +1036,11 @@ const TRANSLATIONS = {
           "Ако вашият deployment използва разсъждаващ модел (o1, o1-mini, o3-mini и др.), задайте „Разсъждаващ“. В противен случай чат заявките може да се провалят.",
         default: "По подразбиране",
         reasoning: "Разсъждаващ",
+        agent_api: "API за агента",
+        agent_api_tooltip:
+          "API, използван за извикванията на агента. Оставете Chat Completions, освен ако внедряването ви не изисква Responses API (напр. GPT-6 с инструменти). Не всеки модел или регион поддържа Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

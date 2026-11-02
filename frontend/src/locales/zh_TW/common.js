@@ -809,6 +809,11 @@ const TRANSLATIONS = {
         model_type: "模型類型",
         default: "預設",
         reasoning: "推理",
+        agent_api: "代理 API",
+        agent_api_tooltip:
+          "代理呼叫所使用的 API。除非您的部署需要 Responses API（例如搭配工具的 GPT-6），否則請保留 Chat Completions。並非所有模型或區域都支援 Responses API。",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "如果您的部署使用推理模型（例如 o1、o1-mini、o3-mini 等），請將此設定設為「推理」。否則，您的對話請求可能會失敗。",
       },

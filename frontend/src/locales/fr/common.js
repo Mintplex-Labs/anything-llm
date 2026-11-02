@@ -881,6 +881,11 @@ const TRANSLATIONS = {
         model_type: "Type de modèle",
         default: "Par défaut",
         reasoning: "Raisonnement",
+        agent_api: "API de l'agent",
+        agent_api_tooltip:
+          "L'API utilisée pour les appels de l'agent. Conservez Chat Completions sauf si votre déploiement exige la Responses API (ex. : GPT-6 avec des outils). Tous les modèles et toutes les régions ne prennent pas en charge la Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "Si votre déploiement utilise un modèle de raisonnement (o1, o1-mini, o3-mini, etc.), veuillez définir cette option sur « Raisonnement ». Sinon, vos requêtes de conversation pourraient échouer.",
       },

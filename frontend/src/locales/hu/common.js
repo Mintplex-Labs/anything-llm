@@ -1027,6 +1027,11 @@ const TRANSLATIONS = {
           "Ha a telepítés gondolkodó modellt használ (o1, o1-mini, o3-mini stb.), állítsa ezt „Gondolkodó” értékre. Ellenkező esetben a csevegési kérések sikertelenek lehetnek.",
         default: "Alapértelmezett",
         reasoning: "Gondolkodó",
+        agent_api: "Ügynök API",
+        agent_api_tooltip:
+          "Az ügynökhívásokhoz használt API. Hagyja a Chat Completions beállítást, hacsak a telepítése nem igényli a Responses API-t (pl. GPT-6 eszközökkel). Nem minden modell vagy régió támogatja a Responses API-t.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

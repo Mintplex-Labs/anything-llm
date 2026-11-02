@@ -1006,6 +1006,11 @@ const TRANSLATIONS = {
         model_type: "Mudeli tüüp",
         default: "Vaikimisi",
         reasoning: "Põhjendus",
+        agent_api: "Agendi API",
+        agent_api_tooltip:
+          "API, mida kasutatakse agendi päringuteks. Jätke Chat Completions, kui teie juurutus ei nõua Responses API-t (nt GPT-6 koos tööriistadega). Kõik mudelid ega piirkonnad ei toeta Responses API-t.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Kui teie rakendus kasutab loogika mudelit (o1, o1-mini, o3-mini jne), siis määrake see väärtuseks "Loogika". Muu korral võivad teie vestlussõnumid ebaõiglas.',
       },

@@ -55,6 +55,15 @@ const KEY_MAPPING = {
           : "Invalid model type. Must be one of: default, reasoning.",
     ],
   },
+  AzureOpenAiAgentApi: {
+    envKey: "AZURE_OPENAI_AGENT_API",
+    checks: [
+      (input) =>
+        ["chat", "responses"].includes(input)
+          ? null
+          : "Invalid agent API. Must be one of: chat, responses.",
+    ],
+  },
 
   // Anthropic Settings
   AnthropicApiKey: {

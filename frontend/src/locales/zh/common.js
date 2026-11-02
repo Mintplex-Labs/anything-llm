@@ -958,6 +958,11 @@ const TRANSLATIONS = {
         model_type: "模型类型",
         default: "预设",
         reasoning: "推理",
+        agent_api: "智能体 API",
+        agent_api_tooltip:
+          "智能体调用所使用的 API。除非你的部署需要 Responses API（例如带工具的 GPT-6），否则请保留 Chat Completions。并非所有模型或区域都支持 Responses API。",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "如果您的部署使用了推理模型（例如 o1、o1-mini、o3-mini 等），请将此选项设置为“推理”。否则，您的聊天请求可能会失败。",
       },

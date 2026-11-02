@@ -1019,6 +1019,11 @@ const TRANSLATIONS = {
           'यदि आपका डिप्लॉयमेंट रीजनिंग मॉडल (जैसे o1, o1-mini, o3-mini आदि) का उपयोग करता है, तो इसे "Reasoning" पर सेट करें। अन्यथा चैट अनुरोध विफल हो सकते हैं।',
         default: "डिफ़ॉल्ट",
         reasoning: "रीज़निंग",
+        agent_api: "एजेंट API",
+        agent_api_tooltip:
+          "एजेंट कॉल के लिए उपयोग किया जाने वाला API। जब तक आपकी डिप्लॉयमेंट को Responses API की आवश्यकता न हो (जैसे टूल्स के साथ GPT-6), Chat Completions ही रखें। हर मॉडल या क्षेत्र Responses API का समर्थन नहीं करता।",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

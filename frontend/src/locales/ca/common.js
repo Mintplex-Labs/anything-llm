@@ -1054,6 +1054,11 @@ const TRANSLATIONS = {
           'Si el teu desplegament usa un model de raonament (o1, o1-mini, o3-mini, etc.), estableix-ho com a "Raonament". En cas contrari, les teves sol·licituds de xat poden fallar.',
         default: "Per defecte",
         reasoning: "Raonament",
+        agent_api: "API de l'agent",
+        agent_api_tooltip:
+          "L'API que s'utilitza per a les crides de l'agent. Manteniu Chat Completions tret que el vostre desplegament requereixi la Responses API (p. ex. GPT-6 amb eines). No tots els models ni regions admeten la Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },
