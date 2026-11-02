@@ -42,8 +42,6 @@ async function validBrowserExtensionApiKey(request, response, next) {
       return;
     }
 
-    // Only admins and managers can create keys, so a key stops working
-    // once its owner is demoted to a role that could not have created it.
     if (![ROLES.admin, ROLES.manager].includes(user.role)) {
       response.status(403).json({
         error: "User does not have permission to use this API key.",
