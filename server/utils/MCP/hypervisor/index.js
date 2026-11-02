@@ -191,6 +191,22 @@ class MCPHypervisor {
   }
 
   /**
+   * Get the tool call timeout for an MCP server in milliseconds.
+   * Set per server via `anythingllm.timeout` (in seconds) in the MCP config file.
+   * Falls back to 60 seconds when unset or not a positive number.
+   * @param {string} serverName - The name of the MCP server
+   * @returns {number} - Timeout in milliseconds
+   */
+  getToolCallTimeout(serverName) {
+    const DEFAULT_TIMEOUT_SECONDS = 60;
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    const timeout = Number(config?.server?.anythingllm?.timeout);
+    if (!Number.isFinite(timeout) || timeout <= 0)
+      return DEFAULT_TIMEOUT_SECONDS * 1000;
+    return timeout * 1000;
+  }
+
+  /**
    * Reload the MCP servers - can be used to reload the MCP servers without restarting the server or app
    * and will also apply changes to the config file if any where made.
    */
