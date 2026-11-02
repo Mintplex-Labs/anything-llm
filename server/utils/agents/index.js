@@ -570,8 +570,6 @@ class AgentHandler {
     if (invocation && !invocation.workspace)
       throw new Error("This agent invocation has no valid workspace");
 
-    // Access may have been revoked between the invocation being created and
-    // the socket connecting, so re-check the user against the workspace.
     if (invocation?.user_id) {
       const user = await User.get({ id: Number(invocation.user_id) });
       if (!user || user.suspended)
