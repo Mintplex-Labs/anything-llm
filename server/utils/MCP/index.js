@@ -133,10 +133,11 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `Executing MCP server: ${name} with ${JSON.stringify(args, null, 2)}`
                     );
-                    const result = await currentMcp.callTool({
-                      name: tool.name,
-                      arguments: args,
-                    });
+                    const result = await currentMcp.callTool(
+                      { name: tool.name, arguments: args },
+                      undefined,
+                      { timeout: mcpLayer.getToolCallTimeout(name) }
+                    );
                     aibitat.handlerProps.log(
                       `MCP server: ${name}:${tool.name} completed successfully`,
                       result
