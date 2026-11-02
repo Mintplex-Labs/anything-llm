@@ -3,39 +3,12 @@ const path = require("path");
 const filesystem = require("./lib.js");
 
 /**
- * Walks a directory tree and collects a flat snapshot of every file and
- * subdirectory, relative to the copy root. Walking fully before any writes
- * prevents a destination-inside-source copy from being observed while
- * traversing (the destination does not exist during the snapshot phase).
- */
-async function walkDirectory(source, copyRoot, snapshot) {
-  const items = await fs.readdir(source, { withFileTypes: true });
-
-  for (const item of items) {
-    const fullPath = path.join(source, item.name);
-    if (item.isSymbolicLink()) {
-      throw new Error(
-        `Cannot copy symbolic link: ${fullPath}. Symlinks are not allowed during copy operations.`
-      );
-    }
-
-    const relativePath = path.relative(copyRoot, fullPath);
-    if (item.isDirectory()) {
-      snapshot.push({ type: "directory", source: fullPath, relativePath });
-      await walkDirectory(fullPath, copyRoot, snapshot);
-    } else {
-      snapshot.push({ type: "file", source: fullPath, relativePath });
-    }
-  }
-}
-
-/**
  * Copies a file or directory tree to the destination.
- * The source tree is snapshotted before any destination writes so that
- * copying a directory into its own subdirectory produces a single snapshot
- * instead of recursing into itself.
+ * `skip` is the real path of the root destination: when copying into a
+ * subdirectory of the source, the newly created destination shows up in the
+ * source listing and must not be copied into itself.
  */
-async function copyRecursive(source, destination) {
+async function copyRecursive(source, destination, skip = null) {
   const lstat = await fs.lstat(source);
 
   if (lstat.isSymbolicLink()) {
@@ -44,24 +17,17 @@ async function copyRecursive(source, destination) {
     );
   }
 
-  if (!lstat.isDirectory()) {
-    await fs.copyFile(source, destination);
-    return;
-  }
-
-  // Phase 1: snapshot the source tree before creating the destination.
-  const snapshot = [];
-  await walkDirectory(source, source, snapshot);
-
-  // Phase 2: recreate the tree at the destination from the snapshot.
-  await fs.mkdir(destination, { recursive: true });
-  for (const entry of snapshot) {
-    const target = path.join(destination, entry.relativePath);
-    if (entry.type === "directory") {
-      await fs.mkdir(target, { recursive: true });
-    } else {
-      await fs.copyFile(entry.source, target);
+  if (lstat.isDirectory()) {
+    await fs.mkdir(destination, { recursive: true });
+    skip ??= await fs.realpath(destination);
+    const entries = await fs.readdir(source);
+    for (const entry of entries) {
+      const entrySource = path.join(source, entry);
+      if (entrySource === skip) continue;
+      await copyRecursive(entrySource, path.join(destination, entry), skip);
     }
+  } else {
+    await fs.copyFile(source, destination);
   }
 }
 
