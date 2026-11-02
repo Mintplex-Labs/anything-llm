@@ -133,15 +133,21 @@ class FilesystemManager {
   #isPathWithinAllowedDirectories(absolutePath, allowedDirs) {
     if (!Array.isArray(allowedDirs) || allowedDirs.length === 0) return false;
 
+    // Windows paths are case-insensitive, so d:\llm and D:\llm are the same folder.
+    const foldCase = (p) =>
+      process.platform === "win32" ? p.toLowerCase() : p;
+
     const normalizedPath = this.#normalizeAndValidatePath(absolutePath);
     if (!normalizedPath) return false;
+    const comparablePath = foldCase(normalizedPath);
 
     return allowedDirs.some((dir) => {
       const normalizedDir = this.#normalizeAndValidatePath(dir);
       if (!normalizedDir) return false;
+      const comparableDir = foldCase(normalizedDir);
 
-      if (normalizedPath === normalizedDir) return true;
-      return normalizedPath.startsWith(normalizedDir + path.sep);
+      if (comparablePath === comparableDir) return true;
+      return comparablePath.startsWith(comparableDir + path.sep);
     });
   }
 
