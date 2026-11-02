@@ -567,6 +567,21 @@ class AgentHandler {
     });
     if (invocation?.closed)
       throw new Error("This agent invocation is already closed");
+    if (invocation && !invocation.workspace)
+      throw new Error("This agent invocation has no valid workspace");
+
+    if (invocation?.user_id) {
+      const user = await User.get({ id: Number(invocation.user_id) });
+      if (!user || user.suspended)
+        throw new Error("User is not permitted to use this agent invocation");
+
+      const workspace = await Workspace.getWithUser(user, {
+        id: invocation.workspace_id,
+      });
+      if (!workspace)
+        throw new Error("User does not have access to this workspace");
+    }
+
     this.invocation = invocation ?? null;
   }
 
