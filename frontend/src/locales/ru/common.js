@@ -870,6 +870,11 @@ const TRANSLATIONS = {
         model_type: "Тип модели",
         default: "Стандартные настройки.",
         reasoning: "Обоснование",
+        agent_api: "API агента",
+        agent_api_tooltip:
+          "API, используемый для вызовов агента. Оставьте Chat Completions, если ваше развертывание не требует Responses API (например, GPT-6 с инструментами). Не все модели и регионы поддерживают Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Если ваш проект использует модель рассуждения (например, o1, o1-mini, o3-mini и т.д.), установите этот параметр в значение "Reasoning". В противном случае, ваши запросы в чат могут не выполняться.',
       },

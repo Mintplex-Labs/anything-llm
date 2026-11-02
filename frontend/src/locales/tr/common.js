@@ -872,6 +872,11 @@ const TRANSLATIONS = {
         model_type: "Model Türü",
         default: "Varsayılan",
         reasoning: "Mantıksal",
+        agent_api: "Ajan API'si",
+        agent_api_tooltip:
+          "Ajan çağrıları için kullanılan API. Dağıtımınız Responses API gerektirmiyorsa (ör. araçlarla GPT-6) Chat Completions'ı koruyun. Her model veya bölge Responses API'yi desteklemez.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Dağıtımınız bir mantıksal model (o1, o1-mini, o3-mini vb.) kullanıyorsa, bunu "Mantıksal" olarak ayarlayın. Aksi takdirde sohbet istekleriniz başarısız olabilir.',
       },

@@ -852,6 +852,11 @@ const TRANSLATIONS = {
         model_type: "نوع النموذج",
         default: "افتراضي",
         reasoning: "المنطق",
+        agent_api: "واجهة برمجة الوكيل",
+        agent_api_tooltip:
+          "واجهة البرمجة المستخدمة لاستدعاءات الوكيل. أبقِ Chat Completions ما لم يتطلب نشرك Responses API (مثل GPT-6 مع الأدوات). لا تدعم جميع النماذج أو المناطق Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'إذا كان نظامك يعتمد على نموذج استدلال (مثل o1، o1-mini، o3-mini، إلخ)، فيرجى تعيين هذا الخيار على "الاستدلال". وإلا، فقد تفشل طلبات الدردشة الخاصة بك.',
       },

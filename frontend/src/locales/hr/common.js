@@ -1034,6 +1034,11 @@ const TRANSLATIONS = {
           "Ako vaša implementacija koristi model za rezoniranje (o1, o1-mini, o3-mini, itd.), postavite ovo na „Rezoniranje“. Inače vaši zahtjevi razgovora mogu ne uspjeti.",
         default: "Zadano",
         reasoning: "Rezoniranje",
+        agent_api: "API agenta",
+        agent_api_tooltip:
+          "API koji se koristi za pozive agenta. Zadržite Chat Completions osim ako vaša implementacija ne zahtijeva Responses API (npr. GPT-6 s alatima). Ne podržavaju svi modeli ni regije Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

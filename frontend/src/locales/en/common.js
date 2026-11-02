@@ -1021,6 +1021,11 @@ const TRANSLATIONS = {
           "If your deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.), set this to “Reasoning”. Otherwise, your chat requests may fail.",
         default: "Default",
         reasoning: "Reasoning",
+        agent_api: "Agent API",
+        agent_api_tooltip:
+          "The API used for agent calls. Keep Chat Completions unless your deployment requires the Responses API (eg: GPT-6 with tools). Not every model or region supports the Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

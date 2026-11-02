@@ -998,6 +998,11 @@ const TRANSLATIONS = {
         model_type: "모델 유형",
         default: "기본값",
         reasoning: "추론",
+        agent_api: "에이전트 API",
+        agent_api_tooltip:
+          "에이전트 호출에 사용되는 API입니다. 배포에 Responses API가 필요한 경우(예: 도구를 사용하는 GPT-6)가 아니면 Chat Completions를 유지하세요. 모든 모델이나 리전이 Responses API를 지원하지는 않습니다.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           '만약 귀하의 배포가 추론 모델(o1, o1-mini, o3-mini 등)을 사용한다면, 이 옵션을 "추론"으로 설정하십시오. 그렇지 않으면, 챗봇 요청이 실패할 수 있습니다.',
       },

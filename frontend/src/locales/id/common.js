@@ -1028,6 +1028,11 @@ const TRANSLATIONS = {
           'Jika deployment Anda menggunakan model reasoning (o1, o1-mini, o3-mini, dll.), atur ini ke "Reasoning". Jika tidak, permintaan obrolan Anda mungkin gagal.',
         default: "Default",
         reasoning: "Reasoning",
+        agent_api: "API Agen",
+        agent_api_tooltip:
+          "API yang digunakan untuk panggilan agen. Tetap gunakan Chat Completions kecuali deployment Anda memerlukan Responses API (mis. GPT-6 dengan tools). Tidak semua model atau region mendukung Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },
