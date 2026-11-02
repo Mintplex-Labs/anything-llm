@@ -714,6 +714,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_DEEPSEEK_API_KEY",
     checks: [],
   },
+  AgentSofyaApiKey: {
+    envKey: "AGENT_SOFYA_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {

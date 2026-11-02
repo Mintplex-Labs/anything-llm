@@ -174,6 +174,7 @@ const SystemSettings = {
             "anysearch-search",
             "firecrawl-search",
             "deepseek-search",
+            "sofya-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -625,6 +626,7 @@ const SystemSettings = {
       AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
       AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
       AgentDeepSeekApiKey: !!process.env.AGENT_DEEPSEEK_API_KEY || null,
+      AgentSofyaApiKey: !!process.env.AGENT_SOFYA_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings

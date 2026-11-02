@@ -123,6 +123,9 @@ const webBrowsing = {
               case "deepseek-search":
                 engine = "_deepSeekSearch";
                 break;
+              case "sofya-search":
+                engine = "_sofyaSearch";
+                break;
               default:
                 // No provider configured - use You.com's keyless free tier,
                 // which falls back to DuckDuckGo on any failure.
@@ -1966,6 +1969,90 @@ const webBrowsing = {
                 link: url,
                 snippet: text,
                 ...(date ? { date } : {}),
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Sofya Search - https://sofya.co
+           * POST https://sofya.co/v1/search
+           * Requires AGENT_SOFYA_API_KEY (free key from https://sofya.co/dashboard).
+           * search_depth "snippets" returns the result snippet as content without fetching each page.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _sofyaSearch: async function (query) {
+            const apiKey = (process.env.AGENT_SOFYA_API_KEY || "").trim();
+            if (!apiKey) {
+              this.super.introspect(
+                `${this.caller}: I can't use Sofya searching because the user has not defined the required API key.\nVisit: https://sofya.co/dashboard to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Sofya to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://sofya.co/v1/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                  query: String(query),
+                  max_results: 10,
+                  search_depth: "snippets",
+                }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // Surface Sofya's {detail} message (e.g. 401 "Invalid API key").
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (typeof body?.detail === "string") message = body.detail;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => ({ response: data, error: null }))
+              .catch((e) => {
+                this.super.handlerProps.log(`Sofya Search Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.results?.forEach((searchResult) => {
+              const { title, url, content, description, published_date } =
+                searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(description || content || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+                ...(published_date ? { date: published_date } : {}),
               });
             });
 

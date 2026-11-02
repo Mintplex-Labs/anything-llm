@@ -599,6 +599,41 @@ export function DeepSeekSearchOptions({ settings }) {
   );
 }
 
+export function SofyaSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        Sofya requires a free API key{" "}
+        <a
+          href="https://sofya.co/dashboard"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from the Sofya dashboard.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentSofyaApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Sofya API Key"
+            required={true}
+            defaultValue={settings?.AgentSofyaApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function ExaSearchOptions({ settings }) {
   return (
     <>
