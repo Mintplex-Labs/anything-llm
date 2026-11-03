@@ -415,11 +415,10 @@ export default function ChatContainer({
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          // No "Agent session complete." statusResponse is appended here:
-          // like the "@agent: Swapping over to agent chat..." handoff notice,
-          // that message is stream plumbing, not conversation. Appending it
-          // rendered a stray "Thoughts" block below the finished answer and,
-          // as the last history item, hid the answer's regenerate action.
+          // Session end is stream plumbing, not conversation, so nothing is
+          // appended. Still sweep content-less placeholders (e.g. the pending
+          // dots from the @agent handoff) in case no agent event replaced them.
+          setChatHistory((prev) => prev.filter((msg) => !!msg.content));
           setLoadingResponse(false);
           setWebsocket(null);
           setSocketId(null);
