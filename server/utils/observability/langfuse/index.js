@@ -1,5 +1,3 @@
-const crypto = require("crypto");
-
 const FLUSH_INTERVAL_MS = 10_000;
 const FLUSH_AT = 20;
 const MAX_QUEUE = 1_000;
@@ -33,115 +31,52 @@ class LangfuseProvider {
   }
 
   /**
-   * Records a completed LLM interaction as a trace with a nested generation
-   * observation and optional child spans. All timing is retrospective - the
-   * trace is written after the response has already been sent to the user.
-   * @param {import("../index").ChatTraceEvent} event
+   * Queues one completed observation as an OTLP span. Trace roots also carry
+   * the trace-level user, session, tags and metadata.
+   * @param {import("../index").ExportedObservation} observation
    */
-  traceChat(event) {
-    console.log(`\x1b[32m[Observability]\x1b[0m Trace queued - ${event.name}`, {
-      userId: event.userId || null,
-      sessionId: event.sessionId || null,
-      model: event.model || null,
-    });
-    const endTime = Date.now();
-    const duration = Number(event?.metrics?.duration) || 0;
-    const startTime = endTime - duration * 1000;
-    const traceId = crypto.randomBytes(16).toString("hex");
-    const rootSpanId = crypto.randomBytes(8).toString("hex");
+  export(observation) {
+    const { trace } = observation;
+    if (trace)
+      console.log(`[32m[Observability][0m Trace queued - ${observation.name}`, {
+        userId: trace.userId,
+        sessionId: trace.sessionId,
+      });
+    const input =
+      observation.type === "generation"
+        ? this.#sanitizeMessages(observation.input) ?? observation.input
+        : observation.input;
 
-    const spans = [
-      this.#span({
-        traceId,
-        spanId: rootSpanId,
-        name: event.name,
-        startTime,
-        endTime,
-        attributes: {
-          "langfuse.observation.type": "span",
-          "langfuse.observation.input": asJSON(event.input),
-          "langfuse.observation.output": asJSON(event.output),
-          "langfuse.trace.input": asJSON(event.input),
-          "langfuse.trace.output": asJSON(event.output),
-          "langfuse.user.id": event.userId || undefined,
-          "langfuse.session.id": event.sessionId || undefined,
-          "langfuse.trace.tags": event.tags,
-          "langfuse.trace.metadata": asJSON(event.metadata),
-        },
-      }),
-      this.#span({
-        traceId,
-        spanId: crypto.randomBytes(8).toString("hex"),
-        parentSpanId: rootSpanId,
-        name: "completion",
-        startTime,
-        endTime,
-        attributes: {
-          "langfuse.observation.type": "generation",
-          "langfuse.observation.input": asJSON(
-            this.#sanitizeMessages(event.messages) ?? event.input
-          ),
-          "langfuse.observation.output": asJSON(event.output),
-          "langfuse.observation.model.name": event.model || undefined,
-          "gen_ai.usage.input_tokens": event?.metrics?.prompt_tokens,
-          "gen_ai.usage.output_tokens": event?.metrics?.completion_tokens,
-          "langfuse.observation.cost_details": costDetails(event.metrics),
-          "langfuse.observation.metadata": asJSON(event.metrics),
-        },
-      }),
-      ...(event.spans || []).map((span) =>
-        this.#span({
-          traceId,
-          spanId: crypto.randomBytes(8).toString("hex"),
-          parentSpanId: rootSpanId,
-          name: span.name,
-          startTime,
-          endTime: startTime,
-          attributes: {
-            "langfuse.observation.type": "span",
-            "langfuse.observation.input": asJSON(span.input),
-            "langfuse.observation.output": asJSON(span.output),
-            "langfuse.observation.metadata": asJSON(span.metadata),
-          },
-        })
-      ),
-    ];
-    this.#enqueue(spans);
-  }
-
-  /**
-   * Records a standalone non-chat event (eg: embedding batch) as a single-span trace.
-   * @param {import("../index").TraceEvent} event
-   */
-  traceEvent(event) {
-    console.log(
-      `\x1b[32m[Observability]\x1b[0m Event queued - ${event.name}`,
-      event.metadata || {}
-    );
-    const now = Date.now();
-    const duration = Number(event?.metadata?.duration) || 0;
     this.#enqueue([
       this.#span({
-        traceId: crypto.randomBytes(16).toString("hex"),
-        spanId: crypto.randomBytes(8).toString("hex"),
-        name: event.name,
-        startTime: now - duration * 1000,
-        endTime: now,
+        traceId: observation.traceId,
+        spanId: observation.spanId,
+        parentSpanId: observation.parentSpanId,
+        name: observation.name,
+        startTime: observation.startTime,
+        endTime: observation.endTime,
+        error: observation.error,
         attributes: {
-          "langfuse.observation.type": event.observationType || "span",
-          "langfuse.observation.model.name": event.model || undefined,
-          "gen_ai.usage.input_tokens": event?.metrics?.prompt_tokens,
-          "gen_ai.usage.output_tokens": event?.metrics?.completion_tokens,
-          "langfuse.observation.cost_details": costDetails(event.metrics),
-          "langfuse.observation.input": asJSON(event.input),
-          "langfuse.observation.output": asJSON(event.output),
-          "langfuse.observation.metadata": asJSON(event.metadata),
-          "langfuse.trace.input": asJSON(event.input),
-          "langfuse.trace.output": asJSON(event.output),
-          "langfuse.user.id": event.userId || undefined,
-          "langfuse.session.id": event.sessionId || undefined,
-          "langfuse.trace.tags": event.tags,
-          "langfuse.trace.metadata": asJSON(event.metadata),
+          "langfuse.observation.type": observation.type,
+          "langfuse.observation.input": asJSON(input),
+          "langfuse.observation.output": asJSON(observation.output),
+          "langfuse.observation.model.name": observation.model || undefined,
+          "langfuse.observation.metadata": asJSON(observation.metadata),
+          "langfuse.observation.level": observation.error ? "ERROR" : undefined,
+          "langfuse.observation.status_message": observation.error || undefined,
+          "gen_ai.usage.input_tokens": observation.usage?.prompt_tokens,
+          "gen_ai.usage.output_tokens": observation.usage?.completion_tokens,
+          "langfuse.observation.cost_details": costDetails(observation.usage),
+          ...(trace
+            ? {
+                "langfuse.trace.input": asJSON(trace.input),
+                "langfuse.trace.output": asJSON(trace.output),
+                "langfuse.user.id": trace.userId || undefined,
+                "langfuse.session.id": trace.sessionId || undefined,
+                "langfuse.trace.tags": trace.tags,
+                "langfuse.trace.metadata": asJSON(trace.metadata),
+              }
+            : {}),
         },
       }),
     ]);
@@ -228,6 +163,7 @@ class LangfuseProvider {
     name,
     startTime,
     endTime,
+    error = null,
     attributes = {},
   }) {
     return {
@@ -241,7 +177,7 @@ class LangfuseProvider {
       attributes: Object.entries(attributes)
         .filter(([, value]) => value !== undefined && value !== null)
         .map(([key, value]) => ({ key, value: otelValue(value) })),
-      status: {},
+      status: error ? { code: 2, message: error } : {},
     };
   }
 }

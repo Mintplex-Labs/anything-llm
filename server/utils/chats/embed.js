@@ -242,21 +242,6 @@ async function streamChatWithForEmbed(
         : { username: !!username ? String(username) : null },
       sessionId,
     });
-
-    Observability.traceWorkspaceChat({
-      name: "embed-chat",
-      workspace: embed.workspace,
-      user: username ? { username: String(username) } : null,
-      sessionId,
-      chatMode,
-      metadata: { embedId: embed.id },
-      message,
-      output: completeText,
-      model: LLMConnector.model,
-      messages,
-      metrics,
-      sources,
-    });
   }
   return;
 }
@@ -336,5 +321,15 @@ async function resolveLLMConnectorForEmbed({
 }
 
 module.exports = {
-  streamChatWithForEmbed,
+  streamChatWithForEmbed: Observability.traced(
+    "embed-chat",
+    streamChatWithForEmbed,
+    (_response, embed, message, sessionId, { username } = {}) => ({
+      input: message,
+      workspace: embed?.workspace,
+      userId: username ? String(username) : null,
+      sessionId,
+      metadata: { embedId: embed?.id },
+    })
+  ),
 };

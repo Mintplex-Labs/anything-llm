@@ -2,7 +2,6 @@ const { WorkspaceChats } = require("../../models/workspaceChats.js");
 const { safeJsonParse } = require("../../utils/http/index.js");
 const { getBaseLLMProviderModel } = require("../../utils/helpers/index.js");
 const AIbitat = require("../../utils/agents/aibitat/index.js");
-const { Observability } = require("../../utils/observability/index.js");
 const truncate = require("truncate");
 
 // Cap per-group chat review so a long-dormant user can't trigger a 500-chat summarization.
@@ -133,17 +132,10 @@ function buildObserverUserMessage(chats) {
  * Returns {candidates, rawText} where candidates is an array or null,
  * and rawText is whatever the model said (for debugging when the tool isn't called).
  */
-async function runObserver({
-  provider,
-  model,
-  userMessage,
-  userId = null,
-  workspaceId = null,
-}) {
+async function runObserver({ provider, model, userMessage }) {
   let candidates = null;
   let rawText = "";
   const aibitat = new AIbitat({ provider, model, maxRounds: 3 });
-  aibitat.suppressObservability = true;
 
   aibitat.onMessage((msg) => {
     if (msg.from === "OBSERVER" && msg.content) rawText = msg.content;
@@ -220,18 +212,6 @@ async function runObserver({
     content: userMessage,
   });
 
-  Observability.traceEvent({
-    name: "memory-extraction:observer",
-    input: userMessage,
-    output: candidates ? JSON.stringify(candidates) : rawText || null,
-    model,
-    userId: await Observability.usernameForId(userId),
-    observationType: "generation",
-    metrics: aibitat.providerInstance?.getCumulativeUsage?.(),
-    metadata: { provider, workspaceId },
-    tags: ["memory-extraction"],
-  });
-
   return { candidates, rawText };
 }
 
@@ -280,17 +260,10 @@ function buildReflectorUserMessage(
  * candidates against existing memories.
  * Returns {memories, rawText} where memories is an array or null.
  */
-async function runReflector({
-  provider,
-  model,
-  userMessage,
-  userId = null,
-  workspaceId = null,
-}) {
+async function runReflector({ provider, model, userMessage }) {
   let finalMemories = null;
   let rawText = "";
   const aibitat = new AIbitat({ provider, model, maxRounds: 3 });
-  aibitat.suppressObservability = true;
 
   aibitat.onMessage((msg) => {
     if (msg.from === "REFLECTOR" && msg.content) rawText = msg.content;
@@ -377,18 +350,6 @@ async function runReflector({
     from: "USER",
     to: "REFLECTOR",
     content: userMessage,
-  });
-
-  Observability.traceEvent({
-    name: "memory-extraction:reflector",
-    input: userMessage,
-    output: finalMemories ? JSON.stringify(finalMemories) : rawText || null,
-    model,
-    userId: await Observability.usernameForId(userId),
-    observationType: "generation",
-    metrics: aibitat.providerInstance?.getCumulativeUsage?.(),
-    metadata: { provider, workspaceId },
-    tags: ["memory-extraction"],
   });
 
   return { memories: finalMemories, rawText };

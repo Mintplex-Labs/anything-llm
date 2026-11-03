@@ -490,22 +490,6 @@ async function chatSync({
     user,
   });
 
-  Observability.traceWorkspaceChat({
-    name: "api-chat",
-    workspace,
-    thread,
-    user,
-    sessionId: sessionId || null,
-    chatId: chat.id,
-    chatMode,
-    message,
-    output: textResponse,
-    model: LLMConnector.model,
-    messages,
-    metrics: performanceMetrics,
-    sources,
-  });
-
   return {
     id: uuid,
     type: "textResponse",
@@ -913,22 +897,6 @@ async function streamChat({
       user,
     });
 
-    Observability.traceWorkspaceChat({
-      name: "api-chat",
-      workspace,
-      thread,
-      user,
-      sessionId: sessionId || null,
-      chatId: chat.id,
-      chatMode,
-      message,
-      output: completeText,
-      model: LLMConnector.model,
-      messages,
-      metrics,
-      sources,
-    });
-
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
@@ -950,7 +918,23 @@ async function streamChat({
   return;
 }
 
+const apiChatTrace = ({
+  workspace,
+  message,
+  mode,
+  user,
+  thread,
+  sessionId,
+}) => ({
+  input: message,
+  workspace,
+  user,
+  thread,
+  sessionId,
+  metadata: { chatMode: mode ?? workspace?.chatMode },
+});
+
 module.exports.ApiChatHandler = {
-  chatSync,
-  streamChat,
+  chatSync: Observability.traced("api-chat", chatSync, apiChatTrace),
+  streamChat: Observability.traced("api-chat", streamChat, apiChatTrace),
 };

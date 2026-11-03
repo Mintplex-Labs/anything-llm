@@ -369,21 +369,6 @@ async function streamChatWithWorkspace(
       ? await WorkspaceChats.upsert(chat.id, completedChat)
       : await WorkspaceChats.new(completedChat);
 
-    Observability.traceWorkspaceChat({
-      name: "workspace-chat",
-      workspace,
-      thread,
-      user,
-      chatId: chat.id,
-      chatMode,
-      message,
-      output: completeText,
-      model: LLMConnector.model,
-      messages,
-      metrics,
-      sources,
-    });
-
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
@@ -433,5 +418,15 @@ async function resolveLLMConnector({
 
 module.exports = {
   VALID_CHAT_MODE,
-  streamChatWithWorkspace,
+  streamChatWithWorkspace: Observability.traced(
+    "workspace-chat",
+    streamChatWithWorkspace,
+    (_response, workspace, message, chatMode, user, thread) => ({
+      input: message,
+      workspace,
+      user,
+      thread,
+      metadata: { chatMode },
+    })
+  ),
 };

@@ -1,5 +1,3 @@
-const { Observability } = require("../../observability");
-
 /**
  * Execute an LLM instruction flow step
  * @param {Object} config Flow step configuration
@@ -38,16 +36,6 @@ async function executeLLMInstruction(config, context) {
     }
 
     introspect(`Successfully received LLM response`);
-    Observability.traceAgentEvent({
-      invocation: aibitat.handlerProps?.invocation,
-      name: "flow:llm-instruction",
-      input,
-      output: completion.textResponse,
-      model: provider.model,
-      observationType: "generation",
-      metrics: provider.getUsage?.(),
-      tags: ["agent-flow"],
-    });
     if (resultVariable) config.resultVariable = resultVariable;
     return completion.textResponse;
   } catch (error) {

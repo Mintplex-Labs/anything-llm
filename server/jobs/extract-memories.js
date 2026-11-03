@@ -3,6 +3,7 @@ const { SystemSettings } = require("../models/systemSettings.js");
 const { Memory } = require("../models/memory.js");
 const { WorkspaceChats } = require("../models/workspaceChats.js");
 const { Workspace } = require("../models/workspace.js");
+const { Observability } = require("../utils/observability");
 const truncate = require("truncate");
 const {
   groupByUserWorkspace,
@@ -44,7 +45,7 @@ const MIN_CHATS_TO_PROCESS = 5;
     const groups = groupByUserWorkspace(allUnprocessed);
     log(`Found ${groups.size} user/workspace pair(s) with unprocessed chats.`);
 
-    for (const group of groups.values()) await processGroup(group);
+    for (const group of groups.values()) await tracedProcessGroup(group);
 
     log("Memory extraction complete.");
   } catch (e) {
@@ -62,6 +63,25 @@ const MIN_CHATS_TO_PROCESS = 5;
  * Then apply the final memories and mark all chats as processed.
  * @param {object[]} groupChats - chats for this group, sorted asc.
  */
+/**
+ * Runs a group inside one trace so the observer + reflector agent runs are
+ * attributed to the user whose chats are being reviewed.
+ * @param {object[]} groupChats
+ */
+function tracedProcessGroup(groupChats) {
+  const { user_id: userId, workspaceId } = groupChats[0];
+  return Observability.trace(
+    {
+      name: "memory-extraction",
+      attribution: async () => ({
+        userId: await Observability.usernameForId(userId),
+        metadata: { workspaceId },
+      }),
+    },
+    () => processGroup(groupChats)
+  );
+}
+
 async function processGroup(groupChats) {
   const { user_id: userId, workspaceId } = groupChats[0];
   const tag = `user ${userId}, workspace ${workspaceId}`;
@@ -120,8 +140,6 @@ async function processGroup(groupChats) {
     const { candidates, rawText: observerRaw } = await runObserver({
       ...llm,
       userMessage: observerMessage,
-      userId,
-      workspaceId,
     });
 
     if (candidates === null || candidates.length === 0) {
@@ -149,8 +167,6 @@ async function processGroup(groupChats) {
       await runReflector({
         ...llm,
         userMessage: reflectorMessage,
-        userId,
-        workspaceId,
       });
 
     if (finalMemories === null || finalMemories.length === 0) {

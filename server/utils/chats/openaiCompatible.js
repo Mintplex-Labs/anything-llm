@@ -253,19 +253,6 @@ async function chatSync({
     },
   });
 
-  Observability.traceWorkspaceChat({
-    name: "openai-compatible-chat",
-    workspace,
-    chatId: chat.id,
-    chatMode,
-    message: String(prompt),
-    output: textResponse,
-    model: LLMConnector.model,
-    messages,
-    metrics,
-    sources,
-  });
-
   return formatJSON(
     {
       id: uuid,
@@ -534,19 +521,6 @@ async function streamChat({
       },
     });
 
-    Observability.traceWorkspaceChat({
-      name: "openai-compatible-chat",
-      workspace,
-      chatId: chat.id,
-      chatMode,
-      message: String(prompt),
-      output: completeText,
-      model: LLMConnector.model,
-      messages,
-      metrics,
-      sources,
-    });
-
     writeResponseChunk(
       response,
       formatJSON(
@@ -616,7 +590,20 @@ function formatJSON(
   return data;
 }
 
+const openAiCompatibleTrace = ({ workspace, prompt }) => ({
+  input: prompt,
+  workspace,
+});
+
 module.exports.OpenAICompatibleChat = {
-  chatSync,
-  streamChat,
+  chatSync: Observability.traced(
+    "openai-compatible-chat",
+    chatSync,
+    openAiCompatibleTrace
+  ),
+  streamChat: Observability.traced(
+    "openai-compatible-chat",
+    streamChat,
+    openAiCompatibleTrace
+  ),
 };

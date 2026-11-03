@@ -4,7 +4,6 @@ const {
   editImageForWorkspace,
 } = require("../../ImageGenerators");
 const { writeResponseChunk } = require("../../helpers/chat/responses");
-const { Observability } = require("../../observability");
 const path = require("path");
 const fs = require("fs");
 
@@ -87,7 +86,6 @@ async function generateImage(
       disconnectController.signal;
 
     const imageBuffers = resolveImageBuffers(attachments);
-    const genStart = Date.now();
     const result =
       imageBuffers.length > 0
         ? await editImageForWorkspace({
@@ -120,28 +118,6 @@ async function generateImage(
       user,
       threadId: thread?.id || null,
       include: true,
-    });
-
-    Observability.traceEvent({
-      name: "image-generation",
-      input: prompt,
-      output: filename,
-      userId: user?.username || null,
-      sessionId: thread ? `${workspace.slug}:${thread.slug}` : workspace.slug,
-      model: process.env.IMAGE_GEN_MODEL_PREF || null,
-      observationType: "generation",
-      metadata: {
-        provider: process.env.IMAGE_GEN_PROVIDER || null,
-        workspaceId: workspace.id,
-        workspaceSlug: workspace.slug,
-        threadId: thread?.id || null,
-        threadSlug: thread?.slug || null,
-        chatId: chat?.id || null,
-        fileSize,
-        edited: imageBuffers.length > 0,
-        duration: (Date.now() - genStart) / 1000,
-      },
-      tags: ["image-generation"],
     });
 
     return {

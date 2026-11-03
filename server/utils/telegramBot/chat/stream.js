@@ -341,19 +341,6 @@ async function persistAndDeliver({
     threadId: thread?.id || null,
   });
 
-  Observability.traceWorkspaceChat({
-    name: "telegram-chat",
-    workspace,
-    thread,
-    user: { username: await telegramUserTag(chatId) },
-    chatMode,
-    message,
-    output: completeText,
-    model: metrics?.model,
-    metrics,
-    sources,
-  });
-
   // Send voice as an additional attachment if requested
   if (voiceResponse) {
     ctx.log?.info?.(`Generating voice response for ${chatId}`);
@@ -489,4 +476,15 @@ function createStreamHandler({ ctx, chatId }) {
   return { responseHandler, flushEdit };
 }
 
-module.exports = { streamResponse };
+module.exports = {
+  streamResponse: Observability.traced(
+    "telegram-chat",
+    streamResponse,
+    ({ chatId, workspace, thread, message }) => ({
+      input: message,
+      workspace,
+      thread,
+      userId: telegramUserTag(chatId),
+    })
+  ),
+};

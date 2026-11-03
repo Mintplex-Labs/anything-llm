@@ -85,6 +85,11 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
+  const { Observability } = require("../observability");
+  return Observability.wrapVectorDb(selectVectorDb(getExactly));
+}
+
+function selectVectorDb(getExactly = null) {
   const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
@@ -155,13 +160,15 @@ function getLLMProvider({
   model = null,
   temperature = null,
 } = {}) {
+  const { Observability } = require("../observability");
+  const providerSlug = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const connector = getLLMProviderConnector({ provider, model });
   connector.temperature = resolveTemperature(
-    provider ?? process.env.LLM_PROVIDER ?? "openai",
+    providerSlug,
     connector.model,
     temperature
   );
-  return connector;
+  return Observability.wrapLLM(connector, providerSlug);
 }
 
 /**
@@ -376,6 +383,11 @@ function selectEmbeddingEngine() {
  * @returns {import("../ImageGenerators/base").BaseImageGenerator}
  */
 function getImageGeneratorProvider() {
+  const { Observability } = require("../observability");
+  return Observability.wrapImageGenerator(selectImageGeneratorProvider());
+}
+
+function selectImageGeneratorProvider() {
   const provider = process.env.IMAGE_GEN_PROVIDER;
   switch (provider) {
     case "openai":
@@ -745,17 +757,12 @@ async function resolveProviderConnector({
   const temperatureOverride = parseFloat(temperature) >= 0 ? temperature : null;
 
   if (effectiveProvider !== "anythingllm-router") {
-    const connector = getLLMProvider({
-      provider: workspace?.chatProvider,
-      model: workspace?.chatModel,
-      temperature: temperatureOverride ?? workspace?.openAiTemp,
-    });
-    // Stamp the acting user on the embedder so query-embedding traces can be
-    // attributed - the embedder has no request context of its own.
-    if (connector?.embedder)
-      connector.embedder._traceUser = user?.username || null;
     return {
-      connector,
+      connector: getLLMProvider({
+        provider: workspace?.chatProvider,
+        model: workspace?.chatModel,
+        temperature: temperatureOverride ?? workspace?.openAiTemp,
+      }),
       routingMetadata: null,
       prefetchedContext: null,
     };

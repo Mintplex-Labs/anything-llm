@@ -585,6 +585,10 @@ class AIbitat {
    * @param message The message to start the chat.
    */
   async start(message) {
+    return this.#traceTurn(message.content, () => this.#start(message));
+  }
+
+  async #start(message) {
     // register the message in the chat history
     this.newMessage(message);
     this.emitter.emit("start", message, this);
@@ -596,6 +600,24 @@ class AIbitat {
     });
 
     return this;
+  }
+
+  /**
+   * Runs one user turn (start, continue, retry) inside an observability trace
+   * so every completion and tool call in the turn nests under it.
+   * @param {string} input - the user message for this turn
+   * @param {() => Promise<AIbitat>} fn
+   */
+  #traceTurn(input, fn) {
+    return Observability.trace(
+      {
+        name: "agent-chat",
+        input,
+        attribution: () =>
+          Observability.agentAttribution(this.handlerProps?.invocation),
+      },
+      fn
+    );
   }
 
   /**
@@ -958,44 +980,21 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
     });
     this.providerInstance.attachHandlerProps(this.handlerProps);
 
-    const observedToolCalls = [];
-    const onToolCallResult = (event) => observedToolCalls.push(event);
-    this.emitter.on("toolCallResult", onToolCallResult);
-
     let content;
-    try {
-      if (this.providerInstance.supportsAgentStreaming) {
-        this.handlerProps.log?.(
-          "[DEBUG] Provider supports agent streaming - will use async execution!"
-        );
-        content = await this.handleAsyncExecution(
-          messages,
-          functions,
-          route.from
-        );
-      } else {
-        this.handlerProps.log?.(
-          "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
-        );
-        content = await this.handleExecution(messages, functions, route.from);
-      }
-    } finally {
-      this.emitter.off("toolCallResult", onToolCallResult);
-    }
-
-    // Internal one-shot runs (memory extraction, router classification) emit
-    // their own named trace with the run's usage - the generic agent-chat
-    // trace here would double-count that same spend.
-    if (content && !this.suppressObservability) {
-      Observability.traceAgentChat({
-        invocation: this.handlerProps?.invocation,
-        input: userPrompt || route.content || "",
-        output: content,
+    if (this.providerInstance.supportsAgentStreaming) {
+      this.handlerProps.log?.(
+        "[DEBUG] Provider supports agent streaming - will use async execution!"
+      );
+      content = await this.handleAsyncExecution(
         messages,
-        model: this.providerInstance?.model,
-        metrics: this.providerInstance?.getCumulativeUsage?.(),
-        toolCalls: observedToolCalls,
-      });
+        functions,
+        route.from
+      );
+    } else {
+      this.handlerProps.log?.(
+        "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
+      );
+      content = await this.handleExecution(messages, functions, route.from);
     }
 
     this.newMessage({ ...route, content });
@@ -1120,7 +1119,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool ${JSON.stringify(args, null, 2)}`
       );
 
-      const result = await fn.handler(args);
+      const result = await Observability.observe(
+        { name: `tool:${name}`, type: "tool", input: args },
+        () => fn.handler(args),
+        { output: (result) => result }
+      );
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       this.emitter.emit("toolCallResult", {
         toolName: name,
@@ -1288,7 +1291,11 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
       );
 
-      const result = await fn.handler(args);
+      const result = await Observability.observe(
+        { name: `tool:${name}`, type: "tool", input: args },
+        () => fn.handler(args),
+        { output: (result) => result }
+      );
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       this.emitter.emit("toolCallResult", {
         toolName: name,
@@ -1365,6 +1372,12 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * @returns
    */
   async continue(feedback, attachments = []) {
+    return this.#traceTurn(feedback, () =>
+      this.#continue(feedback, attachments)
+    );
+  }
+
+  async #continue(feedback, attachments) {
     const lastChat = this._chats.at(-1);
     if (!lastChat || lastChat.state !== "interrupt") {
       throw new Error("No chat to continue");
@@ -1407,6 +1420,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
    * If the last chat was not an error, it will throw an error.
    */
   async retry() {
+    return this.#traceTurn(null, () => this.#retry());
+  }
+
+  async #retry() {
     const lastChat = this._chats.at(-1);
     if (!lastChat || lastChat.state !== "error") {
       throw new Error("No chat to retry");
@@ -1482,7 +1499,7 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
       );
     }
     provider.attachAbortSignal?.(this.abortController.signal);
-    return provider;
+    return Observability.wrapAgentProvider(provider);
   }
 
   /**
