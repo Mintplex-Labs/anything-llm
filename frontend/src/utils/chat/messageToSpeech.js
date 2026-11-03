@@ -74,11 +74,18 @@ export default function messageToSpeech(message = "") {
   /*
    * Bold / italic / strikethrough emphasis. Order matters — handle the
    * longer markers (`***`, `___`, `**`, `__`, `~~`) before the singletons
-   * so "asterisk" is never read aloud.
+   * so "asterisk" is never read aloud. Underscores only mark emphasis at
+   * the edges of a word, so `config_file_name` is read whole.
    */
-  text = text.replace(/(\*\*\*|___)([^*_]+)\1/g, "$2");
-  text = text.replace(/(\*\*|__)([^*_]+)\1/g, "$2");
-  text = text.replace(/(\*|_)([^*_\n]+)\1/g, "$2");
+  text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "$1");
+  text = text.replace(
+    /(?<![\p{L}\p{N}])___([^*_]+)___(?![\p{L}\p{N}])/gu,
+    "$1"
+  );
+  text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
+  text = text.replace(/(?<![\p{L}\p{N}])__([^*_]+)__(?![\p{L}\p{N}])/gu, "$1");
+  text = text.replace(/\*([^*\n]+)\*/g, "$1");
+  text = text.replace(/(?<![\p{L}\p{N}])_([^*_\n]+)_(?![\p{L}\p{N}])/gu, "$1");
   text = text.replace(/~~([^~]+)~~/g, "$1");
 
   /*

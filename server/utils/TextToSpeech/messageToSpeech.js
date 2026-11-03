@@ -31,10 +31,17 @@ function messageToSpeech(message = "") {
   text = text.replace(/^\s*\d+[.)]\s+/gm, "");
   text = text.replace(/^\s{0,3}(?:[-*_]\s*){3,}\s*$/gm, " ");
 
-  // Bold, italic and strikethrough, longest markers first
-  text = text.replace(/(\*\*\*|___)([^*_]+)\1/g, "$2");
-  text = text.replace(/(\*\*|__)([^*_]+)\1/g, "$2");
-  text = text.replace(/(\*|_)([^*_\n]+)\1/g, "$2");
+  // Bold, italic and strikethrough, longest markers first. Underscores only
+  // mark emphasis at the edges of a word, so config_file_name is read whole.
+  text = text.replace(/\*\*\*([^*]+)\*\*\*/g, "$1");
+  text = text.replace(
+    /(?<![\p{L}\p{N}])___([^*_]+)___(?![\p{L}\p{N}])/gu,
+    "$1"
+  );
+  text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
+  text = text.replace(/(?<![\p{L}\p{N}])__([^*_]+)__(?![\p{L}\p{N}])/gu, "$1");
+  text = text.replace(/\*([^*\n]+)\*/g, "$1");
+  text = text.replace(/(?<![\p{L}\p{N}])_([^*_\n]+)_(?![\p{L}\p{N}])/gu, "$1");
   text = text.replace(/~~([^~]+)~~/g, "$1");
 
   // Tables read as comma separated rows
