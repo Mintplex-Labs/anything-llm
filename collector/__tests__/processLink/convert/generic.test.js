@@ -269,6 +269,30 @@ describe("scrapeGenericUrl", () => {
       expect(data.docAuthor).toBe("no author found");
       expect(data.pageContent).toBe(PAGE);
     });
+
+    it("keeps non-Latin path text and the query string in the default title", async () => {
+      mockFetch();
+      writeToServerDocuments.mockImplementation(({ data }) => data);
+
+      for (const link of [
+        "https://example.com/wiki/%E5%8C%97%E4%BA%AC",
+        "https://example.com/wiki/%E4%B8%8A%E6%B5%B7",
+        "https://example.com/wiki/%EC%84%9C%EC%9A%B8",
+        "https://example.com/item?id=1",
+        "https://example.com/item?id=2",
+      ])
+        await scrapeGenericUrl({ link, captureAs: "html" });
+
+      expect(
+        writeToServerDocuments.mock.calls.map(([{ data }]) => data.title)
+      ).toEqual([
+        "example.com_wiki_北京.html",
+        "example.com_wiki_上海.html",
+        "example.com_wiki_서울.html",
+        "example.com_item?id=1.html",
+        "example.com_item?id=2.html",
+      ]);
+    });
   });
 
   describe("delegation by content type", () => {
