@@ -55,7 +55,6 @@ export default function ChatContainer({
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-  const pendingResetRef = useRef(false);
   const activeThreadSlug = threadSlug;
 
   const isEmpty =
@@ -332,7 +331,6 @@ export default function ChatContainer({
         // server to abort the agent and close the socket; fall through to the
         // /reset flow below which resets memory + clears chat history.
         if (promptMessage.userMessage.trim() !== "/reset") return;
-        pendingResetRef.current = true;
       }
 
       if (!promptMessage || !promptMessage?.userMessage) return false;
@@ -417,26 +415,10 @@ export default function ChatContainer({
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          // When the close was triggered by /reset, skip the "Agent session
-          // complete." status - the pending /reset flow will clear history.
-          if (pendingResetRef.current) {
-            pendingResetRef.current = false;
-          } else {
-            setChatHistory((prev) => [
-              ...prev.filter((msg) => !!msg.content),
-              {
-                uuid: v4(),
-                type: "statusResponse",
-                content: "Agent session complete.",
-                role: "assistant",
-                sources: [],
-                closed: true,
-                error: null,
-                animate: false,
-                pending: false,
-              },
-            ]);
-          }
+          // Session end is stream plumbing, not conversation, so nothing is
+          // appended. Still sweep content-less placeholders (e.g. the pending
+          // dots from the @agent handoff) in case no agent event replaced them.
+          setChatHistory((prev) => prev.filter((msg) => !!msg.content));
           setLoadingResponse(false);
           setWebsocket(null);
           setSocketId(null);
