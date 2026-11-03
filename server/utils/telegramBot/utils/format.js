@@ -149,10 +149,19 @@ function markdownToTelegram(
     }
   );
 
+  // Convert list items before emphasis so a "* item" marker is not read as an
+  // opening italic *: - item or * item → • item
+  result = result.replace(/^[-*]\s+/gm, "• ");
+
   // Convert markdown to HTML (order matters - do bold before italic)
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   result = result.replace(/__(.+?)__/g, "<b>$1</b>");
-  result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<i>$1</i>");
+  // As in CommonMark, * only opens italic when not followed by a space and
+  // only closes it when not preceded by one, so "2 * 3 * 4" stays as text.
+  result = result.replace(
+    /(?<!\*)\*(?![\s*])(.+?)(?<![\s*])\*(?!\*)/g,
+    "<i>$1</i>"
+  );
   result = result.replace(
     /(?<![a-zA-Z0-9])_([^_]+)_(?![a-zA-Z0-9])/g,
     "<i>$1</i>"
@@ -161,9 +170,6 @@ function markdownToTelegram(
   result = result.replace(/^&gt;\s*(.+)$/gm, "<i>$1</i>");
   result = result.replace(/^[-*_]{3,}$/gm, "————————————");
   result = result.replace(/^#{1,6}\s+(.+)$/gm, "<b>$1</b>");
-
-  // Convert list items: - item or * item → • item
-  result = result.replace(/^[-*]\s+/gm, "• ");
 
   // Restore preserved blocks
   thinkBlocks.forEach((block, i) => {
