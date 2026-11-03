@@ -304,6 +304,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Odpověď dosáhla maximálního limitu tokenů. Zvyšte maximální počet tokenů, které model může generovat, aby bylo možné získat delší odpovědi.",
     no_response: "Model nedokázal odpovědět.",
+    agent_session_exited: "Ukončili jste relaci agenta.",
   },
   "vector-workspace": {
     identifier: "Identifikátor vektorové databáze",

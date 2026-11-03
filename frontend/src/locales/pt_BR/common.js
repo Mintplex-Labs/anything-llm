@@ -296,6 +296,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "A resposta atingiu o limite máximo de tokens de saída. Aumente o limite máximo de tokens de saída do modelo para permitir respostas mais longas.",
     no_response: "O modelo não conseguiu responder.",
+    agent_session_exited: "Você encerrou a sessão do agente.",
   },
   "vector-workspace": {
     identifier: "Identificador do banco de dados",

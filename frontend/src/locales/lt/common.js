@@ -303,6 +303,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Atsakymas pasiekė maksimalų išvesties žetonų limitą. Padidinkite modelio maksimalų išvesties žetonų skaičių, kad būtų galimi ilgesni atsakymai.",
     no_response: "Modelis nesugebėjo atsakyti.",
+    agent_session_exited: "Jūs baigėte agento seansą.",
   },
   "vector-workspace": {
     identifier: "Vektorių duomenų bazės identifikatorius",

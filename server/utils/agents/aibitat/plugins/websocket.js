@@ -80,6 +80,19 @@ const WEBSOCKET_BAIL_COMMANDS = [
   "/halt",
   "/reset", // Will not reset but will bail. Powerusers always do this and the LLM responds.
 ];
+
+/**
+ * Tells the frontend the user ended the agent session with a bail command so
+ * it can note that in the chat. /reset clears the chat right after, so it gets
+ * no notice.
+ * @param {object} socket
+ * @param {string} command - the feedback the user sent
+ */
+function notifySessionExited(socket, command) {
+  if (command === "/reset" || !WEBSOCKET_BAIL_COMMANDS.includes(command))
+    return;
+  socket.send(JSON.stringify({ type: "agentSessionExited", content: command }));
+}
 /**
  * Detects the /img slash command (optionally followed by a prompt) so it can be
  * handled inline during an active agent session instead of being handed to the
@@ -467,9 +480,10 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const { feedback, attachments, reasoningEffort } =
+          const { feedback, attachments, reasoningEffort, timedOut } =
             await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
+            if (!timedOut) notifySessionExited(socket, feedback);
             socket.close();
             return;
           }
@@ -516,7 +530,11 @@ const websocket = {
                       `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
                     )
                   );
-                  resolve({ feedback: "exit", attachments: [] });
+                  resolve({
+                    feedback: "exit",
+                    attachments: [],
+                    timedOut: true,
+                  });
                   return;
                 }, SOCKET_TIMEOUT_MS);
               };
@@ -572,5 +590,6 @@ const websocket = {
 module.exports = {
   websocket,
   WEBSOCKET_BAIL_COMMANDS,
+  notifySessionExited,
   toolApprovalTimeoutMs,
 };

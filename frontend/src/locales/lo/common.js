@@ -302,6 +302,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached: null,
     no_response: "ໂມເດວບໍ່ສາມາດຕອບໄດ້.",
+    agent_session_exited: "ທ່ານໄດ້ຈົບເຊດຊັນເອເຈນແລ້ວ.",
   },
   "vector-workspace": {
     identifier: "ຕົວລະບຸຖານຂໍ້ມູນເວກເຕີ",

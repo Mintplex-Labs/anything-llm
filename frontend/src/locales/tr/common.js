@@ -260,6 +260,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Cevap, maksimum çıktı token limitine ulaştı. Modelin maksimum çıktı token sayısını artırarak daha uzun cevaplar almayı sağlayın.",
     no_response: "Model yanıt veremedi.",
+    agent_session_exited: "Ajan oturumunu sonlandırdınız.",
   },
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",

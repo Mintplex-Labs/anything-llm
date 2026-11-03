@@ -296,6 +296,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Odpowiedź osiągnęła maksymalną dopuszczalną liczbę tokenów. Zwiększ limit maksymalnej liczby tokenów, które model może wygenerować, aby uzyskać dłuższe odpowiedzi.",
     no_response: "Model nie odpowiedział.",
+    agent_session_exited: "Sesja agenta została zakończona.",
   },
   "vector-workspace": {
     identifier: "Identyfikator wektorowej bazy danych",
