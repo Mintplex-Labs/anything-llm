@@ -42,9 +42,22 @@ module.exports.OutlookSendDraft = {
               }
 
               if (this.super.requestToolApproval) {
+                const lookup = await outlookLib.getDraft(draftId);
+                const draft = lookup.success ? lookup.data : {};
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
-                  payload: { draftId },
+                  payload: {
+                    draftId,
+                    to: draft.to,
+                    cc: draft.cc,
+                    subject: draft.subject,
+                    body:
+                      draft.bodyType === "html"
+                        ? String(draft.body)
+                            .replace(/<[^>]+>/g, "")
+                            .trim()
+                        : draft.body,
+                  },
                   description: `Send draft ${draftId}? This will send the email immediately.`,
                 });
                 if (!approval.approved) {

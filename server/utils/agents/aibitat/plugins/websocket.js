@@ -249,7 +249,7 @@ const websocket = {
          * @param {string} options.skillName - The name of the skill/tool requesting approval
          * @param {Object} [options.payload={}] - Optional payload data to display to the user
          * @param {string} [options.description] - Optional description of what the skill will do
-         * @returns {Promise<{approved: boolean, message: string}>} - The approval result
+         * @returns {Promise<{approved: boolean, message: string, payload?: object|null}>} - The approval result. `payload` carries any edits the user made on the approval card before approving.
          */
         aibitat.requestToolApproval = async function ({
           skillName,
@@ -322,9 +322,16 @@ const websocket = {
                   return;
 
                 if (data.approved) {
+                  const payload =
+                    data.payload &&
+                    typeof data.payload === "object" &&
+                    !Array.isArray(data.payload)
+                      ? data.payload
+                      : null;
                   return settle({
                     approved: true,
                     message: "User approved the tool execution.",
+                    payload,
                   });
                 }
 

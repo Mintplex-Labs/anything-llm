@@ -8,6 +8,9 @@ jest.mock("../../../../../models/systemSettings", () => ({
 jest.mock("../../../../../models/workspaceChats", () => ({
   WorkspaceChats: { count: jest.fn() },
 }));
+jest.mock("../../../../../models/agentSkillWhitelist", () => ({
+  AgentSkillWhitelist: { isWhitelisted: jest.fn().mockResolvedValue(false) },
+}));
 
 const {
   websocket,
@@ -355,4 +358,101 @@ describe("websocket plugin session exit notice", () => {
       expect(sentTypes(socket)).not.toContain("agentSessionExited");
     }
   );
+});
+
+describe("websocket plugin requestToolApproval", () => {
+  /** Sends an approval request and returns the frame the client received. */
+  async function requestApproval(aibitat, socket) {
+    aibitat.emitter = { once: jest.fn(), removeListener: jest.fn() };
+    const pending = aibitat.requestToolApproval({
+      skillName: "gmail-send-email",
+      payload: { to: "a@example.com", subject: "Hi", body: "Hello" },
+    });
+    await flushPromises();
+    const sent = JSON.parse(socket.send.mock.calls[0][0]);
+    expect(sent.type).toBe("toolApprovalRequest");
+    return { pending, requestId: sent.requestId };
+  }
+
+  it("passes the user's edits back with the approval", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending, requestId } = await requestApproval(aibitat, socket);
+    socket.handleToolApproval(
+      JSON.stringify({
+        type: "toolApprovalResponse",
+        requestId,
+        approved: true,
+        payload: { to: "b@example.com", cc: "" },
+      })
+    );
+    await expect(pending).resolves.toEqual({
+      approved: true,
+      message: "User approved the tool execution.",
+      payload: { to: "b@example.com", cc: "" },
+    });
+    expect(socket.handleToolApproval).toBeUndefined();
+  });
+
+  it("resolves a null payload when the approval carries no edits", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending, requestId } = await requestApproval(aibitat, socket);
+    socket.handleToolApproval(
+      JSON.stringify({ type: "toolApprovalResponse", requestId, approved: true })
+    );
+    await expect(pending).resolves.toMatchObject({
+      approved: true,
+      payload: null,
+    });
+  });
+
+  it("discards edits that are not a plain object", async () => {
+    for (const payload of ["to=x", ["a@example.com"], 7]) {
+      const { socket, aibitat } = setupPlugin();
+      const { pending, requestId } = await requestApproval(aibitat, socket);
+      socket.handleToolApproval(
+        JSON.stringify({
+          type: "toolApprovalResponse",
+          requestId,
+          approved: true,
+          payload,
+        })
+      );
+      await expect(pending).resolves.toMatchObject({ payload: null });
+    }
+  });
+
+  it("rejects without a payload", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending, requestId } = await requestApproval(aibitat, socket);
+    socket.handleToolApproval(
+      JSON.stringify({
+        type: "toolApprovalResponse",
+        requestId,
+        approved: false,
+        payload: { to: "b@example.com" },
+      })
+    );
+    await expect(pending).resolves.toEqual({
+      approved: false,
+      message: "Tool call was rejected by the user.",
+    });
+  });
+
+  it("ignores frames for other requests and malformed frames", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending, requestId } = await requestApproval(aibitat, socket);
+    for (const frame of MALFORMED_TEXT_FRAMES) socket.handleToolApproval(frame);
+    socket.handleToolApproval(
+      JSON.stringify({
+        type: "toolApprovalResponse",
+        requestId: "someone-else",
+        approved: true,
+      })
+    );
+    expect(socket.handleToolApproval).toBeDefined();
+    socket.handleToolApproval(
+      JSON.stringify({ type: "toolApprovalResponse", requestId, approved: true })
+    );
+    await expect(pending).resolves.toMatchObject({ approved: true });
+  });
 });
