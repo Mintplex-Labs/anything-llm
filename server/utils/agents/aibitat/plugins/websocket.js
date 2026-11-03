@@ -23,6 +23,25 @@ async function userCanToggleTools(userId = null) {
 }
 
 /**
+ * Agent follow-ups arrive over the socket rather than the HTTP chat routes, so
+ * the 24-hour message limit is checked here before each of the agent's turns.
+ * Returns the quota message when the user is over their limit, otherwise null.
+ * Single-user mode, admins, and users without a limit always pass.
+ * @param {number|null} userId - User id from the agent invocation.
+ * @returns {Promise<string|null>}
+ */
+async function chatQuotaExceededMessage(userId = null) {
+  if (!userId) return null;
+  const { SystemSettings } = require("../../../../models/systemSettings");
+  if (!(await SystemSettings.isMultiUserMode())) return null;
+
+  const { User } = require("../../../../models/user");
+  const user = await User.get({ id: Number(userId) });
+  if (!user || (await User.canSendChat(user))) return null;
+  return `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`;
+}
+
+/**
  * Returns the timeout in ms for agent tool-call approval prompts.
  * Reads from `TOOL_CALL_APPROVAL_TIMEOUT_MS` env var; defaults to 120 000 ms (2 min).
  * @returns {number}
@@ -451,6 +470,15 @@ const websocket = {
           const { feedback, attachments, reasoningEffort } =
             await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
+            socket.close();
+            return;
+          }
+
+          const quotaMessage = await chatQuotaExceededMessage(userId);
+          if (quotaMessage) {
+            socket.send(
+              JSON.stringify({ type: "wssFailure", content: quotaMessage })
+            );
             socket.close();
             return;
           }

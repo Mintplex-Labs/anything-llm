@@ -320,6 +320,8 @@ class MetaGenerator {
    */
   async generate(response, code = 200) {
     if (this.#customConfig === null) await this.#fetchConfg();
+    // Generated SPA pages bypass express.static's frame protection.
+    response.setHeader("X-Frame-Options", "DENY");
     response.status(code).send(`
        <!DOCTYPE html>
         <html lang="en">

@@ -535,7 +535,7 @@ class EphemeralAgentHandler extends AgentHandler {
     const { telegramUserTag } = require("../telegramBot/utils/verification");
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-4.1-nano",
+      model: this.model ?? "gpt-5.6-luna",
       temperature: this.#workspace?.openAiTemp,
       chats: await this.#chatHistory(20),
       handlerProps: {

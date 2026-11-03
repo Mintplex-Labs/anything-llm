@@ -119,7 +119,7 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const { addToWorkspaces = "", metadata: _metadata = {} } =
           reqBody(request);
         const metadata =
@@ -140,8 +140,9 @@ function apiDocumentEndpoints(app) {
         }
 
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
 
         if (!success) {
@@ -266,7 +267,7 @@ function apiDocumentEndpoints(app) {
       }
       */
       try {
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const { addToWorkspaces = "", metadata: _metadata = {} } =
           reqBody(request);
         const metadata =
@@ -289,8 +290,9 @@ function apiDocumentEndpoints(app) {
 
         // Process the uploaded document with metadata
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
         if (!success) {
           return response

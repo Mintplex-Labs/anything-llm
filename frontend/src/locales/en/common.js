@@ -282,6 +282,7 @@ const TRANSLATIONS = {
       "tooltip-description":
         "You are in query mode, which only uses information from your documents. Switch to chat mode for more flexible conversations, or click here to visit our documentation to learn more about chat modes.",
     },
+    no_response: "Model failed to respond.",
     token_limit_reached:
       "Response hit the max output token limit. Increase the model's max output tokens to allow longer responses.",
     temperature: {
@@ -1021,6 +1022,11 @@ const TRANSLATIONS = {
           "If your deployment uses a reasoning model (o1, o1-mini, o3-mini, etc.), set this to “Reasoning”. Otherwise, your chat requests may fail.",
         default: "Default",
         reasoning: "Reasoning",
+        agent_api: "Agent API",
+        agent_api_tooltip:
+          "The API used for agent calls. Keep Chat Completions unless your deployment requires the Responses API (eg: GPT-6 with tools). Not every model or region supports the Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

@@ -79,7 +79,7 @@ export function useTheme() {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     function toggleOnKeybind(e) {
-      if (e.metaKey && e.key === ".") {
+      if ((e.metaKey || e.ctrlKey) && e.key === ".") {
         e.preventDefault();
         _setTheme((prev) => (prev === "light" ? "dark" : "light"));
       }

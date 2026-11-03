@@ -42,12 +42,17 @@ async function runSectionAgent({
   const log = parentAibitat.handlerProps?.log || console.log;
 
   const childAibitat = new AIbitat({
-    provider: parentAibitat.defaultProvider.provider,
-    model: parentAibitat.defaultProvider.model,
+    ...parentAibitat.defaultProvider,
     chats: [],
     handlerProps: parentAibitat.handlerProps,
     maxToolCalls: 5,
   });
+
+  // Stopping the parent session also stops this sub-agent.
+  const abortChild = () => childAibitat.abort();
+  const parentSignal = parentAibitat.abortController.signal;
+  if (parentSignal.aborted) childAibitat.abort();
+  else parentSignal.addEventListener("abort", abortChild, { once: true });
 
   // Share introspect so tool activity (web-search status, etc.) streams to the frontend
   childAibitat.introspect = parentAibitat.introspect;
@@ -154,21 +159,7 @@ async function runSectionAgent({
   );
   provider.attachHandlerProps(childAibitat.handlerProps);
 
-  const traceUsage = () => {
-    const { Observability } = require("../../../../../observability");
-    Observability.traceAgentEvent({
-      invocation: childAibitat.handlerProps?.invocation,
-      name: "pptx:section-agent",
-      input: section.title,
-      output: Array.isArray(childAibitat._submittedSlides)
-        ? `${childAibitat._submittedSlides.length} slide(s)`
-        : null,
-      model: provider.model,
-      observationType: "generation",
-      metrics: provider.getCumulativeUsage?.(),
-      tags: ["agent-tool"],
-    });
-  };
+  childAibitat.providerInstance = provider;
 
   log(
     `[SectionAgent] Running sub-agent for section: "${section.title}" with ${functions.length} tools`
@@ -176,7 +167,6 @@ async function runSectionAgent({
 
   let agentName = `@section-builder`;
   if (sectionPrefix) agentName = `[${sectionPrefix}] ${agentName}`;
-  childAibitat.providerInstance = provider;
   try {
     if (provider.supportsAgentStreaming) {
       await childAibitat.handleAsyncExecution(messages, functions, agentName);
@@ -185,10 +175,10 @@ async function runSectionAgent({
     }
   } catch (error) {
     log(`[SectionAgent] Error in section "${section.title}": ${error.message}`);
-    traceUsage();
     return { ...buildFallbackSlides(section), citations: [] };
+  } finally {
+    parentSignal.removeEventListener("abort", abortChild);
   }
-  traceUsage();
 
   // Collect any citations the child accumulated (from web-search, web-scrape, etc.)
   const citations = childAibitat._pendingCitations || [];

@@ -262,6 +262,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Svaret nåede det maksimale tilladte antal tokens. Øg modellens maksimale antal tokens, så svaret kan være længere.",
+    no_response: "Modellen kunne ikke svare.",
   },
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",
@@ -855,6 +856,11 @@ const TRANSLATIONS = {
         model_type: "Modeltype",
         default: "Standard",
         reasoning: "Begrundelse",
+        agent_api: "Agent-API",
+        agent_api_tooltip:
+          "Den API, der bruges til agentkald. Behold Chat Completions, medmindre din udrulning kræver Responses API (f.eks. GPT-6 med værktøjer). Ikke alle modeller eller regioner understøtter Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Hvis din implementering bruger en ræsonnementsmodel (o1, o1-mini, o3-mini osv.), skal du indstille dette til "Ræsonnement". Ellers kan dine chat-anmodninger mislykkes.',
       },

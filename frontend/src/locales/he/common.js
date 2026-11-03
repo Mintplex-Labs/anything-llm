@@ -290,6 +290,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "התגובה הגיעה למגבלת מספר הטוקנים המקסימלי. הגדילו את מספר הטוקנים המקסימלי שהמודל יכול להפיק, כדי לאפשר תגובות ארוכות יותר.",
+    no_response: "המודל לא הצליח להגיב.",
   },
   "vector-workspace": {
     identifier: "מזהה מסד נתונים וקטורי",
@@ -989,6 +990,11 @@ const TRANSLATIONS = {
         model_type: "סוג מודל",
         default: "ברירת מחדל",
         reasoning: "היגיון",
+        agent_api: "API של הסוכן",
+        agent_api_tooltip:
+          "ה-API שמשמש לקריאות הסוכן. השאירו Chat Completions אלא אם הפריסה שלכם דורשת את Responses API (למשל GPT-6 עם כלים). לא כל מודל או אזור תומכים ב-Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'אם השימוש שלך כולל מודל הסקה (o1, o1-mini, o3-mini וכו\'), הגדר זאת ל"הסקה". אחרת, בקשות השיחה שלך עלולות להיכשל.',
       },

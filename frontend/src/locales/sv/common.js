@@ -304,6 +304,7 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Svaret uppnådde den maximala tillåtna token-gränsen. Öka modellens maximala antal tillåtna tokens för att möjliggöra längre svar.",
+    no_response: "Modellen kunde inte svara.",
   },
   "vector-workspace": {
     identifier: "Identifierare för vektordatabas",
@@ -1021,6 +1022,11 @@ const TRANSLATIONS = {
           "Om distributionen använder en resonemangsmodell (o1, o1-mini, o3-mini med flera), ställ in detta till ”Resonemang”. Annars kan chattförfrågningarna misslyckas.",
         default: "Standard",
         reasoning: "Resonemang",
+        agent_api: "Agent-API",
+        agent_api_tooltip:
+          "API:et som används för agentanrop. Behåll Chat Completions om inte din distribution kräver Responses API (t.ex. GPT-6 med verktyg). Inte alla modeller eller regioner stöder Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

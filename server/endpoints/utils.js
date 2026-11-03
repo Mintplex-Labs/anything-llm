@@ -14,6 +14,9 @@ function utilEndpoints(app) {
   if (!app) return;
 
   app.get("/utils/metrics", async (_, response) => {
+    if (process.env.DISABLE_METRICS_ENDPOINT === "true")
+      return response.sendStatus(404).end();
+
     try {
       const metrics = {
         online: true,

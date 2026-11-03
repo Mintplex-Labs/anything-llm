@@ -27,7 +27,7 @@ class DeepSeekLLM {
       baseURL: "https://api.deepseek.com/v1",
     });
     this.model =
-      modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-chat";
+      modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-flash";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -56,6 +56,27 @@ class DeepSeekLLM {
     );
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * Models without image input (eg: deepseek-v4-pro) ignore the image blocks.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) return userPrompt;
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content.flat();
+  }
+
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
@@ -68,9 +89,8 @@ class DeepSeekLLM {
     return MODEL_MAP.get("deepseek", this.model) ?? 8192;
   }
 
-  async isValidChatCompletionModel(modelName = "") {
-    const models = await this.openai.models.list().catch(() => ({ data: [] }));
-    return models.data.some((model) => model.id === modelName);
+  async isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   constructPrompt({
@@ -78,6 +98,7 @@ class DeepSeekLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
@@ -85,8 +106,11 @@ class DeepSeekLLM {
     };
     return [
       prompt,
-      ...formatChatHistory(chatHistory, ({ userPrompt }) => userPrompt),
-      { role: "user", content: userPrompt },
+      ...formatChatHistory(chatHistory, this.#generateContent),
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
     ];
   }
 
@@ -106,22 +130,32 @@ class DeepSeekLLM {
   }
 
   /**
-   * Returns the reasoning capabilities models.dev lists for the model.
-   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   * Returns the reasoning capabilities models.dev lists for the model and
+   * vision support from the `input_modalities` DeepSeek's /models returns.
+   * Vision is "unknown" when the model is not listed (eg: legacy aliases).
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[], vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
-    return modelsDevReasoningCapabilities("deepseek", this.model);
+    const [reasoning, models] = await Promise.all([
+      modelsDevReasoningCapabilities("deepseek", this.model),
+      this.openai.models.list().catch(() => ({ data: [] })),
+    ]);
+    const modalities = models.data.find(
+      (model) => model.id === this.model
+    )?.input_modalities;
+
+    return {
+      ...reasoning,
+      vision: Array.isArray(modalities)
+        ? modalities.includes("image")
+        : "unknown",
+    };
   }
 
   async getChatCompletion(
     messages = null,
     { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `DeepSeek chat: ${this.model} is not valid for chat completion!`
-      );
-
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -162,11 +196,6 @@ class DeepSeekLLM {
     messages = null,
     { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `DeepSeek chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
         model: this.model,

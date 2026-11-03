@@ -26,7 +26,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     super();
     this.providerTag = "generic-openai";
-    const { model = "gpt-4.1-nano" } = config;
+    const { model = "gpt-5.6-luna" } = config;
     const client = new OpenAI({
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,

@@ -8,7 +8,7 @@ const {
 
 /**
  * The agent provider for the OpenAI API.
- * By default, the model is set to 'gpt-4.1-nano'.
+ * By default, the model is set to 'gpt-5.6-luna'.
  */
 class OpenAIProvider extends Provider {
   model;
@@ -17,7 +17,7 @@ class OpenAIProvider extends Provider {
       options = {
         apiKey: process.env.OPEN_AI_KEY,
       },
-      model = "gpt-4.1-nano",
+      model = "gpt-5.6-luna",
       reasoningEffort = null,
     } = config;
 

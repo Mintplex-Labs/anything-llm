@@ -453,7 +453,9 @@ async function tooledComplete(
 
   if (completion.tool_calls && completion.tool_calls.length > 0) {
     const toolCall = completion.tool_calls[0];
-    const functionArgs = safeJsonParse(toolCall.function.arguments, null);
+    const functionArgs = toolCall.function.arguments?.trim()
+      ? safeJsonParse(toolCall.function.arguments, null)
+      : {};
 
     if (functionArgs === null) {
       return {

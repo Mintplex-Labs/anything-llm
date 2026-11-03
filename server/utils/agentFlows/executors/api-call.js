@@ -14,7 +14,11 @@ async function executeApiCall(config, context) {
 
   const requestConfig = {
     method,
-    headers: headers.reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {}),
+    headers: headers.reduce((acc, h) => {
+      const name = String(h?.key ?? "").trim();
+      if (name) acc[name] = h.value;
+      return acc;
+    }, {}),
   };
 
   if (["POST", "PUT", "PATCH"].includes(method)) {

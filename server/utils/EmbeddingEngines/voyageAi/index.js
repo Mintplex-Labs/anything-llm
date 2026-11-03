@@ -1,3 +1,5 @@
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
+
 class VoyageAiEmbedder {
   constructor() {
     if (!process.env.VOYAGEAI_API_KEY)
@@ -14,6 +16,8 @@ class VoyageAiEmbedder {
       // Voyage AI's limit per request is 128 https://docs.voyageai.com/docs/rate-limits#use-larger-batches
       batchSize: 128,
     });
+    // Embed in batches of the same size so progress can be reported as each one finishes.
+    this.maxConcurrentChunks = 128;
     this.embeddingMaxChunkLength = this.#getMaxEmbeddingLength();
   }
 
@@ -51,8 +55,16 @@ class VoyageAiEmbedder {
 
   async embedChunks(textChunks = []) {
     try {
-      const embeddings = await this.voyage.embedDocuments(textChunks);
-      return embeddings;
+      let chunksProcessed = 0;
+      const batches = await Promise.all(
+        toChunks(textChunks, this.maxConcurrentChunks).map(async (batch) => {
+          const embeddings = await this.voyage.embedDocuments(batch);
+          chunksProcessed += batch.length;
+          reportEmbeddingProgress(chunksProcessed, textChunks.length);
+          return embeddings;
+        })
+      );
+      return batches.flat();
     } catch (error) {
       console.error("Voyage AI Failed to embed:", error);
       if (
