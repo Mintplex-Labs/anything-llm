@@ -55,7 +55,6 @@ export default function ChatContainer({
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-  const pendingResetRef = useRef(false);
   const activeThreadSlug = threadSlug;
 
   const isEmpty =
@@ -332,7 +331,6 @@ export default function ChatContainer({
         // server to abort the agent and close the socket; fall through to the
         // /reset flow below which resets memory + clears chat history.
         if (promptMessage.userMessage.trim() !== "/reset") return;
-        pendingResetRef.current = true;
       }
 
       if (!promptMessage || !promptMessage?.userMessage) return false;
@@ -417,26 +415,11 @@ export default function ChatContainer({
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          // When the close was triggered by /reset, skip the "Agent session
-          // complete." status - the pending /reset flow will clear history.
-          if (pendingResetRef.current) {
-            pendingResetRef.current = false;
-          } else {
-            setChatHistory((prev) => [
-              ...prev.filter((msg) => !!msg.content),
-              {
-                uuid: v4(),
-                type: "statusResponse",
-                content: "Agent session complete.",
-                role: "assistant",
-                sources: [],
-                closed: true,
-                error: null,
-                animate: false,
-                pending: false,
-              },
-            ]);
-          }
+          // No "Agent session complete." statusResponse is appended here:
+          // like the "@agent: Swapping over to agent chat..." handoff notice,
+          // that message is stream plumbing, not conversation. Appending it
+          // rendered a stray "Thoughts" block below the finished answer and,
+          // as the last history item, hid the answer's regenerate action.
           setLoadingResponse(false);
           setWebsocket(null);
           setSocketId(null);
