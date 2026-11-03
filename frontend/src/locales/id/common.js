@@ -306,6 +306,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Respons telah mencapai batas token keluaran maksimum. Tingkatkan batas token keluaran maksimum untuk model agar dapat menghasilkan respons yang lebih panjang.",
     no_response: "Model gagal merespons.",
+    agent_session_exited: "Anda telah mengakhiri sesi agen.",
   },
   "vector-workspace": {
     identifier: "Pengenal basis data vektor",

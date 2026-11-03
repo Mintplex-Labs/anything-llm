@@ -307,6 +307,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "La resposta ha arribat al límit de tokens de sortida. Augmenta el nombre màxim de tokens de sortida del model per permetre respostes més llargues.",
     no_response: "El model no ha pogut respondre.",
+    agent_session_exited: "Has finalitzat la sessió de l'agent.",
   },
   "vector-workspace": {
     identifier: "Identificador de la base de dades vectorial",
