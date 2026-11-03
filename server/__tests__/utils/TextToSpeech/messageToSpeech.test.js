@@ -20,6 +20,10 @@ describe("messageToSpeech", () => {
       "MAX_TOKENS_LIMIT and snake_case_name",
     ],
     ["(_italic_) and __init__", "(italic) and init"],
+    [
+      "**max_tokens** and *my_var* and ***_both_***",
+      "max_tokens and my_var and both",
+    ],
     ["Before\n```js\nconst x = 1;\n```\nAfter", "Before After"],
     ["# Title\n- one\n- two", "Title one two"],
     ["See [the docs](https://example.com) 🎉", "See the docs"],
