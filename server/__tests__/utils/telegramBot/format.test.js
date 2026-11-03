@@ -78,6 +78,20 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("keeps emphasis inside a * bullet item", () => {
+      expect(markdownToTelegram("* Use *caution* here")).toBe(
+        "• Use <i>caution</i> here"
+      );
+      expect(
+        markdownToTelegram("* **Step 1:** install\n* *optional* step")
+      ).toBe("• <b>Step 1:</b> install\n• <i>optional</i> step");
+    });
+
+    test("does not italicize * surrounded by spaces", () => {
+      expect(markdownToTelegram("2 * 3 and 4 * 5")).toBe("2 * 3 and 4 * 5");
+      expect(markdownToTelegram("a * b *c*")).toBe("a * b <i>c</i>");
+    });
+
     test("converts blockquotes to <i>", () => {
       expect(markdownToTelegram("> quoted line")).toBe("<i>quoted line</i>");
     });
