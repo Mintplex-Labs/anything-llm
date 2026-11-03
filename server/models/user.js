@@ -302,6 +302,9 @@ const User = {
   /**
    * Deletes the users that match the given clause. Their workspace chats are
    * kept with no user attached instead of being deleted along with them.
+   * Kept chats are excluded from history so they never mix into the context
+   * of sessionless API, Telegram or memory extraction, which all match
+   * chats with no user. They remain visible in workspace chats and exports.
    * @param {Object} clause - The clause to filter the users to delete by.
    * @returns {Promise<boolean>} True if the users were deleted.
    */
@@ -310,7 +313,7 @@ const User = {
       await prisma.$transaction([
         prisma.workspace_chats.updateMany({
           where: { users: clause },
-          data: { user_id: null },
+          data: { user_id: null, include: false },
         }),
         prisma.users.deleteMany({ where: clause }),
       ]);
