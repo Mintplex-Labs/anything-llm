@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  CaretDown,
+  CaretUp,
   Check,
   EnvelopeSimple,
   FloppyDisk,
@@ -102,6 +104,7 @@ export default function EmailApprovalRequest({
   const { t } = useTranslation();
   const [status, setStatus] = useState("pending");
   const [editing, setEditing] = useState(false);
+  const [held, setHeld] = useState(false);
   const [draft, setDraft] = useState(() => toDraft(payload));
   const [revealed, setRevealed] = useState({ cc: false, bcc: false });
   const responded = status !== "pending";
@@ -115,10 +118,21 @@ export default function EmailApprovalRequest({
   const requiresTo = action === "send" || action === "draft";
 
   const progressPercent = useTimeoutProgress(timeoutMs, {
-    active: !responded,
+    active: !responded && !held,
     intervalMs: 50,
     onTimeout: () => respond(false, "timeout"),
   });
+
+  // Once the user starts editing, the server stops racing them against the
+  // approval clock, so the countdown bar goes away for the rest of the card.
+  function startEditing() {
+    setEditing(true);
+    if (held || responded) return;
+    setHeld(true);
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+      websocket.send(JSON.stringify({ type: "toolApprovalHold", requestId }));
+    }
+  }
 
   function respond(approved, nextStatus = approved ? "approved" : "denied") {
     if (responded) return;
@@ -142,7 +156,7 @@ export default function EmailApprovalRequest({
 
   function reveal(field) {
     setRevealed((prev) => ({ ...prev, [field]: true }));
-    setEditing(true);
+    startEditing();
   }
 
   const showTo = canEditHeader || draft.to.length > 0;
@@ -226,7 +240,7 @@ export default function EmailApprovalRequest({
             {canEditBody ? (
               <EditToggle
                 editing={editing}
-                onToggle={() => setEditing(!editing)}
+                onToggle={editing ? () => setEditing(false) : startEditing}
               />
             ) : (
               <span />
@@ -252,7 +266,7 @@ export default function EmailApprovalRequest({
             </div>
           </div>
         </div>
-        {timeoutMs && (
+        {timeoutMs && !held && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-700 light:bg-slate-300">
             <div
               className="h-full bg-sky-500 light:bg-sky-600 transition-none"
@@ -265,7 +279,13 @@ export default function EmailApprovalRequest({
   );
 }
 
-function CardHeader({ title, subtitle, titleClassName = "", className = "" }) {
+function CardHeader({
+  title,
+  subtitle,
+  titleClassName = "",
+  className = "",
+  trailing = null,
+}) {
   return (
     <div
       className={`w-full flex items-center gap-2.5 p-3 bg-zinc-900 border border-zinc-800 light:bg-slate-200 light:border-slate-200 ${className}`}
@@ -283,6 +303,7 @@ function CardHeader({ title, subtitle, titleClassName = "", className = "" }) {
           {subtitle}
         </span>
       </div>
+      {trailing}
     </div>
   );
 }
@@ -386,28 +407,77 @@ function EditToggle({ editing, onToggle }) {
 
 function ResolvedCard({ status, action, draft, attachmentCount = 0 }) {
   const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
   const titleClassName = status === "approved" ? "" : "line-through";
+  const CaretIcon = expanded ? CaretUp : CaretDown;
 
   return (
     <div className="flex justify-center w-full my-1 pr-4">
-      <div className="w-full font-normal">
-        <CardHeader
-          title={
-            draft.subject ||
-            t(`chat_window.agent_invocation.email.${action}_title`)
-          }
-          subtitle={
-            <ResolvedSubtitle
-              status={status}
-              action={action}
-              recipients={draft.to}
-              attachmentCount={attachmentCount}
-            />
-          }
-          titleClassName={titleClassName}
-          className="rounded-lg"
-        />
+      <div className="w-full flex flex-col rounded-lg overflow-hidden font-normal">
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          aria-label={t(
+            `chat_window.agent_invocation.email.${expanded ? "hide" : "show"}_preview`
+          )}
+          className="border-none bg-transparent p-0 w-full text-left"
+        >
+          <CardHeader
+            title={
+              draft.subject ||
+              t(`chat_window.agent_invocation.email.${action}_title`)
+            }
+            subtitle={
+              <ResolvedSubtitle
+                status={status}
+                action={action}
+                recipients={draft.to}
+                attachmentCount={attachmentCount}
+              />
+            }
+            titleClassName={titleClassName}
+            className={expanded ? "rounded-t-lg" : "rounded-lg"}
+            trailing={
+              <CaretIcon
+                size={16}
+                className="ml-auto shrink-0 text-zinc-400 light:text-slate-600"
+              />
+            }
+          />
+        </button>
+        {expanded && <EmailPreview draft={draft} />}
       </div>
+    </div>
+  );
+}
+
+function EmailPreview({ draft }) {
+  const { t } = useTranslation();
+  const rows = ["to", "cc", "bcc"].filter((field) => draft[field].length > 0);
+
+  return (
+    <div className="w-full flex flex-col gap-6 p-4 rounded-b-lg bg-zinc-800 light:bg-transparent light:border light:border-t-0 light:border-slate-300">
+      <div className="flex flex-col gap-2 w-full">
+        {rows.map((field) => (
+          <RecipientRow
+            key={field}
+            label={t(`chat_window.agent_invocation.email.${field}`)}
+            recipients={draft[field]}
+            onChange={() => {}}
+            editing={false}
+            readOnly
+          />
+        ))}
+        {draft.subject && (
+          <SubjectRow
+            editing={false}
+            value={draft.subject}
+            onChange={() => {}}
+          />
+        )}
+      </div>
+      <BodyField editing={false} value={draft.body} onChange={() => {}} />
     </div>
   );
 }

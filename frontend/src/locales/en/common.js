@@ -1756,6 +1756,8 @@ const TRANSLATIONS = {
         not_sent_timeout: "Not sent · no response in time",
         not_saved_denied: "Not saved · the agent was told to stop",
         not_saved_timeout: "Not saved · no response in time",
+        show_preview: "Show email",
+        hide_preview: "Hide email",
       },
     },
     memories: {

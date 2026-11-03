@@ -57,6 +57,8 @@ const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying q
 // Once the user starts interacting with the clarification card they are present and
 // should not race the clock - this ceiling only exists so an abandoned card cannot hang the turn.
 const CLARIFICATION_ENGAGED_TIMEOUT_MS = 15 * 60 * 1_000; // 15 mins
+// Same ceiling once the user starts editing an email on the tool approval card.
+const TOOL_APPROVAL_ENGAGED_TIMEOUT_MS = CLARIFICATION_ENGAGED_TIMEOUT_MS;
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -292,6 +294,7 @@ const websocket = {
           const requestId = uuidv4();
           return new Promise((resolve) => {
             let timeoutId = null;
+            let held = false;
 
             // Resolve exactly once and tear down every waiter, whichever of the
             // three outcomes lands first: user response, abort, or timeout.
@@ -300,6 +303,17 @@ const websocket = {
               clearTimeout(timeoutId);
               aibitat.emitter.removeListener("abort", abortListener);
               resolve(result);
+            };
+
+            const handleTimeout = (ms) => {
+              console.log(
+                chalk.yellow(`Tool approval request timed out after ${ms}ms`)
+              );
+              settle({
+                approved: false,
+                message:
+                  "Tool approval request timed out. User did not respond in time.",
+              });
             };
 
             // The socket is already gone once the session aborts, so no response
@@ -315,11 +329,20 @@ const websocket = {
             socket.handleToolApproval = (message) => {
               try {
                 const data = safeJsonParse(message, {});
-                if (
-                  data?.type !== "toolApprovalResponse" ||
-                  data?.requestId !== requestId
-                )
+                if (data?.requestId !== requestId) return;
+
+                if (data?.type === "toolApprovalHold") {
+                  if (held) return;
+                  held = true;
+                  clearTimeout(timeoutId);
+                  timeoutId = setTimeout(
+                    () => handleTimeout(TOOL_APPROVAL_ENGAGED_TIMEOUT_MS),
+                    TOOL_APPROVAL_ENGAGED_TIMEOUT_MS
+                  );
                   return;
+                }
+
+                if (data?.type !== "toolApprovalResponse") return;
 
                 if (data.approved) {
                   const payload =
@@ -355,18 +378,10 @@ const websocket = {
               })
             );
 
-            timeoutId = setTimeout(() => {
-              console.log(
-                chalk.yellow(
-                  `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
-                )
-              );
-              settle({
-                approved: false,
-                message:
-                  "Tool approval request timed out. User did not respond in time.",
-              });
-            }, TOOL_APPROVAL_TIMEOUT_MS);
+            timeoutId = setTimeout(
+              () => handleTimeout(TOOL_APPROVAL_TIMEOUT_MS),
+              TOOL_APPROVAL_TIMEOUT_MS
+            );
           });
         };
 

@@ -17,6 +17,8 @@ const {
 } = require("../../../../../utils/agents/aibitat/plugins/websocket.js");
 
 const SOCKET_TIMEOUT_MS = 300 * 1_000;
+const TOOL_APPROVAL_TIMEOUT_MS = 120 * 1_000;
+const TOOL_APPROVAL_ENGAGED_TIMEOUT_MS = 15 * 60 * 1_000;
 const MALFORMED_TEXT_FRAMES = [
   "{bad",
   "",
@@ -361,6 +363,9 @@ describe("websocket plugin session exit notice", () => {
 });
 
 describe("websocket plugin requestToolApproval", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
   /** Sends an approval request and returns the frame the client received. */
   async function requestApproval(aibitat, socket) {
     aibitat.emitter = { once: jest.fn(), removeListener: jest.fn() };
@@ -454,5 +459,50 @@ describe("websocket plugin requestToolApproval", () => {
       JSON.stringify({ type: "toolApprovalResponse", requestId, approved: true })
     );
     await expect(pending).resolves.toMatchObject({ approved: true });
+  });
+
+  it("times out when the user never responds", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending } = await requestApproval(aibitat, socket);
+    jest.advanceTimersByTime(TOOL_APPROVAL_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual({
+      approved: false,
+      message: "Tool approval request timed out. User did not respond in time.",
+    });
+  });
+
+  it("extends the timeout once the user starts editing", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending, requestId } = await requestApproval(aibitat, socket);
+    jest.advanceTimersByTime(TOOL_APPROVAL_TIMEOUT_MS - 1_000);
+    socket.handleToolApproval(
+      JSON.stringify({ type: "toolApprovalHold", requestId })
+    );
+    jest.advanceTimersByTime(TOOL_APPROVAL_TIMEOUT_MS);
+    expect(socket.handleToolApproval).toBeDefined();
+
+    socket.handleToolApproval(
+      JSON.stringify({
+        type: "toolApprovalResponse",
+        requestId,
+        approved: true,
+        payload: { body: "edited" },
+      })
+    );
+    await expect(pending).resolves.toMatchObject({
+      approved: true,
+      payload: { body: "edited" },
+    });
+  });
+
+  it("still gives up on an abandoned edit", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const { pending, requestId } = await requestApproval(aibitat, socket);
+    socket.handleToolApproval(
+      JSON.stringify({ type: "toolApprovalHold", requestId })
+    );
+    jest.advanceTimersByTime(TOOL_APPROVAL_ENGAGED_TIMEOUT_MS);
+    await expect(pending).resolves.toMatchObject({ approved: false });
+    expect(socket.handleToolApproval).toBeUndefined();
   });
 });
