@@ -276,6 +276,12 @@ class OpenAiLLM {
 
       try {
         for await (const chunk of stream) {
+          if (chunk.type === "response.failed") {
+            throw new Error(
+              chunk.response?.error?.message || "Responses API request failed"
+            );
+          }
+
           if (chunk.type === "response.reasoning_summary_text.delta") {
             if (!chunk.delta) continue;
             if (!reasoningOpen) {

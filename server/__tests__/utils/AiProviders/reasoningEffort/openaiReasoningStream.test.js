@@ -103,6 +103,36 @@ describe("OpenAiLLM.handleStream reasoning summaries", () => {
   });
 });
 
+describe("OpenAiLLM.handleStream failures", () => {
+  it("reports a failed response and finishes the chat stream", async () => {
+    const llm = new OpenAiLLM(null, "gpt-5.1");
+    const response = {
+      write: jest.fn(),
+      on: jest.fn(),
+      removeListener: jest.fn(),
+    };
+    const stream = fakeStream([
+      text("Partial answer"),
+      {
+        type: "response.failed",
+        response: { error: { message: "The server had an error" } },
+      },
+    ]);
+
+    await expect(
+      llm.handleStream(response, stream, { uuid: "uuid" })
+    ).resolves.toBe("Partial answer");
+    expect(
+      JSON.parse(response.write.mock.lastCall[0].replace(/^data: /, ""))
+    ).toMatchObject({
+      type: "abort",
+      close: true,
+      error: "The server had an error",
+    });
+    expect(stream.endMeasurement).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("responsesTooledStream reasoning summaries", () => {
   function fakeClient(events) {
     return { responses: { create: jest.fn(async () => fakeStream(events)) } };
