@@ -223,20 +223,15 @@ describe("websocket plugin session reasoning effort", () => {
 });
 
 describe("websocket plugin follow-up chat quota", () => {
-  const {
-    SystemSettings,
-  } = require("../../../../../models/systemSettings");
-  const {
-    WorkspaceChats,
-  } = require("../../../../../models/workspaceChats");
+  const { SystemSettings } = require("../../../../../models/systemSettings");
+  const { WorkspaceChats } = require("../../../../../models/workspaceChats");
   const { User } = require("../../../../../models/user");
 
   const overLimitUser = { id: 7, role: "default", dailyMessageLimit: 3 };
 
   /** Runs one interrupt round trip for an invocation owned by user 7. */
   async function replyWithQuota(feedback = "next") {
-    const { socket, aibitat } = setupPlugin();
-    aibitat.handlerProps = { invocation: { user_id: 7 } };
+    const { socket, aibitat } = setupPlugin({ userId: 7 });
     aibitat.continue = jest.fn(async () => {});
 
     const onInterrupt = aibitat.onInterrupt.mock.calls[0][0];
@@ -265,6 +260,7 @@ describe("websocket plugin follow-up chat quota", () => {
 
     expect(aibitat.continue).not.toHaveBeenCalled();
     const sent = JSON.parse(socket.send.mock.calls.at(-1)[0]);
+    expect(sent.type).toBe("wssFailure");
     expect(sent.content).toBe(
       "You have met your maximum 24 hour chat quota of 3 chats. Try again later."
     );

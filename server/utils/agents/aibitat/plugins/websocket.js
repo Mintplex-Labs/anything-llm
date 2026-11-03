@@ -23,30 +23,22 @@ async function userCanToggleTools(userId = null) {
 }
 
 /**
- * Enforces the 24-hour message limit for agent follow-ups. The HTTP chat
- * routes check User.canSendChat per incoming message, but follow-ups in an
- * agent session arrive over this socket instead, so the same check runs here
- * before the agent's next turn. Single-user mode, and users without a limit
- * or with an admin role (handled by canSendChat), always pass.
- * @param {object} aibitat - The running aibitat instance carrying handlerProps.
- * @returns {Promise<{ allowed: boolean, dailyMessageLimit: number|null }>}
+ * Agent follow-ups arrive over the socket rather than the HTTP chat routes, so
+ * the 24-hour message limit is checked here before each of the agent's turns.
+ * Returns the quota message when the user is over their limit, otherwise null.
+ * Single-user mode, admins, and users without a limit always pass.
+ * @param {number|null} userId - User id from the agent invocation.
+ * @returns {Promise<string|null>}
  */
-async function agentFollowUpWithinQuota(aibitat) {
-  const userId = aibitat?.handlerProps?.invocation?.user_id;
-  if (!userId) return { allowed: true, dailyMessageLimit: null };
-
+async function chatQuotaExceededMessage(userId = null) {
+  if (!userId) return null;
   const { SystemSettings } = require("../../../../models/systemSettings");
-  if (!(await SystemSettings.isMultiUserMode()))
-    return { allowed: true, dailyMessageLimit: null };
+  if (!(await SystemSettings.isMultiUserMode())) return null;
 
   const { User } = require("../../../../models/user");
   const user = await User.get({ id: Number(userId) });
-  if (!user) return { allowed: true, dailyMessageLimit: null };
-
-  return {
-    allowed: await User.canSendChat(user),
-    dailyMessageLimit: user.dailyMessageLimit,
-  };
+  if (!user || (await User.canSendChat(user))) return null;
+  return `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`;
 }
 
 /**
@@ -482,18 +474,10 @@ const websocket = {
             return;
           }
 
-          // A follow-up message in an agent session counts against the user's
-          // 24-hour chat quota the same as a new message over the HTTP chat
-          // routes. Refuse and end the session once the quota is met.
-          const { allowed, dailyMessageLimit } =
-            await agentFollowUpWithinQuota(aibitat);
-          if (!allowed) {
+          const quotaMessage = await chatQuotaExceededMessage(userId);
+          if (quotaMessage) {
             socket.send(
-              JSON.stringify({
-                from: "@agent",
-                to: "USER",
-                content: `You have met your maximum 24 hour chat quota of ${dailyMessageLimit} chats. Try again later.`,
-              })
+              JSON.stringify({ type: "wssFailure", content: quotaMessage })
             );
             socket.close();
             return;
