@@ -76,6 +76,7 @@ export default function RecipientRow({
         {editing && (
           <input
             type="email"
+            autoComplete="off"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}

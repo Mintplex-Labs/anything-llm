@@ -123,15 +123,19 @@ export default function EmailApprovalRequest({
     onTimeout: () => respond(false, "timeout"),
   });
 
-  // Once the user starts editing, the server stops racing them against the
+  // Once the user touches the email, the server stops racing them against the
   // approval clock, so the countdown bar goes away for the rest of the card.
-  function startEditing() {
-    setEditing(true);
+  function hold() {
     if (held || responded) return;
     setHeld(true);
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(JSON.stringify({ type: "toolApprovalHold", requestId }));
     }
+  }
+
+  function startEditing() {
+    setEditing(true);
+    hold();
   }
 
   function respond(approved, nextStatus = approved ? "approved" : "denied") {
@@ -152,6 +156,7 @@ export default function EmailApprovalRequest({
 
   function updateDraft(patch) {
     setDraft((prev) => ({ ...prev, ...patch }));
+    hold();
   }
 
   function reveal(field) {

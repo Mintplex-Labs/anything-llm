@@ -1253,7 +1253,8 @@ class OutlookBridge {
     if (updates.to) {
       message.toRecipients = parseEmailRecipients(updates.to);
     }
-    if (updates.cc) {
+    // An empty string clears the Cc list; undefined leaves it untouched.
+    if (updates.cc !== undefined) {
       message.ccRecipients = parseEmailRecipients(updates.cc);
     }
 
