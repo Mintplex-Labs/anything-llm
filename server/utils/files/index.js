@@ -406,7 +406,12 @@ function normalizePath(filepath = "") {
  * @throws {Error} if the name is empty or contains a path separator
  */
 function normalizeFolderName(folderName = "") {
-  const folder = normalizePath(String(folderName ?? ""));
+  // Leading/trailing separators ("/reports", "reports/") were always dropped
+  // by path.join, so keep accepting them.
+  const folder = normalizePath(String(folderName ?? "")).replace(
+    /^[\\/]+|[\\/]+$/g,
+    ""
+  );
   if (!folder) throw new Error("Invalid folder name.");
   if (/[\\/]/.test(folder))
     throw new Error("Folder name cannot contain path separators.");
@@ -420,7 +425,9 @@ function normalizeFolderName(folderName = "") {
  */
 function isFolderFilePath(docPath = "") {
   try {
-    const segments = normalizePath(String(docPath ?? "")).split(/[\\/]/);
+    const segments = normalizePath(String(docPath ?? ""))
+      .replace(/^[\\/]+|[\\/]+$/g, "")
+      .split(/[\\/]/);
     return segments.length === 2 && segments.every(Boolean);
   } catch {
     return false;
