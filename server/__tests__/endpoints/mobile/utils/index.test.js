@@ -8,17 +8,19 @@ jest.mock("../../../../models/workspace", () => ({
   Workspace: { get: jest.fn(), getWithUser: jest.fn() },
 }));
 jest.mock("../../../../models/workspaceThread", () => ({
-  WorkspaceThread: {},
+  WorkspaceThread: { autoRenameThread: jest.fn() },
 }));
 jest.mock("../../../../models/mobileDevice", () => ({ MobileDevice: {} }));
 jest.mock("../../../../utils/chats/apiChatHandler", () => ({
-  ApiChatHandler: {},
+  ApiChatHandler: { streamChat: jest.fn() },
 }));
 jest.mock("../../../../endpoints/utils", () => ({ getModelTag: () => "test" }));
 
 const prisma = require("../../../../utils/prisma");
 const { WorkspaceChats } = require("../../../../models/workspaceChats");
 const { Workspace } = require("../../../../models/workspace");
+const { WorkspaceThread } = require("../../../../models/workspaceThread");
+const { ApiChatHandler } = require("../../../../utils/chats/apiChatHandler");
 const {
   handleMobileCommand,
 } = require("../../../../endpoints/mobile/utils/index");
@@ -124,5 +126,43 @@ describe("handleMobileCommand: stream-chat", () => {
     expect(response.flushHeaders).not.toHaveBeenCalled();
     expect(response.status).toHaveBeenCalledWith(404);
     expect(response.json).toHaveBeenCalledWith({ error: "Thread not found" });
+    expect(WorkspaceThread.autoRenameThread).not.toHaveBeenCalled();
+  });
+
+  it("auto-names the thread once the first message has been handled", async () => {
+    const thread = { id: 42, name: "Thread" };
+    prisma.workspace_threads.findFirst.mockResolvedValue(thread);
+    ApiChatHandler.streamChat.mockResolvedValue(undefined);
+    const response = {
+      locals: { user: null },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      setHeader: jest.fn(),
+      flushHeaders: jest.fn(),
+      end: jest.fn(),
+    };
+
+    await handleMobileCommand(
+      {
+        params: { command: "stream-chat" },
+        body: { workspaceSlug: "my-ws", threadSlug: "thread-b", message: "hi" },
+      },
+      response
+    );
+
+    expect(ApiChatHandler.streamChat).toHaveBeenCalledWith(
+      expect.objectContaining({ workspace, thread, message: "hi" })
+    );
+    expect(WorkspaceThread.autoRenameThread).toHaveBeenCalledWith({
+      thread,
+      workspace,
+      user: null,
+      prompt: "hi",
+    });
+    // The rename must only run after the chat has been saved, since it counts the thread's chats.
+    expect(
+      WorkspaceThread.autoRenameThread.mock.invocationCallOrder[0]
+    ).toBeGreaterThan(ApiChatHandler.streamChat.mock.invocationCallOrder[0]);
+    expect(response.end).toHaveBeenCalled();
   });
 });

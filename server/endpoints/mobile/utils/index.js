@@ -187,6 +187,12 @@ async function handleMobileCommand(request, response) {
       attachments: [],
       reset: false,
     });
+    await WorkspaceThread.autoRenameThread({
+      thread,
+      workspace,
+      user,
+      prompt: message,
+    });
     return response.end();
   }
 

@@ -455,6 +455,12 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments,
           reset,
         });
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          prompt: message,
+        });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -642,6 +648,12 @@ function apiWorkspaceThreadEndpoints(app) {
           thread,
           attachments,
           reset,
+        });
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          prompt: message,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
