@@ -18,11 +18,13 @@ export default function NewFolderModal({ closeModal, onCreated }) {
     setError(null);
     const name = folderName.trim();
     if (!name || creating) return;
+    if (/[\\/]/.test(name))
+      return setError("Folder names cannot contain / or \\");
 
     setCreating(true);
-    const { success } = await Document.createFolder(name);
+    const { success, message } = await Document.createFolder(name);
     setCreating(false);
-    if (!success) return setError("Failed to create folder");
+    if (!success) return setError(message || "Failed to create folder");
     onCreated(name);
   };
 
