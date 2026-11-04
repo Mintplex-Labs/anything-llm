@@ -8,7 +8,7 @@ jest.mock("../../../../models/workspace", () => ({
   Workspace: { get: jest.fn(), getWithUser: jest.fn() },
 }));
 jest.mock("../../../../models/workspaceThread", () => ({
-  WorkspaceThread: {},
+  WorkspaceThread: { autoRenameThread: jest.fn() },
 }));
 jest.mock("../../../../models/mobileDevice", () => ({ MobileDevice: {} }));
 jest.mock("../../../../utils/chats/apiChatHandler", () => ({
