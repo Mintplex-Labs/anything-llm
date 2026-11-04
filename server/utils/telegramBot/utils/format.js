@@ -203,9 +203,25 @@ function escapeHTML(text) {
     .replace(/>/g, "&gt;");
 }
 
-// Longer tool parameters are cut, so the approval prompt stays within
-// Telegram's message length limit.
-const MAX_TOOL_PAYLOAD_PREVIEW = 2000;
+// Escaped lengths for the agent-supplied parts of a tool approval prompt.
+// Together with the fixed text they keep the prompt under Telegram's
+// 4096-character message limit.
+const MAX_TOOL_DESCRIPTION_PREVIEW = 1000;
+const MAX_TOOL_PAYLOAD_PREVIEW = 2500;
+
+/**
+ * Escape text for Telegram HTML and cut the escaped result to `max`
+ * characters. The cut is made after escaping because escaping can grow the
+ * text up to five times, and any entity left partial by the cut is dropped.
+ * @param {string} text
+ * @param {number} max
+ * @returns {string}
+ */
+function escapeAndTruncate(text, max) {
+  const escaped = escapeHTML(text);
+  if (escaped.length <= max) return escaped;
+  return `${escaped.slice(0, max).replace(/&[a-z]*$/, "")}\n…`;
+}
 
 /**
  * Build the HTML text of a tool approval prompt. The skill name, description
@@ -220,12 +236,15 @@ const MAX_TOOL_PAYLOAD_PREVIEW = 2000;
 function toolApprovalMessage({ skillName, description, payload }) {
   let payloadText = "";
   if (payload && Object.keys(payload).length > 0) {
-    let json = JSON.stringify(payload, null, 2);
-    if (json.length > MAX_TOOL_PAYLOAD_PREVIEW)
-      json = `${json.slice(0, MAX_TOOL_PAYLOAD_PREVIEW)}\n…`;
-    payloadText = `\n\n<b>Parameters:</b>\n<code>${escapeHTML(json)}</code>`;
+    const json = escapeAndTruncate(
+      JSON.stringify(payload, null, 2),
+      MAX_TOOL_PAYLOAD_PREVIEW
+    );
+    payloadText = `\n\n<b>Parameters:</b>\n<code>${json}</code>`;
   }
-  const descText = description ? `\n${escapeHTML(description)}` : "";
+  const descText = description
+    ? `\n${escapeAndTruncate(String(description), MAX_TOOL_DESCRIPTION_PREVIEW)}`
+    : "";
 
   return (
     `🔧 <b>Tool Approval Required</b>\n\n` +
