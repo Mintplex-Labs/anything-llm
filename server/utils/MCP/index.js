@@ -252,7 +252,14 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: `MCP server ${name} not found in config file.`,
       };
     const mcp = this.mcps[name];
-    const online = mcp ? await isMCPServerReachable(mcp) : false; // If the server is not in the mcps object, it is not running
+    let online = false;
+    try {
+      online = mcp ? await isMCPServerReachable(mcp) : false;
+    } catch (error) {
+      // The SDK clears the transport when a connection closes. Only recover
+      // that state; a ping failure on an attached transport still propagates.
+      if (mcp.transport) throw error;
+    }
 
     if (online) {
       const killed = this.pruneMCPServer(name);
@@ -261,6 +268,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: killed ? null : `Failed to kill MCP server: ${name}`,
       };
     } else {
+      this.pruneMCPServer(name);
       const startupResult = await this.startMCPServer(name);
       return { success: startupResult.success, error: startupResult.error };
     }

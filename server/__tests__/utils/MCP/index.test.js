@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const http = require("http");
+const { Client } = require("@modelcontextprotocol/sdk/client/index.js");
+const { InMemoryTransport } = require("@modelcontextprotocol/sdk/inMemory.js");
 const {
   Server: MCPTestServer,
 } = require("@modelcontextprotocol/sdk/server/index.js");
@@ -121,6 +123,104 @@ describe("MCPCompatibilityLayer.servers", () => {
       JSON.stringify({ mcpServers: servers }, null, 2)
     );
   }
+
+  async function connectedClient() {
+    const server = new MCPTestServer(
+      { name: "fixture", version: "1.0.0" },
+      { capabilities: { tools: {} } }
+    );
+    const client = new Client({ name: "test", version: "1.0.0" });
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+    await server.connect(serverTransport);
+    await client.connect(clientTransport);
+    mcpLayer = new MCPCompatibilityLayer();
+    mcpLayer.mcps.fixture = client;
+    mcpLayer.mcpLoadingResults.fixture = {
+      status: "success",
+      message: "Connected",
+    };
+    return { client, server };
+  }
+
+  it("reconnects a closed SDK client using its saved configuration", async () => {
+    const sseServer = await startSSETestServer([GOOD_TOOL]);
+    writeMCPConfig({
+      fixture: { url: `http://localhost:${sseServer.address().port}` },
+    });
+    const { client, server } = await connectedClient();
+    try {
+      await server.close();
+      expect(client.transport).toBeUndefined();
+      expect((await mcpLayer.servers())[0].running).toBe(false);
+
+      expect((await mcpLayer.toggleServerStatus("fixture")).success).toBe(true);
+      expect(mcpLayer.mcps.fixture).not.toBe(client);
+      expect(await mcpLayer.mcps.fixture.ping()).toEqual({});
+      expect((await mcpLayer.servers())[0]).toMatchObject({
+        running: true,
+        tools: [GOOD_TOOL],
+      });
+    } finally {
+      mcpLayer.pruneMCPServers();
+      await client.close();
+      await server.close();
+      stopSSETestServer(sseServer);
+    }
+  });
+
+  it("reports a fresh startup failure after clearing a closed client", async () => {
+    writeMCPConfig({
+      fixture: { type: "websocket", url: "http://localhost:1" },
+    });
+    const { client, server } = await connectedClient();
+    try {
+      await server.close();
+      const result = await mcpLayer.toggleServerStatus("fixture");
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/type must have sse or streamable value/);
+      expect(mcpLayer.mcps.fixture).toBeUndefined();
+      expect(mcpLayer.mcpLoadingResults.fixture.status).toBe("failed");
+    } finally {
+      await client.close();
+      await server.close();
+    }
+  });
+
+  it("still stops a connected server without starting another client", async () => {
+    writeMCPConfig({ fixture: { url: "http://localhost:1" } });
+    const { client, server } = await connectedClient();
+    try {
+      expect(await mcpLayer.toggleServerStatus("fixture")).toEqual({
+        success: true,
+        error: null,
+      });
+      expect(mcpLayer.mcps.fixture).toBeUndefined();
+      expect(mcpLayer.mcpServerConfigs.map(({ name }) => name)).toEqual([
+        "fixture",
+      ]);
+    } finally {
+      await client.close();
+      await server.close();
+    }
+  });
+
+  it("preserves ping failures when the client still has a transport", async () => {
+    writeMCPConfig({ fixture: { url: "http://localhost:1" } });
+    const { client, server } = await connectedClient();
+    try {
+      jest
+        .spyOn(client, "ping")
+        .mockRejectedValue(new Error("Request timed out"));
+      await expect(mcpLayer.toggleServerStatus("fixture")).rejects.toThrow(
+        "Request timed out"
+      );
+      expect(mcpLayer.mcps.fixture).toBe(client);
+    } finally {
+      await client.close();
+      await server.close();
+    }
+  });
 
   it("keeps a server visible with its error when listTools throws on an unresolvable outputSchema $ref (issue #5917)", async () => {
     const goodServer = await startSSETestServer([GOOD_TOOL]);

@@ -270,10 +270,9 @@ class MCPHypervisor {
 
     this.log(`Pruning MCP server: ${name}`);
     const mcp = this.mcps[name];
-    if (!mcp.transport) return true;
-    const childProcess = mcp.transport._process;
+    const childProcess = mcp.transport?._process;
     if (childProcess) childProcess.kill("SIGTERM");
-    mcp.transport.close();
+    mcp.transport?.close();
 
     delete this.mcps[name];
     this.mcpLoadingResults[name] = {
