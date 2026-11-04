@@ -81,6 +81,23 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   /**
+   * Parse a function call from the model's reply. Models sometimes send
+   * `"arguments": null` for a tool without parameters, or the arguments as a
+   * JSON string (the OpenAI tool call format), so both become an object here.
+   * @param {string} response - The model's reply.
+   * @returns {Object|null} The function call, or null if the reply is not JSON.
+   */
+  parseFuncCall(response) {
+    const call = safeJsonParse(response, null);
+    if (!call || typeof call !== "object") return call;
+    if (call.arguments === null || call.arguments === undefined)
+      call.arguments = {};
+    else if (typeof call.arguments === "string")
+      call.arguments = safeJsonParse(call.arguments, call.arguments);
+    return call;
+  }
+
+  /**
    * Validate a function call against a list of functions.
    * @param {{name: string, arguments: Object}} functionCall - The function call to validate.
    * @param {Object[]} functions - The list of functions definitions to validate against.
@@ -102,9 +119,16 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     if (!foundFunc)
       return { valid: false, reason: "Function name does not exist." };
 
+    const args = functionCall.arguments;
+    if (!args || typeof args !== "object" || Array.isArray(args))
+      return {
+        valid: false,
+        reason: "Function call arguments must be an object.",
+      };
+
     const schemaProps = Object.keys(foundFunc?.parameters?.properties || {});
     const requiredProps = foundFunc?.parameters?.required || [];
-    const providedProps = Object.keys(functionCall.arguments);
+    const providedProps = Object.keys(args);
 
     for (const requiredProp of requiredProps) {
       if (!providedProps.includes(requiredProp)) {
@@ -166,7 +190,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     const historyMessages = this.buildToolCallMessages(history, functions);
     const response = await chatCb({ messages: historyMessages });
 
-    const call = safeJsonParse(response, null);
+    const call = this.parseFuncCall(response);
     if (call === null) return { toolCall: null, text: response }; // failed to parse, so must be text.
 
     const { valid, reason } = this.validFuncCall(call, functions);
@@ -230,7 +254,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       }
     }
 
-    const call = safeJsonParse(textResponse, null);
+    const call = this.parseFuncCall(textResponse);
     if (call === null) {
       if (reasoningText.trim().length > 0)
         textResponse = `<think>${reasoningText}</think>${textResponse}`;
