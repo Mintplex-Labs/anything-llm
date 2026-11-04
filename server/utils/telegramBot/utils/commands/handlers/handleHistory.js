@@ -44,7 +44,8 @@ async function handleHistory(ctx, chatId, messageText = "") {
     return;
   }
 
-  const match = messageText.match(/\/history\s+(\d+)/);
+  // In group chats Telegram sends the command as /history@BotName 25
+  const match = messageText.match(/^\/history(?:@\w+)?\s+(\d+)/);
   const count = match
     ? Math.min(parseInt(match[1], 10), MAX_HISTORY_COUNT)
     : DEFAULT_HISTORY_COUNT;
