@@ -552,7 +552,12 @@ class ModelRouterService {
     if (property === "promptContent" || property === "hasImageAttachment")
       return this.#evaluateStringCondition(contextValue, comparator, value);
 
-    return this.#evaluateNumericCondition(contextValue, comparator, value);
+    return this.#evaluateNumericCondition(
+      contextValue,
+      comparator,
+      value,
+      property === "currentHour"
+    );
   }
 
   #getContextValue(property, context) {
@@ -617,7 +622,19 @@ class ModelRouterService {
     }
   }
 
-  #evaluateNumericCondition(contextValue, comparator, value) {
+  /**
+   * @param {number} contextValue
+   * @param {string} comparator
+   * @param {string} value
+   * @param {boolean} [wrapsAround] - The value is on a clock (eg: hours), so a
+   * "between" range whose start is after its end (eg: 22,6) spans midnight.
+   */
+  #evaluateNumericCondition(
+    contextValue,
+    comparator,
+    value,
+    wrapsAround = false
+  ) {
     const numContext = Number(contextValue);
     if (isNaN(numContext)) return false;
 
@@ -625,6 +642,8 @@ class ModelRouterService {
       const parts = String(value).split(",").map(Number);
       if (parts.length !== 2 || parts.some(isNaN)) return false;
       const [min, max] = parts;
+      if (wrapsAround && min > max)
+        return numContext >= min || numContext <= max;
       return numContext >= min && numContext <= max;
     }
 
