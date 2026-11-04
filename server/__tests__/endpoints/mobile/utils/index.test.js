@@ -12,13 +12,14 @@ jest.mock("../../../../models/workspaceThread", () => ({
 }));
 jest.mock("../../../../models/mobileDevice", () => ({ MobileDevice: {} }));
 jest.mock("../../../../utils/chats/apiChatHandler", () => ({
-  ApiChatHandler: {},
+  ApiChatHandler: { streamChat: jest.fn() },
 }));
 jest.mock("../../../../endpoints/utils", () => ({ getModelTag: () => "test" }));
 
 const prisma = require("../../../../utils/prisma");
 const { WorkspaceChats } = require("../../../../models/workspaceChats");
 const { Workspace } = require("../../../../models/workspace");
+const { ApiChatHandler } = require("../../../../utils/chats/apiChatHandler");
 const {
   handleMobileCommand,
 } = require("../../../../endpoints/mobile/utils/index");
@@ -125,4 +126,33 @@ describe("handleMobileCommand: stream-chat", () => {
     expect(response.status).toHaveBeenCalledWith(404);
     expect(response.json).toHaveBeenCalledWith({ error: "Thread not found" });
   });
+
+  it.each(["chat", "query", "automatic"])(
+    "chats in the workspace's configured %s mode",
+    async (chatMode) => {
+      Workspace.get.mockResolvedValue({ ...workspace, chatMode });
+      ApiChatHandler.streamChat.mockResolvedValue(undefined);
+      const response = {
+        locals: { user: null },
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+        setHeader: jest.fn(),
+        flushHeaders: jest.fn(),
+        end: jest.fn(),
+      };
+
+      await handleMobileCommand(
+        {
+          params: { command: "stream-chat" },
+          body: { workspaceSlug: "my-ws", message: "hi" },
+        },
+        response
+      );
+
+      expect(ApiChatHandler.streamChat).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: chatMode, message: "hi" })
+      );
+      expect(response.end).toHaveBeenCalled();
+    }
+  );
 });
