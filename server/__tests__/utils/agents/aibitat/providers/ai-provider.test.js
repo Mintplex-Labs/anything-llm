@@ -49,6 +49,28 @@ describe("UnTooled message formatting", () => {
   });
 });
 
+describe("Provider native tool calling opt-out", () => {
+  const original = process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING;
+  afterEach(() => {
+    if (original === undefined)
+      delete process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING;
+    else process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING = original;
+  });
+
+  test("matches every provider in a list with spaces after the commas", () => {
+    process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING =
+      "generic-openai, ollama ,lmstudio";
+    const provider = new TestProvider();
+
+    expect(provider.optsOutOfNativeToolCallingViaEnv("generic-openai")).toBe(
+      true
+    );
+    expect(provider.optsOutOfNativeToolCallingViaEnv("ollama")).toBe(true);
+    expect(provider.optsOutOfNativeToolCallingViaEnv("lmstudio")).toBe(true);
+    expect(provider.optsOutOfNativeToolCallingViaEnv("openai")).toBe(false);
+  });
+});
+
 describe("Provider usage tracking", () => {
   test("recordUsage accumulates tokens across multiple completions", () => {
     const provider = new TestProvider();
