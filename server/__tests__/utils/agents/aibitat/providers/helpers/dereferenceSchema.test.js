@@ -145,6 +145,25 @@ describe("dereferenceSchema", () => {
     expect(dereferenceSchema(schema).properties.missing).toEqual({});
   });
 
+  it("inlines references to another property", () => {
+    // zod-to-json-schema (used by the MCP TypeScript SDK) points a reused
+    // sub-schema at its first occurrence.
+    const address = {
+      type: "object",
+      properties: { city: { type: "string" } },
+      required: ["city"],
+    };
+    const schema = {
+      type: "object",
+      properties: {
+        from: address,
+        to: { $ref: "#/properties/from" },
+      },
+    };
+
+    expect(dereferenceSchema(schema).properties.to).toEqual(address);
+  });
+
   it("handles non-object inputs defensively", () => {
     expect(dereferenceSchema(null)).toBeNull();
     expect(dereferenceSchema(undefined)).toEqual({});
