@@ -203,6 +203,37 @@ function escapeHTML(text) {
     .replace(/>/g, "&gt;");
 }
 
+// Longer tool parameters are cut, so the approval prompt stays within
+// Telegram's message length limit.
+const MAX_TOOL_PAYLOAD_PREVIEW = 2000;
+
+/**
+ * Build the HTML text of a tool approval prompt. The skill name, description
+ * and parameters come from the agent, so they are escaped before they go into
+ * the HTML message.
+ * @param {Object} request
+ * @param {string} request.skillName
+ * @param {string} [request.description]
+ * @param {Object} [request.payload]
+ * @returns {string}
+ */
+function toolApprovalMessage({ skillName, description, payload }) {
+  let payloadText = "";
+  if (payload && Object.keys(payload).length > 0) {
+    let json = JSON.stringify(payload, null, 2);
+    if (json.length > MAX_TOOL_PAYLOAD_PREVIEW)
+      json = `${json.slice(0, MAX_TOOL_PAYLOAD_PREVIEW)}\n…`;
+    payloadText = `\n\n<b>Parameters:</b>\n<code>${escapeHTML(json)}</code>`;
+  }
+  const descText = description ? `\n${escapeHTML(description)}` : "";
+
+  return (
+    `🔧 <b>Tool Approval Required</b>\n\n` +
+    `The agent wants to execute: <b>${escapeHTML(String(skillName))}</b>${descText}${payloadText}\n\n` +
+    `Do you want to allow this action?`
+  );
+}
+
 /**
  * Close any unclosed HTML tags to prevent Telegram API errors.
  * This is important during streaming when messages may be split mid-markdown.
@@ -290,4 +321,5 @@ function convertTableToPreformatted(tableMarkdown) {
 module.exports = {
   escapeHTML,
   markdownToTelegram,
+  toolApprovalMessage,
 };

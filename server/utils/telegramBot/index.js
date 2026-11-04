@@ -20,6 +20,7 @@ const {
 } = require("./utils/verification");
 const { BOT_COMMANDS, commandPattern } = require("./utils/commands");
 const { handleKeyboardQueryCallback } = require("./utils/navigation");
+const { toolApprovalMessage } = require("./utils/format");
 const {
   downloadTelegramFile,
   transcribeAudio,
@@ -609,17 +610,11 @@ class TelegramBotService {
     );
 
     try {
-      const payloadText =
-        payload && Object.keys(payload).length > 0
-          ? `\n\n<b>Parameters:</b>\n<code>${JSON.stringify(payload, null, 2)}</code>`
-          : "";
-
-      const descText = description ? `\n${description}` : "";
-
-      const messageText =
-        `🔧 <b>Tool Approval Required</b>\n\n` +
-        `The agent wants to execute: <b>${skillName}</b>${descText}${payloadText}\n\n` +
-        `Do you want to allow this action?`;
+      const messageText = toolApprovalMessage({
+        skillName,
+        description,
+        payload,
+      });
 
       const keyboard = {
         inline_keyboard: [
