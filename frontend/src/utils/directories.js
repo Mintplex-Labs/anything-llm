@@ -10,9 +10,11 @@ export function formatDateTimeAsMoment(dateString, format = "LLL") {
 }
 
 export function getFileExtension(path) {
-  const hasExtension = path?.includes(".");
+  // Only the last path segment can have an extension, a dot in a parent folder does not count.
+  const fileName = path?.split(/[\\/]/)?.pop();
+  const hasExtension = fileName?.includes(".");
   if (!hasExtension) return "FILE";
-  const extension = path?.split(".")?.slice(-1)?.[0];
+  const extension = fileName.split(".").slice(-1)[0];
   return extension?.toUpperCase() || "FILE";
 }
 
