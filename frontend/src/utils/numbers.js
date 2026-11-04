@@ -66,11 +66,14 @@ export function milliToHms(milli = 0) {
 export function formatDuration(duration) {
   try {
     if (duration < 0) return "";
-    if (duration < 1) return `${(duration * 1000).toFixed(0)}ms`;
-    if (duration < 60) return `${duration.toFixed(1)}s`;
+    // Each branch stops where its rounding would carry into the next unit, so
+    // 0.9996s is not shown as "1000ms" and 59.96s is not shown as "60.0s".
+    if (duration < 0.9995) return `${(duration * 1000).toFixed(0)}ms`;
+    if (duration < 59.95) return `${duration.toFixed(1)}s`;
     if (duration < 3600) {
-      const minutes = Math.floor(duration / 60);
-      const seconds = Math.floor(duration % 60);
+      const totalSeconds = duration < 60 ? 60 : Math.floor(duration);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
       return `${minutes}m ${seconds}s`;
     }
 
