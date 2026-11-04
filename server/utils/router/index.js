@@ -340,7 +340,7 @@ class ModelRouterService {
     } = require("../../models/workspaceParsedFiles");
     const { TokenManager } = require("../helpers/tiktoken");
 
-    const messageLimit = workspace?.openAiHistory || 20;
+    const messageLimit = workspace?.openAiHistory ?? 20;
 
     const { rawHistory, chatHistory } = chatHistoryOverride
       ? chatHistoryOverride

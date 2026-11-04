@@ -7,6 +7,28 @@ const { escapeHTML } = require("../../format");
 
 const DEFAULT_HISTORY_COUNT = 10;
 const MAX_HISTORY_COUNT = 50;
+// Escaped length of one history message. An exchange holds two of them plus
+// labels and the header, which keeps it within one 4096-character Telegram
+// message.
+const MAX_HISTORY_MESSAGE_LENGTH = 1800;
+
+/**
+ * Escape a history message for HTML and cut the escaped text if it is too
+ * long. The cut is made after escaping because escaping can grow the text up
+ * to five times. A half emoji (lone high surrogate) or an entity left partial
+ * by the cut is dropped.
+ * @param {string} content
+ * @returns {string}
+ */
+function historyMessageHTML(content = "") {
+  const escaped = escapeHTML(content);
+  if (escaped.length <= MAX_HISTORY_MESSAGE_LENGTH) return escaped;
+  const cut = escaped
+    .slice(0, MAX_HISTORY_MESSAGE_LENGTH)
+    .replace(/[\uD800-\uDBFF]$/, "")
+    .replace(/&[a-z]*$/, "");
+  return `${cut}…`;
+}
 
 /**
  * /history [count] - Show recent chat history.
@@ -22,7 +44,8 @@ async function handleHistory(ctx, chatId, messageText = "") {
     return;
   }
 
-  const match = messageText.match(/\/history\s+(\d+)/);
+  // In group chats Telegram sends the command as /history@BotName 25
+  const match = messageText.match(/^\/history(?:@\w+)?\s+(\d+)/);
   const count = match
     ? Math.min(parseInt(match[1], 10), MAX_HISTORY_COUNT)
     : DEFAULT_HISTORY_COUNT;
@@ -54,14 +77,14 @@ async function handleHistory(ctx, chatId, messageText = "") {
   for (let i = 0; i < history.length; i++) {
     const entry = history[i];
     if (entry.role === "user") {
-      let block = `<b>You:</b> ${escapeHTML(entry.content || "")}`;
+      let block = `<b>You:</b> ${historyMessageHTML(entry.content || "")}`;
       if (i + 1 < history.length && history[i + 1].role === "assistant") {
-        block += `\n\n<b>AI:</b> ${escapeHTML(history[i + 1].content || "")}`;
+        block += `\n\n<b>AI:</b> ${historyMessageHTML(history[i + 1].content || "")}`;
         i++;
       }
       exchanges.push(block);
     } else if (entry.role === "assistant") {
-      exchanges.push(`<b>AI:</b> ${escapeHTML(entry.content || "")}`);
+      exchanges.push(`<b>AI:</b> ${historyMessageHTML(entry.content || "")}`);
     }
   }
 

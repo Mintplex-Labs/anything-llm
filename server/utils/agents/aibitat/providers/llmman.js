@@ -256,7 +256,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
       });
     }
 
-    const call = safeJsonParse(textResponse, null);
+    const call = this.parseFuncCall(textResponse);
     if (call === null)
       return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
 

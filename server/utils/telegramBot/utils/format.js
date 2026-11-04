@@ -203,6 +203,56 @@ function escapeHTML(text) {
     .replace(/>/g, "&gt;");
 }
 
+// Escaped lengths for the agent-supplied parts of a tool approval prompt.
+// Together with the fixed text they keep the prompt under Telegram's
+// 4096-character message limit.
+const MAX_TOOL_DESCRIPTION_PREVIEW = 1000;
+const MAX_TOOL_PAYLOAD_PREVIEW = 2500;
+
+/**
+ * Escape text for Telegram HTML and cut the escaped result to `max`
+ * characters. The cut is made after escaping because escaping can grow the
+ * text up to five times, and any entity left partial by the cut is dropped.
+ * @param {string} text
+ * @param {number} max
+ * @returns {string}
+ */
+function escapeAndTruncate(text, max) {
+  const escaped = escapeHTML(text);
+  if (escaped.length <= max) return escaped;
+  return `${escaped.slice(0, max).replace(/&[a-z]*$/, "")}\n…`;
+}
+
+/**
+ * Build the HTML text of a tool approval prompt. The skill name, description
+ * and parameters come from the agent, so they are escaped before they go into
+ * the HTML message.
+ * @param {Object} request
+ * @param {string} request.skillName
+ * @param {string} [request.description]
+ * @param {Object} [request.payload]
+ * @returns {string}
+ */
+function toolApprovalMessage({ skillName, description, payload }) {
+  let payloadText = "";
+  if (payload && Object.keys(payload).length > 0) {
+    const json = escapeAndTruncate(
+      JSON.stringify(payload, null, 2),
+      MAX_TOOL_PAYLOAD_PREVIEW
+    );
+    payloadText = `\n\n<b>Parameters:</b>\n<code>${json}</code>`;
+  }
+  const descText = description
+    ? `\n${escapeAndTruncate(String(description), MAX_TOOL_DESCRIPTION_PREVIEW)}`
+    : "";
+
+  return (
+    `🔧 <b>Tool Approval Required</b>\n\n` +
+    `The agent wants to execute: <b>${escapeHTML(String(skillName))}</b>${descText}${payloadText}\n\n` +
+    `Do you want to allow this action?`
+  );
+}
+
 /**
  * Close any unclosed HTML tags to prevent Telegram API errors.
  * This is important during streaming when messages may be split mid-markdown.
@@ -290,4 +340,5 @@ function convertTableToPreformatted(tableMarkdown) {
 module.exports = {
   escapeHTML,
   markdownToTelegram,
+  toolApprovalMessage,
 };
