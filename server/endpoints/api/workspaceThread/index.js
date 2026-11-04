@@ -649,11 +649,21 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments,
           reset,
         });
+        // If thread was renamed emit event to the client via special `action` response.
         await WorkspaceThread.autoRenameThread({
           thread,
           workspace,
           user,
           prompt: message,
+          onRename: (thread) => {
+            writeResponseChunk(response, {
+              action: "rename_thread",
+              thread: {
+                slug: thread.slug,
+                name: thread.name,
+              },
+            });
+          },
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
