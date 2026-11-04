@@ -26,10 +26,16 @@ function dereferenceSchema(schema = {}) {
     if (typeof ref !== "string" || !ref.startsWith("#/")) return null;
     let node = schema;
     for (const segment of ref.slice(2).split("/")) {
-      const key = decodeURIComponent(segment)
-        .replace(/~1/g, "/")
-        .replace(/~0/g, "~");
-      if (!node || typeof node !== "object" || !(key in node)) return null;
+      let key;
+      try {
+        key = decodeURIComponent(segment)
+          .replace(/~1/g, "/")
+          .replace(/~0/g, "~");
+      } catch {
+        return null; // Malformed %-escape: treat as unresolvable.
+      }
+      if (!node || typeof node !== "object" || !Object.hasOwn(node, key))
+        return null;
       node = node[key];
     }
     return node && typeof node === "object" ? node : null;
