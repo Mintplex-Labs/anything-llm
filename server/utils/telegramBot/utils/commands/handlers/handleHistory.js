@@ -7,6 +7,24 @@ const { escapeHTML } = require("../../format");
 
 const DEFAULT_HISTORY_COUNT = 10;
 const MAX_HISTORY_COUNT = 50;
+// Longer messages are cut, so that every exchange fits in one Telegram message.
+const MAX_HISTORY_MESSAGE_LENGTH = 1500;
+
+/**
+ * Escape a history message for HTML, cutting it first if it is too long.
+ * It is cut by code point before escaping, so neither an emoji nor an HTML
+ * entity is split.
+ * @param {string} content
+ * @returns {string}
+ */
+function historyMessageHTML(content = "") {
+  const chars = Array.from(content);
+  const text =
+    chars.length > MAX_HISTORY_MESSAGE_LENGTH
+      ? `${chars.slice(0, MAX_HISTORY_MESSAGE_LENGTH).join("")}…`
+      : content;
+  return escapeHTML(text);
+}
 
 /**
  * /history [count] - Show recent chat history.
@@ -54,14 +72,14 @@ async function handleHistory(ctx, chatId, messageText = "") {
   for (let i = 0; i < history.length; i++) {
     const entry = history[i];
     if (entry.role === "user") {
-      let block = `<b>You:</b> ${escapeHTML(entry.content || "")}`;
+      let block = `<b>You:</b> ${historyMessageHTML(entry.content || "")}`;
       if (i + 1 < history.length && history[i + 1].role === "assistant") {
-        block += `\n\n<b>AI:</b> ${escapeHTML(history[i + 1].content || "")}`;
+        block += `\n\n<b>AI:</b> ${historyMessageHTML(history[i + 1].content || "")}`;
         i++;
       }
       exchanges.push(block);
     } else if (entry.role === "assistant") {
-      exchanges.push(`<b>AI:</b> ${escapeHTML(entry.content || "")}`);
+      exchanges.push(`<b>AI:</b> ${historyMessageHTML(entry.content || "")}`);
     }
   }
 
