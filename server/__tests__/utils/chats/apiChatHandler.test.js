@@ -442,3 +442,56 @@ describe("ApiChatHandler @agent persistence", () => {
     });
   });
 });
+
+describe("ApiChatHandler chat history limit", () => {
+  const { recentChatHistory } = require("../../../utils/chats/index");
+  const historyLoaded = new Error("history loaded");
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    EphemeralAgentHandler.isAgentInvocation.mockResolvedValue(false);
+    resolveProviderConnector.mockResolvedValue({
+      connector: { promptWindowLimit: () => 8000 },
+      routingMetadata: null,
+    });
+    getVectorDbClass.mockReturnValue({
+      hasNamespace: jest.fn().mockResolvedValue(false),
+      namespaceCount: jest.fn().mockResolvedValue(0),
+    });
+    // Stop the chat once the history is requested, the limit is all we check.
+    recentChatHistory.mockRejectedValue(historyLoaded);
+  });
+
+  test.each([
+    ["chatSync", (args) => ApiChatHandler.chatSync(args)],
+    [
+      "streamChat",
+      (args) => ApiChatHandler.streamChat({ response: {}, ...args }),
+    ],
+  ])(
+    "%s sends no prior messages when the history limit is 0",
+    async (_, chat) => {
+      await expect(
+        chat({
+          workspace: { ...workspace, openAiHistory: 0 },
+          message: "hello",
+          mode: "chat",
+        })
+      ).rejects.toBe(historyLoaded);
+
+      expect(recentChatHistory).toHaveBeenCalledWith(
+        expect.objectContaining({ messageLimit: 0 })
+      );
+    }
+  );
+
+  test("falls back to 20 messages when the workspace has no history limit", async () => {
+    await expect(
+      ApiChatHandler.chatSync({ workspace, message: "hello", mode: "chat" })
+    ).rejects.toBe(historyLoaded);
+
+    expect(recentChatHistory).toHaveBeenCalledWith(
+      expect.objectContaining({ messageLimit: 20 })
+    );
+  });
+});
