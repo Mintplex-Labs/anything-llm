@@ -144,7 +144,8 @@ class SambaNovaLLM {
         prompt_tokens: result.output.usage?.prompt_tokens || 0,
         completion_tokens: result.output.usage?.completion_tokens || 0,
         total_tokens: result.output.usage?.total_tokens || 0,
-        outputTps: result.output.usage?.total_tokens_per_sec || 0,
+        outputTps:
+          (result.output.usage?.completion_tokens || 0) / result.duration,
         duration: result.duration,
         model: this.model,
         provider: this.className,
