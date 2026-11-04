@@ -81,19 +81,22 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   /**
-   * Parse a function call from the model's reply. Models sometimes send
-   * `"arguments": null` for a tool without parameters, or the arguments as a
-   * JSON string (the OpenAI tool call format), so both become an object here.
+   * Parse a function call from the model's reply. A tool without parameters
+   * may be called with `null`, blank, or missing arguments, which all become
+   * `{}`. Arguments sent as a JSON string (the OpenAI tool call format) are
+   * parsed. Anything else is left as-is for `validFuncCall` to reject.
    * @param {string} response - The model's reply.
    * @returns {Object|null} The function call, or null if the reply is not JSON.
    */
   parseFuncCall(response) {
     const call = safeJsonParse(response, null);
-    if (!call || typeof call !== "object") return call;
+    if (!call || typeof call !== "object" || Array.isArray(call)) return call;
     if (call.arguments === null || call.arguments === undefined)
       call.arguments = {};
     else if (typeof call.arguments === "string")
-      call.arguments = safeJsonParse(call.arguments, call.arguments);
+      call.arguments = call.arguments.trim()
+        ? safeJsonParse(call.arguments, call.arguments)
+        : {};
     return call;
   }
 
