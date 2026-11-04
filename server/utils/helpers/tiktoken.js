@@ -1,4 +1,5 @@
 const { getEncodingNameForModel, getEncoding } = require("js-tiktoken");
+const { getPromptTokenCounter } = require("./tokenCounters");
 
 /**
  * @class TokenManager
@@ -11,20 +12,28 @@ const { getEncodingNameForModel, getEncoding } = require("js-tiktoken");
  */
 class TokenManager {
   static instance = null;
-  static currentModel = null;
+  static currentKey = null;
 
-  constructor(model = "gpt-3.5-turbo") {
-    if (TokenManager.instance && TokenManager.currentModel === model) {
+  /**
+   * @param {string} model - Model name used for the local encoder fallback
+   * @param {Object|null} llm - Optional LLM connector used for a provider's native tokenizer
+   */
+  constructor(model = "gpt-3.5-turbo", llm = null) {
+    const cacheKey = `${model}:${llm?.className ?? ""}`;
+    if (TokenManager.instance && TokenManager.currentKey === cacheKey) {
       this.log("Returning existing instance for model:", model);
+      // Keep the native counter pointed at the connector for this request.
+      TokenManager.instance.llm = llm;
       return TokenManager.instance;
     }
 
     this.model = model;
+    this.llm = llm;
     this.encoderName = this.#getEncodingFromModel(model);
     this.encoder = getEncoding(this.encoderName);
 
     TokenManager.instance = this;
-    TokenManager.currentModel = model;
+    TokenManager.currentKey = cacheKey;
     this.log("Initialized new TokenManager instance for model:", model);
     return this;
   }
@@ -75,6 +84,25 @@ class TokenManager {
   countFromString(input = "") {
     const tokens = this.tokensFromString(input);
     return tokens.length;
+  }
+
+  /**
+   * Counts an OpenAI-shaped prompt with the provider's native tokenizer when
+   * the connector has one. Returns null when the provider has no counter or the
+   * request fails so callers can keep using the local encoder estimate.
+   * @param {Array<{role: string, content: string|object[]}>} messages
+   * @returns {Promise<number|null>}
+   */
+  async countPromptTokens(messages = []) {
+    const counter = getPromptTokenCounter(this.llm);
+    if (!counter) return null;
+
+    try {
+      const count = await counter(this.llm, messages);
+      return Number.isInteger(count) && count > 0 ? count : null;
+    } catch {
+      return null;
+    }
   }
 
   /**
