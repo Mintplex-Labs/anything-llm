@@ -181,7 +181,7 @@ export default function EmailApprovalRequest({
     );
 
   return (
-    <div className="flex justify-center w-full my-1 pr-4">
+    <div className="flex justify-center w-full mt-3 mb-1 pr-4">
       <div className="relative w-full flex flex-col rounded-lg overflow-hidden font-normal">
         <CardHeader
           title={t(`chat_window.agent_invocation.email.${action}_title`)}
@@ -417,7 +417,7 @@ function ResolvedCard({ status, action, draft, attachmentCount = 0 }) {
   const CaretIcon = expanded ? CaretUp : CaretDown;
 
   return (
-    <div className="flex justify-center w-full my-1 pr-4">
+    <div className="flex justify-center w-full mt-3 mb-1 pr-4">
       <div className="w-full flex flex-col rounded-lg overflow-hidden font-normal">
         <button
           type="button"
