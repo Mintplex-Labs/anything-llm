@@ -127,32 +127,80 @@ describe("handleMobileCommand: stream-chat", () => {
     expect(response.json).toHaveBeenCalledWith({ error: "Thread not found" });
   });
 
-  it.each(["chat", "query", "automatic"])(
-    "chats in the workspace's configured %s mode",
-    async (chatMode) => {
-      Workspace.get.mockResolvedValue({ ...workspace, chatMode });
-      ApiChatHandler.streamChat.mockResolvedValue(undefined);
-      const response = {
-        locals: { user: null },
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-        setHeader: jest.fn(),
-        flushHeaders: jest.fn(),
-        end: jest.fn(),
-      };
+  function streamResponse(user = null) {
+    return {
+      locals: { user },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      setHeader: jest.fn(),
+      flushHeaders: jest.fn(),
+      end: jest.fn(),
+    };
+  }
 
-      await handleMobileCommand(
-        {
-          params: { command: "stream-chat" },
-          body: { workspaceSlug: "my-ws", message: "hi" },
-        },
-        response
-      );
+  function streamChat(body, response) {
+    return handleMobileCommand(
+      { params: { command: "stream-chat" }, body },
+      response
+    );
+  }
 
-      expect(ApiChatHandler.streamChat).toHaveBeenCalledWith(
-        expect.objectContaining({ mode: chatMode, message: "hi" })
-      );
-      expect(response.end).toHaveBeenCalled();
-    }
-  );
+  it("chats in the workspace's configured mode", async () => {
+    Workspace.get.mockResolvedValue({ ...workspace, chatMode: "automatic" });
+    const response = streamResponse();
+
+    await streamChat({ workspaceSlug: "my-ws", message: "hi" }, response);
+
+    expect(ApiChatHandler.streamChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: "automatic",
+        message: "hi",
+        thread: null,
+      })
+    );
+    expect(response.end).toHaveBeenCalled();
+  });
+
+  it("uses the mode of the workspace resolved for the signed-in user", async () => {
+    const user = { id: 3 };
+    Workspace.getWithUser.mockResolvedValue({
+      ...workspace,
+      chatMode: "query",
+    });
+    const response = streamResponse(user);
+
+    await streamChat({ workspaceSlug: 123, message: "hi" }, response);
+
+    expect(Workspace.get).not.toHaveBeenCalled();
+    expect(Workspace.getWithUser).toHaveBeenCalledWith(user, { slug: "123" });
+    expect(ApiChatHandler.streamChat).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: "query", user })
+    );
+  });
+
+  it.each([
+    [{ workspaceSlug: "my-ws" }, "Message is required"],
+    [{ workspaceSlug: "my-ws", message: "" }, "Message is required"],
+    [{ message: "hi" }, "Workspace ID is required"],
+  ])("rejects %j before opening the stream", async (body, error) => {
+    const response = streamResponse();
+
+    await streamChat(body, response);
+
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith({ error });
+    expect(response.flushHeaders).not.toHaveBeenCalled();
+    expect(ApiChatHandler.streamChat).not.toHaveBeenCalled();
+  });
+
+  it("propagates a chat handler failure to the route instead of ending the stream", async () => {
+    ApiChatHandler.streamChat.mockRejectedValue(new Error("bad provider"));
+    const response = streamResponse();
+
+    await expect(
+      streamChat({ workspaceSlug: "my-ws", message: "hi" }, response)
+    ).rejects.toThrow("bad provider");
+    expect(response.flushHeaders).toHaveBeenCalled();
+    expect(response.end).not.toHaveBeenCalled();
+  });
 });
