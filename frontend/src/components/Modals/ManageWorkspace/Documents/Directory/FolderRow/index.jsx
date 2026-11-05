@@ -116,7 +116,7 @@ export default function FolderRow({
             tabIndex={0}
             onClick={(event) => {
               event.stopPropagation();
-              onToggleFolder(item);
+              onToggleFolder(item, event);
             }}
           >
             {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}

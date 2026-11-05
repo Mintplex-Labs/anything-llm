@@ -1,6 +1,6 @@
 import UploadFile from "../UploadFile";
 import PreLoader from "@/components/Preloader";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import FolderRow from "./FolderRow";
 import System from "@/models/system";
@@ -23,8 +23,39 @@ import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
 import useUploadQueue from "../hooks/useUploadQueue";
 import { getFilesFromUploadEvent } from "@/utils/folderUpload";
+import {
+  rowsBetween,
+  isSelectAllShortcut,
+  isClearSelectionKey,
+} from "@/utils/directories";
 
 const NO_FILES = [];
+
+/**
+ * Rows top to bottom as rendered, so a shift-click range covers exactly what
+ * the user sees.
+ * @returns {Array<import("../hooks/useDocumentPicker").PickerRow>}
+ */
+function flattenRows(rows) {
+  return rows.flatMap((row) => {
+    const folder = {
+      id: `folder:${row.item.name}`,
+      kind: "folder",
+      name: row.item.name,
+      files: row.files,
+      expanded: row.expanded,
+    };
+    if (!row.expanded) return [folder];
+    return [
+      folder,
+      ...row.files.map((file) => ({
+        id: `file:${file.id}`,
+        kind: "file",
+        file: { ...file, folderName: row.item.name },
+      })),
+    ];
+  });
+}
 
 export default function Directory({
   picker,
@@ -67,6 +98,8 @@ export default function Directory({
     toggleFile,
     toggleFolder,
     selectAll,
+    setFiles,
+    selectRange,
     clearSelection,
     resolveSelection,
     removeFiles,
@@ -137,6 +170,79 @@ export default function Directory({
       searchResults ? rows.reduce((acc, row) => acc + row.files.length, 0) : 0,
     [searchResults, rows]
   );
+
+  /* -------------------------------- selection ------------------------------ */
+
+  const pickerRows = useMemo(() => flattenRows(rows), [rows]);
+  // Ref so the memoized file rows can keep a stable click handler.
+  const pickerRowsRef = useRef(pickerRows);
+  useEffect(() => {
+    pickerRowsRef.current = pickerRows;
+  }, [pickerRows]);
+  /** Id of the row last clicked without shift. */
+  const rangeAnchor = useRef(null);
+
+  /**
+   * Shift-click selects the range from the anchor; any other click becomes
+   * the new anchor and is left to the caller to toggle.
+   * @returns {boolean} whether the click was consumed as a range
+   */
+  const clickRow = useCallback(
+    (id, event) => {
+      const rows = pickerRowsRef.current;
+      const anchor = rangeAnchor.current;
+      const range =
+        event.shiftKey && anchor ? rowsBetween(rows, anchor, id) : null;
+      if (range) {
+        selectRange(
+          range,
+          rows.find((row) => row.id === anchor)
+        );
+        return true;
+      }
+      rangeAnchor.current = id;
+      return false;
+    },
+    [selectRange]
+  );
+
+  const handleFileClick = useCallback(
+    (file, folderName, event) => {
+      if (!clickRow(`file:${file.id}`, event)) toggleFile(file, folderName);
+    },
+    [clickRow, toggleFile]
+  );
+
+  const handleFolderToggle = (folder, files, event) => {
+    if (!clickRow(`folder:${folder.name}`, event)) toggleFolder(folder, files);
+  };
+
+  // While searching, "all" means the matches on screen, not the whole library.
+  const selectAllVisible = () =>
+    searchResults
+      ? setFiles(
+          pickerRows
+            .filter((row) => row.kind === "file")
+            .map((row) => row.file),
+          true
+        )
+      : selectAll();
+  const allSelected =
+    rows.length > 0 &&
+    rows.every(
+      (row) => folderSelectionState(row.item.name, row.files) === "all"
+    );
+
+  const handleKeyDown = (event) => {
+    if (isClearSelectionKey(event) && hasSelection) {
+      // Keep it from the modal's window listener, which would close the modal.
+      event.stopPropagation();
+      return clearSelection();
+    }
+    if (!isSelectAllShortcut(event)) return;
+    event.preventDefault();
+    selectAllVisible();
+  };
 
   /* --------------------------------- search -------------------------------- */
 
@@ -307,7 +413,12 @@ export default function Directory({
             </button>
           </div>
 
-          <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
+          {/* Focusable so the keyboard shortcuts scope to the panel last clicked. */}
+          <div
+            className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border outline-none focus-within:border-cyan-300/80"
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
+          >
             <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
               {searchResults ? (
@@ -327,7 +438,7 @@ export default function Directory({
               )}
             </div>
 
-            <div className="overflow-y-auto h-full pt-8">
+            <div className="overflow-y-auto h-full pt-8 select-none">
               {status === "initializing" ? (
                 <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                   <PreLoader />
@@ -349,8 +460,10 @@ export default function Directory({
                     )}
                     isFileSelected={(id) => isFileSelected(row.item.name, id)}
                     onToggleExpanded={toggleExpanded}
-                    onToggleFolder={(folder) => toggleFolder(folder, row.files)}
-                    onToggleFile={toggleFile}
+                    onToggleFolder={(folder, event) =>
+                      handleFolderToggle(folder, row.files, event)
+                    }
+                    onToggleFile={handleFileClick}
                     onPrefetch={prefetchFolder}
                     onLoadMore={loadMore}
                     acceptsDrops={uploadQueue.ready}
@@ -432,10 +545,8 @@ export default function Directory({
         <ContextMenu
           contextMenu={contextMenu}
           closeContextMenu={closeContextMenu}
-          allSelected={
-            hasSelection && selectedFolderNames.length === folders.length
-          }
-          onSelectAll={selectAll}
+          allSelected={allSelected}
+          onSelectAll={selectAllVisible}
           onClearSelection={clearSelection}
         />
       </div>
