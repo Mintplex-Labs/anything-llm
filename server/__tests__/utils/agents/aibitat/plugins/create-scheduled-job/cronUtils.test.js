@@ -71,6 +71,17 @@ describe("convertCronLocalToUtc", () => {
       );
     });
 
+    it("rewrites 7 to 0 when the date does not move, since the scheduler reads 7 as Saturday", () => {
+      const cron = convertCronLocalToUtc("0 12 * * 7", "America/New_York");
+      expect(cron).toBe("0 16 * * 0");
+      expect(nextRunWeekdays(cron, "America/New_York", 2)).toEqual([
+        "Sun",
+        "Sun",
+      ]);
+      expect(convertCronLocalToUtc("0 9 * * 5-7", "UTC")).toBe("0 9 * * 0,5,6");
+      expect(convertCronLocalToUtc("0 9 * * */7", "UTC")).toBe("0 9 * * */7");
+    });
+
     it("converts weekday names, in any case, to the shifted numeric list", () => {
       expect(convertCronLocalToUtc("0 9 * * MON-FRI", "Australia/Sydney")).toBe(
         "0 23 * * 0,1,2,3,4"
