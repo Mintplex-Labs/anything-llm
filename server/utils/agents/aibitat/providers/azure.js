@@ -44,14 +44,23 @@ class AzureOpenAiProvider extends Provider {
 
   /**
    * Switches this session to the Responses API if the error is a deployment
-   * refusing function tools on Chat Completions.
+   * refusing function tools on Chat Completions (common on newer GPT-6
+   * deployments). Also used by the model-router classifier, which must call
+   * a tool once — a silent Chat Completions 400 there always falls back.
    * @param {Error & {status?: number}} error
    * @returns {boolean} Whether the request should be retried on the Responses API.
    */
   #switchToResponsesAPI(error) {
     if (this.#useResponsesAPI) return false;
-    if (error?.status !== 400 || !/\/v1\/responses/.test(error?.message ?? ""))
-      return false;
+    if (error?.status !== 400) return false;
+    const message = String(error?.message ?? "");
+    const asksForResponses = /\/v1\/responses/.test(message);
+    const toolsUnsupportedOnChat =
+      /(tool|function)/i.test(message) &&
+      /(not support|unsupported|not available|only supported|use the responses)/i.test(
+        message
+      );
+    if (!asksForResponses && !toolsUnsupportedOnChat) return false;
     this.providerLog(
       "Deployment requires the Responses API for tool calls - switching for this session."
     );

@@ -23,6 +23,19 @@ const {
  */
 
 /**
+ * Strip JSON Schema meta keywords Azure (and some gateways) reject on
+ * `tools[].function.parameters`. OpenAI ignores `$schema`; Azure can 400.
+ * @param {object|null|undefined} parameters
+ * @returns {object}
+ */
+function sanitizeToolParameters(parameters) {
+  if (!parameters || typeof parameters !== "object" || Array.isArray(parameters))
+    return parameters ?? {};
+  const { $schema: _schema, ...rest } = parameters;
+  return rest;
+}
+
+/**
  * Convert aibitat function definitions to the OpenAI tools format.
  * @param {Array<{name: string, description: string, parameters: object}>} functions
  * @returns {Array<{type: "function", function: {name: string, description: string, parameters: object}}>}
@@ -34,7 +47,7 @@ function formatFunctionsToTools(functions) {
     function: {
       name: func.name,
       description: func.description,
-      parameters: func.parameters,
+      parameters: sanitizeToolParameters(func.parameters),
     },
   }));
 }
@@ -508,6 +521,7 @@ async function tooledComplete(
 
 module.exports = {
   formatFunctionsToTools,
+  sanitizeToolParameters,
   formatMessagesForTools,
   tooledStream,
   tooledComplete,

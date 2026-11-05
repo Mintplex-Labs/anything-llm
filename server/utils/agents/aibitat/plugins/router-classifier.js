@@ -25,7 +25,8 @@ const routerClassifier = {
           description:
             "Select the category that best matches the user's message. Pick the FIRST category whose description matches the message, in the priority order listed. If no category matches, select 'none'.",
           parameters: {
-            $schema: "http://json-schema.org/draft-07/schema#",
+            // No `$schema` — Azure OpenAI can reject it on tool parameters and
+            // the model-router classifier would silently fall back (#6686).
             type: "object",
             properties: {
               category: {

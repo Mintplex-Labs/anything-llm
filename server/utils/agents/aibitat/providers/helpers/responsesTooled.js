@@ -81,11 +81,14 @@ function formatToResponsesInput(messages = [], provider = null) {
  * @returns {{type: "function", name: string, description: string, parameters: object, strict: boolean}[]}
  */
 function formatResponsesTools(functions = []) {
+  const {
+    sanitizeToolParameters,
+  } = require("./tooled.js");
   return functions.map((func) => ({
     type: "function",
     name: func.name,
     description: func.description,
-    parameters: func.parameters,
+    parameters: sanitizeToolParameters(func.parameters),
     strict: false,
   }));
 }

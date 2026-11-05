@@ -1,5 +1,7 @@
 const {
   formatMessagesForTools,
+  formatFunctionsToTools,
+  sanitizeToolParameters,
   tooledStream,
   tooledComplete,
   temperatureParam,
@@ -390,5 +392,48 @@ describe("tooledComplete tool call arguments", () => {
     expect(result.retryWithError.content).toBe(
       "Failed to parse tool call arguments as JSON. Raw arguments: not json"
     );
+  });
+});
+
+describe("sanitizeToolParameters / formatFunctionsToTools", () => {
+  it("strips $schema so Azure OpenAI does not reject the tool schema", () => {
+    expect(
+      sanitizeToolParameters({
+        $schema: "http://json-schema.org/draft-07/schema#",
+        type: "object",
+        properties: { category: { type: "string" } },
+        required: ["category"],
+      })
+    ).toEqual({
+      type: "object",
+      properties: { category: { type: "string" } },
+      required: ["category"],
+    });
+  });
+
+  it("leaves schemas without $schema unchanged", () => {
+    const parameters = {
+      type: "object",
+      properties: { q: { type: "string" } },
+    };
+    expect(sanitizeToolParameters(parameters)).toEqual(parameters);
+  });
+
+  it("omits $schema from the OpenAI tools payload", () => {
+    const [tool] = formatFunctionsToTools([
+      {
+        name: "select_category",
+        description: "Pick a category",
+        parameters: {
+          $schema: "http://json-schema.org/draft-07/schema#",
+          type: "object",
+          properties: { category: { type: "string" } },
+          required: ["category"],
+        },
+      },
+    ]);
+
+    expect(tool.function.parameters).not.toHaveProperty("$schema");
+    expect(tool.function.parameters.type).toBe("object");
   });
 });
