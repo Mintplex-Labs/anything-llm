@@ -131,6 +131,54 @@ class MCPHypervisor {
   }
 
   /**
+   * Add a new MCP server to the config file
+   * @param {string} name - The name of the MCP server
+   * @param {Object} serverConfig - The server configuration
+   * @returns {{success: boolean, error: string | null}}
+   */
+  addMCPServerToConfig(name, serverConfig) {
+    try {
+      if (!name || typeof name !== "string") {
+        return { success: false, error: "MCP server name is required." };
+      }
+
+      const servers = safeJsonParse(
+        fs.readFileSync(this.mcpServerJSONPath, "utf8"),
+        { mcpServers: {} }
+      );
+
+      if (servers.mcpServers[name]) {
+        return {
+          success: false,
+          error: `MCP server with name "${name}" already exists.`,
+        };
+      }
+
+      const serverType = this.#parseServerType(serverConfig);
+      if (!serverType) {
+        return {
+          success: false,
+          error: "MCP server must have either 'command' or 'url'.",
+        };
+      }
+
+      this.#validateServerDefinitionByType(name, serverConfig, serverType);
+
+      servers.mcpServers[name] = serverConfig;
+      fs.writeFileSync(
+        this.mcpServerJSONPath,
+        JSON.stringify(servers, null, 2),
+        "utf8"
+      );
+      this.log(`MCP server ${name} added to config file`);
+      return { success: true, error: null };
+    } catch (error) {
+      this.log(`Failed to add MCP server ${name}:`, error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Update the suppressed tools for an MCP server
    * @param {string} serverName - The name of the MCP server
    * @param {string} toolName - The name of the tool to toggle

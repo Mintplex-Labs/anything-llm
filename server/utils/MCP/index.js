@@ -290,6 +290,28 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   }
 
   /**
+   * Add a new MCP server
+   * @param {string} name - The name of the MCP server
+   * @param {Object} config - The server configuration
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  async addServer(name, config) {
+    const result = this.addMCPServerToConfig(name, config);
+    if (!result.success) return result;
+
+    // Try to start the server after adding it
+    try {
+      const startResult = await this.startMCPServer(name);
+      return {
+        success: startResult.success,
+        error: startResult.error || result.error,
+      };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Return the useful MCP payload as a string for the agent.
    * Text blocks are returned as-is so JSON inside them is not escaped again.
    * Error results keep the full envelope so the agent sees `isError: true`.

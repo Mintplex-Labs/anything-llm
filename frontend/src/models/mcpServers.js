@@ -92,6 +92,25 @@ const MCPServers = {
         suppressedTools: [],
       }));
   },
+
+  /**
+   * Add a new MCP server
+   * @param {string} name - The name of the MCP server
+   * @param {Object} config - The server configuration
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  addServer: async (name, config) => {
+    return await fetch(`${API_BASE}/mcp-servers/new`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name, config }),
+    })
+      .then((res) => res.json())
+      .catch((e) => ({
+        success: false,
+        error: e.message,
+      }));
+  },
 };
 
 export default MCPServers;
