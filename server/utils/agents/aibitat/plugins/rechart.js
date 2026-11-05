@@ -72,7 +72,7 @@ Make sure the format use double quotes and property names are string literals. P
               const data =
                 typeof dataset === "string"
                   ? safeJsonParse(dataset, null)
-                  : (dataset ?? null);
+                  : dataset ?? null;
               if (data === null) {
                 this.super.introspect(
                   `${this.caller}: ${this.name} provided invalid JSON data - so we cant make a ${type} chart.`
