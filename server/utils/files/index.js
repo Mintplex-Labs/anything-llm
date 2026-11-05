@@ -396,6 +396,45 @@ function normalizePath(filepath = "") {
 }
 
 /**
+ * Document storage is exactly two segments (`folder/file.json`): docpath, the
+ * embedding pipeline, the vector cache and the file picker (which only
+ * enumerates one level below documentsPath) all assume that shape. Anything
+ * written deeper is invisible in the picker and cannot be embedded, so every
+ * folder name must be a single path segment.
+ * @param {string} folderName
+ * @returns {string} the normalized folder name
+ * @throws {Error} if the name is empty or contains a path separator
+ */
+function normalizeFolderName(folderName = "") {
+  // Leading/trailing separators ("/reports", "reports/") were always dropped
+  // by path.join, so keep accepting them.
+  const folder = normalizePath(String(folderName ?? "")).replace(
+    /^[\\/]+|[\\/]+$/g,
+    ""
+  );
+  if (!folder) throw new Error("Invalid folder name.");
+  if (/[\\/]/.test(folder))
+    throw new Error("Folder name cannot contain path separators.");
+  return folder;
+}
+
+/**
+ * Checks that a relative document path is exactly `folder/file`.
+ * @param {string} docPath
+ * @returns {boolean}
+ */
+function isFolderFilePath(docPath = "") {
+  try {
+    const segments = normalizePath(String(docPath ?? ""))
+      .replace(/^[\\/]+|[\\/]+$/g, "")
+      .split(/[\\/]/);
+    return segments.length === 2 && segments.every(Boolean);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Strips characters that are illegal in Windows filenames, including Unicode
  * quotation marks (U+201C, U+201D, etc.) that can get corrupted into ASCII
  * double-quotes during charset conversion in the upload pipeline.
@@ -705,7 +744,7 @@ async function searchDocuments(searchTerm = "") {
  * into it so repeated uploads to the same folder are idempotent. Source
  * folders left empty by the move are removed, except custom-documents.
  *
- * The folder must be a single path segment - see the note below on why.
+ * The folder must be a single path segment - see normalizeFolderName.
  * @param {Array<{location: string, name: string}>} documents - documents returned by Collector.processDocument
  * @param {string} folderName - target folder name (e.g. "my-notes")
  * @param {string} basePath - base documents directory (overridable for testing)
@@ -717,17 +756,7 @@ function moveProcessedDocsToFolder(
   folderName = "",
   basePath = documentsPath
 ) {
-  const folder = normalizePath(folderName);
-  if (!folder) throw new Error("Invalid folder name.");
-
-  // Deliberate: document storage is exactly two segments (`folder/file.json`)
-  // and docpath, the embedding pipeline and the vector cache all assume that
-  // shape. A nested folder name would produce documents that the file picker
-  // (which only enumerates one level below documentsPath) cannot see and that
-  // cannot be embedded. /v1/document/upload/:folderName historically accepted
-  // a URL-encoded separator here; that is now rejected.
-  if (folder.includes("/") || folder.includes("\\"))
-    throw new Error("Folder name cannot contain path separators.");
+  const folder = normalizeFolderName(folderName);
 
   const targetFolderPath = path.join(basePath, folder);
   if (!isWithin(path.resolve(basePath), path.resolve(targetFolderPath)))
@@ -1003,6 +1032,8 @@ module.exports = {
   chatHistoryAttachments,
   GENERATED_IMAGE_FILENAME_PATTERN,
   moveProcessedDocsToFolder,
+  normalizeFolderName,
+  isFolderFilePath,
   viewLocalFiles,
   listFolders,
   searchDocuments,

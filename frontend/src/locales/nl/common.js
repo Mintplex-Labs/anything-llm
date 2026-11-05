@@ -261,6 +261,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Het antwoord heeft het maximale aantal uitvoertokens bereikt. Verhoog het maximale aantal uitvoertokens van het model om langere antwoorden mogelijk te maken.",
     no_response: "Model kon niet reageren.",
+    agent_session_exited: "Je hebt de agentsessie beëindigd.",
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",

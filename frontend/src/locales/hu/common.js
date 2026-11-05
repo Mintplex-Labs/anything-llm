@@ -305,6 +305,7 @@ const TRANSLATIONS = {
       },
     },
     no_response: "A modell nem tudott válaszolni.",
+    agent_session_exited: "Ön befejezte az ügynökmunkamenetet.",
   },
   "vector-workspace": {
     identifier: "Vektoradatbázis-azonosító",

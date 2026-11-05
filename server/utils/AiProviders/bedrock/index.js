@@ -415,8 +415,7 @@ class AWSBedrockLLM {
       prompt_tokens: usage?.prompt_tokens ?? 0,
       completion_tokens: completionTokens,
       total_tokens: usage?.total_tokens ?? 0,
-      outputTps:
-        completionTokens && duration ? completionTokens / (duration / 1000) : 0,
+      outputTps: completionTokens && duration ? completionTokens / duration : 0,
       duration,
       model: this.model,
       provider: this.className,

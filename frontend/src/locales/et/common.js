@@ -293,6 +293,7 @@ const TRANSLATIONS = {
     token_limit_reached:
       "Vastus jõudis maksimaalse väljundtokenite piirini. Pikemate vastuste lubamiseks suurendage mudeli maksimaalset väljundtokenite arvu.",
     no_response: "Mudel ei suutnud vastata.",
+    agent_session_exited: "Lõpetasite agendi seansi.",
   },
   "vector-workspace": {
     identifier: "Vektoriandmebaasi identifikaator",

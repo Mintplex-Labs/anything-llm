@@ -128,6 +128,7 @@ describe("websocket plugin handleFeedback", () => {
     await expect(pending).resolves.toEqual({
       feedback: "exit",
       attachments: [],
+      timedOut: true,
     });
   });
 
@@ -281,4 +282,77 @@ describe("websocket plugin follow-up chat quota", () => {
     expect(User.get).not.toHaveBeenCalled();
     expect(aibitat.continue).toHaveBeenCalledWith("next", []);
   });
+});
+
+describe("websocket plugin session exit notice", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  /** Starts an interrupt and returns the socket and the settled promise. */
+  async function interrupt() {
+    const { socket, aibitat } = setupPlugin();
+    aibitat.continue = jest.fn(async () => {});
+    const onInterrupt = aibitat.onInterrupt.mock.calls[0][0];
+    const done = onInterrupt({ from: "USER", to: "@agent" });
+    await flushPromises();
+    return { socket, aibitat, done };
+  }
+
+  const sentTypes = (socket) =>
+    socket.send.mock.calls.map(([frame]) => JSON.parse(frame).type);
+
+  it.each(["exit", "/exit", "stop", "/stop", "halt", "/halt"])(
+    "notifies the user before closing on %s",
+    async (command) => {
+      const { socket, done } = await interrupt();
+      await socket.handleFeedback(
+        JSON.stringify({ type: "awaitingFeedback", feedback: command })
+      );
+      await done;
+
+      const notice = socket.send.mock.calls.at(-1)[0];
+      expect(JSON.parse(notice)).toEqual({
+        type: "agentSessionExited",
+        content: command,
+      });
+      expect(socket.send.mock.invocationCallOrder.at(-1)).toBeLessThan(
+        socket.close.mock.invocationCallOrder[0]
+      );
+    }
+  );
+
+  it("sends no notice when the session times out", async () => {
+    const { socket, done } = await interrupt();
+    jest.advanceTimersByTime(SOCKET_TIMEOUT_MS);
+    await done;
+
+    expect(socket.close).toHaveBeenCalled();
+    expect(sentTypes(socket)).not.toContain("agentSessionExited");
+  });
+
+  it("sends no notice for /reset, which clears the chat", async () => {
+    const { socket, done } = await interrupt();
+    await socket.handleFeedback(
+      JSON.stringify({ type: "awaitingFeedback", feedback: "/reset" })
+    );
+    await done;
+
+    expect(socket.close).toHaveBeenCalled();
+    expect(sentTypes(socket)).not.toContain("agentSessionExited");
+  });
+
+  it.each(["/EXIT", " /exit", "exit please", "", null])(
+    "treats %p as a normal reply, not an exit",
+    async (feedback) => {
+      const { socket, aibitat, done } = await interrupt();
+      await socket.handleFeedback(
+        JSON.stringify({ type: "awaitingFeedback", feedback })
+      );
+      await done;
+
+      expect(aibitat.continue).toHaveBeenCalled();
+      expect(socket.close).not.toHaveBeenCalled();
+      expect(sentTypes(socket)).not.toContain("agentSessionExited");
+    }
+  );
 });

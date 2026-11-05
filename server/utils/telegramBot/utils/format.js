@@ -149,10 +149,19 @@ function markdownToTelegram(
     }
   );
 
+  // Convert list items before emphasis so a "* item" marker is not read as an
+  // opening italic *: - item or * item → • item
+  result = result.replace(/^[-*]\s+/gm, "• ");
+
   // Convert markdown to HTML (order matters - do bold before italic)
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   result = result.replace(/__(.+?)__/g, "<b>$1</b>");
-  result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<i>$1</i>");
+  // As in CommonMark, * only opens italic when not followed by a space and
+  // only closes it when not preceded by one, so "2 * 3 * 4" stays as text.
+  result = result.replace(
+    /(?<!\*)\*(?![\s*])(.+?)(?<![\s*])\*(?!\*)/g,
+    "<i>$1</i>"
+  );
   result = result.replace(
     /(?<![a-zA-Z0-9])_([^_]+)_(?![a-zA-Z0-9])/g,
     "<i>$1</i>"
@@ -161,9 +170,6 @@ function markdownToTelegram(
   result = result.replace(/^&gt;\s*(.+)$/gm, "<i>$1</i>");
   result = result.replace(/^[-*_]{3,}$/gm, "————————————");
   result = result.replace(/^#{1,6}\s+(.+)$/gm, "<b>$1</b>");
-
-  // Convert list items: - item or * item → • item
-  result = result.replace(/^[-*]\s+/gm, "• ");
 
   // Restore preserved blocks
   thinkBlocks.forEach((block, i) => {
@@ -195,6 +201,56 @@ function escapeHTML(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+// Escaped lengths for the agent-supplied parts of a tool approval prompt.
+// Together with the fixed text they keep the prompt under Telegram's
+// 4096-character message limit.
+const MAX_TOOL_DESCRIPTION_PREVIEW = 1000;
+const MAX_TOOL_PAYLOAD_PREVIEW = 2500;
+
+/**
+ * Escape text for Telegram HTML and cut the escaped result to `max`
+ * characters. The cut is made after escaping because escaping can grow the
+ * text up to five times, and any entity left partial by the cut is dropped.
+ * @param {string} text
+ * @param {number} max
+ * @returns {string}
+ */
+function escapeAndTruncate(text, max) {
+  const escaped = escapeHTML(text);
+  if (escaped.length <= max) return escaped;
+  return `${escaped.slice(0, max).replace(/&[a-z]*$/, "")}\n…`;
+}
+
+/**
+ * Build the HTML text of a tool approval prompt. The skill name, description
+ * and parameters come from the agent, so they are escaped before they go into
+ * the HTML message.
+ * @param {Object} request
+ * @param {string} request.skillName
+ * @param {string} [request.description]
+ * @param {Object} [request.payload]
+ * @returns {string}
+ */
+function toolApprovalMessage({ skillName, description, payload }) {
+  let payloadText = "";
+  if (payload && Object.keys(payload).length > 0) {
+    const json = escapeAndTruncate(
+      JSON.stringify(payload, null, 2),
+      MAX_TOOL_PAYLOAD_PREVIEW
+    );
+    payloadText = `\n\n<b>Parameters:</b>\n<code>${json}</code>`;
+  }
+  const descText = description
+    ? `\n${escapeAndTruncate(String(description), MAX_TOOL_DESCRIPTION_PREVIEW)}`
+    : "";
+
+  return (
+    `🔧 <b>Tool Approval Required</b>\n\n` +
+    `The agent wants to execute: <b>${escapeHTML(String(skillName))}</b>${descText}${payloadText}\n\n` +
+    `Do you want to allow this action?`
+  );
 }
 
 /**
@@ -284,4 +340,5 @@ function convertTableToPreformatted(tableMarkdown) {
 module.exports = {
   escapeHTML,
   markdownToTelegram,
+  toolApprovalMessage,
 };

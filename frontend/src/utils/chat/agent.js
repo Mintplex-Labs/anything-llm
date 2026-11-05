@@ -72,6 +72,7 @@ const handledEvents = [
   "scheduledJobCreated",
   "awaitingFeedback",
   "wssFailure",
+  "agentSessionExited",
   "rechartVisualize",
   "toolApprovalRequest",
   "clarificationRequest",
@@ -422,6 +423,26 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         },
       ];
     });
+  }
+
+  // Sent only when the user ends the session with an exit command - not on
+  // timeouts, aborts, or disconnects. Live only; it is never persisted.
+  if (data.type === "agentSessionExited") {
+    return setChatHistory((prev) => [
+      ...prev.filter((msg) => !!msg.content),
+      {
+        uuid: v4(),
+        type: "agentSessionExited",
+        content: data.content,
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      },
+    ]);
   }
 
   if (data.type === "toolApprovalRequest") {
