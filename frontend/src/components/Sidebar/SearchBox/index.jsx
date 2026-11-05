@@ -175,7 +175,7 @@ function SearchResultItem({ to, name, hint }) {
       onClick={() => window.dispatchEvent(new Event(SEARCH_RESULT_SELECTED))}
       className="hover:bg-[#FFF]/10 light:hover:bg-[#000]/10 transition-all duration-300 rounded-sm px-[8px] py-[2px]"
     >
-      <p className="text-theme-text-primary text-sm truncate w-[80%]">
+      <p className="text-theme-text-primary text-sm truncate w-full">
         {name}
         {hint && (
           <span className="text-theme-text-secondary text-xs ml-[4px]">
