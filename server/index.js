@@ -3,6 +3,7 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 
 require("./utils/logger")();
+require("./utils/boot/loadCACertificates")(); // trusts custom CAs from the opt-in settings
 require("./utils/boot/patchSdkTimeouts")();
 require("./utils/helpers/modelPricing"); // boots the model pricing cache refresh
 const express = require("express");
