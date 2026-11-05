@@ -56,6 +56,7 @@ export default function AdminAgents() {
   const [agentSkills, setAgentSkills] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [disabledAgentSkills, setDisabledAgentSkills] = useState([]);
+  const [ownSkillsCount, setOwnSkillsCount] = useState(0);
 
   const [agentFlows, setAgentFlows] = useState([]);
   const [selectedFlow, setSelectedFlow] = useState(null);
@@ -118,6 +119,7 @@ export default function AdminAgents() {
         flowsRes,
         fsAgentAvailable,
         createFilesAvailable,
+        workspacesWithOwnSkills,
       ] = await Promise.all([
         System.keys(),
         Admin.systemPreferencesByFields([
@@ -129,6 +131,7 @@ export default function AdminAgents() {
         AgentFlows.listFlows(),
         System.isFileSystemAgentAvailable(),
         System.isCreateFilesAgentAvailable(),
+        Admin.workspacesWithOwnAgentSkillsCount(),
       ]);
 
       const { flows = [] } = flowsRes;
@@ -142,6 +145,7 @@ export default function AdminAgents() {
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
+      setOwnSkillsCount(workspacesWithOwnSkills);
       setLoading(false);
     }
     fetchSettings();
@@ -379,6 +383,7 @@ export default function AdminAgents() {
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
             </div>
+            <OwnSkillsNote count={ownSkillsCount} />
             {/* Default skills */}
             <SkillList
               skills={defaultSkills}
@@ -604,6 +609,7 @@ export default function AdminAgents() {
             </div>
             <AgentSkillSettings />
           </div>
+          <OwnSkillsNote count={ownSkillsCount} />
 
           <div className="flex-1 overflow-y-auto pr-2 pb-4">
             <div className="space-y-4">
@@ -781,6 +787,16 @@ export default function AdminAgents() {
         </div>
       </form>
     </SkillLayout>
+  );
+}
+
+function OwnSkillsNote({ count }) {
+  const { t } = useTranslation();
+  if (!count) return null;
+  return (
+    <p className="text-xs text-zinc-400 light:text-slate-500 mb-4 max-w-[360px]">
+      {t("agent.workspaces_with_own_skills", { count })}
+    </p>
   );
 }
 

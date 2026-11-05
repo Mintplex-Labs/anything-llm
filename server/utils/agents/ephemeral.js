@@ -422,10 +422,13 @@ class EphemeralAgentHandler extends AgentHandler {
       )
     );
 
+    const workspaceSkills = Workspace.parseAgentSkills(
+      this.#workspace?.agentSkills
+    );
     this.#funcsToLoad = [
-      ...(await agentSkillsFromSystemSettings()),
-      ...ImportedPlugin.activeImportedPlugins(),
-      ...AgentFlows.activeFlowPlugins(),
+      ...(await agentSkillsFromSystemSettings(workspaceSkills)),
+      ...ImportedPlugin.activeImportedPlugins(workspaceSkills),
+      ...AgentFlows.activeFlowPlugins(workspaceSkills),
       ...(await new MCPCompatibilityLayer().activeMCPServers()),
     ];
   }

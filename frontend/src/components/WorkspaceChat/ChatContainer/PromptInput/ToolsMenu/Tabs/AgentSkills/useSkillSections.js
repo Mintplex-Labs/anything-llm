@@ -56,6 +56,9 @@ export default function useSkillSections({
   toggleSkill,
   isSubSkillEnabled,
   toggleSubSkill,
+  isImportedSkillEnabled,
+  isFlowEnabled,
+  isMcpToolEnabled,
   toggleImportedSkill,
   toggleFlow,
   toggleMcpTool,
@@ -122,7 +125,7 @@ export default function useSkillSections({
       const items = importedSkills.map((skill) => ({
         id: skill.hubId,
         name: skill.name,
-        enabled: skill.active,
+        enabled: isImportedSkillEnabled(skill),
         onToggle: () => toggleImportedSkill(skill),
       }));
       sectionList.push({
@@ -138,7 +141,7 @@ export default function useSkillSections({
       const items = flows.map((flow) => ({
         id: flow.uuid,
         name: flow.name,
-        enabled: flow.active,
+        enabled: isFlowEnabled(flow),
         onToggle: () => toggleFlow(flow),
       }));
       sectionList.push({
@@ -152,17 +155,11 @@ export default function useSkillSections({
     // MCP Servers
     for (const server of mcpServers) {
       if (!server.running || server.tools.length === 0) continue;
-      const suppressedTools = server.config?.anythingllm?.suppressedTools || [];
       const items = server.tools.map((tool) => ({
         id: `mcp::${server.name}::${tool.name}`,
         name: tool.name,
-        enabled: !suppressedTools.includes(tool.name),
-        onToggle: () =>
-          toggleMcpTool(
-            server.name,
-            tool.name,
-            !suppressedTools.includes(tool.name)
-          ),
+        enabled: isMcpToolEnabled(server, tool.name),
+        onToggle: () => toggleMcpTool(server, tool.name),
       }));
       sectionList.push({
         id: `mcp-${server.name}`,
@@ -187,6 +184,9 @@ export default function useSkillSections({
     toggleSkill,
     isSubSkillEnabled,
     toggleSubSkill,
+    isImportedSkillEnabled,
+    isFlowEnabled,
+    isMcpToolEnabled,
     toggleImportedSkill,
     toggleFlow,
     toggleMcpTool,

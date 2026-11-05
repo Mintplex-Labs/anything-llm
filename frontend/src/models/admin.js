@@ -175,6 +175,18 @@ const Admin = {
         return null;
       });
   },
+  /**
+   * Count the workspaces with their own agent skill toggles, which system agent skill changes don't reach.
+   * @returns {Promise<number>}
+   */
+  workspacesWithOwnAgentSkillsCount: async () => {
+    return await fetch(`${API_BASE}/admin/workspaces/own-agent-skills-count`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res.count ?? 0)
+      .catch(() => 0);
+  },
   updateSystemPreferences: async (updates = {}) => {
     return await fetch(`${API_BASE}/admin/system-preferences`, {
       method: "POST",
