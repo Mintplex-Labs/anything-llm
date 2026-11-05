@@ -121,6 +121,9 @@ class EphemeralAgentHandler extends AgentHandler {
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
+        // A prompt that never got a response is left out of the agent history -
+        // some providers (ex: Bedrock) reject a blank assistant message.
+        if (!response?.text) return;
         const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
