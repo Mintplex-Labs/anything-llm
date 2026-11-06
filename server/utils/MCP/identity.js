@@ -17,8 +17,9 @@ const { AsyncLocalStorage } = require("async_hooks");
  * - All servers (incl. stdio): `params._meta["com.anythingllm/identity"]`.
  *
  * Values are omitted when unavailable - e.g. single-user mode has no user.
- * The `X-AnythingLLM-` header prefix is reserved: static config headers using
- * it are dropped so they can never pose as a forwarded identity.
+ * On servers with forwardIdentity enabled, static config headers starting with
+ * `X-AnythingLLM-` are dropped so they can never pose as a forwarded identity.
+ * Servers without it keep their config headers untouched.
  *
  * MCP clients are shared across the whole instance, so per-request headers are
  * injected by a custom `fetch` reading an AsyncLocalStorage context set around

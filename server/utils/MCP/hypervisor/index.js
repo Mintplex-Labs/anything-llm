@@ -490,9 +490,15 @@ class MCPHypervisor {
    */
   createHttpTransport(server) {
     const url = new URL(server.url);
+    // Reserved X-AnythingLLM-* config headers are only dropped for servers that
+    // opt in to identity forwarding - other servers send their headers as-is.
+    const forwardsIdentity =
+      forwardIdentityFields(server.anythingllm?.forwardIdentity).length > 0;
     const options = {
       requestInit: {
-        headers: stripReservedHeaders(server.headers, (msg) => this.log(msg)),
+        headers: forwardsIdentity
+          ? stripReservedHeaders(server.headers, (msg) => this.log(msg))
+          : server.headers,
       },
       fetch: identityFetch,
     };

@@ -236,7 +236,7 @@ describe("MCP identity forwarding", () => {
     expect(call.meta).toEqual({ user: { id: 3 }, workspace: { slug: "acme" } });
   });
 
-  it("sends nothing when forwardIdentity is not set", async () => {
+  it("sends nothing and leaves X-AnythingLLM-* config headers untouched when forwardIdentity is not set", async () => {
     await boot();
     const fns = await loadTools(
       layer,
@@ -247,9 +247,8 @@ describe("MCP identity forwarding", () => {
 
     expect(User.get).not.toHaveBeenCalled();
     const call = server.received.find((r) => r.method === "tools/call");
-    expect(call).toMatchObject({ apiKey: "static" });
+    expect(call).toMatchObject({ apiKey: "static", username: "spoofed" });
     expect(call.userId).toBeUndefined();
-    expect(call.username).toBeUndefined();
     expect(call.meta).toBeUndefined();
   });
 
