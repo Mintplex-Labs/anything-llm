@@ -44,8 +44,13 @@ async function asMbox({
       `-- Working on message "${mail.subject || "Unknown subject"}" --`
     );
 
-    const messageTitle = mail?.subject
-      ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
+    // slugify drops characters it has no mapping for, such as CJK, which can
+    // leave nothing of the subject.
+    const subjectSlug = mail?.subject
+      ? slugify(mail.subject.replace(".", ""))
+      : "";
+    const messageTitle = subjectSlug
+      ? `${subjectSlug}.mbox`
       : `msg_${item}-${filename}`;
     const data = {
       id: v4(),
