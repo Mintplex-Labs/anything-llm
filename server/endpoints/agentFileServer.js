@@ -21,121 +21,119 @@ const { Telemetry } = require("../models/telemetry");
 function agentFileServerEndpoints(app) {
   if (!app) return;
 
-  /**
-   * Download a generated file by its storage filename.
-   * Validates that the requesting user has access to the workspace
-   * where the file was generated.
-   */
   app.get(
     "/agent-skills/generated-files/:filename",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        const { filename } = request.params;
-        if (!filename)
-          return response.status(400).json({ error: "Filename is required" });
-
-        // Validate filename format
-        const parsed = createFilesLib.parseFilename(filename);
-        if (!parsed) {
-          return response
-            .status(400)
-            .json({ error: "Invalid filename format" });
-        }
-
-        // Find a chat or scheduled job run that references this file
-        const fileSource = await findFileSource(filename, {
-          user,
-          isMultiUser: multiUserMode(response),
-        });
-
-        if (!fileSource) {
-          return response.status(404).json({
-            error: "File not found or access denied",
-          });
-        }
-
-        // Retrieve the file from storage
-        const fileData = await createFilesLib.getGeneratedFile(filename);
-        if (!fileData) {
-          return response
-            .status(404)
-            .json({ error: "File not found in storage" });
-        }
-
-        // Get mime type and set headers for download
-        const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
-        const safeFilename = createFilesLib.sanitizeFilenameForHeader(
-          fileSource.displayFilename || filename
-        );
-        response.setHeader("Content-Type", mimeType);
-        response.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${safeFilename}"`
-        );
-        response.setHeader("Content-Length", fileData.buffer.length);
-        response.send(fileData.buffer);
-        Telemetry.sendTelemetry("agent_generated_file_downloaded", {
-          type: mimeType,
-        }).catch(() => {});
-        return;
-      } catch (error) {
-        console.error("[agentFileServer] Download error:", error.message);
-        return response.status(500).json({ error: "Failed to download file" });
-      }
-    }
+    downloadGeneratedFile
   );
 
-  /**
-   * Serve a generated image inline (so it can be used as an <img> src).
-   * Validates that the requesting user has access to a chat that references
-   * the image before serving it from storage/generated-images.
-   */
   app.get(
     "/image-generation/generated-images/:filename",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async (request, response) => {
-      try {
-        const fs = require("fs");
-        const path = require("path");
-        const {
-          generatedImagesPath,
-          GENERATED_IMAGE_FILENAME_PATTERN,
-        } = require("../utils/files");
-        const user = await userFromSession(request, response);
-        const { filename } = request.params;
-
-        if (!filename || !GENERATED_IMAGE_FILENAME_PATTERN.test(filename))
-          return response.status(400).json({ error: "Invalid filename" });
-
-        const fileSource = await findFileSource(filename, {
-          user,
-          isMultiUser: multiUserMode(response),
-        });
-        if (!fileSource)
-          return response
-            .status(404)
-            .json({ error: "Image not found or access denied" });
-
-        const imagePath = path.resolve(generatedImagesPath, filename);
-        let imageBuffer;
-        try {
-          imageBuffer = await fs.promises.readFile(imagePath);
-        } catch {
-          return response
-            .status(404)
-            .json({ error: "Image not found in storage" });
-        }
-
-        response.setHeader("Content-Type", "image/png");
-        return response.send(imageBuffer);
-      } catch (error) {
-        console.error("[agentFileServer] Image serve error:", error.message);
-        return response.status(500).json({ error: "Failed to serve image" });
-      }
-    }
+    serveGeneratedImage
   );
+}
+
+/**
+ * Download a generated file by its storage filename.
+ * Validates that the requesting user has access to the workspace
+ * where the file was generated.
+ */
+async function downloadGeneratedFile(request, response) {
+  try {
+    const user = await userFromSession(request, response);
+    const { filename } = request.params;
+    if (!filename)
+      return response.status(400).json({ error: "Filename is required" });
+
+    // Validate filename format
+    const parsed = createFilesLib.parseFilename(filename);
+    if (!parsed) {
+      return response.status(400).json({ error: "Invalid filename format" });
+    }
+
+    // Find a chat or scheduled job run that references this file
+    const fileSource = await findFileSource(filename, {
+      user,
+      isMultiUser: multiUserMode(response),
+    });
+
+    if (!fileSource) {
+      return response.status(404).json({
+        error: "File not found or access denied",
+      });
+    }
+
+    // Retrieve the file from storage
+    const fileData = await createFilesLib.getGeneratedFile(filename);
+    if (!fileData) {
+      return response.status(404).json({ error: "File not found in storage" });
+    }
+
+    // Get mime type and set headers for download
+    const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
+    const safeFilename = createFilesLib.sanitizeFilenameForHeader(
+      fileSource.displayFilename || filename
+    );
+    response.setHeader("Content-Type", mimeType);
+    response.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${safeFilename}"`
+    );
+    response.setHeader("Content-Length", fileData.buffer.length);
+    response.send(fileData.buffer);
+    Telemetry.sendTelemetry("agent_generated_file_downloaded", {
+      type: mimeType,
+    }).catch(() => {});
+    return;
+  } catch (error) {
+    console.error("[agentFileServer] Download error:", error.message);
+    return response.status(500).json({ error: "Failed to download file" });
+  }
+}
+
+/**
+ * Serve a generated image inline (so it can be used as an <img> src).
+ * Validates that the requesting user has access to a chat that references
+ * the image before serving it from storage/generated-images.
+ */
+async function serveGeneratedImage(request, response) {
+  try {
+    const fs = require("fs");
+    const path = require("path");
+    const {
+      generatedImagesPath,
+      GENERATED_IMAGE_FILENAME_PATTERN,
+    } = require("../utils/files");
+    const user = await userFromSession(request, response);
+    const { filename } = request.params;
+
+    if (!filename || !GENERATED_IMAGE_FILENAME_PATTERN.test(filename))
+      return response.status(400).json({ error: "Invalid filename" });
+
+    const fileSource = await findFileSource(filename, {
+      user,
+      isMultiUser: multiUserMode(response),
+    });
+    if (!fileSource)
+      return response
+        .status(404)
+        .json({ error: "Image not found or access denied" });
+
+    const imagePath = path.resolve(generatedImagesPath, filename);
+    let imageBuffer;
+    try {
+      imageBuffer = await fs.promises.readFile(imagePath);
+    } catch {
+      return response.status(404).json({ error: "Image not found in storage" });
+    }
+
+    response.setHeader("Content-Type", "image/png");
+    return response.send(imageBuffer);
+  } catch (error) {
+    console.error("[agentFileServer] Image serve error:", error.message);
+    return response.status(500).json({ error: "Failed to serve image" });
+  }
 }
 
 /**
@@ -229,4 +227,8 @@ async function findInScheduledJobRuns(storageFilename) {
   return null;
 }
 
-module.exports = { agentFileServerEndpoints };
+module.exports = {
+  agentFileServerEndpoints,
+  downloadGeneratedFile,
+  serveGeneratedImage,
+};
