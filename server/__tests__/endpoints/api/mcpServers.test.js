@@ -411,29 +411,97 @@ describe("Developer API /v1/mcp-servers", () => {
   });
 
   describe("POST /v1/mcp-servers/:name/toggle-tool", () => {
-    beforeEach(() => writeConfig({ srv: { command: "node", ...NO_START } }));
+    let sse;
+    let url;
+    const toggleTool = (server, body) =>
+      call("POST", `/v1/mcp-servers/${server}/toggle-tool`, { body });
+
+    beforeEach(async () => {
+      sse = await startSSETestServer();
+      url = `http://localhost:${sse.address().port}`;
+      await call("POST", "/v1/mcp-servers/new", {
+        body: { name: "live", config: { url } },
+      });
+    });
+
+    afterEach(async () => {
+      MCPHypervisor._instance?.pruneMCPServers();
+      await closeServer(sse);
+    });
 
     it("suppresses and re-enables a tool, persisting to the config", async () => {
-      const off = await call("POST", "/v1/mcp-servers/srv/toggle-tool", {
-        body: { toolName: "tool-a", enabled: false },
+      const off = await toggleTool("live", {
+        toolName: "tool-a",
+        enabled: false,
       });
       expect(off.json).toEqual({
         success: true,
         error: null,
         suppressedTools: ["tool-a"],
       });
-      expect(readConfig().srv.anythingllm.suppressedTools).toEqual(["tool-a"]);
+      expect(readConfig().live.anythingllm.suppressedTools).toEqual(["tool-a"]);
 
-      const offAgain = await call("POST", "/v1/mcp-servers/srv/toggle-tool", {
-        body: { toolName: "tool-a", enabled: false },
+      const offAgain = await toggleTool("live", {
+        toolName: "tool-a",
+        enabled: false,
       });
       expect(offAgain.json.suppressedTools).toEqual(["tool-a"]);
 
-      const on = await call("POST", "/v1/mcp-servers/srv/toggle-tool", {
-        body: { toolName: "tool-a", enabled: true },
+      const on = await toggleTool("live", {
+        toolName: "tool-a",
+        enabled: true,
       });
       expect(on.json.suppressedTools).toEqual([]);
-      expect(readConfig().srv.anythingllm.autoStart).toBe(false);
+      expect(readConfig().live.url).toBe(url);
+    });
+
+    it.each([
+      ["disable", false],
+      ["enable", true],
+    ])(
+      "rejects trying to %s a tool the server does not have",
+      async (_, enabled) => {
+        const res = await toggleTool("live", {
+          toolName: "no-such-tool",
+          enabled,
+        });
+        expect(res.status).toBe(400);
+        expect(res.json.error).toMatch(/Tool no-such-tool not found/);
+        expect(readConfig().live).toEqual({ url });
+      }
+    );
+
+    it("matches tool names exactly", async () => {
+      for (const toolName of ["TOOL-A", "tool-a ", " tool-a", "tool"]) {
+        const res = await toggleTool("live", { toolName, enabled: false });
+        expect(res.status).toBe(400);
+      }
+      expect(readConfig().live).toEqual({ url });
+    });
+
+    it("can re-enable a suppressed tool the server no longer reports", async () => {
+      await call("POST", "/v1/mcp-servers/live/update", {
+        body: {
+          config: { url, anythingllm: { suppressedTools: ["removed-tool"] } },
+        },
+      });
+      const res = await toggleTool("live", {
+        toolName: "removed-tool",
+        enabled: true,
+      });
+      expect(res.status).toBe(200);
+      expect(res.json.suppressedTools).toEqual([]);
+    });
+
+    it("rejects toggling tools on a stopped server", async () => {
+      await call("POST", "/v1/mcp-servers/live/toggle");
+      const res = await toggleTool("live", {
+        toolName: "tool-a",
+        enabled: false,
+      });
+      expect(res.status).toBe(400);
+      expect(res.json.error).toMatch(/not running/);
+      expect(readConfig().live).toEqual({ url });
     });
 
     it.each([
@@ -444,20 +512,28 @@ describe("Developer API /v1/mcp-servers", () => {
       ["string enabled", { toolName: "tool-a", enabled: "false" }],
       ["numeric enabled", { toolName: "tool-a", enabled: 0 }],
     ])("rejects %s without touching the config", async (_, body) => {
-      const res = await call("POST", "/v1/mcp-servers/srv/toggle-tool", {
-        body,
-      });
+      const res = await toggleTool("live", body);
       expect(res.status).toBe(400);
       expect(res.json.success).toBe(false);
-      expect(readConfig().srv).toEqual({ command: "node", ...NO_START });
+      expect(readConfig().live).toEqual({ url });
     });
 
-    it("returns 400 for an unknown server", async () => {
-      const res = await call("POST", "/v1/mcp-servers/ghost/toggle-tool", {
-        body: { toolName: "tool-a", enabled: false },
+    it.each([
+      "ghost",
+      "constructor",
+      "toString",
+      "hasOwnProperty",
+      "__proto__",
+    ])("returns 400 for unknown server %s and writes nothing", async (name) => {
+      const res = await toggleTool(name, {
+        toolName: "tool-a",
+        enabled: false,
       });
       expect(res.status).toBe(400);
       expect(res.json.error).toMatch(/not found/);
+      expect(readConfig()).toEqual({ live: { url } });
+      expect(Object.prototype.anythingllm).toBeUndefined();
+      expect(Object.prototype.toString.anythingllm).toBeUndefined();
     });
   });
 

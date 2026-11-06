@@ -179,7 +179,8 @@ class MCPHypervisor {
       { mcpServers: {} }
     );
 
-    if (!servers.mcpServers[serverName]) {
+    // Own-key check so names like "constructor" don't resolve to Object built-ins.
+    if (!Object.prototype.hasOwnProperty.call(servers.mcpServers, serverName)) {
       return {
         success: false,
         error: `MCP server ${serverName} not found in config file.`,

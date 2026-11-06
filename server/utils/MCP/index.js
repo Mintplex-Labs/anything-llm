@@ -394,13 +394,44 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   }
 
   /**
-   * Toggle tool suppression for an MCP server
+   * Toggle tool suppression for an MCP server.
+   * The server must be running so the tool name can be checked against the
+   * tools it reports. A name already in suppressedTools can always be
+   * re-enabled, so entries for tools the server no longer has can be cleared.
+   * To suppress tools before a server's first start, set
+   * `anythingllm.suppressedTools` in its config instead.
    * @param {string} serverName - The name of the MCP server
    * @param {string} toolName - The name of the tool to toggle
    * @param {boolean} enabled - Whether the tool should be enabled (true) or suppressed (false)
    * @returns {Promise<{success: boolean, error: string | null, suppressedTools: string[]}>}
    */
   async toggleToolSuppression(serverName, toolName, enabled) {
+    const fail = (error) => ({ success: false, error, suppressedTools: [] });
+    if (!this.mcpServerConfigs.some((s) => s.name === serverName))
+      return fail(`MCP server ${serverName} not found in config file.`);
+
+    const clearingStaleEntry =
+      enabled === true &&
+      this.getSuppressedTools(serverName).includes(toolName);
+    if (!clearingStaleEntry) {
+      const mcp = this.mcps[serverName];
+      if (!mcp)
+        return fail(
+          `MCP server ${serverName} is not running - start it to toggle its tools.`
+        );
+
+      let tools;
+      try {
+        tools = await listAllMCPTools(mcp);
+      } catch (error) {
+        return fail(
+          `Failed to list tools for MCP server ${serverName}: ${error.message}`
+        );
+      }
+      if (!tools.some((tool) => tool.name === toolName))
+        return fail(`Tool ${toolName} not found on MCP server ${serverName}.`);
+    }
+
     return this.updateSuppressedTools(serverName, toolName, enabled);
   }
 }
