@@ -3,7 +3,6 @@ const { OpenAICompatibleChat } = require('../../../utils/chats/openaiCompatible'
 const { WorkspaceChats } = require('../../../models/workspaceChats');
 const { getVectorDbClass, getLLMProvider, resolveProviderConnector } = require('../../../utils/helpers');
 const { extractTextContent, extractAttachments } = require('../../../endpoints/api/openai/helpers');
-
 const { handleDefaultStreamResponseV2 } = require('../../../utils/helpers/chat/responses');
 
 // Mock dependencies
