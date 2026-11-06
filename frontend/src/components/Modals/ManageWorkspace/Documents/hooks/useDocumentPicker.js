@@ -132,6 +132,33 @@ function folderStateOf(state, name, visibleFiles) {
   return hits === items.length && !partiallyLoaded ? "all" : "some";
 }
 
+/**
+ * Unselects a wholesale-selected folder once every one of its files has been
+ * opted out, so its checkbox reads empty rather than partial. Only applies to
+ * fully fetched folders - with pages still on the server, the folder's
+ * selection covers files the user has not seen and so cannot have opted out.
+ * @param {object} state reducer state after the opt-outs are applied
+ * @param {Iterable<string>} names folders whose opt-outs just changed
+ */
+function dropEmptiedFolders(state, names) {
+  let selectedFolders = state.selectedFolders;
+  let deselectedFiles = state.deselectedFiles;
+  for (const name of names) {
+    if (!selectedFolders.has(name)) continue;
+    const entry = state.contents[name] ?? UNLOADED;
+    if (entry.status !== "loaded" || entry.hasMore || !entry.items.length)
+      continue;
+    if (!entry.items.every((file) => deselectedFiles.has(file.id))) continue;
+    if (selectedFolders === state.selectedFolders)
+      selectedFolders = new Set(selectedFolders);
+    if (deselectedFiles === state.deselectedFiles)
+      deselectedFiles = new Set(deselectedFiles);
+    selectedFolders.delete(name);
+    for (const file of entry.items) deselectedFiles.delete(file.id);
+  }
+  return { ...state, selectedFolders, deselectedFiles };
+}
+
 function sameMembers(a, b) {
   if (a === b) return true;
   if (!a || !b) return (a?.size ?? 0) === (b?.size ?? 0);
@@ -258,17 +285,20 @@ function reducer(state, action) {
       const selectedFiles = new Map(state.selectedFiles);
       if (isOn) selectedFiles.delete(id);
       else selectedFiles.set(id, { ...file, folderName });
-      return {
-        ...state,
-        selectedFiles,
-        // Turning a file off inside a wholesale-selected folder records an
-        // exception; turning it back on clears that exception.
-        deselectedFiles: withToggled(
-          state.deselectedFiles,
-          id,
-          isOn && inSelectedFolder
-        ),
-      };
+      return dropEmptiedFolders(
+        {
+          ...state,
+          selectedFiles,
+          // Turning a file off inside a wholesale-selected folder records an
+          // exception; turning it back on clears that exception.
+          deselectedFiles: withToggled(
+            state.deselectedFiles,
+            id,
+            isOn && inSelectedFolder
+          ),
+        },
+        [folderName]
+      );
     }
 
     case "toggle-folder": {
@@ -344,7 +374,10 @@ function reducer(state, action) {
           : selectedFiles.delete(file.id);
         deselectedFiles.delete(file.id);
       }
-      return { ...state, selectedFiles, deselectedFiles };
+      return dropEmptiedFolders(
+        { ...state, selectedFiles, deselectedFiles },
+        new Set(action.files.map((file) => file.folderName))
+      );
     }
 
     // Wholesale selection, so files on pages not fetched yet are included.
