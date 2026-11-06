@@ -51,9 +51,25 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
   // run the compressor to ensure the prompt has enough space to reply.
   // realistically - most users will not be impacted by this.
   const tokenBuffer = 600;
-  const tokenManager = new TokenManager(llm.model);
+  const tokenManager = new TokenManager(llm.model, llm);
+  const estimatedPromptTokens = tokenManager.statsFrom(messages);
+
+  // cl100k_base is only a fallback for local models and can over-estimate CJK
+  // text enough to trigger compression for a prompt that actually fits. When
+  // the provider exposes a native tokenizer, use it only after the fast local
+  // estimate predicts an overflow, and keep the existing response buffer.
+  if (estimatedPromptTokens + tokenBuffer >= llm.promptWindowLimit()) {
+    const nativePromptTokens = await tokenManager.countPromptTokens(messages);
+    if (
+      Number.isInteger(nativePromptTokens) &&
+      nativePromptTokens > 0 &&
+      nativePromptTokens + tokenBuffer < llm.promptWindowLimit()
+    )
+      return messages;
+  }
+
   // If no work needs to be done, just pass through.
-  if (tokenManager.statsFrom(messages) + tokenBuffer < llm.promptWindowLimit())
+  if (estimatedPromptTokens + tokenBuffer < llm.promptWindowLimit())
     return messages;
 
   const system = messages.shift();
