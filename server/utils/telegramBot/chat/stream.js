@@ -9,6 +9,8 @@ const {
 } = require("../../chats");
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
+const { Observability } = require("../../observability");
+const { telegramUserTag } = require("../utils/verification");
 const {
   STREAM_EDIT_INTERVAL,
   MAX_MSG_LEN,
@@ -474,4 +476,15 @@ function createStreamHandler({ ctx, chatId }) {
   return { responseHandler, flushEdit };
 }
 
-module.exports = { streamResponse };
+module.exports = {
+  streamResponse: Observability.traced(
+    "telegram-chat",
+    streamResponse,
+    ({ chatId, workspace, thread, message }) => ({
+      input: message,
+      workspace,
+      thread,
+      userId: telegramUserTag(chatId),
+    })
+  ),
+};

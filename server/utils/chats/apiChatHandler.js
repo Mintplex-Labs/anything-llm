@@ -5,6 +5,7 @@ const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 const {
   chatPrompt,
   sourceIdentifier,
@@ -917,7 +918,23 @@ async function streamChat({
   return;
 }
 
+const apiChatTrace = ({
+  workspace,
+  message,
+  mode,
+  user,
+  thread,
+  sessionId,
+}) => ({
+  input: message,
+  workspace,
+  user,
+  thread,
+  sessionId,
+  metadata: { chatMode: mode ?? workspace?.chatMode },
+});
+
 module.exports.ApiChatHandler = {
-  chatSync,
-  streamChat,
+  chatSync: Observability.traced("api-chat", chatSync, apiChatTrace),
+  streamChat: Observability.traced("api-chat", streamChat, apiChatTrace),
 };
