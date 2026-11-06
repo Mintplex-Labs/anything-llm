@@ -1,3 +1,4 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -26,7 +27,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     super();
     this.providerTag = "generic-openai";
-    const { model = "gpt-5.6-luna" } = config;
+    const { model = "gpt-5.6-luna", reasoningEffort = null } = config;
     const client = new OpenAI({
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
@@ -38,6 +39,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
     this._supportsToolCalling = null;
     this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS
@@ -47,6 +49,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  get reasoningConfig() {
+    return reasoningParams("generic-openai", this.reasoningEffort);
   }
 
   /**
@@ -83,6 +89,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         ...temperatureParam(this.temperature),
         messages,
         ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
+        ...this.reasoningConfig,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -103,6 +110,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       stream: true,
       messages,
       ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
+      ...this.reasoningConfig,
     });
   }
 

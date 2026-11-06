@@ -1520,7 +1520,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           reasoningEffort,
         });
       case "generic-openai":
-        return new Providers.GenericOpenAiProvider({ model: config.model });
+        return new Providers.GenericOpenAiProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "perplexity":
         return new Providers.PerplexityProvider({ model: config.model });
       case "textgenwebui":
