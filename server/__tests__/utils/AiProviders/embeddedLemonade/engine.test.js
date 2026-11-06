@@ -52,7 +52,11 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe("EmbeddedLemonadeEngine boot", () => {
+// These suites spawn a `#!/bin/sh` stand-in for lemond and rely on POSIX file
+// modes, neither of which Windows supports, so they only run on POSIX hosts.
+const describePosix = process.platform === "win32" ? describe.skip : describe;
+
+describePosix("EmbeddedLemonadeEngine boot", () => {
   it("reports a lemond that cannot be executed instead of crashing the server", async () => {
     installLemond("#!/bin/sh\nsleep 30\n", 0o644);
 
@@ -151,7 +155,7 @@ describe("EmbeddedLemonadeEngine boot", () => {
   });
 });
 
-describe("EmbeddedLemonadeEngine CUDA selection", () => {
+describePosix("EmbeddedLemonadeEngine CUDA selection", () => {
   // These lemonds are running - wait for them to exit so their exit log lands while console.log is still mocked.
   afterEach(() => EmbeddedLemonadeEngine.stop());
 

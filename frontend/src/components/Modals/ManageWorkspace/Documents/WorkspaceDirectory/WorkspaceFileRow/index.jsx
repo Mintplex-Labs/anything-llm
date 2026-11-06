@@ -45,12 +45,12 @@ export default function WorkspaceFileRow({
   function toggleRowSelection(e) {
     if (disableSelection) return;
     e.stopPropagation();
-    toggleSelection();
+    toggleSelection(e);
   }
 
   function handleRowSelection(e) {
     e.stopPropagation();
-    toggleSelection();
+    toggleSelection(e);
   }
 
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);

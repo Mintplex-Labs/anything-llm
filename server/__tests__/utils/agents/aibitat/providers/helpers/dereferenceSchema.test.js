@@ -145,6 +145,48 @@ describe("dereferenceSchema", () => {
     expect(dereferenceSchema(schema).properties.missing).toEqual({});
   });
 
+  it("inlines references to another property", () => {
+    // zod-to-json-schema (used by the MCP TypeScript SDK) points a reused
+    // sub-schema at its first occurrence.
+    const address = {
+      type: "object",
+      properties: { city: { type: "string" } },
+      required: ["city"],
+    };
+    const schema = {
+      type: "object",
+      properties: {
+        from: address,
+        to: { $ref: "#/properties/from" },
+      },
+    };
+
+    expect(dereferenceSchema(schema).properties.to).toEqual(address);
+  });
+
+  it("decodes escaped pointer segments and drops malformed or inherited ones", () => {
+    const leaf = { type: "string" };
+    const schema = {
+      type: "object",
+      properties: {
+        "a/b": leaf,
+        "c~d": leaf,
+        slash: { $ref: "#/properties/a~1b" },
+        tilde: { $ref: "#/properties/c~0d" },
+        chained: { $ref: "#/properties/slash" },
+        malformed: { $ref: "#/properties/100%" },
+        inherited: { $ref: "#/properties/constructor" },
+      },
+    };
+
+    const { properties } = dereferenceSchema(schema);
+    expect(properties.slash).toEqual(leaf);
+    expect(properties.tilde).toEqual(leaf);
+    expect(properties.chained).toEqual(leaf);
+    expect(properties.malformed).toEqual({});
+    expect(properties.inherited).toEqual({});
+  });
+
   it("handles non-object inputs defensively", () => {
     expect(dereferenceSchema(null)).toBeNull();
     expect(dereferenceSchema(undefined)).toEqual({});
