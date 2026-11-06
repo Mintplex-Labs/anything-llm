@@ -13,7 +13,7 @@ const {
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
 const {
-  forwardIdentityScopes,
+  forwardIdentityFields,
   identityFetch,
   stripReservedHeaders,
 } = require("../identity");
@@ -223,14 +223,15 @@ class MCPHypervisor {
   }
 
   /**
-   * Which identity scopes to forward to an MCP server.
-   * Set per server via `anythingllm.forwardIdentity` (true or ["user", "workspace"]).
+   * Which identity fields to forward to an MCP server.
+   * Set per server via `anythingllm.forwardIdentity` - true, or a list of
+   * "user", "workspace" and/or single fields like "user.id", "workspace.slug".
    * @param {string} serverName - The name of the MCP server
-   * @returns {("user"|"workspace")[]}
+   * @returns {string[]} e.g. ["user.id", "workspace.slug"]
    */
-  getForwardIdentityScopes(serverName) {
+  getForwardIdentityFields(serverName) {
     const config = this.mcpServerConfigs.find((s) => s.name === serverName);
-    return forwardIdentityScopes(config?.server?.anythingllm?.forwardIdentity);
+    return forwardIdentityFields(config?.server?.anythingllm?.forwardIdentity);
   }
 
   /**

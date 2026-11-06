@@ -30,7 +30,7 @@ const MCPCompatibilityLayer = require("../../../utils/MCP");
 const MCPHypervisor = require("../../../utils/MCP/hypervisor");
 const {
   IDENTITY_META_KEY,
-  forwardIdentityScopes,
+  forwardIdentityFields,
 } = require("../../../utils/MCP/identity");
 
 /**
@@ -99,16 +99,28 @@ async function loadTools(layer, name, aibitat) {
   return fns;
 }
 
-describe("forwardIdentityScopes", () => {
+const USER_FIELDS = ["user.id", "user.username", "user.role"];
+const WORKSPACE_FIELDS = ["workspace.id", "workspace.slug"];
+
+describe("forwardIdentityFields", () => {
   it.each([
-    [true, ["user", "workspace"]],
-    [["workspace"], ["workspace"]],
-    [["user", "bogus"], ["user"]],
+    [true, [...USER_FIELDS, ...WORKSPACE_FIELDS]],
+    [
+      ["user", "workspace"],
+      [...USER_FIELDS, ...WORKSPACE_FIELDS],
+    ],
+    [["workspace"], WORKSPACE_FIELDS],
+    [
+      ["workspace.slug", "user.id"],
+      ["user.id", "workspace.slug"],
+    ],
+    [["user", "user.id"], USER_FIELDS],
+    [["user.bogus", "user.password", "bogus"], []],
     [false, []],
     [undefined, []],
     ["user", []],
   ])("%j -> %j", (input, expected) => {
-    expect(forwardIdentityScopes(input)).toEqual(expected);
+    expect(forwardIdentityFields(input)).toEqual(expected);
   });
 });
 
@@ -205,6 +217,23 @@ describe("MCP identity forwarding", () => {
     expect(call.username).toBeUndefined();
     expect(call.role).toBeUndefined();
     expect(call.meta.user).toBeUndefined();
+  });
+
+  it("forwards only the listed fields and skips the user lookup when only user.id is asked for", async () => {
+    await boot({ forwardIdentity: ["user.id", "workspace.slug"] });
+    const fns = await loadTools(
+      layer,
+      "dummy",
+      fakeAibitat({ workspace, user_id: 3 })
+    );
+    await fns["dummy-whoami"].handler({});
+
+    expect(User.get).not.toHaveBeenCalled();
+    const call = server.received.find((r) => r.method === "tools/call");
+    expect(call).toMatchObject({ userId: "3", workspaceSlug: "acme" });
+    expect(call.username).toBeUndefined();
+    expect(call.role).toBeUndefined();
+    expect(call.meta).toEqual({ user: { id: 3 }, workspace: { slug: "acme" } });
   });
 
   it("sends nothing when forwardIdentity is not set", async () => {

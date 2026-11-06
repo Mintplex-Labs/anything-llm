@@ -4,15 +4,18 @@ const { AsyncLocalStorage } = require("async_hooks");
  * Forwards the calling AnythingLLM user and/or workspace to MCP servers that
  * opt in via `anythingllm.forwardIdentity` in the MCP config file:
  *
- *   "anythingllm": { "forwardIdentity": true }                  // user + workspace
- *   "anythingllm": { "forwardIdentity": ["workspace"] }         // only these scopes
+ *   "forwardIdentity": true                               // every field
+ *   "forwardIdentity": ["user", "workspace"]              // every field
+ *   "forwardIdentity": ["user.id", "workspace.slug"]      // only these fields
+ *
+ * `user` is shorthand for user.id, user.username and user.role; `workspace` for
+ * workspace.id and workspace.slug. Anything not in IDENTITY_FIELDS is ignored.
  *
  * Identity is sent on every request made for an agent session (tools/list and
  * tools/call) in two places:
  * - HTTP servers (sse/streamable): `X-AnythingLLM-*` headers.
  * - All servers (incl. stdio): `params._meta["com.anythingllm/identity"]`.
  *
- * The "user" scope sends the user's id, username and role (multi-user only).
  * Values are omitted when unavailable - e.g. single-user mode has no user.
  * The `X-AnythingLLM-` header prefix is reserved: static config headers using
  * it are dropped so they can never pose as a forwarded identity.
@@ -22,7 +25,15 @@ const { AsyncLocalStorage } = require("async_hooks");
  * each MCP call.
  */
 
-const IDENTITY_SCOPES = ["user", "workspace"];
+/** Forwardable fields and the header each is sent as. */
+const IDENTITY_FIELDS = {
+  "user.id": "X-AnythingLLM-User-Id",
+  "user.username": "X-AnythingLLM-Username",
+  "user.role": "X-AnythingLLM-User-Role",
+  "workspace.id": "X-AnythingLLM-Workspace-Id",
+  "workspace.slug": "X-AnythingLLM-Workspace-Slug",
+};
+const ALL_FIELDS = Object.keys(IDENTITY_FIELDS);
 const RESERVED_HEADER_PREFIX = "x-anythingllm-";
 const IDENTITY_META_KEY = "com.anythingllm/identity";
 
@@ -34,16 +45,19 @@ const userCache = new WeakMap();
 
 /**
  * @param {boolean|string[]|undefined} value - `anythingllm.forwardIdentity`
- * @returns {("user"|"workspace")[]}
+ * @returns {string[]} fields from IDENTITY_FIELDS, in their declared order
  */
-function forwardIdentityScopes(value) {
-  if (value === true) return [...IDENTITY_SCOPES];
+function forwardIdentityFields(value) {
+  if (value === true) return [...ALL_FIELDS];
   if (!Array.isArray(value)) return [];
-  return IDENTITY_SCOPES.filter((scope) => value.includes(scope));
+  return ALL_FIELDS.filter(
+    (field) => value.includes(field) || value.includes(field.split(".")[0])
+  );
 }
 
 /**
- * Only looked up when the user scope is forwarded. Cached per agent session.
+ * Only looked up when user.username or user.role is forwarded. Cached per
+ * agent session.
  * @param {object} aibitat
  * @param {number} userId
  * @returns {Promise<{username: string, role: string}|null>}
@@ -75,37 +89,48 @@ function headerValue(value) {
 }
 
 /**
+ * @param {string[]} fields
+ * @param {object} aibitat
+ * @param {object} invocation
+ * @returns {Promise<Record<string, string|number|null|undefined>>}
+ */
+async function identityValues(fields, aibitat, invocation) {
+  const values = {};
+  const userId = invocation.user_id ? Number(invocation.user_id) : null;
+  if (userId) {
+    values["user.id"] = userId;
+    if (fields.includes("user.username") || fields.includes("user.role")) {
+      const user = await lookupUser(aibitat, userId);
+      values["user.username"] = user?.username;
+      values["user.role"] = user?.role;
+    }
+  }
+  if (invocation.workspace?.id) {
+    values["workspace.id"] = invocation.workspace.id;
+    values["workspace.slug"] = invocation.workspace.slug;
+  }
+  return values;
+}
+
+/**
  * Build the identity to forward to one MCP server for an agent session.
- * @param {("user"|"workspace")[]} scopes
+ * @param {string[]} fields - from forwardIdentityFields
  * @param {object|null} aibitat - carries `handlerProps.invocation`
  * @returns {Promise<{headers: Record<string, string>, _meta: object}|null>}
  */
-async function resolveMCPIdentity(scopes, aibitat) {
+async function resolveMCPIdentity(fields, aibitat) {
   const invocation = aibitat?.handlerProps?.invocation;
-  if (!scopes.length || !invocation) return null;
+  if (!fields.length || !invocation) return null;
 
+  const values = await identityValues(fields, aibitat, invocation);
   const identity = {};
   const headers = {};
-
-  if (scopes.includes("user") && invocation.user_id) {
-    const id = Number(invocation.user_id);
-    const user = await lookupUser(aibitat, id);
-    identity.user = {
-      id,
-      username: user?.username ?? null,
-      role: user?.role ?? null,
-    };
-    headers["X-AnythingLLM-User-Id"] = String(id);
-    if (user?.username)
-      headers["X-AnythingLLM-Username"] = headerValue(user.username);
-    if (user?.role) headers["X-AnythingLLM-User-Role"] = headerValue(user.role);
-  }
-
-  const workspace = invocation.workspace;
-  if (scopes.includes("workspace") && workspace?.id) {
-    identity.workspace = { id: workspace.id, slug: workspace.slug };
-    headers["X-AnythingLLM-Workspace-Id"] = String(workspace.id);
-    headers["X-AnythingLLM-Workspace-Slug"] = headerValue(workspace.slug);
+  for (const field of fields) {
+    const value = values[field];
+    if (value === null || value === undefined || value === "") continue;
+    const [group, key] = field.split(".");
+    identity[group] = { ...identity[group], [key]: value };
+    headers[IDENTITY_FIELDS[field]] = headerValue(value);
   }
 
   if (!Object.keys(identity).length) return null;
@@ -159,7 +184,7 @@ function stripReservedHeaders(headers, log = () => {}) {
 
 module.exports = {
   IDENTITY_META_KEY,
-  forwardIdentityScopes,
+  forwardIdentityFields,
   resolveMCPIdentity,
   withMCPIdentity,
   identityFetch,

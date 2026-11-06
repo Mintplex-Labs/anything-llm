@@ -78,7 +78,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     if (!mcp) return null;
 
     const identity = await resolveMCPIdentity(
-      this.getForwardIdentityScopes(name),
+      this.getForwardIdentityFields(name),
       aibitat
     );
 
