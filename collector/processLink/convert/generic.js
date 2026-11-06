@@ -92,7 +92,7 @@ async function scrapeGenericUrl({
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
-    title: metadata.title || slugify(filename) + ".html",
+    title: metadata.title || `${filename}${url.search}.html`,
     docAuthor: metadata.docAuthor || "no author found",
     description: metadata.description || "No description found.",
     docSource: metadata.docSource || "URL link uploaded by the user.",

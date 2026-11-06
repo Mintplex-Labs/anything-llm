@@ -192,5 +192,17 @@ describe("FlowExecutor: replaceVariables", () => {
         p: executor.variables.plan,
       });
     });
+
+    it("ends a string at a quote that follows an escaped backslash", () => {
+      const replaced = executor.replaceVariables({
+        bodyType: "json",
+        body: '{"path":"C:\\\\","p":"${plan}","n":${n}}',
+      });
+      expect(JSON.parse(replaced.body)).toEqual({
+        path: "C:\\",
+        p: executor.variables.plan,
+        n: 5,
+      });
+    });
   });
 });

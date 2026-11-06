@@ -28,6 +28,7 @@ const AGENT_AWAITING_USER_EVENTS = [
 const AGENT_PASSIVE_EVENTS = ["rename_thread"];
 const AGENT_PASSIVE_STREAM_EVENTS = [
   "chatId",
+  "promptChatId",
   "usageMetrics",
   "citations",
   "removeStatusResponse",
@@ -64,6 +65,25 @@ function takeBufferedCitations(uuid) {
   bufferedCitations.delete(uuid);
   return citations;
 }
+
+/**
+ * Set the saved chat id on the latest prompt so it stays editable if the reply
+ * is stopped. Clears the pending placeholder's userMessage so the update does
+ * not resend the prompt.
+ * @param {Object[]} history
+ * @param {number} chatId
+ * @returns {Object[]}
+ */
+function tagPromptChatId(history, chatId) {
+  if (!chatId) return history;
+  const promptIdx = history.findLastIndex((msg) => msg.role === "user");
+  return history.map((msg, i) => {
+    if (i === promptIdx) return { ...msg, chatId };
+    if (msg.pending) return { ...msg, userMessage: null };
+    return msg;
+  });
+}
+
 const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
@@ -154,6 +174,12 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
   }
 
   if (data.type === "reportStreamEvent") {
+    // Arrives before any reply, so it must not set the streaming flag below.
+    if (data.content.type === "promptChatId")
+      return setChatHistory((prev) =>
+        tagPromptChatId(prev, data.content.chatId)
+      );
+
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
     // If we get this message we know the provider supports agentic streaming
     socket.supportsAgentStreaming = true;
