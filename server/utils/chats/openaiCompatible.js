@@ -81,18 +81,29 @@ async function chatSync({
     .filter(Boolean)
     .join("\n\n");
 
-  const message = [
+  let message = [
     systemPrompt,
     conversation,
-     // Avoid appending the prompt twice if it is already the last user message.
+    // Avoid appending the prompt twice if it is already the last user message.
     prompt && history.at(-1)?.role === "user"
       ? null
       : prompt
         ? `USER:\n${prompt}`
         : null,
-  ]
+    ]
     .filter(Boolean)
     .join("\n\n");
+
+  // Move @agent to the beginning, if present.
+  const agentIndex = message.indexOf("@agent");
+
+  if (agentIndex !== -1) {
+    message =
+      message.substring(agentIndex, agentIndex + 6) +
+      "\n\n" +
+      message.substring(0, agentIndex) +
+      message.substring(agentIndex + 6);
+  }
   
    if (USE_API_CHAT_HANDLER) {
     const result = await ApiChatHandler.chatSync({
@@ -364,7 +375,7 @@ async function streamChat({
     .filter(Boolean)
     .join("\n\n");
 
-  const message = [
+   let message = [
     systemPrompt,
     conversation,
     // Avoid appending the prompt twice if it is already the last user message.
@@ -373,9 +384,20 @@ async function streamChat({
       : prompt
         ? `USER:\n${prompt}`
         : null,
-  ]
+    ]
     .filter(Boolean)
     .join("\n\n");
+
+  // Move @agent to the beginning, if present.
+  const agentIndex = message.indexOf("@agent");
+
+  if (agentIndex !== -1) {
+    message =
+      message.substring(agentIndex, agentIndex + 6) +
+      "\n\n" +
+      message.substring(0, agentIndex) +
+      message.substring(agentIndex + 6);
+  }
 
   // New implementation: delegate chat and agent handling to ApiChatHandler.
   if (USE_API_CHAT_HANDLER) {
