@@ -28,6 +28,7 @@ const AGENT_AWAITING_USER_EVENTS = [
 const AGENT_PASSIVE_EVENTS = ["rename_thread"];
 const AGENT_PASSIVE_STREAM_EVENTS = [
   "chatId",
+  "promptChatId",
   "usageMetrics",
   "citations",
   "removeStatusResponse",
@@ -154,6 +155,23 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
   }
 
   if (data.type === "reportStreamEvent") {
+    // Arrives before any reply, so it must not set the streaming flag below.
+    if (data.content.type === "promptChatId") {
+      if (!data.content.chatId) return;
+      return setChatHistory((prev) => {
+        const userIdx = prev.findLastIndex((msg) => msg.role === "user");
+        return prev.map((msg, i) => {
+          if (i === userIdx) return { ...msg, chatId: data.content.chatId };
+          // Drop userMessage so this update doesn't resend the prompt.
+          if (msg.pending && msg.userMessage) {
+            const { userMessage: _, ...placeholder } = msg;
+            return placeholder;
+          }
+          return msg;
+        });
+      });
+    }
+
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
     // If we get this message we know the provider supports agentic streaming
     socket.supportsAgentStreaming = true;

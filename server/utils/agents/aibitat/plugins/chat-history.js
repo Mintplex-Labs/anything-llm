@@ -55,7 +55,13 @@ const chatHistory = {
               prompt: userMessage,
               response: { text: "" },
             });
-            if (chat) aibitat.registerChatId(chat.id);
+            if (chat) {
+              aibitat.registerChatId(chat.id);
+              aibitat.socket?.send?.("reportStreamEvent", {
+                type: "promptChatId",
+                chatId: chat.id,
+              });
+            }
           }
         });
 

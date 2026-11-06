@@ -185,6 +185,11 @@ export default function handleChat(
     setChatHistory([..._chatHistory]);
   } else if (type === "agentInitWebsocketConnection") {
     setWebsocket(chatResult.websocketUUID);
+  } else if (type === "promptChatId") {
+    // Local copy only - setting state here would resend the prompt.
+    const userIdx = _chatHistory.findLastIndex((msg) => msg.role === "user");
+    if (!chatId || userIdx === -1) return;
+    _chatHistory[userIdx] = { ..._chatHistory[userIdx], chatId };
   } else if (type === "stopGeneration") {
     const chatIdx = _chatHistory.length - 1;
     const existingHistory = { ..._chatHistory[chatIdx] };

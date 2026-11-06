@@ -279,6 +279,12 @@ async function streamChatWithWorkspace(
     threadId: thread?.id || null,
     user,
   });
+  if (chat)
+    writeResponseChunk(response, {
+      uuid,
+      type: "promptChatId",
+      chatId: chat.id,
+    });
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
