@@ -131,6 +131,42 @@ class MCPHypervisor {
   }
 
   /**
+   * Validate a server definition and write it to the config file under `name`,
+   * replacing any existing definition with that name.
+   * @param {string} name - The name of the MCP server
+   * @param {Object} server - The server definition (same shape as an entry in `mcpServers`)
+   * @returns {{success: boolean, error: string | null}}
+   */
+  writeMCPServerToConfig(name, server) {
+    try {
+      if (typeof name !== "string" || !name.trim() || name === "__proto__")
+        throw new Error("MCP server name is required.");
+      if (!server || typeof server !== "object" || Array.isArray(server))
+        throw new Error("MCP server config must be an object.");
+
+      const serverType = this.#parseServerType(server);
+      if (!serverType)
+        throw new Error("MCP server config must have a command or url.");
+      this.#validateServerDefinitionByType(name, server, serverType);
+
+      const servers = safeJsonParse(
+        fs.readFileSync(this.mcpServerJSONPath, "utf8"),
+        { mcpServers: {} }
+      );
+      servers.mcpServers[name] = server;
+      fs.writeFileSync(
+        this.mcpServerJSONPath,
+        JSON.stringify(servers, null, 2),
+        "utf8"
+      );
+      this.log(`MCP server ${name} written to config file`);
+      return { success: true, error: null };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Update the suppressed tools for an MCP server
    * @param {string} serverName - The name of the MCP server
    * @param {string} toolName - The name of the tool to toggle

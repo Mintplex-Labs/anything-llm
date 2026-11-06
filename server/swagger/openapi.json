@@ -4288,6 +4288,470 @@
           }
         }
       }
+    },
+    "/v1/mcp-servers": {
+      "get": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "List all MCP servers in the config file with their status, config, and available tools. Will boot servers that have not been started yet.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "servers": [
+                      {
+                        "name": "my-mcp-server",
+                        "config": {
+                          "command": "npx",
+                          "args": [
+                            "-y",
+                            "@example/mcp-server"
+                          ],
+                          "anythingllm": {
+                            "suppressedTools": []
+                          }
+                        },
+                        "running": true,
+                        "tools": [
+                          {
+                            "name": "do-thing",
+                            "description": "Does a thing",
+                            "inputSchema": {}
+                          }
+                        ],
+                        "error": null,
+                        "process": {
+                          "pid": 12345
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/mcp-servers/new": {
+      "post": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "Add a new MCP server to the config file and start it. The server is saved even if it fails to start - check `running` and `startError` in the response.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "running": true,
+                    "startError": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": false,
+                    "error": "MCP server my-mcp-server already exists in config file.",
+                    "running": false,
+                    "startError": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Name of the new server and its definition, in the same shape as an entry under mcpServers in the MCP config file.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "my-mcp-server",
+                "config": {
+                  "command": "npx",
+                  "args": [
+                    "-y",
+                    "@example/mcp-server"
+                  ],
+                  "env": {
+                    "API_KEY": "secret"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mcp-servers/reload": {
+      "post": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "Stop all MCP servers and boot them again from the config file.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "servers": []
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/mcp-servers/{name}/update": {
+      "post": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "Replace the definition of an existing MCP server and restart it. The config fully replaces the old one - include the `anythingllm` block to keep settings like suppressedTools.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name of the MCP server in the config file."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "running": true,
+                    "startError": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": false,
+                    "error": "MCP server my-mcp-server not found in config file.",
+                    "running": false,
+                    "startError": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "config": {
+                  "type": "streamable",
+                  "url": "https://example.com/mcp",
+                  "headers": {
+                    "Authorization": "Bearer token"
+                  },
+                  "anythingllm": {
+                    "suppressedTools": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mcp-servers/{name}/toggle": {
+      "post": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "Stop the MCP server if it is running, otherwise start it.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name of the MCP server in the config file."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/mcp-servers/{name}/toggle-tool": {
+      "post": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "Enable or disable a single tool of an MCP server. Disabled tools are not given to agents.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name of the MCP server in the config file."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "suppressedTools": [
+                      "do-thing"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "toolName": "do-thing",
+                "enabled": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mcp-servers/{name}": {
+      "delete": {
+        "tags": [
+          "MCP Servers"
+        ],
+        "description": "Stop the MCP server and remove it from the config file.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name of the MCP server in the config file."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
