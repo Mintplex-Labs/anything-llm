@@ -627,7 +627,7 @@ class ModelRouterService {
    * @param {string} comparator
    * @param {string} value
    * @param {boolean} [wrapsAround] - The value is on a clock (eg: hours), so a
-   * "between" range whose start is after its end (eg: 22,6) spans midnight.
+   * "between" range whose start is after its end (eg: 22,6 or 22-6) spans midnight.
    */
   #evaluateNumericCondition(
     contextValue,
@@ -639,8 +639,11 @@ class ModelRouterService {
     if (isNaN(numContext)) return false;
 
     if (comparator === "between") {
-      const parts = String(value).split(",").map(Number);
-      if (parts.length !== 2 || parts.some(isNaN)) return false;
+      // Accepts "min,max" or "min-max" (eg: 9,17 or 22-6).
+      const raw = String(value).split(/[,-]/);
+      if (raw.length !== 2 || raw.some((p) => !p.trim())) return false;
+      const parts = raw.map(Number);
+      if (parts.some(isNaN)) return false;
       const [min, max] = parts;
       if (wrapsAround && min > max)
         return numContext >= min || numContext <= max;
