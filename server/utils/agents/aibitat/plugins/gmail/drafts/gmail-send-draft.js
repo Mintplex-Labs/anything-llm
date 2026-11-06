@@ -42,9 +42,13 @@ module.exports.GmailSendDraft = {
               }
 
               if (this.super.requestToolApproval) {
+                const lookup = await gmailLib.getDraft(draftId);
+                const { to, cc, bcc, subject, body } = lookup.success
+                  ? lookup.data
+                  : {};
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
-                  payload: { draftId },
+                  payload: { draftId, to, cc, bcc, subject, body },
                   description: `Send Gmail draft "${draftId}" - This will send the email immediately`,
                 });
                 if (!approval.approved) {

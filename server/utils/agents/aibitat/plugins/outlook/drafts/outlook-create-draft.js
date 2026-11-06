@@ -1,5 +1,6 @@
 const outlookLib = require("../lib.js");
 const { prepareAttachmentsWithValidation, handleSkillError } = outlookLib;
+const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.OutlookCreateDraft = {
   name: "outlook-create-draft",
@@ -143,7 +144,16 @@ module.exports.OutlookCreateDraft = {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
                   payload: isReply
-                    ? { replyToMessageId, replyAll, body }
+                    ? {
+                        replyToMessageId,
+                        replyAll,
+                        ...(await outlookLib.getReplyContext(
+                          replyToMessageId,
+                          replyAll
+                        )),
+                        body,
+                        attachmentCount: preparedAttachments.length,
+                      }
                     : {
                         to,
                         subject,
@@ -160,6 +170,15 @@ module.exports.OutlookCreateDraft = {
                   );
                   return approval.message;
                 }
+
+                ({ to, subject, body, cc, bcc } = applyEmailEdits(
+                  { to, subject, body, cc, bcc },
+                  approval.payload
+                ));
+                if (!isReply && (!to || !subject)) {
+                  return "Error: 'to' and 'subject' are required for new drafts. For draft replies, provide 'replyToMessageId'.";
+                }
+                if (!body) return "Error: 'body' is required.";
               }
 
               let result;

@@ -1,5 +1,6 @@
 const outlookLib = require("../lib.js");
 const { handleSkillError } = outlookLib;
+const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.OutlookUpdateDraft = {
   name: "outlook-update-draft",
@@ -81,7 +82,13 @@ module.exports.OutlookUpdateDraft = {
               if (this.super.requestToolApproval) {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
-                  payload: { draftId, hasChanges: { to, subject, body, cc } },
+                  payload: {
+                    draftId,
+                    ...(to ? { to } : {}),
+                    ...(subject ? { subject } : {}),
+                    ...(body ? { body } : {}),
+                    ...(cc ? { cc } : {}),
+                  },
                   description: `Update draft ${draftId}`,
                 });
                 if (!approval.approved) {
@@ -90,6 +97,11 @@ module.exports.OutlookUpdateDraft = {
                   );
                   return approval.message;
                 }
+
+                ({ to, subject, body, cc } = applyEmailEdits(
+                  { to, subject, body, cc },
+                  approval.payload
+                ));
               }
 
               this.super.introspect(
@@ -100,7 +112,10 @@ module.exports.OutlookUpdateDraft = {
               if (to) updates.to = to;
               if (subject) updates.subject = subject;
               if (body) updates.body = body;
-              if (cc) updates.cc = cc;
+              if (typeof cc === "string") updates.cc = cc;
+              if (Object.keys(updates).length === 1) {
+                return "Error: At least one field to update (to, subject, body, cc) is required.";
+              }
 
               const result = await outlookLib.updateDraft(draftId, updates);
 
