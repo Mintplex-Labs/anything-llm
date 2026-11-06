@@ -24,17 +24,6 @@ const EMPTY_SET = Object.freeze(new Set());
 const EMPTY_MAP = Object.freeze(new Map());
 
 /**
- * One rendered row of the picker, used for shift-click ranges.
- * @typedef {object} PickerRow
- * @property {string} id unique across files and folders
- * @property {'file'|'folder'} kind
- * @property {object & {folderName: string}} [file] when kind is file
- * @property {string} [name] folder name when kind is folder
- * @property {Array<object>} [files] the folder's rendered files
- * @property {boolean} [expanded] whether the folder's files are rendered
- */
-
-/**
  * Single source of truth for the "My Documents" file picker.
  *
  * The picker is lazily loaded - `listFolders()` only returns folder shells and
@@ -132,14 +121,8 @@ function folderStateOf(state, name, visibleFiles) {
   return hits === items.length && !partiallyLoaded ? "all" : "some";
 }
 
-/**
- * Unselects a wholesale-selected folder once every one of its files has been
- * opted out, so its checkbox reads empty rather than partial. Only applies to
- * fully fetched folders - with pages still on the server, the folder's
- * selection covers files the user has not seen and so cannot have opted out.
- * @param {object} state reducer state after the opt-outs are applied
- * @param {Iterable<string>} names folders whose opt-outs just changed
- */
+// Unselects a fully fetched, wholesale-selected folder once every file in it
+// is opted out. Folders with unfetched pages keep their selection.
 function dropEmptiedFolders(state, names) {
   let selectedFolders = state.selectedFolders;
   let deselectedFiles = state.deselectedFiles;
@@ -356,8 +339,7 @@ function reducer(state, action) {
         deselectedFiles: EMPTY_SET,
       };
 
-    // Files inside a wholesale-selected folder are tracked as exceptions to it
-    // rather than as entries of their own, so the sets stay canonical.
+    // Files in a wholesale-selected folder are tracked as exceptions to it.
     case "set-files": {
       if (!action.files.length) return state;
       const selectedFiles = new Map(state.selectedFiles);
@@ -381,7 +363,7 @@ function reducer(state, action) {
     }
 
     // Wholesale selection, so files on pages not fetched yet are included.
-    // Turning a folder off drops its individual entries too, so nothing lingers.
+    // Turning a folder off also drops its individual entries.
     case "set-folders": {
       if (!action.names.length) return state;
       const selectedFolders = new Set(state.selectedFolders);
@@ -623,21 +605,12 @@ export default function useDocumentPicker({ slug }) {
     []
   );
   const selectAll = useCallback(() => dispatch({ type: "select-all" }), []);
-  /**
-   * @param {Array<object & {folderName: string}>} files
-   * @param {boolean} on
-   */
   const setFiles = useCallback(
     (files, on) => dispatch({ type: "set-files", files, on }),
     []
   );
-  /**
-   * Shift-click range: every row takes on the anchor's current state. A
-   * collapsed folder is one unit; an expanded folder is represented by its
-   * file rows, so only those inside the range change.
-   * @param {Array<PickerRow>} rows the range, in rendered order
-   * @param {PickerRow} anchor the row last clicked without shift
-   */
+  // Every row in the range takes the anchor's state. Collapsed folders change
+  // as a unit; expanded ones only through their file rows in the range.
   const selectRange = useCallback((rows, anchor) => {
     const state = stateRef.current;
     const on =

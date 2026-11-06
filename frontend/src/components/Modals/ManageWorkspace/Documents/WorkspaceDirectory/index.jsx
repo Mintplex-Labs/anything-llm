@@ -45,11 +45,10 @@ function WorkspaceDirectory({
     0
   );
 
-  /** Render order: staged for embedding first, then pinned, then the rest. */
+  // Staged for embedding first, then pinned, then the rest.
   const orderedFiles = useMemo(() => {
     const isMoved = (item) =>
       movedItems.some((movedItem) => movedItem.id === item.id);
-    // Sort pinned items to the top
     const isPinned = (item) => item.pinnedWorkspaces?.includes(workspace.id);
     return files.items
       .flatMap((folder) => folder.items.map((item) => ({ item, folder })))
@@ -108,7 +107,7 @@ function WorkspaceDirectory({
   const handleKeyDown = (event) => {
     if (hasChanges) return;
     if (isClearSelectionKey(event) && Object.keys(selectedItems).length > 0) {
-      // Keep it from the modal's window listener, which would close the modal.
+      // Otherwise the modal's Escape handler closes the modal.
       event.stopPropagation();
       return setSelectedItems({});
     }
@@ -233,7 +232,7 @@ function WorkspaceDirectory({
               highlightWorkspace ? "border-4 border-cyan-300/80 z-[999]" : ""
             }`}
           />
-          {/* Focusable so the keyboard shortcuts scope to the panel last clicked. */}
+          {/* Focusable so shortcuts apply to the last-clicked panel. */}
           <div
             className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border outline-none focus-within:border-cyan-300/80"
             tabIndex={-1}

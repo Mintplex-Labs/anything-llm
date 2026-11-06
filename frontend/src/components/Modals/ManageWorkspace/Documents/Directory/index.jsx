@@ -31,11 +31,7 @@ import {
 
 const NO_FILES = [];
 
-/**
- * Rows top to bottom as rendered, so a shift-click range covers exactly what
- * the user sees.
- * @returns {Array<import("../hooks/useDocumentPicker").PickerRow>}
- */
+/** Rows in rendered order, for shift-click ranges. */
 function flattenRows(rows) {
   return rows.flatMap((row) => {
     const folder = {
@@ -174,19 +170,15 @@ export default function Directory({
   /* -------------------------------- selection ------------------------------ */
 
   const pickerRows = useMemo(() => flattenRows(rows), [rows]);
-  // Ref so the memoized file rows can keep a stable click handler.
+  // Ref keeps the memoized file rows' click handler stable.
   const pickerRowsRef = useRef(pickerRows);
   useEffect(() => {
     pickerRowsRef.current = pickerRows;
   }, [pickerRows]);
-  /** Id of the row last clicked without shift. */
   const rangeAnchor = useRef(null);
 
-  /**
-   * Shift-click selects the range from the anchor; any other click becomes
-   * the new anchor and is left to the caller to toggle.
-   * @returns {boolean} whether the click was consumed as a range
-   */
+  // Shift-click selects from the anchor; any other click moves the anchor.
+  // Returns true when the click was handled as a range.
   const clickRow = useCallback(
     (id, event) => {
       const rows = pickerRowsRef.current;
@@ -235,7 +227,7 @@ export default function Directory({
 
   const handleKeyDown = (event) => {
     if (isClearSelectionKey(event) && hasSelection) {
-      // Keep it from the modal's window listener, which would close the modal.
+      // Otherwise the modal's Escape handler closes the modal.
       event.stopPropagation();
       return clearSelection();
     }
@@ -413,7 +405,7 @@ export default function Directory({
             </button>
           </div>
 
-          {/* Focusable so the keyboard shortcuts scope to the panel last clicked. */}
+          {/* Focusable so shortcuts apply to the last-clicked panel. */}
           <div
             className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border outline-none focus-within:border-cyan-300/80"
             tabIndex={-1}
