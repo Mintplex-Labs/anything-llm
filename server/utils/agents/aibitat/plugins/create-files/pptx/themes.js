@@ -1,181 +1,157 @@
 /**
- * Curated presentation themes for pptxgenjs.
+ * Themes for generated presentations. The model picks one by name and never
+ * writes styling itself, so every layout in render.js works with every theme.
  *
- * Each theme is a complete design system: title-slide palette, content-slide
- * palette, table styling, footer colors, and typography.  The rendering code
- * in utils.js consumes these tokens to produce consistent, professional slides.
- *
- * Themes: default · corporate · dark · minimal · creative
+ * A theme is one Tailwind color scale plus the shade its dark slides use
+ * (700 for bright themes, 950 for deep ones). Layouts pick shades from the
+ * scale by number, mirroring the Figma designs they were built from.
  */
 
-const THEMES = {
-  default: {
-    name: "Professional",
-    description: "Clean and versatile — works for any presentation",
+const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
 
-    titleSlideBackground: "1E293B",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "94A3B8",
-    titleSlideAccentColor: "3B82F6",
+const SCALES = {
+  slate:
+    "F8FAFC F1F5F9 E2E8F0 CBD5E1 94A3B8 64748B 475569 334155 1E293B 0F172A 020617",
+  indigo:
+    "EEF2FF E0E7FF C7D2FE A5B4FC 818CF8 6366F1 4F46E5 4338CA 3730A3 312E81 1E1B4B",
+  blue: "EFF6FF DBEAFE BFDBFE 93C5FD 60A5FA 3B82F6 2563EB 1D4ED8 1E40AF 1E3A8A 172554",
+  emerald:
+    "ECFDF5 D1FAE5 A7F3D0 6EE7B7 34D399 10B981 059669 047857 065F46 064E3B 022C22",
+  cyan: "ECFEFF CFFAFE A5F3FC 67E8F9 22D3EE 06B6D4 0891B2 0E7490 155E75 164E63 083344",
+  sky: "F0F9FF E0F2FE BAE6FD 7DD3FC 38BDF8 0EA5E9 0284C7 0369A1 075985 0C4A6E 082F49",
+  violet:
+    "F5F3FF EDE9FE DDD6FE C4B5FD A78BFA 8B5CF6 7C3AED 6D28D9 5B21B6 4C1D95 2E1065",
+  pink: "FDF2F8 FCE7F3 FBCFE8 F9A8D4 F472B6 EC4899 DB2777 BE185D 9D174D 831843 500724",
+};
 
-    background: "FFFFFF",
-    titleColor: "0F172A",
-    subtitleColor: "64748B",
-    bodyColor: "334155",
-    accentColor: "2563EB",
-    bulletColor: "2563EB",
-
-    tableHeaderBg: "1E293B",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "F8FAFC",
-    tableBorderColor: "E2E8F0",
-
-    footerColor: "94A3B8",
-    footerLineColor: "E2E8F0",
-
-    fontTitle: "Calibri",
-    fontBody: "Calibri",
+// `tint` is the scale light slides and table stripes come from, when it is
+// not the theme's own scale.
+const PALETTES = {
+  slate: {
+    name: "Slate",
+    description:
+      "Near-black and cool gray, minimal and monochrome. Safe default for any business deck.",
+    dark: 950,
   },
-
-  corporate: {
-    name: "Corporate",
-    description: "Refined and authoritative — ideal for business and finance",
-
-    titleSlideBackground: "0C1929",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "7B96B5",
-    titleSlideAccentColor: "C9943E",
-
-    background: "FFFFFF",
-    titleColor: "0C1929",
-    subtitleColor: "5A6D82",
-    bodyColor: "2C3E50",
-    accentColor: "1A5276",
-    bulletColor: "1A5276",
-
-    tableHeaderBg: "0C1929",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "F4F7FA",
-    tableBorderColor: "D5DBE2",
-
-    footerColor: "8B9DB3",
-    footerLineColor: "D5DBE2",
-
-    fontTitle: "Calibri",
-    fontBody: "Calibri",
+  indigo: {
+    name: "Indigo",
+    description: "Bright indigo, confident and modern. Product and strategy.",
+    dark: 700,
+    tint: "slate",
   },
-
-  dark: {
-    name: "Dark",
-    description: "Sleek dark theme — great for tech and product presentations",
-
-    titleSlideBackground: "0F0F1A",
-    titleSlideTitleColor: "F8FAFC",
-    titleSlideSubtitleColor: "7C8DB5",
-    titleSlideAccentColor: "818CF8",
-
-    background: "18181B",
-    titleColor: "F4F4F5",
-    subtitleColor: "A1A1AA",
-    bodyColor: "D4D4D8",
-    accentColor: "6366F1",
-    bulletColor: "818CF8",
-
-    tableHeaderBg: "6366F1",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "1F1F24",
-    tableBorderColor: "3F3F46",
-
-    footerColor: "71717A",
-    footerLineColor: "3F3F46",
-
-    fontTitle: "Calibri",
-    fontBody: "Calibri",
+  blue: {
+    name: "Blue",
+    description: "Classic bright blue. Corporate, finance, consulting.",
+    dark: 700,
   },
-
-  minimal: {
-    name: "Minimal",
-    description: "Ultra-clean with maximum whitespace — lets content speak",
-
-    titleSlideBackground: "F5F5F5",
-    titleSlideTitleColor: "171717",
-    titleSlideSubtitleColor: "737373",
-    titleSlideAccentColor: "A3A3A3",
-
-    background: "FFFFFF",
-    titleColor: "171717",
-    subtitleColor: "737373",
-    bodyColor: "404040",
-    accentColor: "525252",
-    bulletColor: "A3A3A3",
-
-    tableHeaderBg: "262626",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "FAFAFA",
-    tableBorderColor: "E5E5E5",
-
-    footerColor: "A3A3A3",
-    footerLineColor: "E5E5E5",
-
-    fontTitle: "Calibri",
-    fontBody: "Calibri Light",
+  emerald: {
+    name: "Emerald",
+    description: "Deep green. Sustainability, health, growth.",
+    dark: 950,
   },
-
-  creative: {
-    name: "Creative",
-    description: "Bold and expressive — perfect for pitches and creative work",
-
-    titleSlideBackground: "2E1065",
-    titleSlideTitleColor: "FFFFFF",
-    titleSlideSubtitleColor: "C4B5FD",
-    titleSlideAccentColor: "A78BFA",
-
-    background: "FFFFFF",
-    titleColor: "3B0764",
-    subtitleColor: "7C3AED",
-    bodyColor: "374151",
-    accentColor: "7C3AED",
-    bulletColor: "7C3AED",
-
-    tableHeaderBg: "5B21B6",
-    tableHeaderColor: "FFFFFF",
-    tableAltRowBg: "FAF5FF",
-    tableBorderColor: "E9D5FF",
-
-    footerColor: "A78BFA",
-    footerLineColor: "E9D5FF",
-
-    fontTitle: "Calibri",
-    fontBody: "Calibri",
+  cyan: {
+    name: "Cyan",
+    description: "Deep teal and cyan. Data, science, engineering.",
+    dark: 950,
+  },
+  sky: {
+    name: "Sky",
+    description: "Bright sky blue. SaaS, product updates, education.",
+    dark: 700,
+  },
+  violet: {
+    name: "Violet",
+    description: "Bright violet. Creative, marketing, AI.",
+    dark: 700,
+  },
+  pink: {
+    name: "Pink",
+    description: "Deep wine and pink. Brand, consumer, events.",
+    dark: 950,
   },
 };
 
+const DEFAULT_THEME = "indigo";
+
 /**
- * Get a theme by name, falling back to default if not found.
- * @param {string} themeName
- * @returns {object} Theme configuration
+ * Perceived brightness of a hex color, 0 (black) to 1 (white).
+ * @param {string} hex - 6-digit hex without `#`
+ * @returns {number}
  */
-function getTheme(themeName) {
-  const key = (themeName || "default").toLowerCase().trim();
-  return THEMES[key] || THEMES.default;
+function luminance(hex) {
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+/** Mixes `amount` (0-1) of `into` into `hex`. */
+function mix(hex, into, amount) {
+  const c = (h, i) => parseInt(h.slice(i, i + 2), 16);
+  return [0, 2, 4]
+    .map((i) => Math.round(c(hex, i) * (1 - amount) + c(into, i) * amount))
+    .map((v) => v.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+}
+
+/** A Tailwind scale as `{ 50: "F8FAFC", ..., 950: "020617" }`. */
+function scaleOf(name) {
+  const hexes = SCALES[name].split(" ");
+  return Object.fromEntries(SHADES.map((shade, i) => [shade, hexes[i]]));
 }
 
 /**
- * @returns {string[]} Available theme identifiers
+ * A Tailwind-like scale with `hex` as its 600 shade, for brand colors.
+ * Lighter shades mix toward white and darker ones toward black.
  */
-function getAvailableThemes() {
-  return Object.keys(THEMES);
+function scaleFromColor(hex) {
+  const steps = {
+    50: ["FFFFFF", 0.95],
+    100: ["FFFFFF", 0.9],
+    200: ["FFFFFF", 0.75],
+    300: ["FFFFFF", 0.55],
+    400: ["FFFFFF", 0.3],
+    500: ["FFFFFF", 0.15],
+    600: ["FFFFFF", 0],
+    700: ["000000", 0.15],
+    800: ["000000", 0.3],
+    900: ["000000", 0.45],
+    950: ["000000", 0.65],
+  };
+  return Object.fromEntries(
+    SHADES.map((shade) => [shade, mix(hex, ...steps[shade])])
+  );
 }
 
 /**
- * @returns {object[]} Array of { id, name, description } for documentation
+ * Resolves a theme name into the token object render.js draws with, falling
+ * back to the default theme for unknown names.
+ * @param {string} name - A key of PALETTES
+ * @param {string} [accentColor] - Optional hex brand color that replaces the theme's scale
+ * @returns {{name: string, scale: Object<number, string>, dark: string, light: string, stripe: string}}
  */
-function getThemeDescriptions() {
-  return Object.entries(THEMES).map(([id, t]) => ({
-    id,
-    name: t.name,
-    description: t.description,
-  }));
+function getTheme(name, accentColor) {
+  const key = String(name || "")
+    .toLowerCase()
+    .trim();
+  const id = PALETTES[key] ? key : DEFAULT_THEME;
+  const palette = PALETTES[id];
+  const accent = String(accentColor || "")
+    .replace("#", "")
+    .toUpperCase();
+  // Near-black and near-white brand colors produce a scale with no usable
+  // contrast between its shades, so they are ignored.
+  const accentLum = luminance(accent);
+  const accentOk =
+    /^[0-9A-F]{6}$/.test(accent) && accentLum >= 0.2 && accentLum <= 0.85;
+  const scale = accentOk ? scaleFromColor(accent) : scaleOf(id);
+  const tint = accentOk || !palette.tint ? scale : scaleOf(palette.tint);
+  return {
+    name: palette.name,
+    scale,
+    dark: scale[palette.dark],
+    light: tint[50],
+    stripe: tint[200],
+  };
 }
 
-module.exports = { THEMES, getTheme, getAvailableThemes, getThemeDescriptions };
+module.exports = { PALETTES, getTheme };
