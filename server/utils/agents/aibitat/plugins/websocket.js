@@ -376,6 +376,10 @@ const websocket = {
          * @param {boolean} [options.allowSkip=true] - Whether the user can skip individual questions
          * @param {number} [options.timeoutMs] - Override timeout (ms)
          * @returns {Promise<{ skipped: boolean, timedOut: boolean, answers: Array<{skipped: boolean, answer: any}> }>}
+         * Resolves early if the agent session is aborted while awaiting
+         * answers; the result mirrors the timeout shape since no consumer
+         * reads it after an abort (the agent loop stops at the next boundary
+         * and the pending chat save is skipped).
          */
         aibitat.requestUserClarification = async function ({
           questions = [],
@@ -387,15 +391,44 @@ const websocket = {
             let timeoutId = null;
             let held = false;
 
-            const handleTimeout = (ms) => {
+            // Resolve exactly once and tear down every waiter, whichever of
+            // the three outcomes lands first: user response, abort, or
+            // timeout.
+            const settle = (result) => {
               delete socket.handleClarificationResponse;
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // The socket is already gone once the session aborts, so no
+            // response can arrive - settle now instead of parking on the
+            // full (up to 15 minute) timeout. The result mirrors the timeout
+            // shape: the agent loop stops at the next boundary and the
+            // pending chat save is skipped, so nothing consumes it.
+            function abortListener() {
+              settle({
+                skipped: false,
+                timedOut: true,
+                answers: questions.map(() => ({
+                  skipped: true,
+                  answer: null,
+                })),
+              });
+            }
+            aibitat.emitter.once("abort", abortListener);
+
+            const handleTimeout = (ms) => {
               console.log(
                 chalk.yellow(`Clarification request timed out after ${ms}ms`)
               );
-              resolve({
+              settle({
                 skipped: false,
                 timedOut: true,
-                answers: questions.map(() => ({ skipped: true, answer: null })),
+                answers: questions.map(() => ({
+                  skipped: true,
+                  answer: null,
+                })),
               });
             };
 
@@ -417,11 +450,8 @@ const websocket = {
 
                 if (data?.type !== "clarificationResponse") return;
 
-                delete socket.handleClarificationResponse;
-                clearTimeout(timeoutId);
-
                 if (data.skipped) {
-                  return resolve({
+                  return settle({
                     skipped: true,
                     timedOut: false,
                     answers: questions.map(() => ({
@@ -439,7 +469,7 @@ const websocket = {
                     answer: a.answer ?? null,
                   };
                 });
-                return resolve({
+                return settle({
                   skipped: false,
                   timedOut: false,
                   answers: normalized,
