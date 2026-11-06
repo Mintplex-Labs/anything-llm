@@ -189,11 +189,7 @@ function shiftCron(cron, shiftMinutes) {
     rewrite(hour, hours, movedHours, 23),
     dayShift ? shiftDayOfMonth(dom, dayShift) : dom,
     month,
-    // The scheduler (@breejs/later) reads weekday 7 as Saturday, so rewrite a
-    // 7 to 0 even when the runs stay on the same day.
-    dayShift || /(^|[,-])7(?=$|[,-])/.test(dow)
-      ? shiftWeekdays(dow, dayShift)
-      : dow,
+    dayShift ? shiftWeekdays(dow, dayShift) : dow,
   ].join(" ");
 }
 
