@@ -55,6 +55,8 @@ class MCPHypervisor {
    * @type { { [key: string]: {status: 'success' | 'failed', message: string} } }
    */
   mcpLoadingResults = {};
+  #booted = false;
+  #bootPromise = null;
 
   constructor() {
     if (MCPHypervisor._instance) return MCPHypervisor._instance;
@@ -265,6 +267,8 @@ class MCPHypervisor {
    * and will also apply changes to the config file if any where made.
    */
   async reloadMCPServers() {
+    // Let an in-flight scan finish before replacing its clients and results.
+    while (this.#bootPromise) await this.#bootPromise.catch(() => {});
     this.pruneMCPServers();
     await this.bootMCPServers();
   }
@@ -333,6 +337,7 @@ class MCPHypervisor {
     this.mcpLoadingResults[name] = {
       status: "failed",
       message: `Server was stopped manually by the administrator.`,
+      manuallyStopped: true,
     };
     return true;
   }
@@ -359,6 +364,7 @@ class MCPHypervisor {
     }
     this.mcps = {};
     this.mcpLoadingResults = {};
+    this.#booted = false;
   }
 
   /**
@@ -560,18 +566,27 @@ class MCPHypervisor {
   }
 
   /**
-   * Boot the MCP servers according to the server definitions.
-   * This function will skip booting MCP servers if they are already running.
+   * Scan the MCP server definitions and allow retry if no server could start.
    * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
    */
   async bootMCPServers() {
-    if (Object.keys(this.mcps).length > 0) {
-      this.log("MCP Servers already running, skipping boot.");
-      return this.mcpLoadingResults;
-    }
+    if (this.#booted) return this.mcpLoadingResults;
+    this.#bootPromise ??= this.#bootConfiguredMCPServers().finally(() => {
+      this.#bootPromise = null;
+    });
+    return this.#bootPromise;
+  }
 
+  async #bootConfiguredMCPServers() {
     const serverDefinitions = this.mcpServerConfigs;
     for (const { name, server } of serverDefinitions) {
+      // Preserve servers already started or explicitly stopped through the API.
+      if (
+        Object.hasOwn(this.mcps, name) ||
+        this.mcpLoadingResults[name]?.manuallyStopped
+      )
+        continue;
+
       if (
         server.anythingllm?.hasOwnProperty("autoStart") &&
         server.anythingllm.autoStart === false
@@ -616,6 +631,7 @@ class MCPHypervisor {
     }
 
     const runningServers = Object.keys(this.mcps);
+    this.#booted = runningServers.length > 0;
     this.log(
       `Successfully started ${runningServers.length} MCP servers:`,
       runningServers

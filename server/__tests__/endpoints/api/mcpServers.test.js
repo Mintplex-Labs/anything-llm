@@ -550,6 +550,12 @@ describe("Developer API /v1/mcp-servers", () => {
         expect(stop.json).toEqual({ success: true, error: null });
         expect(MCPHypervisor._instance.mcps.live).toBeUndefined();
 
+        const listed = await call("GET", "/v1/mcp-servers");
+        expect(listed.status).toBe(200);
+        expect(listed.json.servers).toMatchObject([
+          { name: "live", running: false, tools: [] },
+        ]);
+
         const start = await call("POST", "/v1/mcp-servers/live/toggle");
         expect(start.json).toEqual({ success: true, error: null });
         expect(MCPHypervisor._instance.mcps.live).toBeDefined();
@@ -567,6 +573,94 @@ describe("Developer API /v1/mcp-servers", () => {
   });
 
   describe("GET /v1/mcp-servers and POST /v1/mcp-servers/reload", () => {
+    it("boots existing servers when adding a server is the first MCP operation", async () => {
+      const sse = await startSSETestServer();
+      const url = `http://localhost:${sse.address().port}`;
+
+      try {
+        writeConfig({ existing: { url }, disabled: { url, ...NO_START } });
+        const added = await call("POST", "/v1/mcp-servers/new", {
+          body: { name: "added", config: { url } },
+        });
+        expect(added.status).toBe(200);
+        expect(added.json.running).toBe(true);
+        const layer = new MCPCompatibilityLayer();
+        const addedClient = layer.mcps.added;
+
+        const listed = await call("GET", "/v1/mcp-servers");
+        expect(listed.status).toBe(200);
+        const servers = Object.fromEntries(
+          listed.json.servers.map((server) => [server.name, server])
+        );
+        expect(servers).toMatchObject({
+          added: { running: true },
+          existing: { running: true },
+          disabled: { running: false, tools: [] },
+        });
+        expect(layer.mcps.added).toBe(addedClient);
+        expect((await layer.activeMCPServers()).sort()).toEqual([
+          "@@mcp_added",
+          "@@mcp_existing",
+        ]);
+      } finally {
+        MCPHypervisor._instance?.pruneMCPServers();
+        await closeServer(sse);
+      }
+    });
+
+    it("shares the initial scan across concurrent list and agent discovery", async () => {
+      const sse = await startSSETestServer();
+      let createTransport;
+      try {
+        writeConfig({
+          live: { url: `http://localhost:${sse.address().port}` },
+        });
+        const layer = new MCPCompatibilityLayer();
+        createTransport = jest.spyOn(layer, "createHttpTransport");
+
+        const [servers, active] = await Promise.all([
+          layer.servers(),
+          layer.activeMCPServers(),
+        ]);
+
+        expect(servers).toMatchObject([{ name: "live", running: true }]);
+        expect(active).toEqual(["@@mcp_live"]);
+        expect(createTransport).toHaveBeenCalledTimes(1);
+      } finally {
+        // Also close any transport that a duplicate startup overwrote.
+        for (const { value } of createTransport?.mock.results ?? [])
+          await value?.close();
+        MCPHypervisor._instance?.pruneMCPServers();
+        await closeServer(sse);
+      }
+    });
+
+    it("allows a later list to retry when no server could start", async () => {
+      const sse = await startSSETestServer();
+      try {
+        writeConfig({
+          live: { url: `http://localhost:${sse.address().port}` },
+        });
+        const layer = new MCPCompatibilityLayer();
+        jest.spyOn(layer, "createHttpTransport").mockImplementationOnce(() => {
+          throw new Error("MCP endpoint temporarily unavailable");
+        });
+
+        const failed = await call("GET", "/v1/mcp-servers");
+        expect(failed.json.servers).toMatchObject([
+          { name: "live", running: false },
+        ]);
+
+        const recovered = await call("GET", "/v1/mcp-servers");
+        expect(recovered.json.servers).toMatchObject([
+          { name: "live", running: true },
+        ]);
+      } finally {
+        MCPHypervisor._instance?.pruneMCPServers();
+        await closeServer(sse);
+      }
+    });
+
     it("returns an empty list with no servers configured", async () => {
       const res = await call("GET", "/v1/mcp-servers");
       expect(res.status).toBe(200);
