@@ -7,6 +7,7 @@ const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const { extractTextContent } = require("../../endpoints/api/openai/helpers");
+const { ApiChatHandler } = require("./apiChatHandler");
 
 const { PassThrough } = require("stream");
 
@@ -59,7 +60,73 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
+  
+  // Select the chat handling implementation.
+  // true: Use ApiChatHandler (normal chat + agent invocation)
+  // false: Use the original OpenAI-compatible implementation.
+  const USE_API_CHAT_HANDLER = true;
 
+  // OpenAI messages history into one AnythingLLM message.
+  const conversation = history
+    .map(({ role, content }) => {
+      const text = extractTextContent(
+        Array.isArray(content) ? content.filter(Boolean) : content
+      );
+
+      if (!text || !["user", "assistant", "system"].includes(role))
+        return null;
+
+      return `${role.toUpperCase()}:\n${text}`;
+    })
+    .filter(Boolean)
+    .join("\n\n");
+
+  const message = [
+    systemPrompt,
+    conversation,
+     // Avoid appending the prompt twice if it is already the last user message.
+    prompt && history.at(-1)?.role === "user"
+      ? null
+      : prompt
+        ? `USER:\n${prompt}`
+        : null,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  
+   if (USE_API_CHAT_HANDLER) {
+    const result = await ApiChatHandler.chatSync({
+      workspace,
+      message,
+      mode: chatMode,
+      user: null,
+      thread: null,
+      sessionId: null,
+      attachments,
+    });
+
+    return formatJSON(
+      {
+        id: uuid,
+        type: "textResponse",
+        sources: result.sources ?? [],
+        close: true,
+        error: result.error ?? null,
+        textResponse: result.textResponse ?? null,
+      },
+      {
+        model: workspace.slug,
+        finish_reason: "stop",
+        usage: result.metrics ?? {},
+      }
+    );
+  }
+ 
+  // -------------------------------------------------------------------------
+  // Original OpenAI-compatible implementation.
+  // Kept intact so it can be restored by setting USE_API_CHAT_HANDLER = false.
+  // -------------------------------------------------------------------------
+    
   const { connector: LLMConnector, routingMetadata } =
     await resolveProviderConnector({
       workspace,
@@ -277,7 +344,59 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = workspace?.chatMode ?? "automatic";
+  // Select the chat handling implementation.
+  // true: Use ApiChatHandler (normal chat + agent invocation)
+  // false: Use the original OpenAI-compatible implementation.
+  const USE_API_CHAT_HANDLER = true;
 
+  // OpenAI messages history into one AnythingLLM message.
+  const conversation = history
+    .map(({ role, content }) => {
+      const text = extractTextContent(
+        Array.isArray(content) ? content.filter(Boolean) : content
+      );
+
+      if (!text || !["user", "assistant", "system"].includes(role))
+        return null;
+
+      return `${role.toUpperCase()}:\n${text}`;
+    })
+    .filter(Boolean)
+    .join("\n\n");
+
+  const message = [
+    systemPrompt,
+    conversation,
+    // Avoid appending the prompt twice if it is already the last user message.
+    prompt && history.at(-1)?.role === "user"
+      ? null
+      : prompt
+        ? `USER:\n${prompt}`
+        : null,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  // New implementation: delegate chat and agent handling to ApiChatHandler.
+  if (USE_API_CHAT_HANDLER) {
+    await ApiChatHandler.streamChat({
+      workspace,
+      response,
+      message,
+      mode: chatMode,
+      user: null,
+      thread: null,
+      sessionId: null,
+      attachments,
+    });
+
+    return;
+  }
+
+  // -------------------------------------------------------------------------
+  // Original OpenAI-compatible implementation.
+  // Kept intact so it can be restored by setting USE_API_CHAT_HANDLER = false.
+  // -------------------------------------------------------------------------
   const { connector: LLMConnector, routingMetadata } =
     await resolveProviderConnector({
       workspace,
