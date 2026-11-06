@@ -12,6 +12,11 @@ const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
+const {
+  forwardIdentityScopes,
+  identityFetch,
+  stripReservedHeaders,
+} = require("../identity");
 
 /**
  * @typedef {'stdio' | 'http'} MCPServerTypes
@@ -215,6 +220,17 @@ class MCPHypervisor {
       `MCP server ${serverName} tool ${toolName} ${enabled ? "enabled" : "suppressed"}`
     );
     return { success: true, error: null, suppressedTools };
+  }
+
+  /**
+   * Which identity scopes to forward to an MCP server.
+   * Set per server via `anythingllm.forwardIdentity` (true or ["user", "workspace"]).
+   * @param {string} serverName - The name of the MCP server
+   * @returns {("user"|"workspace")[]}
+   */
+  getForwardIdentityScopes(serverName) {
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    return forwardIdentityScopes(config?.server?.anythingllm?.forwardIdentity);
   }
 
   /**
@@ -473,22 +489,20 @@ class MCPHypervisor {
    */
   createHttpTransport(server) {
     const url = new URL(server.url);
+    const options = {
+      requestInit: {
+        headers: stripReservedHeaders(server.headers, (msg) => this.log(msg)),
+      },
+      fetch: identityFetch,
+    };
 
     // If the server block has a type property then use that to determine the transport type
     switch (server.type) {
       case "streamable":
       case "http":
-        return new StreamableHTTPClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
+        return new StreamableHTTPClientTransport(url, options);
       default:
-        return new SSEClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
+        return new SSEClientTransport(url, options);
     }
   }
 
