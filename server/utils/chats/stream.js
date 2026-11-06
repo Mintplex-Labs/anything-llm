@@ -4,10 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
-const {
-  writeResponseChunk,
-  safeJSONStringify,
-} = require("../helpers/chat/responses");
+const { writeResponseChunk } = require("../helpers/chat/responses");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const { grepAgents } = require("./agents");
 const {
@@ -372,19 +369,10 @@ async function streamChatWithWorkspace(
       user,
       include: true,
     };
-    // Update the early-saved row in place, never recreate it: the user may have
-    // deleted it (edit or delete) while generation kept running server-side.
     // The early save can fail, so fall back to creating the row here.
-    let savedChat = null;
-    if (chat) {
-      const updated = await WorkspaceChats._update(chat.id, {
-        response: safeJSONStringify(completedChat.response),
-        include: true,
-      });
-      if (updated) savedChat = chat;
-    } else {
-      ({ chat: savedChat } = await WorkspaceChats.new(completedChat));
-    }
+    const { chat: savedChat } = chat
+      ? await WorkspaceChats.upsert(chat.id, completedChat)
+      : await WorkspaceChats.new(completedChat);
 
     writeResponseChunk(response, {
       uuid,
