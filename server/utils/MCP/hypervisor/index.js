@@ -12,6 +12,11 @@ const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
+const {
+  forwardIdentityFields,
+  identityFetch,
+  stripReservedHeaders,
+} = require("../identity");
 
 /**
  * @typedef {'stdio' | 'http'} MCPServerTypes
@@ -215,6 +220,18 @@ class MCPHypervisor {
       `MCP server ${serverName} tool ${toolName} ${enabled ? "enabled" : "suppressed"}`
     );
     return { success: true, error: null, suppressedTools };
+  }
+
+  /**
+   * Which identity fields to forward to an MCP server.
+   * Set per server via `anythingllm.forwardIdentity` - true, or a list of
+   * "user", "workspace" and/or single fields like "user.id", "workspace.slug".
+   * @param {string} serverName - The name of the MCP server
+   * @returns {string[]} e.g. ["user.id", "workspace.slug"]
+   */
+  getForwardIdentityFields(serverName) {
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    return forwardIdentityFields(config?.server?.anythingllm?.forwardIdentity);
   }
 
   /**
@@ -473,22 +490,26 @@ class MCPHypervisor {
    */
   createHttpTransport(server) {
     const url = new URL(server.url);
+    // Reserved X-AnythingLLM-* config headers are only dropped for servers that
+    // opt in to identity forwarding - other servers send their headers as-is.
+    const forwardsIdentity =
+      forwardIdentityFields(server.anythingllm?.forwardIdentity).length > 0;
+    const options = {
+      requestInit: {
+        headers: forwardsIdentity
+          ? stripReservedHeaders(server.headers, (msg) => this.log(msg))
+          : server.headers,
+      },
+      fetch: identityFetch,
+    };
 
     // If the server block has a type property then use that to determine the transport type
     switch (server.type) {
       case "streamable":
       case "http":
-        return new StreamableHTTPClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
+        return new StreamableHTTPClientTransport(url, options);
       default:
-        return new SSEClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
+        return new SSEClientTransport(url, options);
     }
   }
 

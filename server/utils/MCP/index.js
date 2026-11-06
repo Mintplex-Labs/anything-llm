@@ -1,4 +1,5 @@
 const MCPHypervisor = require("./hypervisor");
+const { resolveMCPIdentity, withMCPIdentity } = require("./identity");
 
 // JSON-RPC "Method not found". A server that does not implement `ping`
 // answers with this code, which still proves it is alive.
@@ -24,13 +25,17 @@ async function isMCPServerReachable(mcp) {
 
 // The SDK returns one page per call. Only expose the list once every page
 // has loaded, so a later-page error cannot silently hide tools.
-async function listAllMCPTools(mcp) {
+async function listAllMCPTools(mcp, _meta = undefined) {
   const tools = [];
   const seenCursors = new Set();
   let cursor;
   do {
+    const params = {
+      ...(cursor !== undefined && { cursor }),
+      ...(_meta && { _meta }),
+    };
     const page = await mcp.listTools(
-      cursor === undefined ? undefined : { cursor }
+      Object.keys(params).length ? params : undefined
     );
     tools.push(...page.tools);
     cursor = page.nextCursor;
@@ -68,13 +73,20 @@ class MCPCompatibilityLayer extends MCPHypervisor {
    * @param {Object} aibitat - The aibitat object to pass to the plugin
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
-  async convertServerToolsToPlugins(name, _aibitat = null) {
+  async convertServerToolsToPlugins(name, aibitat = null) {
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
+    const identity = await resolveMCPIdentity(
+      this.getForwardIdentityFields(name),
+      aibitat
+    );
+
     let tools;
     try {
-      tools = await listAllMCPTools(mcp);
+      tools = await withMCPIdentity(identity, () =>
+        listAllMCPTools(mcp, identity?._meta)
+      );
     } catch (error) {
       this.log(`Failed to list tools for MCP server ${name}:`, error);
       return null;
@@ -133,10 +145,16 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `Executing MCP server: ${name} with ${JSON.stringify(args, null, 2)}`
                     );
-                    const result = await currentMcp.callTool(
-                      { name: tool.name, arguments: args },
-                      undefined,
-                      { timeout: mcpLayer.getToolCallTimeout(name) }
+                    const result = await withMCPIdentity(identity, () =>
+                      currentMcp.callTool(
+                        {
+                          name: tool.name,
+                          arguments: args,
+                          ...(identity && { _meta: identity._meta }),
+                        },
+                        undefined,
+                        { timeout: mcpLayer.getToolCallTimeout(name) }
+                      )
                     );
                     aibitat.handlerProps.log(
                       `MCP server: ${name}:${tool.name} completed successfully`,
