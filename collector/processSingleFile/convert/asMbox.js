@@ -45,7 +45,7 @@ async function asMbox({
     );
 
     const messageTitle = mail?.subject
-      ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
+      ? `${mail.subject}.mbox`
       : `msg_${item}-${filename}`;
     const data = {
       id: v4(),
