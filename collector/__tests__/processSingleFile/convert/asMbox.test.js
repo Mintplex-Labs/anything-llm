@@ -32,14 +32,14 @@ describe("asMbox", () => {
   });
   afterEach(() => fs.rmSync(dir, { recursive: true, force: true }));
 
-  it("titles a message by its position when its subject slugifies to nothing", async () => {
+  it("keeps non-Latin subjects in the message title", async () => {
     const fullFilePath = path.join(dir, "inbox.mbox");
     fs.writeFileSync(
       fullFilePath,
       [
         message("Weekly update"),
         message("会议纪要"),
-        message("日本語の件名"),
+        message("Re: 日本語の件名"),
       ].join("\n")
     );
 
@@ -50,9 +50,9 @@ describe("asMbox", () => {
     });
 
     expect(documents.map((doc) => doc.title)).toEqual([
-      "Weekly-update.mbox",
-      "msg_2-inbox.mbox",
-      "msg_3-inbox.mbox",
+      "Weekly update.mbox",
+      "会议纪要.mbox",
+      "Re: 日本語の件名.mbox",
     ]);
   });
 });
