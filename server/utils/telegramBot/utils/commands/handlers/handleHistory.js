@@ -91,7 +91,7 @@ async function handleHistory(ctx, chatId, messageText = "") {
   if (!exchanges.length) return;
 
   const threadName = thread?.name || "Default";
-  const header = `<b>${workspace.name} → ${threadName}</b>\nLast ${exchanges.length} message(s)\n\n`;
+  const header = `<b>${escapeHTML(workspace.name)} → ${escapeHTML(threadName)}</b>\nLast ${exchanges.length} message(s)\n\n`;
 
   await sendBatchedMessages(ctx.bot, chatId, exchanges, {
     header,
