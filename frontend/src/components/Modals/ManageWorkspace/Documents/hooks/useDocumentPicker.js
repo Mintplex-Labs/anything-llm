@@ -688,11 +688,20 @@ export default function useDocumentPicker({ slug }) {
     return resolved;
   }, []);
 
-  /** Folder names selected wholesale (used by delete, which removes folders). */
-  const selectedFolderNames = useMemo(
-    () => [...state.selectedFolders],
-    [state.selectedFolders]
-  );
+  /**
+   * Folder names selected wholesale (used by delete, which removes folders).
+   * Folders with files opted out are left out, so delete removes only their
+   * resolved files. An opted-out file can be on a loaded page or only in the
+   * current search matches.
+   */
+  const selectedFolderNames = useMemo(() => {
+    const { selectedFolders, deselectedFiles, contents, searchResults } = state;
+    return [...selectedFolders].filter((name) => {
+      const matches = searchResults?.find((f) => f.name === name)?.items ?? [];
+      const files = [...(contents[name] ?? UNLOADED).items, ...matches];
+      return !files.some((file) => deselectedFiles.has(file.id));
+    });
+  }, [state]);
 
   /* --------------------------------- actions ------------------------------- */
 
