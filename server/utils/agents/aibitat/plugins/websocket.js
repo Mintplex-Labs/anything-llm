@@ -387,12 +387,32 @@ const websocket = {
             let timeoutId = null;
             let held = false;
 
-            const handleTimeout = (ms) => {
+            const settle = (result) => {
               delete socket.handleClarificationResponse;
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // The socket is gone once the session aborts, so settle now instead of
+            // waiting out the timeout.
+            function abortListener() {
+              settle({
+                skipped: false,
+                timedOut: true,
+                answers: questions.map(() => ({
+                  skipped: true,
+                  answer: null,
+                })),
+              });
+            }
+            aibitat.emitter.once("abort", abortListener);
+
+            const handleTimeout = (ms) => {
               console.log(
                 chalk.yellow(`Clarification request timed out after ${ms}ms`)
               );
-              resolve({
+              settle({
                 skipped: false,
                 timedOut: true,
                 answers: questions.map(() => ({ skipped: true, answer: null })),
@@ -417,11 +437,8 @@ const websocket = {
 
                 if (data?.type !== "clarificationResponse") return;
 
-                delete socket.handleClarificationResponse;
-                clearTimeout(timeoutId);
-
                 if (data.skipped) {
-                  return resolve({
+                  return settle({
                     skipped: true,
                     timedOut: false,
                     answers: questions.map(() => ({
@@ -439,7 +456,7 @@ const websocket = {
                     answer: a.answer ?? null,
                   };
                 });
-                return resolve({
+                return settle({
                   skipped: false,
                   timedOut: false,
                   answers: normalized,
