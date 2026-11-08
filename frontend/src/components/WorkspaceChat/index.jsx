@@ -61,16 +61,23 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   useEffect(() => {
+    let cancelled = false;
+
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
-        setLoaded({ key: "none", workspace: null, history: [] });
+        if (!cancelled)
+          setLoaded({ key: "none", workspace: null, history: [] });
         return false;
       }
 
       const chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
+
+      // A response for a thread we have already switched away from must not
+      // replace the newly selected thread's history.
+      if (cancelled) return;
 
       setLoaded({
         key: `${workspace.slug}:${threadSlug ?? "default"}`,
@@ -80,6 +87,10 @@ export default function WorkspaceChat({ loading, workspace }) {
       });
     }
     getHistory();
+
+    return () => {
+      cancelled = true;
+    };
   }, [workspace, loading, threadSlug]);
 
   const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
