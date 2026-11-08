@@ -175,6 +175,36 @@ class PushNotifications {
   sendNotification({ to = "primary", payload = {} } = {}) {
     if (this.#subscriptions.size === 0)
       return this.#log(".sendNotification() - No subscriptions found");
+
+    // "all" delivers the payload to every registered subscription. Each send
+    // is logged individually and one failed delivery does not stop the rest.
+    // Without this branch "all" fell through to the single-target lookup
+    // below, where it never matched a key, so the documented broadcast was a
+    // silent no-op that sent nothing to anyone.
+    if (to === "all") {
+      const sends = [];
+      for (const [userId, subscription] of this.#subscriptions) {
+        this.#log(
+          `.sendNotification() - Sending notification to user ${userId}`
+        );
+        sends.push(
+          this.pushService
+            .sendNotification(subscription, JSON.stringify(payload))
+            .then((res) => {
+              this.#log(
+                `.sendNotification() - Delivered to ${userId} (status: ${res.statusCode})`
+              );
+            })
+            .catch((err) => {
+              this.#log(
+                `.sendNotification() - Failed for ${userId}: ${err.message}`
+              );
+            })
+        );
+      }
+      return Promise.all(sends).then(() => undefined);
+    }
+
     if (!this.#subscriptions.has(to))
       return this.#log(
         `.sendNotification() - Subscription for user ${to} not found`
