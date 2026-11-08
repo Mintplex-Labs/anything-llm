@@ -1368,7 +1368,7 @@ const TRANSLATIONS = {
     document: "Dokument",
     similarity_match: "mäng",
     source_count_one: "{{count}} viidatud",
-    source_count_other: "Viidatud allikad",
+    source_count_other: "{{count}} viidatud",
     add_new: "Lisada uus",
     edit: "Redigeerimine",
     publish: "Avaldada",
