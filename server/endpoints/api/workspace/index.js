@@ -431,7 +431,8 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        const validLimit = Math.max(1, parseInt(limit));
+        const parsedLimit = parseInt(limit);
+        const validLimit = Math.max(1, isNaN(parsedLimit) ? 100 : parsedLimit);
         const validOrderBy = ["asc", "desc"].includes(orderBy)
           ? orderBy
           : "asc";
