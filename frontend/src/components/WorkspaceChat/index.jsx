@@ -66,8 +66,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
-        if (!cancelled)
-          setLoaded({ key: "none", workspace: null, history: [] });
+        setLoaded({ key: "none", workspace: null, history: [] });
         return false;
       }
 
