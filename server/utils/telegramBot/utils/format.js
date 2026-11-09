@@ -144,7 +144,7 @@ function markdownToTelegram(
     /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))+)\)/g,
     (_, label, url) => {
       const placeholder = `\x00LINK${links.length}\x00`;
-      links.push(url);
+      links.push(url.replace(/"/g, "&quot;"));
       return `<a href="${placeholder}">${label}</a>`;
     }
   );
