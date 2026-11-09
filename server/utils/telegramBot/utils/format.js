@@ -144,7 +144,6 @@ function markdownToTelegram(
     /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))+)\)/g,
     (_, label, url) => {
       const placeholder = `\x00LINK${links.length}\x00`;
-      // escapeHTML leaves `"` alone, which would end the href attribute early.
       links.push(url.replace(/"/g, "&quot;"));
       return `<a href="${placeholder}">${label}</a>`;
     }
