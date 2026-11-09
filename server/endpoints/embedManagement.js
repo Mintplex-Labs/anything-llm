@@ -1,7 +1,7 @@
 const { EmbedChats } = require("../models/embedChats");
 const { EmbedConfig } = require("../models/embedConfig");
 const { EventLogs } = require("../models/eventLogs");
-const { reqBody, userFromSession } = require("../utils/http");
+const { reqBody, userFromSession, toBoundedInt } = require("../utils/http");
 const { validEmbedConfigId } = require("../utils/middleware/embedMiddleware");
 const {
   flexUserRoleValid,
@@ -95,7 +95,9 @@ function embedManagementEndpoints(app) {
     [chatHistoryViewable, validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { offset = 0, limit = 20 } = reqBody(request);
+        const body = reqBody(request);
+        const offset = toBoundedInt(body.offset, 0, { min: 0 });
+        const limit = toBoundedInt(body.limit, 20, { min: 1 });
         const embedChats = await EmbedChats.whereWithEmbedAndWorkspace(
           {},
           limit,

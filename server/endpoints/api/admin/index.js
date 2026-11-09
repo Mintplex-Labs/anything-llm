@@ -6,7 +6,7 @@ const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { WorkspaceUser } = require("../../../models/workspaceUsers");
 const { canModifyAdmin } = require("../../../utils/helpers/admin");
-const { multiUserMode, reqBody } = require("../../../utils/http");
+const { multiUserMode, reqBody, toBoundedInt } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
 function apiAdminEndpoints(app) {
@@ -714,7 +714,7 @@ function apiAdminEndpoints(app) {
     */
       try {
         const pgSize = 20;
-        const { offset = 0 } = reqBody(request);
+        const offset = toBoundedInt(reqBody(request).offset, 0, { min: 0 });
         const chats = await WorkspaceChats.whereWithData(
           {},
           pgSize,
