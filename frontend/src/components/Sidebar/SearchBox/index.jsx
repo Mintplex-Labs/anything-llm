@@ -20,8 +20,6 @@ export default function SearchBox({ user, showNewWsModal }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState(DEFAULT_SEARCH_RESULTS);
-  // Monotonic id for search requests. A slow query must not overwrite the
-  // results of one issued after it.
   const searchSeq = useRef(0);
   const handleSearch = debounce(handleSearchDebounced, 500);
 
