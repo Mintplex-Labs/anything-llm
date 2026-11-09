@@ -67,6 +67,14 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("escapes double quotes inside a link URL", () => {
+      expect(
+        markdownToTelegram('see [search](https://example.com/q?x="hi") here')
+      ).toBe(
+        'see <a href="https://example.com/q?x=&quot;hi&quot;">search</a> here'
+      );
+    });
+
     test("converts headings to <b>", () => {
       expect(markdownToTelegram("# Title\nbody")).toBe("<b>Title</b>\nbody");
       expect(markdownToTelegram("### Subsection")).toBe("<b>Subsection</b>");
