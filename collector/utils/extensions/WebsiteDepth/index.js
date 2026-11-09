@@ -1,5 +1,5 @@
 const { v4 } = require("uuid");
-const { ClosingPuppeteerWebBaseLoader } = require("../../puppeteer");
+const { PuppeteerLoader } = require("../../puppeteer");
 const { default: slugify } = require("slugify");
 const { parse } = require("node-html-parser");
 const { writeToServerDocuments, documentsFolder } = require("../../files");
@@ -76,7 +76,7 @@ async function getPageLinks(url, baseUrl) {
       launchConfig.headless = "false";
     }
 
-    const loader = new ClosingPuppeteerWebBaseLoader(url, {
+    const loader = new PuppeteerLoader(url, {
       launchOptions: {
         headless: launchConfig.headless,
         ignoreHTTPSErrors: true,
@@ -163,7 +163,7 @@ async function bulkScrapePages(links, outFolderPath) {
       let content;
       const { processVia } = await determineContentType(link);
       if (processVia === "web") {
-        const loader = new ClosingPuppeteerWebBaseLoader(link, {
+        const loader = new PuppeteerLoader(link, {
           launchOptions: {
             headless: launchConfig.headless,
             ignoreHTTPSErrors: true,

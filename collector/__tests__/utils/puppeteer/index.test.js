@@ -13,7 +13,7 @@ jest.mock("langchain/document_loaders/web/puppeteer", () => {
 const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
-const { ClosingPuppeteerWebBaseLoader } = require("../../../utils/puppeteer");
+const { PuppeteerLoader } = require("../../../utils/puppeteer");
 
 function mockBrowser(page) {
   const browser = {
@@ -37,9 +37,9 @@ function mockPage(overrides = {}) {
 }
 
 const scrape = (options) =>
-  new ClosingPuppeteerWebBaseLoader("https://example.com", options).scrape();
+  new PuppeteerLoader("https://example.com", options).scrape();
 
-describe("ClosingPuppeteerWebBaseLoader", () => {
+describe("PuppeteerLoader", () => {
   it("returns the page content and closes the browser", async () => {
     const browser = mockBrowser(mockPage());
 

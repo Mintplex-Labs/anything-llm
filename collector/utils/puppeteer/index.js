@@ -3,14 +3,14 @@ const {
 } = require("langchain/document_loaders/web/puppeteer");
 
 /**
- * PuppeteerWebBaseLoader that closes its browser whether the scrape succeeds or
- * throws (navigation timeout, destroyed execution context, net::ERR_*), so a
- * long-running collector never accumulates orphaned Chromium processes.
- * Overrides scrape() because the base scrape() calls the static _scrape by
- * class name, which a subclass cannot intercept.
+ * Puppeteer page loader for the collector. Always closes the browser, whether the
+ * scrape succeeds or throws (navigation timeout, destroyed execution context,
+ * net::ERR_*), so a long-running collector never accumulates orphaned Chromium
+ * processes. Overrides scrape() because the base scrape() calls the static
+ * _scrape by class name, which a subclass cannot intercept.
  * Also accepts `headers`, sent with every request of the page.
  */
-class ClosingPuppeteerWebBaseLoader extends PuppeteerWebBaseLoader {
+class PuppeteerLoader extends PuppeteerWebBaseLoader {
   async scrape() {
     const { launch } = await PuppeteerWebBaseLoader.imports();
     const browser = await launch({
@@ -38,4 +38,4 @@ class ClosingPuppeteerWebBaseLoader extends PuppeteerWebBaseLoader {
   }
 }
 
-module.exports = { ClosingPuppeteerWebBaseLoader };
+module.exports = { PuppeteerLoader };

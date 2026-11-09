@@ -1,5 +1,5 @@
 const { v4 } = require("uuid");
-const { ClosingPuppeteerWebBaseLoader } = require("../../utils/puppeteer");
+const { PuppeteerLoader } = require("../../utils/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -165,7 +165,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       launchConfig.headless = "false";
     }
 
-    const loader = new ClosingPuppeteerWebBaseLoader(link, {
+    const loader = new PuppeteerLoader(link, {
       launchOptions: {
         headless: launchConfig.headless,
         ignoreHTTPSErrors: true,
