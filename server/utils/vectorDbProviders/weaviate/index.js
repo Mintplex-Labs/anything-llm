@@ -8,20 +8,20 @@ const { camelCase } = require("../../helpers/camelcase");
 const { sourceIdentifier } = require("../../chats");
 const { VectorDatabase } = require("../base");
 
-/**
- * The Weaviate class (collection) name for a workspace namespace. Weaviate
- * class names must start with a letter, but a slug can start with a digit
- * (eg: "2024-report", or the uuid slug of a workspace named in a non-Latin
- * script), so those names get a prefix. Other names are unchanged.
- * @param {string} namespace
- * @returns {string}
- */
-function className(namespace) {
-  const name = camelCase(namespace);
-  return /^[A-Za-z]/.test(name) ? name : `AnythingLLM${name}`;
-}
-
 class Weaviate extends VectorDatabase {
+  /**
+   * The Weaviate class (collection) name for a workspace namespace. Weaviate
+   * class names must start with a letter, but a slug can start with a digit
+   * (eg: "2024-report", or the uuid slug of a workspace named in a non-Latin
+   * script), so those names get a prefix. Other names are unchanged.
+   * @param {string} namespace
+   * @returns {string}
+   */
+  static className(namespace) {
+    const name = camelCase(namespace);
+    return /^[A-Za-z]/.test(name) ? name : `AnythingLLM${name}`;
+  }
+
   constructor() {
     super();
   }
@@ -103,7 +103,9 @@ class Weaviate extends VectorDatabase {
 
   async namespaceCountWithClient(client, namespace) {
     try {
-      return await client.collections.get(className(namespace)).length();
+      return await client.collections
+        .get(Weaviate.className(namespace))
+        .length();
     } catch (e) {
       this.logger(`namespaceCountWithClient`, e.message);
       return 0;
@@ -130,7 +132,7 @@ class Weaviate extends VectorDatabase {
     };
 
     const { objects } = await client.collections
-      .get(className(namespace))
+      .get(Weaviate.className(namespace))
       .query.nearVector(queryVector, {
         limit: topN,
         returnMetadata: ["distance"],
@@ -168,7 +170,7 @@ class Weaviate extends VectorDatabase {
     if (!namespace) throw new Error("No namespace value provided.");
     if (!(await this.namespaceExists(client, namespace))) return null;
 
-    const collection = client.collections.get(className(namespace));
+    const collection = client.collections.get(Weaviate.className(namespace));
     return {
       ...(await collection.config.get()),
       vectorCount: await collection.length(),
@@ -177,7 +179,7 @@ class Weaviate extends VectorDatabase {
 
   async addVectors(client, namespace, vectors = []) {
     const { hasErrors, errors } = await client.collections
-      .get(className(namespace))
+      .get(Weaviate.className(namespace))
       .data.insertMany(
         vectors.map(({ id, vector, properties }) => ({
           id,
@@ -195,16 +197,16 @@ class Weaviate extends VectorDatabase {
   async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
-    return await client.collections.exists(className(namespace));
+    return await client.collections.exists(Weaviate.className(namespace));
   }
 
   async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    return await client.collections.exists(className(namespace));
+    return await client.collections.exists(Weaviate.className(namespace));
   }
 
   async deleteVectorsInNamespace(client, namespace = null) {
-    await client.collections.delete(className(namespace));
+    await client.collections.delete(Weaviate.className(namespace));
     return true;
   }
 
@@ -232,8 +234,8 @@ class Weaviate extends VectorDatabase {
           const weaviateClassExits = await this.hasNamespace(namespace);
           if (!weaviateClassExits) {
             await client.collections.createFromSchema({
-              class: className(namespace),
-              description: `Class created by AnythingLLM named ${className(namespace)}`,
+              class: Weaviate.className(namespace),
+              description: `Class created by AnythingLLM named ${Weaviate.className(namespace)}`,
               vectorizer: "none",
             });
           }
@@ -332,8 +334,8 @@ class Weaviate extends VectorDatabase {
       const weaviateClassExits = await this.hasNamespace(namespace);
       if (!weaviateClassExits) {
         await client.collections.createFromSchema({
-          class: className(namespace),
-          description: `Class created by AnythingLLM named ${className(namespace)}`,
+          class: Weaviate.className(namespace),
+          description: `Class created by AnythingLLM named ${Weaviate.className(namespace)}`,
           vectorizer: "none",
         });
       }
@@ -370,7 +372,7 @@ class Weaviate extends VectorDatabase {
     const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
-    const collection = client.collections.get(className(namespace));
+    const collection = client.collections.get(Weaviate.className(namespace));
     for (const chunk of toChunks(knownDocuments, 500)) {
       await collection.data.deleteMany(
         collection.filter.byId().containsAny(chunk.map((doc) => doc.vectorId))
@@ -438,7 +440,7 @@ class Weaviate extends VectorDatabase {
     const details = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
     return {
-      message: `Namespace ${className(namespace)} was deleted along with ${
+      message: `Namespace ${Weaviate.className(namespace)} was deleted along with ${
         details?.vectorCount
       } vectors.`,
     };
