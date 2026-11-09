@@ -1647,7 +1647,7 @@ const TRANSLATIONS = {
         submitting: "Publication...",
         prompt_label: "Prompt",
         prompt_description: "Le prompt exécuté par cette commande.",
-        prompt_placeholder: "Résumez le texte suivant : {{input}}",
+        prompt_placeholder: "Saisissez votre prompt ici...",
       },
     },
   },
