@@ -74,8 +74,6 @@ export default function WorkspaceChat({ loading, workspace }) {
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
 
-      // A response for a thread we have already switched away from must not
-      // replace the newly selected thread's history.
       if (cancelled) return;
 
       setLoaded({
