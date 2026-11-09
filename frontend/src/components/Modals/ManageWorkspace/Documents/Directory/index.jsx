@@ -250,10 +250,12 @@ export default function Directory({
     event.stopPropagation();
     if (!window.confirm(t("connectors.directory.delete-confirmation"))) return;
 
-    const selected = await resolveSelection();
+    // A folder with any file opted out is kept; only its resolved files go.
+    const partialFolders = new Set();
+    const selected = await resolveSelection({ partialFolders });
     const toRemove = selected.map((file) => `${file.folderName}/${file.name}`);
     const foldersToRemove = selectedFolderNames.filter(
-      (name) => name !== "custom-documents"
+      (name) => name !== "custom-documents" && !partialFolders.has(name)
     );
 
     setBusy(
