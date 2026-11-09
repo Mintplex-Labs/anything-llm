@@ -394,17 +394,19 @@ const websocket = {
               resolve(result);
             };
 
-            // The socket is gone once the session aborts, so settle now instead of
-            // waiting out the timeout.
-            function abortListener() {
+            // Abort and timeout both mean no answers will arrive, so both
+            // resolve with every question marked skipped.
+            const settleUnanswered = () =>
               settle({
                 skipped: false,
                 timedOut: true,
-                answers: questions.map(() => ({
-                  skipped: true,
-                  answer: null,
-                })),
+                answers: questions.map(() => ({ skipped: true, answer: null })),
               });
+
+            // The socket is gone once the session aborts, so settle now instead of
+            // waiting out the timeout.
+            function abortListener() {
+              settleUnanswered();
             }
             aibitat.emitter.once("abort", abortListener);
 
@@ -412,11 +414,7 @@ const websocket = {
               console.log(
                 chalk.yellow(`Clarification request timed out after ${ms}ms`)
               );
-              settle({
-                skipped: false,
-                timedOut: true,
-                answers: questions.map(() => ({ skipped: true, answer: null })),
-              });
+              settleUnanswered();
             };
 
             socket.handleClarificationResponse = (message) => {
