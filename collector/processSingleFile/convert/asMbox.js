@@ -44,8 +44,9 @@ async function asMbox({
       `-- Working on message "${mail.subject || "Unknown subject"}" --`
     );
 
-    const messageTitle = mail?.subject
-      ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
+    const subject = mail?.subject?.trim();
+    const messageTitle = subject
+      ? `${subject}.mbox`
       : `msg_${item}-${filename}`;
     const data = {
       id: v4(),

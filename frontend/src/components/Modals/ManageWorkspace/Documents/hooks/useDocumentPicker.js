@@ -638,9 +638,13 @@ export default function useDocumentPicker({ slug }) {
   /**
    * Expand the current selection into concrete file records, fetching whole
    * folders on demand. Files already embedded in this workspace are skipped.
+   * @param {object} [options]
+   * @param {Set<string>} [options.partialFolders] filled with the names of
+   * wholesale-selected folders that have at least one file opted out. Delete
+   * uses it to remove only the resolved files of those folders, not the folder.
    * @returns {Promise<Array<object & {folderName: string}>>}
    */
-  const resolveSelection = useCallback(async () => {
+  const resolveSelection = useCallback(async ({ partialFolders } = {}) => {
     const {
       folders,
       contents,
@@ -665,7 +669,11 @@ export default function useDocumentPicker({ slug }) {
           );
         }
         for (const file of items) {
-          if (deselectedFiles.has(file.id) || seen.has(file.id)) continue;
+          if (deselectedFiles.has(file.id)) {
+            partialFolders?.add(folder.name);
+            continue;
+          }
+          if (seen.has(file.id)) continue;
           seen.add(file.id);
           resolved.push({ ...file, folderName: folder.name });
         }
@@ -688,7 +696,11 @@ export default function useDocumentPicker({ slug }) {
     return resolved;
   }, []);
 
-  /** Folder names selected wholesale (used by delete, which removes folders). */
+  /**
+   * Folder names selected wholesale (used by delete, which removes folders).
+   * Some may have files opted out; `resolveSelection({ partialFolders })`
+   * reports those.
+   */
   const selectedFolderNames = useMemo(
     () => [...state.selectedFolders],
     [state.selectedFolders]

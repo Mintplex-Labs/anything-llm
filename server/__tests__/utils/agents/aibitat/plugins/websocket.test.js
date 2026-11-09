@@ -9,6 +9,7 @@ jest.mock("../../../../../models/workspaceChats", () => ({
   WorkspaceChats: { count: jest.fn() },
 }));
 
+const { EventEmitter } = require("events");
 const {
   websocket,
 } = require("../../../../../utils/agents/aibitat/plugins/websocket.js");
@@ -34,6 +35,7 @@ const flushPromises = () =>
 function setupPlugin({ userId = null } = {}) {
   const socket = { send: jest.fn(), close: jest.fn() };
   const aibitat = {
+    emitter: new EventEmitter(),
     onError: jest.fn(),
     onMessage: jest.fn(),
     onTerminate: jest.fn(),
@@ -142,6 +144,84 @@ describe("websocket plugin handleFeedback", () => {
     await pending;
 
     expect(jest.getTimerCount()).toBe(0);
+  });
+});
+
+describe("websocket plugin requestUserClarification", () => {
+  const CLARIFICATION_TIMEOUT_MS = 120_000;
+  const questions = [
+    { kind: "input", question: "Which URL?", inputType: "url" },
+  ];
+  const timedOutResult = {
+    skipped: false,
+    timedOut: true,
+    answers: [{ skipped: true, answer: null }],
+  };
+
+  function requestClarification(aibitat) {
+    return aibitat.requestUserClarification({ questions, allowSkip: true });
+  }
+
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it("resolves immediately when the session is aborted while awaiting answers", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const pending = requestClarification(aibitat);
+
+    aibitat.emitter.emit("abort", null, aibitat);
+    await expect(pending).resolves.toEqual(timedOutResult);
+
+    expect(socket.handleClarificationResponse).toBeUndefined();
+    expect(jest.getTimerCount()).toBe(0);
+    expect(aibitat.emitter.listenerCount("abort")).toBe(0);
+  });
+
+  it("settles immediately even after the user held the card open", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const pending = requestClarification(aibitat);
+    const requestId = JSON.parse(socket.send.mock.calls.at(-1)[0]).requestId;
+
+    await socket.handleClarificationResponse(
+      JSON.stringify({ requestId, type: "clarificationHold" })
+    );
+
+    aibitat.emitter.emit("abort", null, aibitat);
+    await expect(pending).resolves.toEqual(timedOutResult);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(aibitat.emitter.listenerCount("abort")).toBe(0);
+  });
+
+  it("removes the abort listener after a user response", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const pending = requestClarification(aibitat);
+    const requestId = JSON.parse(socket.send.mock.calls.at(-1)[0]).requestId;
+
+    await socket.handleClarificationResponse(
+      JSON.stringify({
+        requestId,
+        type: "clarificationResponse",
+        answers: [{ skipped: false, answer: "https://x.dev" }],
+      })
+    );
+
+    await expect(pending).resolves.toEqual({
+      skipped: false,
+      timedOut: false,
+      answers: [{ skipped: false, answer: "https://x.dev" }],
+    });
+    expect(jest.getTimerCount()).toBe(0);
+    expect(aibitat.emitter.listenerCount("abort")).toBe(0);
+  });
+
+  it("removes the abort listener after a timeout", async () => {
+    const { socket, aibitat } = setupPlugin();
+    const pending = requestClarification(aibitat);
+
+    jest.advanceTimersByTime(CLARIFICATION_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual(timedOutResult);
+    expect(socket.handleClarificationResponse).toBeUndefined();
+    expect(aibitat.emitter.listenerCount("abort")).toBe(0);
   });
 });
 
