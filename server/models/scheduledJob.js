@@ -9,6 +9,27 @@ const cronValidate = require("cron-validate").default;
 // when displaying.
 later.date.UTC();
 
+/**
+ * Cron allows 7 for Sunday in the day-of-week field, but @breejs/later reads it
+ * as Saturday. Write a 7, and a range ending at 7, with 0 instead.
+ * @param {string} cronExpression
+ * @returns {string}
+ */
+function sundayAsZero(cronExpression) {
+  const fields = String(cronExpression).trim().split(/\s+/);
+  if (fields.length !== 5) return cronExpression;
+  fields[4] = fields[4]
+    .split(",")
+    .map((part) => {
+      if (part === "7") return "0";
+      const range = /^([0-6])-7$/.exec(part);
+      if (!range) return part;
+      return range[1] === "0" ? "0-6" : `0,${range[1]}-6`;
+    })
+    .join(",");
+  return fields.join(" ");
+}
+
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],
 
@@ -22,6 +43,16 @@ const ScheduledJob = {
   MAX_ACTIVE: null,
 
   /**
+   * Parse a cron expression into a @breejs/later schedule, reading weekday 7
+   * as Sunday like cron does.
+   * @param {string} cronExpression
+   * @returns {object}
+   */
+  parseCron: function (cronExpression) {
+    return later.parse.cron(sundayAsZero(cronExpression));
+  },
+
+  /**
    * Compute the next run time from a cron expression.
    * Uses @breejs/later which is already available via Bree.
    * @param {string} cronExpression
@@ -29,7 +60,7 @@ const ScheduledJob = {
    */
   computeNextRunAt: function (cronExpression) {
     try {
-      const sched = later.parse.cron(cronExpression);
+      const sched = this.parseCron(cronExpression);
       const next = later.schedule(sched).next(1);
       return next || null;
     } catch (error) {

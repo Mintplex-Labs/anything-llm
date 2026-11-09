@@ -1,7 +1,5 @@
 const { v4 } = require("uuid");
-const {
-  PuppeteerWebBaseLoader,
-} = require("langchain/document_loaders/web/puppeteer");
+const { PuppeteerLoader } = require("../../utils/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -167,7 +165,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       launchConfig.headless = "false";
     }
 
-    const loader = new PuppeteerWebBaseLoader(link, {
+    const loader = new PuppeteerLoader(link, {
       launchOptions: {
         headless: launchConfig.headless,
         ignoreHTTPSErrors: true,
@@ -176,44 +174,15 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       gotoOptions: {
         waitUntil: "networkidle2",
       },
-      async evaluate(page, browser) {
+      headers: validatedHeaders(headers),
+      async evaluate(page) {
         const innerHTML = await page.evaluate(
           () => document.documentElement.innerHTML
         );
-        await browser.close();
         if (captureAs === "html") return innerHTML;
         return htmlToMarkdown(innerHTML, link);
       },
     });
-
-    // Override scrape method if headers are available
-    let overrideHeaders = validatedHeaders(headers);
-    if (Object.keys(overrideHeaders).length > 0) {
-      loader.scrape = async function () {
-        const { launch } = await PuppeteerWebBaseLoader.imports();
-        const browser = await launch({
-          headless: "new",
-          defaultViewport: null,
-          ignoreDefaultArgs: ["--disable-extensions"],
-          ...this.options?.launchOptions,
-        });
-        const page = await browser.newPage();
-        await page.setExtraHTTPHeaders(overrideHeaders);
-
-        await page.goto(this.webPath, {
-          timeout: 180000,
-          waitUntil: "networkidle2",
-          ...this.options?.gotoOptions,
-        });
-
-        const bodyHTML = this.options?.evaluate
-          ? await this.options.evaluate(page, browser)
-          : await page.evaluate(() => document.body.innerHTML);
-
-        await browser.close();
-        return bodyHTML;
-      };
-    }
 
     const docs = await loader.load();
     for (const doc of docs) pageContents.push(doc.pageContent);

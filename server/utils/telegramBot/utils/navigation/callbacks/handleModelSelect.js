@@ -1,6 +1,7 @@
 const { Workspace } = require("../../../../../models/workspace");
 const { getCustomModels } = require("../../../../helpers/customModels");
 const { resolveWorkspaceProvider } = require("../../index");
+const { modelCallbackToken } = require("../../commands/handlers/showModelMenu");
 
 /**
  * Handle model selection for a workspace.
@@ -14,7 +15,7 @@ const { resolveWorkspaceProvider } = require("../../index");
 async function handleModelSelect({ ctx, chatId, query, messageId, data } = {}) {
   const parts = data.slice(4).split(":");
   const workspaceId = parseInt(parts[0], 10);
-  const modelIdPrefix = parts.slice(1).join(":");
+  const token = parts[1];
 
   const workspace = await Workspace.get({ id: workspaceId });
   if (!workspace) {
@@ -26,10 +27,9 @@ async function handleModelSelect({ ctx, chatId, query, messageId, data } = {}) {
 
   const { provider } = resolveWorkspaceProvider(workspace);
   const { models } = await getCustomModels(provider);
-  const selectedModel = models?.find((m) => {
-    const id = m.id || m.name;
-    return id === modelIdPrefix || id.startsWith(modelIdPrefix);
-  });
+  const selectedModel = models?.find(
+    (m) => modelCallbackToken(m.id || m.name) === token
+  );
 
   if (!selectedModel) {
     await ctx.bot.answerCallbackQuery(query.id, {
