@@ -61,6 +61,8 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   useEffect(() => {
+    let cancelled = false;
+
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
@@ -72,6 +74,8 @@ export default function WorkspaceChat({ loading, workspace }) {
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
 
+      if (cancelled) return;
+
       setLoaded({
         key: `${workspace.slug}:${threadSlug ?? "default"}`,
         workspace,
@@ -80,6 +84,10 @@ export default function WorkspaceChat({ loading, workspace }) {
       });
     }
     getHistory();
+
+    return () => {
+      cancelled = true;
+    };
   }, [workspace, loading, threadSlug]);
 
   const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
