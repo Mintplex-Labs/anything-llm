@@ -253,6 +253,13 @@ class LanceDb extends VectorDatabase {
    * @returns
    */
   async updateOrCreateCollection(client, data = [], namespace) {
+    // A table created from zero-length vectors gets a 0-dimension vector column,
+    // which crashes LanceDB's decoder on every later read of that table.
+    if (data.some((record) => !record.vector?.length))
+      throw new Error(
+        "Embedder returned an empty vector for one or more chunks. Check your embedding provider and model, then try again."
+      );
+
     const hasNamespace = await this.hasNamespace(namespace);
     if (hasNamespace) {
       const collection = await client.openTable(namespace);
