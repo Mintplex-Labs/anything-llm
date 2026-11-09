@@ -20,21 +20,24 @@ export default function SearchBox({ user, showNewWsModal }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState(DEFAULT_SEARCH_RESULTS);
+  const searchSeq = useRef(0);
   const handleSearch = debounce(handleSearchDebounced, 500);
 
   async function handleSearchDebounced(e) {
+    const seq = ++searchSeq.current;
     try {
       const searchValue = e.target.value;
       setSearchTerm(searchValue);
       setLoading(true);
       const searchResults =
         await Workspace.searchWorkspaceOrThread(searchValue);
+      if (seq !== searchSeq.current) return;
       setSearchResults(searchResults);
     } catch (error) {
       console.error(error);
       setSearchResults(DEFAULT_SEARCH_RESULTS);
     } finally {
-      setLoading(false);
+      if (seq === searchSeq.current) setLoading(false);
     }
   }
 
