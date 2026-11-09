@@ -194,9 +194,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
 
-| Easypanel                                                 |
-| --------------------------------------------------------- |
-| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] |
+| Easypanel                                                 | Nife |
+| --------------------------------------------------------- | ---- |
+| [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy] | [![Deploy on Nife][nife-btn]][nife-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -328,3 +328,5 @@ This project is [MIT](./LICENSE) licensed.
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
 [easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
 [easypanel-deploy]: https://easypanel.io/templates/anythingllm
+[nife-btn]: https://img.shields.io/badge/Deploy%20on-Nife-6d28d9
+[nife-deploy]: https://launch.nife.io/marketplace/anything-llm?autodeploy=true
