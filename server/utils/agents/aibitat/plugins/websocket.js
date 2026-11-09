@@ -387,16 +387,34 @@ const websocket = {
             let timeoutId = null;
             let held = false;
 
-            const handleTimeout = (ms) => {
+            const settle = (result) => {
               delete socket.handleClarificationResponse;
-              console.log(
-                chalk.yellow(`Clarification request timed out after ${ms}ms`)
-              );
-              resolve({
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // Abort and timeout both mean no answers will arrive, so both
+            // resolve with every question marked skipped.
+            const settleUnanswered = () =>
+              settle({
                 skipped: false,
                 timedOut: true,
                 answers: questions.map(() => ({ skipped: true, answer: null })),
               });
+
+            // The socket is gone once the session aborts, so settle now instead of
+            // waiting out the timeout.
+            function abortListener() {
+              settleUnanswered();
+            }
+            aibitat.emitter.once("abort", abortListener);
+
+            const handleTimeout = (ms) => {
+              console.log(
+                chalk.yellow(`Clarification request timed out after ${ms}ms`)
+              );
+              settleUnanswered();
             };
 
             socket.handleClarificationResponse = (message) => {
@@ -417,11 +435,8 @@ const websocket = {
 
                 if (data?.type !== "clarificationResponse") return;
 
-                delete socket.handleClarificationResponse;
-                clearTimeout(timeoutId);
-
                 if (data.skipped) {
-                  return resolve({
+                  return settle({
                     skipped: true,
                     timedOut: false,
                     answers: questions.map(() => ({
@@ -439,7 +454,7 @@ const websocket = {
                     answer: a.answer ?? null,
                   };
                 });
-                return resolve({
+                return settle({
                   skipped: false,
                   timedOut: false,
                   answers: normalized,
