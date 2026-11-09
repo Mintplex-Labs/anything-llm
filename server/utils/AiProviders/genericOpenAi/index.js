@@ -482,15 +482,20 @@ class GenericOpenAiLLM {
    */
   async getModelCapabilities() {
     try {
-      const reasoningOptions = await catalogReasoningOptions(
+      const { ok, reasoningOptions } = await catalogReasoningOptions(
         this.openai,
         this.model
       );
+      // "unknown" keeps a failed catalog read out of the shared capability
+      // cache, so fixing the key or starting the backend takes effect at once.
+      let reasoning = "unknown";
+      if (ok)
+        reasoning =
+          this.#supportsCapabilityFromENV("reasoning") ||
+          reasoningOptions.length > 0;
       return {
         tools: this.#supportsCapabilityFromENV("tools"),
-        reasoning:
-          this.#supportsCapabilityFromENV("reasoning") ||
-          reasoningOptions.length > 0,
+        reasoning,
         reasoningOptions,
         imageGeneration: this.#supportsCapabilityFromENV("imageGeneration"),
         vision: this.#supportsCapabilityFromENV("vision"),
