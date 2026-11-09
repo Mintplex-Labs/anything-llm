@@ -3,10 +3,11 @@ const {
 } = require("langchain/document_loaders/web/puppeteer");
 
 /**
- * PuppeteerWebBaseLoader that always closes its browser. langchain's _scrape only
- * closes it after goto and evaluate succeed, so every failed scrape (navigation
- * timeout, destroyed execution context, net::ERR_*) leaked a whole Chromium
- * process tree until the container ran out of memory.
+ * PuppeteerWebBaseLoader that closes its browser whether the scrape succeeds or
+ * throws (navigation timeout, destroyed execution context, net::ERR_*), so a
+ * long-running collector never accumulates orphaned Chromium processes.
+ * Overrides scrape() because the base scrape() calls the static _scrape by
+ * class name, which a subclass cannot intercept.
  * Also accepts `headers`, sent with every request of the page.
  */
 class ClosingPuppeteerWebBaseLoader extends PuppeteerWebBaseLoader {
