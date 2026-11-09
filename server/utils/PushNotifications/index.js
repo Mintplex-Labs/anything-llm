@@ -168,13 +168,37 @@ class PushNotifications {
   /**
    * Send a push notification to all subscribed clients.
    * @param {Object} options - The options for the notification.
-   * @param {"primary"|number} [options.to] - The subscription to send the notification to. "all" sends to all subscriptions, "primary" sends to the primary user (single user mode only), a number sends subscription to specific user
+   * @param {"primary"|"all"|number} [options.to] - The subscription to send the notification to. "all" sends to all subscriptions, "primary" sends to the primary user (single user mode only), a number sends subscription to specific user
    * @param {PushNotificationPayload} [options.payload] - The payload to send to the clients.
    * @returns {Promise<void>}
    */
   sendNotification({ to = "primary", payload = {} } = {}) {
     if (this.#subscriptions.size === 0)
       return this.#log(".sendNotification() - No subscriptions found");
+    if (to === "all") {
+      const pushService = this.pushService;
+      if (!pushService)
+        return this.#log(
+          ".sendNotification() - Push service unavailable, cannot send to all subscriptions"
+        );
+      this.#log(
+        `.sendNotification() - Sending notification to all ${this.#subscriptions.size} subscriptions`
+      );
+      return Promise.allSettled(
+        [...this.#subscriptions.values()].map((subscription) =>
+          pushService
+            .sendNotification(subscription, JSON.stringify(payload))
+            .then((res) => {
+              this.#log(
+                `.sendNotification() - Delivered (status: ${res.statusCode})`
+              );
+            })
+            .catch((err) => {
+              this.#log(`.sendNotification() - Failed: ${err.message}`);
+            })
+        )
+      );
+    }
     if (!this.#subscriptions.has(to))
       return this.#log(
         `.sendNotification() - Subscription for user ${to} not found`
