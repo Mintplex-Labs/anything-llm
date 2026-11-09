@@ -27,7 +27,7 @@ jest.mock("../../utils/downloadURIToFile", () => ({
   })),
 }));
 jest.mock("../../utils/extensions/YoutubeTranscript", () => ({}));
-jest.mock("langchain/document_loaders/web/puppeteer", () => ({}));
+jest.mock("../../utils/puppeteer", () => ({}));
 
 const { handlers } = require("express");
 const { processSingleFile } = require("../../processSingleFile");
