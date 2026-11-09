@@ -1,31 +1,10 @@
 /* eslint-env jest, node */
-jest.mock("langchain/document_loaders/web/puppeteer", () => {
-  class PuppeteerWebBaseLoader {
-    constructor(webPath, options) {
-      this.webPath = webPath;
-      this.options = options;
-    }
-  }
-  PuppeteerWebBaseLoader.imports = jest.fn();
-  return { PuppeteerWebBaseLoader };
-});
-
 const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
 const { PuppeteerLoader } = require("../../../utils/puppeteer");
 
-function mockBrowser(page) {
-  const browser = {
-    newPage: jest.fn().mockResolvedValue(page),
-    close: jest.fn().mockResolvedValue(),
-    process: () => null,
-  };
-  PuppeteerWebBaseLoader.imports.mockResolvedValue({
-    launch: jest.fn().mockResolvedValue(browser),
-  });
-  return browser;
-}
+const URL = "https://example.com";
 
 function mockPage(overrides = {}) {
   return {
@@ -36,58 +15,269 @@ function mockPage(overrides = {}) {
   };
 }
 
-const scrape = (options) =>
-  new PuppeteerLoader("https://example.com", options).scrape();
+function mockBrowser(page = mockPage(), overrides = {}) {
+  return {
+    page,
+    newPage: jest.fn().mockResolvedValue(page),
+    close: jest.fn().mockResolvedValue(),
+    process: () => null,
+    ...overrides,
+  };
+}
+
+/**
+ * Stubs puppeteer's launch (only the real langchain loader's dynamic import is
+ * replaced) so each launch call hands out the next browser in the list.
+ */
+function mockLaunch(...browsers) {
+  const launch = jest.fn();
+  for (const browser of browsers) launch.mockResolvedValueOnce(browser);
+  jest.spyOn(PuppeteerWebBaseLoader, "imports").mockResolvedValue({ launch });
+  return launch;
+}
+
+const scrape = (options, url = URL) =>
+  new PuppeteerLoader(url, options).scrape();
+
+afterEach(() => jest.restoreAllMocks());
 
 describe("PuppeteerLoader", () => {
-  it("returns the page content and closes the browser", async () => {
-    const browser = mockBrowser(mockPage());
+  describe("success path", () => {
+    it("reads document.body.innerHTML when no evaluate is given", async () => {
+      const browser = mockBrowser();
+      mockLaunch(browser);
 
-    await expect(scrape()).resolves.toBe("<p>body</p>");
-    expect(browser.close).toHaveBeenCalledTimes(1);
+      await expect(scrape()).resolves.toBe("<p>body</p>");
+      expect(browser.page.evaluate).toHaveBeenCalledTimes(1);
+      expect(browser.page.evaluate.mock.calls[0][0].toString()).toContain(
+        "document.body.innerHTML"
+      );
+    });
+
+    it("passes the page and browser to evaluate and returns its result", async () => {
+      const browser = mockBrowser();
+      mockLaunch(browser);
+      const evaluate = jest.fn().mockResolvedValue("evaluated");
+
+      await expect(scrape({ evaluate })).resolves.toBe("evaluated");
+      expect(evaluate).toHaveBeenCalledWith(browser.page, browser);
+      expect(browser.page.evaluate).not.toHaveBeenCalled();
+      expect(browser.close).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns whatever evaluate resolves to, including empty values", async () => {
+      mockLaunch(mockBrowser(), mockBrowser());
+
+      await expect(scrape({ evaluate: async () => "" })).resolves.toBe("");
+      await expect(scrape({ evaluate: async () => undefined })).resolves.toBe(
+        undefined
+      );
+    });
   });
 
-  it.each([
-    ["goto", { goto: jest.fn().mockRejectedValue(new Error("timeout")) }],
-    [
-      "evaluate",
-      {
-        evaluate: jest
-          .fn()
-          .mockRejectedValue(new Error("Execution context was destroyed")),
-      },
-    ],
-  ])("closes the browser when %s throws", async (_, overrides) => {
-    const browser = mockBrowser(mockPage(overrides));
+  describe("options", () => {
+    it("launches with defaults that caller launchOptions override", async () => {
+      const launch = mockLaunch(mockBrowser(), mockBrowser());
 
-    await expect(scrape()).rejects.toThrow();
-    expect(browser.close).toHaveBeenCalledTimes(1);
+      await scrape();
+      expect(launch).toHaveBeenLastCalledWith({
+        headless: true,
+        defaultViewport: null,
+        ignoreDefaultArgs: ["--disable-extensions"],
+      });
+
+      await scrape({
+        launchOptions: {
+          headless: "new",
+          ignoreHTTPSErrors: true,
+          args: ["--no-sandbox"],
+        },
+      });
+      expect(launch).toHaveBeenLastCalledWith({
+        headless: "new",
+        defaultViewport: null,
+        ignoreDefaultArgs: ["--disable-extensions"],
+        ignoreHTTPSErrors: true,
+        args: ["--no-sandbox"],
+      });
+    });
+
+    it("navigates to the loader URL with defaults that caller gotoOptions override", async () => {
+      const first = mockBrowser();
+      const second = mockBrowser();
+      mockLaunch(first, second);
+
+      await scrape(undefined, "https://example.com/a");
+      expect(first.page.goto).toHaveBeenCalledWith("https://example.com/a", {
+        timeout: 180000,
+        waitUntil: "domcontentloaded",
+      });
+
+      await scrape({ gotoOptions: { waitUntil: "networkidle2" } });
+      expect(second.page.goto).toHaveBeenCalledWith(URL, {
+        timeout: 180000,
+        waitUntil: "networkidle2",
+      });
+    });
+
+    it("sets custom headers before navigating", async () => {
+      const browser = mockBrowser();
+      mockLaunch(browser);
+      const order = [];
+      browser.page.setExtraHTTPHeaders.mockImplementation(async () =>
+        order.push("headers")
+      );
+      browser.page.goto.mockImplementation(async () => order.push("goto"));
+
+      await scrape({ headers: { Authorization: "Bearer abc" } });
+
+      expect(browser.page.setExtraHTTPHeaders).toHaveBeenCalledWith({
+        Authorization: "Bearer abc",
+      });
+      expect(order).toEqual(["headers", "goto"]);
+    });
+
+    it.each([
+      ["no options", undefined],
+      ["no headers key", {}],
+      ["null headers", { headers: null }],
+    ])("skips setting headers with %s", async (_, options) => {
+      const browser = mockBrowser();
+      mockLaunch(browser);
+
+      await scrape(options);
+      expect(browser.page.setExtraHTTPHeaders).not.toHaveBeenCalled();
+    });
   });
 
-  it("kills the browser process when close() rejects", async () => {
-    const kill = jest.fn();
-    const browser = mockBrowser(
-      mockPage({ goto: jest.fn().mockRejectedValue(new Error("timeout")) })
+  describe("failure path", () => {
+    it.each([
+      ["newPage", (b) => b.newPage.mockRejectedValue(new Error("newPage"))],
+      [
+        "setExtraHTTPHeaders",
+        (b) =>
+          b.page.setExtraHTTPHeaders.mockRejectedValue(new Error("headers")),
+      ],
+      [
+        "goto",
+        (b) =>
+          b.page.goto.mockRejectedValue(
+            new Error("Navigation timeout of 180000 ms exceeded")
+          ),
+      ],
+      [
+        "goto (net::ERR_NAME_NOT_RESOLVED)",
+        (b) =>
+          b.page.goto.mockRejectedValue(
+            new Error("net::ERR_NAME_NOT_RESOLVED at https://example.invalid/")
+          ),
+      ],
+      [
+        "default evaluate",
+        (b) =>
+          b.page.evaluate.mockRejectedValue(
+            new Error("Execution context was destroyed")
+          ),
+      ],
+    ])(
+      "closes the browser and rethrows when %s rejects",
+      async (_, breakIt) => {
+        const browser = mockBrowser();
+        breakIt(browser);
+        mockLaunch(browser);
+
+        await expect(scrape({ headers: { "X-Test": "1" } })).rejects.toThrow();
+        expect(browser.close).toHaveBeenCalledTimes(1);
+      }
     );
-    browser.close.mockRejectedValue(new Error("Connection closed"));
-    browser.process = () => ({ kill });
 
-    await expect(scrape()).rejects.toThrow("timeout");
-    expect(kill).toHaveBeenCalledWith("SIGKILL");
+    it("closes the browser when a caller's evaluate throws", async () => {
+      const browser = mockBrowser();
+      mockLaunch(browser);
+      const evaluate = jest.fn().mockRejectedValue(new Error("bad markup"));
+
+      await expect(scrape({ evaluate })).rejects.toThrow("bad markup");
+      expect(browser.close).toHaveBeenCalledTimes(1);
+    });
+
+    it("closes the browser when a non-Error value is thrown", async () => {
+      const browser = mockBrowser();
+      browser.page.goto.mockRejectedValue("plain string failure");
+      mockLaunch(browser);
+
+      await expect(scrape()).rejects.toBe("plain string failure");
+      expect(browser.close).toHaveBeenCalledTimes(1);
+    });
+
+    it("rethrows a launch failure without trying to close anything", async () => {
+      const launch = jest
+        .fn()
+        .mockRejectedValue(new Error("Failed to launch the browser process"));
+      jest
+        .spyOn(PuppeteerWebBaseLoader, "imports")
+        .mockResolvedValue({ launch });
+
+      await expect(scrape()).rejects.toThrow(
+        "Failed to launch the browser process"
+      );
+    });
   });
 
-  it("sends custom headers and passes the page to evaluate", async () => {
-    const page = mockPage();
-    mockBrowser(page);
+  describe("when close() rejects", () => {
+    it("kills the process and keeps the original scrape error", async () => {
+      const kill = jest.fn();
+      const browser = mockBrowser(mockPage(), {
+        close: jest.fn().mockRejectedValue(new Error("Connection closed")),
+        process: () => ({ kill }),
+      });
+      browser.page.goto.mockRejectedValue(new Error("timeout"));
+      mockLaunch(browser);
 
-    await expect(
-      scrape({
-        headers: { Authorization: "Bearer abc" },
-        evaluate: async (p) => (p === page ? "evaluated" : "wrong page"),
-      })
-    ).resolves.toBe("evaluated");
-    expect(page.setExtraHTTPHeaders).toHaveBeenCalledWith({
-      Authorization: "Bearer abc",
+      await expect(scrape()).rejects.toThrow("timeout");
+      expect(kill).toHaveBeenCalledWith("SIGKILL");
+    });
+
+    it("kills the process and still returns content after a successful scrape", async () => {
+      const kill = jest.fn();
+      const browser = mockBrowser(mockPage(), {
+        close: jest.fn().mockRejectedValue(new Error("Connection closed")),
+        process: () => ({ kill }),
+      });
+      mockLaunch(browser);
+
+      await expect(scrape()).resolves.toBe("<p>body</p>");
+      expect(kill).toHaveBeenCalledWith("SIGKILL");
+    });
+
+    it("does not throw when there is no process handle to kill", async () => {
+      const browser = mockBrowser(mockPage(), {
+        close: jest.fn().mockRejectedValue(new Error("Connection closed")),
+        process: () => null,
+      });
+      mockLaunch(browser);
+
+      await expect(scrape()).resolves.toBe("<p>body</p>");
+    });
+  });
+
+  describe("repeated and concurrent scrapes", () => {
+    it("launches and closes a separate browser per scrape, failed or not", async () => {
+      const ok = mockBrowser();
+      const failing = mockBrowser();
+      failing.page.goto.mockRejectedValue(new Error("timeout"));
+      const alsoOk = mockBrowser();
+      const launch = mockLaunch(ok, failing, alsoOk);
+
+      const results = await Promise.allSettled([scrape(), scrape(), scrape()]);
+
+      expect(results.map((r) => r.status)).toEqual([
+        "fulfilled",
+        "rejected",
+        "fulfilled",
+      ]);
+      expect(launch).toHaveBeenCalledTimes(3);
+      for (const browser of [ok, failing, alsoOk])
+        expect(browser.close).toHaveBeenCalledTimes(1);
     });
   });
 });
