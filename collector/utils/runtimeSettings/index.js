@@ -1,5 +1,13 @@
 const { reqBody } = require("../http");
 
+// Chromium flags that are always applied when the collector launches a
+// browser: without them, a scraped page can learn the host's local IP
+// addresses and real media device names via WebRTC fingerprinting.
+const CHROMIUM_PRIVACY_ARGS = [
+  "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
+  "--use-fake-device-for-media-stream",
+];
+
 /**
  * Runtime settings are used to configure the collector per-request.
  * These settings are persisted across requests, but can be overridden per-request.
@@ -32,13 +40,13 @@ class RuntimeSettings {
       validate: (value) => String(value) === "true",
     },
     browserLaunchArgs: {
-      default: [],
+      default: [...CHROMIUM_PRIVACY_ARGS],
       validate: (value) => {
         let args = [];
         if (Array.isArray(value)) args = value.map((arg) => String(arg.trim()));
         if (typeof value === "string")
           args = value.split(",").map((arg) => arg.trim());
-        return args;
+        return [...new Set([...CHROMIUM_PRIVACY_ARGS, ...args])];
       },
     },
   };
