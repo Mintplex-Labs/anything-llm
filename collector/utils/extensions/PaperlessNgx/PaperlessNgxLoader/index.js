@@ -2,6 +2,8 @@ const { htmlToText } = require("html-to-text");
 const pdf = require("pdf-parse");
 
 class PaperlessNgxLoader {
+  maxConcurrentDownloads = 5;
+
   constructor({ baseUrl, apiToken }) {
     const url = new URL(baseUrl);
     this.baseUrl = `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
@@ -73,12 +75,16 @@ class PaperlessNgxLoader {
         })`
       );
 
-      const documentsWithContent = await Promise.all(
-        documents.map(async (doc) => {
-          const content = await this.fetchDocumentContent(doc.id);
-          return { ...doc, content };
-        })
+      const documentsWithContent = await this.fetchAllDocumentContent(
+        documents
       );
+      const failedIds = documentsWithContent
+        .filter((doc) => !doc.content)
+        .map((doc) => doc.id);
+      if (failedIds.length)
+        console.warn(
+          `Could not fetch content for ${failedIds.length} of ${documents.length} Paperless-ngx documents: ${failedIds.join(", ")}`
+        );
 
       return documentsWithContent.filter((doc) => !!doc.content);
     } catch (error) {
@@ -86,6 +92,32 @@ class PaperlessNgxLoader {
         `Failed to fetch documents from Paperless-ngx: ${error.message}`
       );
     }
+  }
+
+  /**
+   * Fetches the content of every document with at most `maxConcurrentDownloads`
+   * requests in flight, since each download holds a database connection on the
+   * Paperless-ngx side and an unbounded burst exhausts its Postgres pool.
+   * @param {{[key: string]: any, id: number}[]} documents
+   * @returns {Promise<{[key: string]: any, content: string}[]>} In input order
+   */
+  async fetchAllDocumentContent(documents) {
+    const results = new Array(documents.length);
+    let next = 0;
+    const worker = async () => {
+      while (next < documents.length) {
+        const index = next++;
+        const doc = documents[index];
+        results[index] = {
+          ...doc,
+          content: await this.fetchDocumentContent(doc.id),
+        };
+      }
+    };
+
+    const workerCount = Math.min(this.maxConcurrentDownloads, documents.length);
+    await Promise.all(Array.from({ length: workerCount }, worker));
+    return results;
   }
 
   /**
