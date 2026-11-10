@@ -22,7 +22,12 @@ const EMAIL_SKILLS = {
   "gmail-send-draft": { provider: "Gmail", action: "send_draft" },
   "outlook-send-email": { provider: "Outlook", action: "send" },
   "outlook-create-draft": { provider: "Outlook", action: "draft" },
-  "outlook-update-draft": { provider: "Outlook", action: "update_draft" },
+  // Outlook draft updates have no Bcc field, so the card must not offer one.
+  "outlook-update-draft": {
+    provider: "Outlook",
+    action: "update_draft",
+    noBcc: true,
+  },
   "outlook-send-draft": { provider: "Outlook", action: "send_draft" },
 };
 
@@ -109,7 +114,7 @@ export default function EmailApprovalRequest({
   const [revealed, setRevealed] = useState({ cc: false, bcc: false });
   const responded = status !== "pending";
 
-  const { provider } = EMAIL_SKILLS[skillName];
+  const { provider, noBcc = false } = EMAIL_SKILLS[skillName];
   const action = emailAction(skillName, payload);
   const isDraft = DRAFT_ACTIONS.includes(action);
   const canEditBody = action !== "send_draft";
@@ -166,7 +171,7 @@ export default function EmailApprovalRequest({
 
   const showTo = canEditHeader || draft.to.length > 0;
   const showCc = revealed.cc || draft.cc.length > 0;
-  const showBcc = revealed.bcc || draft.bcc.length > 0;
+  const showBcc = !noBcc && (revealed.bcc || draft.bcc.length > 0);
   const showSubject = canEditHeader || !!draft.subject;
   const ApproveIcon = isDraft ? FloppyDisk : PaperPlaneTilt;
 
@@ -203,7 +208,7 @@ export default function EmailApprovalRequest({
                   canEditHeader && (
                     <RevealLinks
                       showCc={showCc}
-                      showBcc={showBcc}
+                      showBcc={showBcc || noBcc}
                       onReveal={reveal}
                     />
                   )
