@@ -769,6 +769,46 @@ describe("ModelPricing", () => {
       expect(pricing.setOverrides("not-an-array")).toEqual([]);
     });
 
+    it("drops entries with an invalid price instead of saving them as $0", () => {
+      const saved = pricing.setOverrides([
+        { provider: "openai", model: "gpt-4o", input: "abc", output: 1 },
+        { provider: "openai", model: "a", input: -1, output: 1 },
+        { provider: "openai", model: "b", input: 1, output: null },
+        { provider: "openai", model: "c", input: "", output: 1 },
+        { provider: "openai", model: "d", input: 1 },
+        { provider: "openai", model: "e", input: Infinity, output: 1 },
+        { provider: "openai", model: "f", input: [], output: 1 },
+        { provider: "openai", model: "g", input: true, output: 1 },
+        { provider: "openai", model: "h", input: "1.5", output: 0 },
+      ]);
+      expect(saved).toEqual([
+        { provider: "openai", model: "h", input: 1.5, output: 0 },
+      ]);
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        }).inputCost
+      ).toBe(2.5);
+    });
+
+    it("refuses to save more than 500 overrides and keeps the saved ones", () => {
+      const entry = (i) => ({
+        provider: "ollama",
+        model: `m${i}`,
+        input: 1,
+        output: 1,
+      });
+      pricing.setOverrides([entry(0)]);
+      expect(
+        pricing.setOverrides(Array.from({ length: 500 }, (_, i) => entry(i)))
+      ).toHaveLength(500);
+      expect(() =>
+        pricing.setOverrides(Array.from({ length: 501 }, (_, i) => entry(i)))
+      ).toThrow("Cannot save more than 500 model prices.");
+      expect(pricing.getOverrides()).toHaveLength(500);
+    });
+
     it("persists to disk so other processes read the same overrides", () => {
       pricing.setOverrides([
         { provider: "litellm", model: null, input: 1, output: 1 },

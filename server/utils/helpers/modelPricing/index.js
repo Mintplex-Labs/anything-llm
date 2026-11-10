@@ -115,6 +115,20 @@ function zeroCost() {
 }
 
 /**
+ * A price must be a finite, non-negative number (or numeric string). Anything
+ * else is rejected rather than coerced to 0, since a $0 override would hide
+ * the models.dev price for that model.
+ * @param {unknown} value
+ * @returns {number|null}
+ */
+function parsePrice(value) {
+  if (typeof value === "string" && !value.trim()) return null;
+  if (typeof value !== "number" && typeof value !== "string") return null;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+/**
  * Drops malformed entries and dedupes by provider + model (last one wins).
  * @param {unknown} overrides
  * @returns {PricingOverride[]}
@@ -127,6 +141,9 @@ function sanitizeOverrides(overrides) {
     const provider =
       typeof entry.provider === "string" ? entry.provider.trim() : "";
     if (!provider) continue;
+    const input = parsePrice(entry.input);
+    const output = parsePrice(entry.output);
+    if (input === null || output === null) continue;
     const model =
       typeof entry.model === "string" && entry.model.trim()
         ? entry.model.trim()
@@ -134,11 +151,11 @@ function sanitizeOverrides(overrides) {
     byKey.set(`${provider}:${model?.toLowerCase() ?? ""}`, {
       provider,
       model,
-      input: toNonNegativeNumber(entry.input),
-      output: toNonNegativeNumber(entry.output),
+      input,
+      output,
     });
   }
-  return Array.from(byKey.values()).slice(0, MAX_OVERRIDES);
+  return Array.from(byKey.values());
 }
 
 /**
@@ -416,9 +433,12 @@ class ModelPricing {
    * Replaces the admin pricing overrides.
    * @param {unknown} overrides - list of {@link PricingOverride}, malformed entries are dropped
    * @returns {PricingOverride[]} the overrides that were saved
+   * @throws {Error} when more than MAX_OVERRIDES valid entries are given
    */
   setOverrides(overrides = []) {
     const sanitized = sanitizeOverrides(overrides);
+    if (sanitized.length > MAX_OVERRIDES)
+      throw new Error(`Cannot save more than ${MAX_OVERRIDES} model prices.`);
     fs.writeFileSync(overridesFile(), JSON.stringify(sanitized));
     this.#overridesCache = null;
     return sanitized;
