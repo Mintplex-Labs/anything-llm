@@ -1,7 +1,11 @@
 const { OpenAI } = require("openai");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
-const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  MAX_PARSE_RETRIES,
+  tooledStream,
+  tooledComplete,
+} = require("./helpers/tooled.js");
 const {
   responsesTooledStream,
   responsesTooledComplete,
@@ -84,7 +88,7 @@ class AzureOpenAiProvider extends Provider {
    * @param {function} eventHandler
    * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
    */
-  async stream(messages, functions = [], eventHandler = null) {
+  async stream(messages, functions = [], eventHandler = null, attempt = 0) {
     const streamFn = this.#useResponsesAPI
       ? responsesTooledStream
       : tooledStream;
@@ -93,7 +97,7 @@ class AzureOpenAiProvider extends Provider {
     );
 
     try {
-      return await streamFn(
+      const result = await streamFn(
         this.client,
         this.model,
         messages,
@@ -101,9 +105,27 @@ class AzureOpenAiProvider extends Provider {
         eventHandler,
         { provider: this }
       );
+
+      if (result.retryWithError) {
+        if (attempt >= MAX_PARSE_RETRIES)
+          return {
+            textResponse: result.retryWithError.content,
+            functionCall: null,
+            uuid: result.uuid,
+            usage: result.usage,
+          };
+        return this.stream(
+          [...messages, result.retryWithError],
+          functions,
+          eventHandler,
+          attempt + 1
+        );
+      }
+
+      return result;
     } catch (error) {
       if (this.#switchToResponsesAPI(error))
-        return this.stream(messages, functions, eventHandler);
+        return this.stream(messages, functions, eventHandler, attempt);
       console.error(error.message, error);
       throw this.#toAgentError(error);
     }
@@ -116,7 +138,7 @@ class AzureOpenAiProvider extends Provider {
    * @param {any[]} functions
    * @returns The completion.
    */
-  async complete(messages, functions = []) {
+  async complete(messages, functions = [], attempt = 0) {
     try {
       const result = this.#useResponsesAPI
         ? await responsesTooledComplete(
@@ -136,13 +158,24 @@ class AzureOpenAiProvider extends Provider {
           );
 
       if (result.retryWithError) {
-        return this.complete([...messages, result.retryWithError], functions);
+        if (attempt >= MAX_PARSE_RETRIES)
+          return {
+            textResponse: result.retryWithError.content,
+            functionCall: null,
+            cost: result.cost,
+            usage: result.usage,
+          };
+        return this.complete(
+          [...messages, result.retryWithError],
+          functions,
+          attempt + 1
+        );
       }
 
       return result;
     } catch (error) {
       if (this.#switchToResponsesAPI(error))
-        return this.complete(messages, functions);
+        return this.complete(messages, functions, attempt);
       throw this.#toAgentError(error);
     }
   }

@@ -392,3 +392,111 @@ describe("tooledComplete tool call arguments", () => {
     );
   });
 });
+describe("tooledStream tool call arguments", () => {
+  function fakeStreamClient(deltas) {
+    const create = jest.fn(async () =>
+      (async function* () {
+        for (const delta of deltas) {
+          yield { choices: [{ delta }] };
+        }
+      })()
+    );
+    return { client: { chat: { completions: { create } } }, create };
+  }
+
+  const toolDeltas = (args) => [
+    {
+      tool_calls: [
+        {
+          index: 0,
+          id: "call_1",
+          type: "function",
+          function: {
+            name: "search",
+            ...(args === undefined ? {} : { arguments: args }),
+          },
+        },
+      ],
+    },
+  ];
+
+  it.each([
+    ["empty", ""],
+    ["whitespace", " \n"],
+    ["null", null],
+    ["missing", undefined],
+  ])(
+    "treats %s streamed arguments of a zero-arg tool as {}",
+    async (_label, args) => {
+      const { client } = fakeStreamClient(toolDeltas(args));
+      const result = await tooledStream(
+        client,
+        "m",
+        [{ role: "user", content: "what time is it" }],
+        [],
+        null,
+        { provider: {} }
+      );
+      expect(result.retryWithError).toBeUndefined();
+      expect(result.functionCall).toEqual({
+        id: "call_1",
+        name: "search",
+        arguments: {},
+      });
+    }
+  );
+
+  it("parses JSON streamed arguments accumulated across chunks", async () => {
+    const { client } = fakeStreamClient([
+      {
+        tool_calls: [
+          {
+            index: 0,
+            id: "call_1",
+            type: "function",
+            function: { name: "search", arguments: '{"tz":' },
+          },
+        ],
+      },
+      {
+        tool_calls: [{ index: 0, function: { arguments: '"UTC"}' } }],
+      },
+    ]);
+    const result = await tooledStream(
+      client,
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      null,
+      { provider: {} }
+    );
+    expect(result.retryWithError).toBeUndefined();
+    expect(result.functionCall.arguments).toEqual({ tz: "UTC" });
+  });
+
+  it("returns retryWithError on unparseable streamed arguments", async () => {
+    const PROSE = "I cannot search the web";
+    const { client, create } = fakeStreamClient(toolDeltas(PROSE));
+    const result = await tooledStream(
+      client,
+      "m",
+      [{ role: "user", content: "search the web" }],
+      [],
+      null,
+      { provider: {} }
+    );
+    expect(result.functionCall).toBeUndefined();
+    expect(result.retryWithError).toEqual({
+      role: "function",
+      name: "search",
+      content: `Failed to parse tool call arguments as JSON. Raw arguments: ${PROSE}`,
+      originalFunctionCall: {
+        id: "call_1",
+        name: "search",
+        arguments: PROSE,
+      },
+    });
+    expect(result.uuid).toBeDefined();
+    expect(create).toHaveBeenCalledTimes(1);
+  });
+});

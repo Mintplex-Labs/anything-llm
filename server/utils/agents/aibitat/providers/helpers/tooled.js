@@ -6,6 +6,13 @@ const {
 } = require("../../../../helpers/chat/responses");
 
 /**
+ * Max parse-failure retries per LLM turn. Together with the initial request
+ * this bounds a single completion to 3 LLM requests before the raw error
+ * text is surfaced as the turn's reply.
+ */
+const MAX_PARSE_RETRIES = 2;
+
+/**
  * Shared native OpenAI-compatible tool calling utilities.
  * Any provider with an OpenAI-compatible client can use these functions
  * instead of the UnTooled prompt-based approach when the model supports
@@ -370,10 +377,35 @@ async function tooledStream(
   const toolCallIndices = Object.keys(toolCallsByIndex).map(Number);
   if (toolCallIndices.length > 0) {
     const firstToolCall = toolCallsByIndex[Math.min(...toolCallIndices)];
+    const functionArgs = firstToolCall.arguments?.trim()
+      ? safeJsonParse(firstToolCall.arguments, null)
+      : {};
+
+    if (functionArgs === null) {
+      return {
+        textResponse: null,
+        retryWithError: {
+          role: "function",
+          name: firstToolCall.name,
+          content: `Failed to parse tool call arguments as JSON. Raw arguments: ${firstToolCall.arguments}`,
+          originalFunctionCall: {
+            id: firstToolCall.id,
+            name: firstToolCall.name,
+            arguments: firstToolCall.arguments,
+            ...(firstToolCall.extra_content
+              ? { extra_content: firstToolCall.extra_content }
+              : {}),
+          },
+        },
+        uuid: msgUUID,
+        usage,
+      };
+    }
+
     result.functionCall = {
       id: firstToolCall.id,
       name: firstToolCall.name,
-      arguments: safeJsonParse(firstToolCall.arguments, {}),
+      arguments: functionArgs,
       ...(firstToolCall.extra_content
         ? { extra_content: firstToolCall.extra_content }
         : {}),
@@ -514,4 +546,5 @@ module.exports = {
   temperatureParam,
   serviceTierParam,
   maxTokensParam,
+  MAX_PARSE_RETRIES,
 };
