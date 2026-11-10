@@ -106,6 +106,9 @@ class ContextWindowCache {
         for (const [model, limit] of Object.entries(limits))
           this.#store(bucket, model, limit);
         bucket.inventoryExpiresAt = Date.now() + this.#ttl;
+        this.#log(
+          `Context windows cached for ${Object.keys(limits).length} model(s)${force ? " (forced refresh)" : ""}.`
+        );
       })
       .catch((e) => this.#log("Error caching context windows:", e.message))
       .finally(() => {
@@ -123,15 +126,22 @@ class ContextWindowCache {
     if (!model) return;
     const bucket = this.#current();
     const key = this.#normalize(model);
-    if (bucket.windows.get(key)?.expiresAt > Date.now()) return;
+    const cached = bucket.windows.get(key);
+    if (cached?.expiresAt > Date.now()) return;
     if (!this.#fetchOne) return this.refresh();
 
     if (!bucket.pending.has(key)) {
+      const reason = cached ? "expired" : "not cached";
       bucket.pending.set(
         key,
         Promise.resolve()
           .then(() => this.#fetchOne(model))
-          .then((limit) => this.#store(bucket, model, limit))
+          .then((limit) => {
+            this.#store(bucket, model, limit);
+            this.#log(
+              `Context window for ${model} (${reason}): ${Number(limit) > 0 ? limit : "none reported"}.`
+            );
+          })
           .catch((e) =>
             this.#log(`Error caching context window for ${model}:`, e.message)
           )
