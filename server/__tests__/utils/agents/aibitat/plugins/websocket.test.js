@@ -365,8 +365,17 @@ describe("websocket plugin session exit notice", () => {
 });
 
 describe("websocket plugin requestToolApproval", () => {
-  beforeEach(() => jest.useFakeTimers());
-  afterEach(() => jest.useRealTimers());
+  const autoApproved = process.env.AGENT_AUTO_APPROVED_SKILLS;
+  beforeEach(() => {
+    // An auto-approved skill skips the card entirely, so keep every request manual.
+    delete process.env.AGENT_AUTO_APPROVED_SKILLS;
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+    if (autoApproved !== undefined)
+      process.env.AGENT_AUTO_APPROVED_SKILLS = autoApproved;
+  });
 
   /** Sends an approval request and returns the frame the client received. */
   async function requestApproval(aibitat, socket) {
