@@ -67,7 +67,12 @@ Make sure the format use double quotes and property names are string literals. P
                 return "The chart was generated and returned to the user. This function completed successfully. Do not call this function again.";
               }
 
-              const data = safeJsonParse(dataset, null);
+              // The UI parses the dataset with plain JSON.parse, so send it the
+              // repaired JSON. Some providers pass tool arguments as objects.
+              const data =
+                typeof dataset === "string"
+                  ? safeJsonParse(dataset, null)
+                  : dataset ?? null;
               if (data === null) {
                 this.super.introspect(
                   `${this.caller}: ${this.name} provided invalid JSON data - so we cant make a ${type} chart.`
@@ -78,7 +83,7 @@ Make sure the format use double quotes and property names are string literals. P
               this.super.introspect(`${this.caller}: Rendering ${type} chart.`);
               this.super.socket.send("rechartVisualize", {
                 type,
-                dataset,
+                dataset: JSON.stringify(data),
                 title,
               });
 
@@ -87,7 +92,7 @@ Make sure the format use double quotes and property names are string literals. P
                 storedResponse: (additionalText = "") =>
                   JSON.stringify({
                     type,
-                    dataset,
+                    dataset: JSON.stringify(data),
                     title,
                     caption: additionalText,
                   }),

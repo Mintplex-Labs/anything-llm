@@ -1,6 +1,6 @@
 /**
- * Inlines all local JSON-Schema `$ref` pointers (those referencing `$defs`/`definitions`)
- * and removes the definition blocks from the resulting schema.
+ * Inlines all local JSON-Schema `$ref` pointers (e.g. into `$defs`/`definitions`, or to
+ * another property) and removes the definition blocks from the resulting schema.
  *
  * Some MCP servers - notably tools defined with Pydantic v2 nested models - expose an
  * `inputSchema` that describes nested object parameters via `$ref`/`$defs`. Providers that
@@ -20,16 +20,25 @@ function dereferenceSchema(schema = {}) {
   if (!schema || typeof schema !== "object" || Array.isArray(schema))
     return schema;
 
-  const definitions = {
-    ...(schema.$defs || {}),
-    ...(schema.definitions || {}),
-  };
-
+  // Resolve any local JSON pointer: "#/$defs/Address", or the
+  // "#/properties/from" pointers zod-to-json-schema emits for reused schemas.
   const resolveRef = (ref) => {
-    if (typeof ref !== "string") return null;
-    const match = /^#\/(?:\$defs|definitions)\/(.+)$/.exec(ref);
-    if (!match) return null;
-    return definitions[match[1]] ?? null;
+    if (typeof ref !== "string" || !ref.startsWith("#/")) return null;
+    let node = schema;
+    for (const segment of ref.slice(2).split("/")) {
+      let key;
+      try {
+        key = decodeURIComponent(segment)
+          .replace(/~1/g, "/")
+          .replace(/~0/g, "~");
+      } catch {
+        return null; // Malformed %-escape: treat as unresolvable.
+      }
+      if (!node || typeof node !== "object" || !Object.hasOwn(node, key))
+        return null;
+      node = node[key];
+    }
+    return node && typeof node === "object" ? node : null;
   };
 
   const walk = (node, seenRefs) => {

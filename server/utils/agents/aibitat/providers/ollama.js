@@ -106,7 +106,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<string|null>} The completion.
    */
   async #handleFunctionCallChat({ messages = [] }) {
-    await OllamaAILLM.cacheContextWindows();
+    await OllamaAILLM.contextWindows.ensure(this.model);
     const response = await this.client.chat({
       model: this.model,
       keep_alive: this.keepAlive,
@@ -119,7 +119,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await OllamaAILLM.cacheContextWindows();
+    await OllamaAILLM.contextWindows.ensure(this.model);
     return await this.client.chat({
       model: this.model,
       keep_alive: this.keepAlive,
@@ -283,7 +283,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       });
     }
 
-    const call = safeJsonParse(textResponse, null);
+    const call = this.parseFuncCall(textResponse);
     if (call === null)
       return { toolCall: null, text: textResponse, uuid: msgUUID }; // failed to parse, so must be regular text response.
 
@@ -340,7 +340,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         "OllamaProvider.stream (tooled) - will process this chat completion."
       );
       this.resetUsage();
-      await OllamaAILLM.cacheContextWindows();
+      await OllamaAILLM.contextWindows.ensure(this.model);
       const msgUUID = v4();
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
@@ -540,7 +540,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
     if (useNative) {
       this.resetUsage();
-      await OllamaAILLM.cacheContextWindows();
+      await OllamaAILLM.contextWindows.ensure(this.model);
       const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
 

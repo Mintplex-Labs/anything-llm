@@ -14,6 +14,7 @@ const ToolCallTextFilter = require("./toolCallFilter.js");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 class FoundryLLM {
   /**
@@ -24,9 +25,6 @@ class FoundryLLM {
    * @type {number}
    */
   static MAX_DEFAULT_CONTEXT_WINDOW = 16_000;
-
-  /** @see FoundryLLM.cacheContextWindows */
-  static modelContextWindows = {};
 
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.FOUNDRY_BASE_PATH)
@@ -40,8 +38,9 @@ class FoundryLLM {
     });
 
     this.embedder = embedder ?? new NativeEmbedder();
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
     this.limits = null;
-    FoundryLLM.cacheContextWindows(true);
+    FoundryLLM.contextWindows.ensure(this.model);
     this.#log(`Loaded with model: ${this.model}`);
   }
 
@@ -55,7 +54,7 @@ class FoundryLLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await FoundryLLM.cacheContextWindows();
+    await FoundryLLM.contextWindows.ensure(this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -140,21 +139,15 @@ class FoundryLLM {
   }
 
   /**
-   * Cache the context windows for the Foundry models.
-   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
-   * Foundry Local has a weird behavior that when max_completion_tokens is unset it will only allow the output to be 1024 tokens.
-   *
-   * If you pass in too large of a max_completion_tokens, it will throw an error.
-   * If you pass in too little of a max_completion_tokens, you will get stubbed outputs before you reach a real "stop" token.
-   * So we need to cache the context windows and use them for the lifetime of the server.
-   * @param {boolean} force
-   * @returns
+   * Foundry Local caps output at 1024 tokens when max_completion_tokens is
+   * unset, errors when it is too large, and stubs replies when it is too
+   * small, so the real context window must be known before inference.
+   * @see ContextWindowCache
    */
-  static async cacheContextWindows(force = false) {
-    try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(FoundryLLM.modelContextWindows).length > 0 && !force)
-        return;
+  static contextWindows = new ContextWindowCache({
+    connection: () => `${process.env.FOUNDRY_BASE_PATH}`,
+    fetchAll: async () => {
+      const limits = {};
 
       // A 0.10+ daemon dropped maxInputTokens/maxOutputTokens from /v1/models,
       // so the registry catalog is the only place the real window is published.
@@ -163,32 +156,41 @@ class FoundryLLM {
       const FoundryCatalog = require("./catalog.js");
       for (const model of await FoundryCatalog.models()) {
         if (!model.contextLength) continue;
-        FoundryLLM.modelContextWindows[model.alias] = model.contextLength;
+        limits[model.alias] = model.contextLength;
         for (const variant of model.variants)
-          FoundryLLM.modelContextWindows[variant.name] = model.contextLength;
+          limits[variant.name] = model.contextLength;
       }
 
       const openai = new OpenAIApi({
         baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
         apiKey: null,
       });
-      (await openai.models.list().then((result) => result.data)).map(
-        (model) => {
-          // Whatever the daemon reports wins — it knows how the model was
-          // actually loaded. Older daemons are the only ones that report this.
-          const contextWindow =
-            Number(model.maxInputTokens) + Number(model.maxOutputTokens);
-          if (contextWindow > 0)
-            FoundryLLM.modelContextWindows[model.id] = contextWindow;
-        }
-      );
-      FoundryLLM.#slog(
-        `Context windows cached for ${Object.keys(FoundryLLM.modelContextWindows).length} model name(s).`
-      );
-    } catch (e) {
-      FoundryLLM.#slog(`Error caching context windows: ${e.message}`);
-      return;
-    }
+      const daemonModels = await openai.models
+        .list()
+        .then((result) => result.data)
+        .catch((e) => {
+          FoundryLLM.#slog(`Error listing daemon models: ${e.message}`);
+          return [];
+        });
+      for (const model of daemonModels) {
+        // Whatever the daemon reports wins — it knows how the model was
+        // actually loaded. Older daemons are the only ones that report this.
+        const contextWindow =
+          Number(model.maxInputTokens) + Number(model.maxOutputTokens);
+        if (contextWindow > 0) limits[model.id] = contextWindow;
+      }
+      return limits;
+    },
+    log: (...args) => FoundryLLM.#slog(...args),
+  });
+
+  /**
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
+   */
+  static async cacheContextWindows(force = false) {
+    await FoundryLLM.contextWindows.refresh({ force });
   }
 
   /**
@@ -218,7 +220,7 @@ class FoundryLLM {
    * @returns {number}
    */
   static promptWindowLimit(modelName) {
-    const modelLimit = Number(this.modelContextWindows[modelName]) || null;
+    const modelLimit = Number(FoundryLLM.contextWindows.get(modelName)) || null;
     if (!modelLimit)
       this.#slog(
         `No context window known for ${modelName} - it may be inaccurately reported.`

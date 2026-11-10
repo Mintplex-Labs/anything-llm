@@ -16,6 +16,7 @@ class AnythingLLMModelRouter {
     this.router = null;
     this.resolvedRoute = null;
     this._routeKey = null;
+    this._routeState = null;
     this.delegateProvider = null;
     this.routerService.log(
       `Initialized for workspace "${workspace?.name || workspace?.slug}"`
@@ -36,11 +37,12 @@ class AnythingLLMModelRouter {
    * @param {Object} opts - { user, thread }
    */
   async resolve(context = {}, { user = null, thread = null } = {}) {
-    this.router = await this.routerService.resolveRouterForWorkspace(
+    const resolved = await this.routerService.resolveRouterForWorkspace(
       this.workspace
     );
-    if (!this.router)
-      throw new Error("No model router found for this workspace.");
+    if (!resolved) throw new Error("No model router found for this workspace.");
+    this.router = resolved.router;
+    this._routeState = resolved.state;
 
     const rules = this.router.rules || [];
     const stickyMs = (this.router.cooldown_seconds ?? 300) * 1000;
@@ -59,13 +61,18 @@ class AnythingLLMModelRouter {
     );
     if (calcResult) {
       this.resolvedRoute = calcResult;
-      this.routerService.setStickyRoute(this._routeKey, calcResult);
+      this.routerService.setStickyRoute(
+        this._routeState,
+        this._routeKey,
+        calcResult
+      );
       this.#finalize();
       return;
     }
 
     // Step 2: LLM rules (cached to avoid expensive re-classification)
     const { route: llmResult } = await this.routerService.evaluateLLMRules(
+      this._routeState,
       this._routeKey,
       rules,
       context,
@@ -74,13 +81,21 @@ class AnythingLLMModelRouter {
     );
     if (llmResult) {
       this.resolvedRoute = llmResult;
-      this.routerService.setStickyRoute(this._routeKey, llmResult);
+      this.routerService.setStickyRoute(
+        this._routeState,
+        this._routeKey,
+        llmResult
+      );
       this.#finalize();
       return;
     }
 
     // Step 3: No rule matched — check sticky route
-    const sticky = this.routerService.getStickyRoute(this._routeKey, stickyMs);
+    const sticky = this.routerService.getStickyRoute(
+      this._routeState,
+      this._routeKey,
+      stickyMs
+    );
     if (sticky) {
       this.resolvedRoute = sticky;
       this.routerService.log(
@@ -149,7 +164,11 @@ class AnythingLLMModelRouter {
   onInferenceComplete() {
     if (!this._routeKey || !this.resolvedRoute || this.resolvedRoute.isFallback)
       return;
-    this.routerService.setStickyRoute(this._routeKey, this.resolvedRoute);
+    this.routerService.setStickyRoute(
+      this._routeState,
+      this._routeKey,
+      this.resolvedRoute
+    );
   }
 
   get routingMetadata() {

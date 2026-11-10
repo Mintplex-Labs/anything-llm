@@ -259,10 +259,13 @@ export default function ChatContainer({
 
   const regenerateAssistantMessage = useCallback(
     (chatId) => {
-      const filteredHistory = chatHistoryRef2.current.slice(0, -1);
-      const lastUserMessage = filteredHistory.findLast(
-        (msg) => msg.role === "user"
-      );
+      // Drop the whole previous response, not just the reply - agent status
+      // updates sit between the prompt and the reply, and leaving them would
+      // fold the old run's activity (and its timing) into the new one.
+      const history = chatHistoryRef2.current;
+      const lastUserIdx = history.findLastIndex((msg) => msg.role === "user");
+      const filteredHistory = history.slice(0, lastUserIdx + 1);
+      const lastUserMessage = history[lastUserIdx];
       Workspace.deleteChats(workspace.slug, [chatId])
         .then(() =>
           sendCommandRef.current({

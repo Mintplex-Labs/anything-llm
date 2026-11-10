@@ -5,6 +5,26 @@ const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
 const { safeJsonParse } = require("../http");
 
+/**
+ * Whether a position in a JSON text is inside a string literal.
+ * Inside a string a backslash escapes the next character, so \" does not end
+ * the string but the quote after \\ does.
+ * @param {string} text - The JSON text
+ * @param {number} position - The position to check
+ * @returns {boolean} True if the position is inside a string literal
+ */
+function isInsideJsonString(text, position) {
+  let inString = false;
+  for (let i = 0; i < position; i++) {
+    if (inString && text[i] === "\\") {
+      i++;
+      continue;
+    }
+    if (text[i] === '"') inString = !inString;
+  }
+  return inString;
+}
+
 class FlowExecutor {
   constructor() {
     this.variables = {};
@@ -175,9 +195,7 @@ class FlowExecutor {
     return body.replace(/\${([^}]+)}/g, (match, varName, offset) => {
       const value = this.getValueFromPath(this.variables, varName);
       if (value === undefined) return match;
-      // An odd number of unescaped quotes before the match means we are inside a string literal
-      const quotesBefore = body.slice(0, offset).match(/(?<!\\)"/g) || [];
-      const inString = quotesBefore.length % 2 === 1;
+      const inString = isInsideJsonString(body, offset);
       // JSON.stringify wraps in quotes, slice them off since the template already has its own
       return inString ? JSON.stringify(String(value)).slice(1, -1) : value;
     });

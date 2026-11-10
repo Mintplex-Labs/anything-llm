@@ -121,6 +121,7 @@ class EphemeralAgentHandler extends AgentHandler {
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
+        if (!response?.text) return;
         const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
@@ -541,6 +542,7 @@ class EphemeralAgentHandler extends AgentHandler {
         invocation: {
           workspace: this.#workspace,
           workspace_id: this.#workspace?.id ?? null,
+          user_id: this.#userId || null,
         },
         log: this.log,
         routingMetadata: this.routingMetadata || null,

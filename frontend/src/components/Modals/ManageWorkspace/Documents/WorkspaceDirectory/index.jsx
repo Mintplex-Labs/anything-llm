@@ -1,6 +1,6 @@
 import PreLoader from "@/components/Preloader";
 import WorkspaceFileRow from "./WorkspaceFileRow";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import Modal, {
   ModalHeader,
   ModalBody,
@@ -17,6 +17,11 @@ import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import { useEmbeddingProgress } from "@/EmbeddingProgressContext";
 import EmbeddingFileRow from "@/components/EmbeddingFileRow";
+import {
+  rowsBetween,
+  isSelectAllShortcut,
+  isClearSelectionKey,
+} from "@/utils/directories";
 
 function WorkspaceDirectory({
   workspace,
@@ -40,17 +45,54 @@ function WorkspaceDirectory({
     0
   );
 
-  const toggleSelection = (item) => {
+  // Staged for embedding first, then pinned, then the rest.
+  const orderedFiles = useMemo(() => {
+    const isMoved = (item) =>
+      movedItems.some((movedItem) => movedItem.id === item.id);
+    const isPinned = (item) => item.pinnedWorkspaces?.includes(workspace.id);
+    return files.items
+      .flatMap((folder) => folder.items.map((item) => ({ item, folder })))
+      .sort((a, b) => {
+        if (isMoved(a.item) && !isMoved(b.item)) return -1;
+        if (!isMoved(a.item) && isMoved(b.item)) return 1;
+        if (isPinned(a.item) && !isPinned(b.item)) return -1;
+        if (!isPinned(a.item) && isPinned(b.item)) return 1;
+        return 0;
+      });
+  }, [files, movedItems, workspace.id]);
+  const rangeAnchor = useRef(null);
+
+  const setItems = (items, on) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = { ...prevSelectedItems };
-      if (newSelectedItems[item.id]) {
-        delete newSelectedItems[item.id];
-      } else {
-        newSelectedItems[item.id] = true;
+      for (const item of items) {
+        if (on) newSelectedItems[item.id] = true;
+        else delete newSelectedItems[item.id];
       }
       return newSelectedItems;
     });
   };
+
+  const handleRowClick = (item, event) => {
+    const anchor = rangeAnchor.current;
+    const range =
+      event.shiftKey && anchor
+        ? rowsBetween(
+            orderedFiles.map((row) => row.item),
+            anchor,
+            item.id
+          )
+        : null;
+    if (range) return setItems(range, !!selectedItems[anchor]);
+    rangeAnchor.current = item.id;
+    setItems([item], !selectedItems[item.id]);
+  };
+
+  const selectAll = () =>
+    setItems(
+      files.items.flatMap((folder) => folder.items),
+      true
+    );
 
   const toggleSelectAll = () => {
     const allItems = files.items.flatMap((folder) => folder.items);
@@ -58,12 +100,20 @@ function WorkspaceDirectory({
     if (allSelected) {
       setSelectedItems({});
     } else {
-      const newSelectedItems = {};
-      allItems.forEach((item) => {
-        newSelectedItems[item.id] = true;
-      });
-      setSelectedItems(newSelectedItems);
+      selectAll();
     }
+  };
+
+  const handleKeyDown = (event) => {
+    if (hasChanges) return;
+    if (isClearSelectionKey(event) && Object.keys(selectedItems).length > 0) {
+      // Otherwise the modal's Escape handler closes the modal.
+      event.stopPropagation();
+      return setSelectedItems({});
+    }
+    if (!isSelectAllShortcut(event)) return;
+    event.preventDefault();
+    selectAll();
   };
 
   const removeSelectedItems = async () => {
@@ -182,7 +232,12 @@ function WorkspaceDirectory({
               highlightWorkspace ? "border-4 border-cyan-300/80 z-[999]" : ""
             }`}
           />
-          <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
+          {/* Focusable so shortcuts apply to the last-clicked panel. */}
+          <div
+            className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border outline-none focus-within:border-cyan-300/80"
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
+          >
             <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10">
               <div className="col-span-10 flex items-center gap-x-[4px]">
                 {!hasChanges &&
@@ -219,32 +274,25 @@ function WorkspaceDirectory({
                 </p>
               )}
             </div>
-            <div className="overflow-y-auto h-[calc(100%-40px)]">
-              {files.items.some((folder) => folder.items.length > 0) ||
-              movedItems.length > 0 ? (
-                <RenderFileRows
-                  files={files}
-                  movedItems={movedItems}
-                  workspace={workspace}
-                >
-                  {({ item, folder }) => (
-                    <WorkspaceFileRow
-                      key={item.id}
-                      item={item}
-                      folderName={folder.name}
-                      workspace={workspace}
-                      setLoading={setLoading}
-                      setLoadingMessage={setLoadingMessage}
-                      fetchKeys={fetchKeys}
-                      hasChanges={hasChanges}
-                      movedItems={movedItems}
-                      selected={selectedItems[item.id]}
-                      toggleSelection={() => toggleSelection(item)}
-                      disableSelection={hasChanges}
-                      setSelectedItems={setSelectedItems}
-                    />
-                  )}
-                </RenderFileRows>
+            <div className="overflow-y-auto h-[calc(100%-40px)] select-none">
+              {orderedFiles.length > 0 ? (
+                orderedFiles.map(({ item, folder }) => (
+                  <WorkspaceFileRow
+                    key={item.id}
+                    item={item}
+                    folderName={folder.name}
+                    workspace={workspace}
+                    setLoading={setLoading}
+                    setLoadingMessage={setLoadingMessage}
+                    fetchKeys={fetchKeys}
+                    hasChanges={hasChanges}
+                    movedItems={movedItems}
+                    selected={selectedItems[item.id]}
+                    toggleSelection={(event) => handleRowClick(item, event)}
+                    disableSelection={hasChanges}
+                    setSelectedItems={setSelectedItems}
+                  />
+                ))
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-white text-opacity-40 text-sm font-medium">
@@ -418,31 +466,6 @@ const DocumentWatchAlert = memo(() => {
     </Modal>
   );
 });
-
-function RenderFileRows({ files, movedItems, children, workspace }) {
-  function sortMovedItemsAndFiles(a, b) {
-    const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
-    const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
-    if (aIsMovedItem && !bIsMovedItem) return -1;
-    if (!aIsMovedItem && bIsMovedItem) return 1;
-
-    // Sort pinned items to the top
-    const aIsPinned = a.pinnedWorkspaces?.includes(workspace.id);
-    const bIsPinned = b.pinnedWorkspaces?.includes(workspace.id);
-    if (aIsPinned && !bIsPinned) return -1;
-    if (!aIsPinned && bIsPinned) return 1;
-
-    return 0;
-  }
-
-  return files.items
-    .flatMap((folder) => folder.items)
-    .sort(sortMovedItemsAndFiles)
-    .map((item) => {
-      const folder = files.items.find((f) => f.items.includes(item));
-      return children({ item, folder });
-    });
-}
 
 /**
  * Tooltips for the workspace directory components. Renders when the workspace directory is shown

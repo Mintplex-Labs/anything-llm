@@ -17,6 +17,8 @@ const {
   maxTokensParam,
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled.js");
+const { reasoningParams } = require("../../helpers/reasoningEffort");
+const { catalogReasoningOptions } = require("./modelCatalog");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -236,7 +238,7 @@ class GenericOpenAiLLM {
 
   async getChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
@@ -245,6 +247,7 @@ class GenericOpenAiLLM {
           messages,
           ...temperatureParam(temperature),
           ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
+          ...reasoningParams("generic-openai", reasoningEffort),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -279,7 +282,7 @@ class GenericOpenAiLLM {
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = this.temperature } = {}
+    { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.openai.chat.completions.create({
@@ -288,6 +291,7 @@ class GenericOpenAiLLM {
         messages,
         ...temperatureParam(temperature),
         ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
+        ...reasoningParams("generic-openai", reasoningEffort),
         ...this.#includeStreamOptionsUsage(),
       }),
       messages,
@@ -474,13 +478,25 @@ class GenericOpenAiLLM {
 
   /**
    * Returns the capabilities of the model.
-   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
    */
   async getModelCapabilities() {
     try {
+      const { ok, reasoningOptions } = await catalogReasoningOptions(
+        this.openai,
+        this.model
+      );
+      // "unknown" keeps a failed catalog read out of the shared capability
+      // cache, so fixing the key or starting the backend takes effect at once.
+      let reasoning = "unknown";
+      if (ok)
+        reasoning =
+          this.#supportsCapabilityFromENV("reasoning") ||
+          reasoningOptions.length > 0;
       return {
         tools: this.#supportsCapabilityFromENV("tools"),
-        reasoning: this.#supportsCapabilityFromENV("reasoning"),
+        reasoning,
+        reasoningOptions,
         imageGeneration: this.#supportsCapabilityFromENV("imageGeneration"),
         vision: this.#supportsCapabilityFromENV("vision"),
       };
@@ -489,6 +505,7 @@ class GenericOpenAiLLM {
       return {
         tools: "unknown",
         reasoning: "unknown",
+        reasoningOptions: [],
         imageGeneration: "unknown",
         vision: "unknown",
       };

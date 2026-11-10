@@ -343,4 +343,4 @@ If you are getting errors like `llama:streaming - could not stream chat. Error: 
 
 ### Still not working?
 
-[Ask for help on Discord](https://discord.gg/6UyHPeGZAC)
+[Ask for help on GitHub Discussions](https://github.com/Mintplex-Labs/anything-llm/discussions)

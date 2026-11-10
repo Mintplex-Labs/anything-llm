@@ -375,9 +375,12 @@ export default function AdminAgents() {
             hidden={showSkillModal}
             className="flex flex-col gap-y-[18px] overflow-y-scroll no-scroll"
           >
-            <div className="text-theme-text-primary flex items-center gap-x-2">
-              <Robot size={24} />
-              <p className="text-lg font-medium">Agent Skills</p>
+            <div className="flex justify-between items-center">
+              <div className="text-theme-text-primary flex items-center gap-x-2">
+                <Robot size={24} />
+                <p className="text-lg font-medium">Agent Skills</p>
+              </div>
+              <AgentSkillSettings />
             </div>
             {/* Default skills */}
             <SkillList

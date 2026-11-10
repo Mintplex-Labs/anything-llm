@@ -102,7 +102,7 @@ async function streamChatWithWorkspace(
 
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
@@ -279,6 +279,12 @@ async function streamChatWithWorkspace(
     threadId: thread?.id || null,
     user,
   });
+  if (chat)
+    writeResponseChunk(response, {
+      uuid,
+      type: "promptChatId",
+      chatId: chat.id,
+    });
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
