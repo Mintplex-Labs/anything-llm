@@ -80,7 +80,15 @@ class ModelRouterService {
         this.routerCache.set(cacheKey, state);
       }
 
-      const router = await state.config;
+      let router;
+      try {
+        router = await state.config;
+      } catch (error) {
+        // Drop the failed lookup so the next request retries the database.
+        if (this.routerCache.get(cacheKey) === state)
+          this.routerCache.delete(cacheKey);
+        throw error;
+      }
       // A rule edit may have invalidated this lookup while it was in flight.
       if (this.routerCache.get(cacheKey) !== state) continue;
       if (!router) {
