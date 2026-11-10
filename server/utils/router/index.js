@@ -33,8 +33,6 @@ class ModelRouterService {
     ModelRouterService.instance = this;
 
     this.routerCache = new Map();
-    this.stickyRoutes = new Map();
-    this.llmCache = new Map();
     this.lastNotifiedRoute = new Map();
     this.LOG_PREFIX = "\x1b[35m[ModelRouterService]\x1b[0m";
   }
@@ -61,41 +59,65 @@ class ModelRouterService {
   // ─────────────────────────────────────────────────────────────────────────────
 
   /**
-   * Load the router config and rules for a workspace.
-   * Caches the result to avoid repeated DB lookups.
+   * Load the router and its decision caches. Each cached configuration owns
+   * its decisions, so an older request cannot repopulate the current caches.
    * @param {Object} workspace - A workspaces record with router_id set
-   * @returns {Promise<Object|null>} Router with rules, or null if not found
+   * @returns {Promise<Object|null>} Router and cache state, or null if not found
    */
   async resolveRouterForWorkspace(workspace) {
     if (!workspace?.router_id) return null;
 
     const cacheKey = `router:${workspace.router_id}`;
-    const cached = this.routerCache.get(cacheKey);
-    if (cached) {
-      this.log(`Using cached router "${cached.name}" (id: ${cached.id})`);
-      return cached;
-    }
+    while (true) {
+      let state = this.routerCache.get(cacheKey);
+      const cached = !!state;
+      if (!state) {
+        state = {
+          config: ModelRouter.getWithRules({ id: workspace.router_id }),
+          stickyRoutes: new Map(),
+          llmCache: new Map(),
+        };
+        this.routerCache.set(cacheKey, state);
+      }
 
-    const router = await ModelRouter.getWithRules({ id: workspace.router_id });
-    if (router) {
-      this.routerCache.set(cacheKey, router);
+      let router;
+      try {
+        router = await state.config;
+      } catch (error) {
+        // Drop the failed lookup so the next request retries the database.
+        if (this.routerCache.get(cacheKey) === state)
+          this.routerCache.delete(cacheKey);
+        throw error;
+      }
+      // A rule edit may have invalidated this lookup while it was in flight.
+      if (this.routerCache.get(cacheKey) !== state) continue;
+      if (!router) {
+        this.routerCache.delete(cacheKey);
+        return null;
+      }
+
       this.log(
-        `Loaded router "${router.name}" with ${router.rules?.length ?? 0} rules`
+        cached
+          ? `Using cached router "${router.name}" (id: ${router.id})`
+          : `Loaded router "${router.name}" with ${router.rules?.length ?? 0} rules`
       );
+      return { router, state };
     }
-    return router;
   }
 
   /**
-   * Invalidate the cached router config (e.g., after rules are edited).
+   * Invalidate the cached router config and its decisions after an edit.
    * @param {number} routerId
    */
   static invalidateRouter(routerId) {
     const svc = ModelRouterService.getInstance();
     const cacheKey = `router:${routerId}`;
-    if (!svc.routerCache.has(cacheKey)) return;
-    svc.log(`Invalidated cached router (id: ${routerId})`);
+    const state = svc.routerCache.get(cacheKey);
+    if (!state) return;
     svc.routerCache.delete(cacheKey);
+    state.stickyRoutes.clear();
+    state.llmCache.clear();
+    svc.log(`Invalidated cached router (id: ${routerId})`);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -115,20 +137,21 @@ class ModelRouterService {
 
   /**
    * Get the sticky route if still within the window.
+   * @param {Object} state - The current configuration's decision caches
    * @param {string} key
    * @param {number} stickyMs
    * @returns {{ provider: string, model: string, ruleTitle: string|null, ruleType: string|null, isFallback: boolean }|null}
    */
-  getStickyRoute(key, stickyMs = ModelRouterService.DEFAULT_STICKY_MS) {
+  getStickyRoute(state, key, stickyMs = ModelRouterService.DEFAULT_STICKY_MS) {
     if (stickyMs <= 0) return null;
-    const entry = this.stickyRoutes.get(key);
+    const entry = state.stickyRoutes.get(key);
     if (!entry) {
       this.log(`Sticky route: MISS (no entry)`);
       return null;
     }
     const ageMs = Date.now() - entry.stickyAt;
     if (ageMs > stickyMs) {
-      this.stickyRoutes.delete(key);
+      state.stickyRoutes.delete(key);
       this.log(
         `Sticky route: EXPIRED (age: ${Math.round(ageMs / 1000)}s > ${Math.round(stickyMs / 1000)}s)`
       );
@@ -146,22 +169,15 @@ class ModelRouterService {
   /**
    * Set the sticky route (only for non-fallback matches).
    * Resets the timer so the window extends from the last match.
+   * @param {Object} state - The configuration that selected this route
    * @param {string} key
    * @param {{ provider: string, model: string, ruleTitle: string|null, ruleType: string|null, isFallback: boolean }} route
    */
-  setStickyRoute(key, route) {
-    this.stickyRoutes.set(key, { route, stickyAt: Date.now() });
+  setStickyRoute(state, key, route) {
+    state.stickyRoutes.set(key, { route, stickyAt: Date.now() });
     this.log(
       `Sticky route: SET → ${route.provider}/${route.model} (rule: ${route.ruleTitle || "unknown"})`
     );
-  }
-
-  /**
-   * Clear a sticky route (e.g., on new conversation).
-   * @param {string} key
-   */
-  clearStickyRoute(key) {
-    this.stickyRoutes.delete(key);
   }
 
   /**
@@ -180,8 +196,10 @@ class ModelRouterService {
       workspace.slug,
       thread?.slug ?? null
     );
-    svc.stickyRoutes.delete(key);
-    svc.llmCache.delete(key);
+    for (const state of svc.routerCache.values()) {
+      state.stickyRoutes.delete(key);
+      state.llmCache.delete(key);
+    }
     svc.lastNotifiedRoute.delete(key);
     svc.log(
       `Reset routing state for key "${key}" (workspace: ${workspace.slug})`
@@ -194,12 +212,13 @@ class ModelRouterService {
 
   /**
    * Get cached LLM classification result if still within window.
+   * @param {Object} state - The current configuration's decision caches
    * @param {string} key
    * @param {number} ttlMs
    * @returns {Object|null} The cached matched rule (or null sentinel meaning "no match"), or undefined if no cache
    */
-  getCachedLLMResult(key, ttlMs = ModelRouterService.DEFAULT_STICKY_MS) {
-    const entry = this.llmCache.get(key);
+  getCachedLLMResult(state, key, ttlMs = ModelRouterService.DEFAULT_STICKY_MS) {
+    const entry = state.llmCache.get(key);
     if (!entry) {
       this.log(`LLM cache: MISS (no entry)`);
       return undefined;
@@ -211,7 +230,7 @@ class ModelRouterService {
       : ModelRouterService.LLM_NO_MATCH_COOLDOWN_MS;
     const ageMs = Date.now() - entry.cachedAt;
     if (ageMs > effectiveTtl) {
-      this.llmCache.delete(key);
+      state.llmCache.delete(key);
       this.log(
         `LLM cache: EXPIRED (age: ${Math.round(ageMs / 1000)}s > ${Math.round(effectiveTtl / 1000)}s)`
       );
@@ -225,11 +244,12 @@ class ModelRouterService {
 
   /**
    * Cache an LLM classification result.
+   * @param {Object} state - The configuration used for classification
    * @param {string} key
    * @param {Object|null} result - The matched rule, or null if no match
    */
-  setCachedLLMResult(key, result) {
-    this.llmCache.set(key, { result, cachedAt: Date.now() });
+  setCachedLLMResult(state, key, result) {
+    state.llmCache.set(key, { result, cachedAt: Date.now() });
     this.log(`LLM cache: SET → ${result ? `"${result.title}"` : "no match"}`);
   }
 
@@ -441,6 +461,7 @@ class ModelRouterService {
 
   /**
    * Evaluate LLM rules, using cache if available.
+   * @param {Object} state - The current configuration's decision caches
    * @param {string} cacheKey - Key for LLM result caching
    * @param {Array} rules - All rules (will be filtered to enabled LLM rules)
    * @param {Object} context
@@ -448,11 +469,11 @@ class ModelRouterService {
    * @param {number} stickyMs - TTL for LLM cache
    * @returns {Promise<{ route: Object|null, fromCache: boolean }>}
    */
-  async evaluateLLMRules(cacheKey, rules, context, router, stickyMs) {
+  async evaluateLLMRules(state, cacheKey, rules, context, router, stickyMs) {
     const llmRules = rules.filter((r) => r.enabled && r.type === "llm");
     if (llmRules.length === 0) return { route: null, fromCache: false };
 
-    const cached = this.getCachedLLMResult(cacheKey, stickyMs);
+    const cached = this.getCachedLLMResult(state, cacheKey, stickyMs);
     if (cached !== undefined) {
       this.log(
         `LLM classification cache hit → ${cached ? `"${cached.title}"` : "no match"}`
@@ -467,7 +488,7 @@ class ModelRouterService {
       `Evaluating LLM batch of ${llmRules.length} rules: [${llmRules.map((r) => `"${r.title}"`).join(", ")}]`
     );
     const matched = await classifyWithLLM(llmRules, context.prompt, router);
-    this.setCachedLLMResult(cacheKey, matched || null);
+    this.setCachedLLMResult(state, cacheKey, matched || null);
 
     if (matched) {
       this.log(
