@@ -102,8 +102,9 @@ const CACHE_FILES = {
   },
 };
 
-// Overrides live on disk (not in memory or the DB) so scheduled jobs running
-// in worker threads see the same prices the admin saved in the main process.
+// Overrides live in a file so cost lookups stay synchronous (getCostBreakdown
+// runs inside sync usage accounting) while worker threads, like scheduled
+// jobs, still read the same prices the admin saved in the main process.
 function overridesFile() {
   return path.resolve(cacheDir(), "overrides.json");
 }
