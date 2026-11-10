@@ -14,12 +14,10 @@ const {
   PROVIDER_REASONING_EFFORTS,
   reasoningParams,
 } = require("../../helpers/reasoningEffort");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
-  /** @see LMStudioLLM.cacheContextWindows */
-  static modelContextWindows = {};
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
@@ -42,10 +40,9 @@ class LMStudioLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
 
-    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
     this.limits = null;
-
-    LMStudioLLM.cacheContextWindows(true);
+    LMStudioLLM.contextWindows.ensure(this.model);
     this.#log(`initialized with model: ${this.model}`);
   }
 
@@ -59,7 +56,7 @@ class LMStudioLLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await LMStudioLLM.cacheContextWindows();
+    await LMStudioLLM.contextWindows.ensure(this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -67,54 +64,42 @@ class LMStudioLLM {
     };
   }
 
-  /**
-   * Cache the context windows for the LMStudio models.
-   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
-   *
-   * This is a convenience to ensure that the context windows are correct and that the user
-   * does not have to manually set the context window for each model.
-   * @param {boolean} force - Force the cache to be refreshed.
-   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
-   */
-  static async cacheContextWindows(force = false) {
-    try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(LMStudioLLM.modelContextWindows).length > 0 && !force)
-        return;
-
+  /** @see ContextWindowCache */
+  static contextWindows = new ContextWindowCache({
+    connection: () =>
+      `${process.env.LMSTUDIO_BASE_PATH}|${process.env.LMSTUDIO_AUTH_TOKEN ?? ""}`,
+    fetchAll: async () => {
       const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
       const endpoint = new URL(
         parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH)
       );
       endpoint.pathname = "/api/v0/models";
-      await fetch(endpoint.toString(), {
+      const res = await fetch(endpoint.toString(), {
         headers: {
           "Content-Type": "application/json",
           ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
         },
-      })
-        .then((res) => {
-          if (!res.ok)
-            throw new Error(`LMStudio:cacheContextWindows - ${res.statusText}`);
-          return res.json();
-        })
-        .then(({ data: models }) => {
-          models.forEach((model) => {
-            if (model.type === "embeddings") return;
-            LMStudioLLM.modelContextWindows[model.id] =
-              model.max_context_length;
-          });
-        })
-        .catch((e) => {
-          LMStudioLLM.#slog(`Error caching context windows`, e);
-          return;
-        });
+      });
+      if (!res.ok) throw new Error(`LMStudio:/api/v0/models ${res.statusText}`);
 
-      LMStudioLLM.#slog(`Context windows cached for all models!`);
-    } catch (e) {
-      LMStudioLLM.#slog(`Error caching context windows`, e);
-      return;
-    }
+      const { data: models = [] } = await res.json();
+      const limits = {};
+      for (const model of models) {
+        if (model.type === "embeddings") continue;
+        limits[model.id] = model.max_context_length;
+      }
+      return limits;
+    },
+    log: (...args) => LMStudioLLM.#slog(...args),
+  });
+
+  /**
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
+   */
+  static async cacheContextWindows(force = false) {
+    await LMStudioLLM.contextWindows.refresh({ force });
   }
 
   #appendContext(contextTexts = []) {
@@ -134,7 +119,7 @@ class LMStudioLLM {
   }
 
   static promptWindowLimit(modelName) {
-    if (Object.keys(LMStudioLLM.modelContextWindows).length === 0) {
+    if (LMStudioLLM.contextWindows.size === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -143,7 +128,7 @@ class LMStudioLLM {
 
     let userDefinedLimit = null;
     const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 16384;
+      Number(LMStudioLLM.contextWindows.get(modelName)) || 16384;
 
     if (
       process.env.LMSTUDIO_MODEL_TOKEN_LIMIT &&

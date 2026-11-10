@@ -9,11 +9,9 @@ const {
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 class LocalAiLLM {
-  /** @see LocalAiLLM.cacheContextWindows */
-  static modelContextWindows = {};
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
@@ -28,10 +26,9 @@ class LocalAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
 
-    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
     this.limits = null;
-
-    LocalAiLLM.cacheContextWindows(true);
+    LocalAiLLM.contextWindows.ensure(this.model);
     this.#log(`initialized with model: ${this.model}`);
   }
 
@@ -45,7 +42,7 @@ class LocalAiLLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await LocalAiLLM.cacheContextWindows();
+    await LocalAiLLM.contextWindows.ensure(this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -56,62 +53,57 @@ class LocalAiLLM {
     );
   }
 
+  /** @see ContextWindowCache */
+  static contextWindows = new ContextWindowCache({
+    connection: () =>
+      `${process.env.LOCAL_AI_BASE_PATH}|${process.env.LOCAL_AI_API_KEY ?? ""}`,
+    fetchAll: () => LocalAiLLM.#fetchContextWindows(),
+    log: (...args) => LocalAiLLM.#slog(...args),
+  });
+
   /**
-   * Cache the context windows for the LocalAI models.
-   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
-   *
-   * This is a convenience to ensure that the context windows are correct and that the user
-   * does not have to manually set the context window for each model.
-   * @param {boolean} force - Force the cache to be refreshed.
-   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
    */
   static async cacheContextWindows(force = false) {
-    try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(LocalAiLLM.modelContextWindows).length > 0 && !force)
-        return;
+    await LocalAiLLM.contextWindows.refresh({ force });
+  }
 
-      const apiKey = process.env.LOCAL_AI_API_KEY ?? null;
-      const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
-      const { origin } = new URL(process.env.LOCAL_AI_BASE_PATH);
-      const { data: models = [] } = await fetch(`${origin}/v1/models`, {
-        headers,
-      }).then((res) => {
-        if (!res.ok)
-          throw new Error(`LocalAI:cacheContextWindows - ${res.statusText}`);
-        return res.json();
-      });
-      if (!models.length) return;
+  /** @returns {Promise<Record<string, number>>} Context window by model id. */
+  static async #fetchContextWindows() {
+    const apiKey = process.env.LOCAL_AI_API_KEY ?? null;
+    const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
+    const { origin } = new URL(process.env.LOCAL_AI_BASE_PATH);
+    const res = await fetch(`${origin}/v1/models`, { headers });
+    if (!res.ok) throw new Error(`LocalAI:/v1/models ${res.statusText}`);
+    const { data: models = [] } = await res.json();
+    if (!models.length) return {};
 
-      // /v1/models/capabilities reports the resolved context_size (and the
-      // capabilities/modalities) of each model. Older LocalAI versions do not
-      // have it, so those fall back to the VRAM-estimate endpoint, which
-      // returns the context_length auto-detected from GGUF metadata.
-      const capabilities = await LocalAiLLM.#fetchModelCapabilities();
-      const needsEstimate = models.filter(
-        ({ id }) => !capabilities.find((m) => m.id === id)?.context_size
-      );
-      const estimates = await Promise.all(
-        needsEstimate.map(({ id }) =>
-          fetch(`${origin}/api/models/vram-estimate`, {
-            method: "POST",
-            headers: { ...headers, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: id }),
-          })
-            .then((res) => (res.ok ? res.json() : {}))
-            .then((est) => ({ id, context_size: est.context_length }))
-            .catch(() => ({ id }))
-        )
-      );
-      [...capabilities, ...estimates].forEach(({ id, context_size }) => {
-        if (!context_size) return;
-        LocalAiLLM.modelContextWindows[id] = Number(context_size);
-      });
-      LocalAiLLM.#slog(`Context windows cached for all models!`);
-    } catch (e) {
-      LocalAiLLM.#slog(`Error caching context windows`, e);
-      return;
-    }
+    // /v1/models/capabilities reports the resolved context_size (and the
+    // capabilities/modalities) of each model. Older LocalAI versions do not
+    // have it, so those fall back to the VRAM-estimate endpoint, which
+    // returns the context_length auto-detected from GGUF metadata.
+    const capabilities = await LocalAiLLM.#fetchModelCapabilities();
+    const needsEstimate = models.filter(
+      ({ id }) => !capabilities.find((m) => m.id === id)?.context_size
+    );
+    const estimates = await Promise.all(
+      needsEstimate.map(({ id }) =>
+        fetch(`${origin}/api/models/vram-estimate`, {
+          method: "POST",
+          headers: { ...headers, "Content-Type": "application/json" },
+          body: JSON.stringify({ model: id }),
+        })
+          .then((res) => (res.ok ? res.json() : {}))
+          .then((est) => ({ id, context_size: est.context_length }))
+          .catch(() => ({ id }))
+      )
+    );
+    const limits = {};
+    for (const { id, context_size } of [...capabilities, ...estimates])
+      if (context_size) limits[id] = Number(context_size);
+    return limits;
   }
 
   /**
@@ -182,7 +174,7 @@ class LocalAiLLM {
   }
 
   static promptWindowLimit(modelName) {
-    if (Object.keys(LocalAiLLM.modelContextWindows).length === 0) {
+    if (LocalAiLLM.contextWindows.size === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -191,7 +183,7 @@ class LocalAiLLM {
 
     let userDefinedLimit = null;
     const systemDefinedLimit =
-      Number(this.modelContextWindows[modelName]) || 8192;
+      Number(LocalAiLLM.contextWindows.get(modelName)) || 8192;
 
     if (
       process.env.LOCAL_AI_MODEL_TOKEN_LIMIT &&

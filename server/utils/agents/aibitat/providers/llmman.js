@@ -81,7 +81,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns {Promise<string|null>} The completion.
    */
   async #handleFunctionCallChat({ messages = [] }) {
-    await LlmmanLLM.cacheContextWindows();
+    await LlmmanLLM.contextWindows.ensure(this.model);
     const response = await this.client.chat({
       model: this.model,
       keep_alive: this.keepAlive,
@@ -93,7 +93,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await LlmmanLLM.cacheContextWindows();
+    await LlmmanLLM.contextWindows.ensure(this.model);
     return await this.client.chat({
       model: this.model,
       keep_alive: this.keepAlive,
@@ -313,7 +313,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
         "LlmmanProvider.stream (tooled) - will process this chat completion."
       );
       this.resetUsage();
-      await LlmmanLLM.cacheContextWindows();
+      await LlmmanLLM.contextWindows.ensure(this.model);
       const msgUUID = v4();
       const formattedMessages = this.#formatMessagesForApiTools(messages);
       const tools = formatFunctionsToTools(functions);
@@ -512,7 +512,7 @@ class LlmmanProvider extends InheritMultiple([Provider, UnTooled]) {
 
     if (useNative) {
       this.resetUsage();
-      await LlmmanLLM.cacheContextWindows();
+      await LlmmanLLM.contextWindows.ensure(this.model);
       const formattedMessages = this.#formatMessagesForApiTools(messages);
       const tools = formatFunctionsToTools(functions);
 
