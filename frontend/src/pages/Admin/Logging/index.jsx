@@ -1,5 +1,6 @@
 import Sidebar from "@/components/SettingsSidebar";
 import useQuery from "@/hooks/useQuery";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 import System from "@/models/system";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
@@ -104,6 +105,7 @@ function LogsContainer({
   handlePrevious,
 }) {
   const { t } = useTranslation();
+  const multiUserMode = useMultiUserMode();
   if (loading) {
     return (
       <Skeleton.default
@@ -126,9 +128,11 @@ function LogsContainer({
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("event.table.type")}
             </th>
-            <th scope="col" className="px-6 py-3">
-              {t("event.table.user")}
-            </th>
+            {multiUserMode && (
+              <th scope="col" className="px-6 py-3">
+                {t("event.table.user")}
+              </th>
+            )}
             <th scope="col" className="px-6 py-3">
               {t("event.table.occurred")}
             </th>

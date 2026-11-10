@@ -221,51 +221,43 @@ async function openAiModels(apiKey = null) {
       console.error(`OpenAI:listModels`, e.message);
       return [
         {
-          name: "gpt-3.5-turbo",
-          id: "gpt-3.5-turbo",
+          name: "gpt-6.1-sol",
+          id: "gpt-6.1-sol",
           object: "model",
           created: 1677610602,
           owned_by: "openai",
           organization: "OpenAi",
         },
         {
-          name: "gpt-4o",
-          id: "gpt-4o",
+          name: "gpt-6-luna",
+          id: "gpt-6-luna",
           object: "model",
           created: 1677610602,
           owned_by: "openai",
           organization: "OpenAi",
         },
         {
-          name: "gpt-4",
-          id: "gpt-4",
+          name: "gpt-5.6-sol",
+          id: "gpt-5.6-sol",
           object: "model",
-          created: 1687882411,
+          created: 1677610602,
           owned_by: "openai",
           organization: "OpenAi",
         },
         {
-          name: "gpt-4-turbo",
-          id: "gpt-4-turbo",
+          name: "gpt-5.6-terra",
+          id: "gpt-5.6-terra",
           object: "model",
-          created: 1712361441,
-          owned_by: "system",
-          organization: "OpenAi",
-        },
-        {
-          name: "gpt-4-32k",
-          id: "gpt-4-32k",
-          object: "model",
-          created: 1687979321,
+          created: 1677610602,
           owned_by: "openai",
           organization: "OpenAi",
         },
         {
-          name: "gpt-3.5-turbo-16k",
-          id: "gpt-3.5-turbo-16k",
+          name: "gpt-5.6-luna",
+          id: "gpt-5.6-luna",
           object: "model",
-          created: 1683758102,
-          owned_by: "openai-internal",
+          created: 1677610602,
+          owned_by: "openai",
           organization: "OpenAi",
         },
       ];
@@ -823,13 +815,13 @@ async function getDeepSeekModels(apiKey = null) {
       console.error(`DeepSeek:listModels`, e.message);
       return [
         {
-          id: "deepseek-chat",
-          name: "deepseek-chat",
+          id: "deepseek-flash",
+          name: "deepseek-flash",
           organization: "deepseek",
         },
         {
-          id: "deepseek-reasoner",
-          name: "deepseek-reasoner",
+          id: "deepseek-v4-pro",
+          name: "deepseek-v4-pro",
           organization: "deepseek",
         },
       ];

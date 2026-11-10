@@ -296,6 +296,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Die Antwort hat das maximale Limit an Ausgabe-Token erreicht. Erhöhen Sie die maximale Anzahl an Ausgabe-Token des Modells, um längere Antworten zu ermöglichen.",
+    no_response: "Das Modell hat nicht geantwortet.",
+    agent_session_exited: "Sie haben die Agentensitzung beendet.",
   },
   "vector-workspace": {
     identifier: "Vektordatenbank-Identifikator",
@@ -1042,6 +1044,11 @@ const TRANSLATIONS = {
         model_type: "Art des Modells",
         default: "Standard",
         reasoning: "Reasoning",
+        agent_api: "Agenten-API",
+        agent_api_tooltip:
+          "Die API, die für Agentenaufrufe verwendet wird. Behalten Sie Chat Completions bei, es sei denn, Ihre Bereitstellung erfordert die Responses API (z. B. GPT-6 mit Tools). Nicht jedes Modell und nicht jede Region unterstützt die Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Wenn Ihre Bereitstellung ein Reasoning-Modell verwendet (z. B. o1, o1-mini, o3-mini usw.), setzen Sie dies auf "Reasoning". Andernfalls können Ihre Chat-Anfragen fehlschlagen.',
       },

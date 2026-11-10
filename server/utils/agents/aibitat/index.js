@@ -747,10 +747,10 @@ class AIbitat {
 
     // get the provider that will be used for the channel
     // if the channel has a provider, use that otherwise
-    // use the GPT-4 because it has a better reasoning
+    // use the default OpenAI model
     const provider = this.getProviderForConfig({
       // @ts-expect-error
-      model: "gpt-4",
+      model: "gpt-5.6-luna",
       ...this.defaultProvider,
       ...channelConfig,
     });
@@ -1520,7 +1520,10 @@ https://docs.anythingllm.com/agent/intelligent-tool-selection
           reasoningEffort,
         });
       case "generic-openai":
-        return new Providers.GenericOpenAiProvider({ model: config.model });
+        return new Providers.GenericOpenAiProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "perplexity":
         return new Providers.PerplexityProvider({ model: config.model });
       case "textgenwebui":

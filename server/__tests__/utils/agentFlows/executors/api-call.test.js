@@ -156,6 +156,25 @@ describe("executeApiCall", () => {
       );
     });
 
+    it("skips header rows without a name and trims header names", async () => {
+      const fetchMock = mockResponse("{}");
+      await executeApiCall(
+        {
+          url: "https://example.com/items",
+          method: "GET",
+          headers: [
+            { key: " Authorization ", value: "Bearer token" },
+            { key: "", value: "" },
+            { key: "   ", value: "ignored" },
+          ],
+        },
+        context
+      );
+      const [, requestConfig] = fetchMock.mock.calls[0];
+      expect(requestConfig.headers).toEqual({ Authorization: "Bearer token" });
+      expect(() => new Headers(requestConfig.headers)).not.toThrow();
+    });
+
     it("does not attach a body to GET requests", async () => {
       const fetchMock = mockResponse("{}");
       await executeApiCall(

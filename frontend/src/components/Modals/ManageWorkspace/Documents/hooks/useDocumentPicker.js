@@ -21,6 +21,7 @@ const UNLOADED = Object.freeze({
 });
 
 const EMPTY_SET = Object.freeze(new Set());
+const EMPTY_MAP = Object.freeze(new Map());
 
 /**
  * Single source of truth for the "My Documents" file picker.
@@ -48,8 +49,8 @@ const initialState = {
   expanded: EMPTY_SET,
   /** @type {Set<string>} folder names selected wholesale */
   selectedFolders: EMPTY_SET,
-  /** @type {Set<string>} individually selected file ids */
-  selectedFiles: EMPTY_SET,
+  /** @type {Map<string, object & {folderName: string}>} selected file records, including search-only hits */
+  selectedFiles: EMPTY_MAP,
   /** @type {Set<string>} files opted out of an otherwise-selected folder */
   deselectedFiles: EMPTY_SET,
   /** @type {Array<{name, fileCount, items}>|null} null when not searching */
@@ -82,6 +83,63 @@ function groupDocpathsByFolder(docpaths) {
     byFolder.get(folder).add(file);
   }
   return byFolder;
+}
+
+function fileIsSelected(state, folderName, id) {
+  const { selectedFolders, deselectedFiles, selectedFiles } = state;
+  if (selectedFolders.has(folderName) && !deselectedFiles.has(id)) return true;
+  return selectedFiles.has(id);
+}
+
+/**
+ * @param {string} name folder name
+ * @param {Array<object>} [visibleFiles] the files actually rendered for this
+ * folder. Search mode renders match lists rather than the fetched page, so
+ * the caller has to say which set the checkbox should reflect.
+ * @returns {'none'|'some'|'all'} tri-state for a folder's own checkbox.
+ */
+function folderStateOf(state, name, visibleFiles) {
+  const {
+    selectedFolders,
+    deselectedFiles,
+    selectedFiles,
+    contents,
+    searchResults,
+  } = state;
+  const items = visibleFiles ?? (contents[name] ?? UNLOADED).items;
+  if (selectedFolders.has(name)) {
+    const opted = items.some((f) => deselectedFiles.has(f.id));
+    return opted ? "some" : "all";
+  }
+  if (items.length === 0) return "none";
+  const hits = items.filter((f) => selectedFiles.has(f.id)).length;
+  if (hits === 0) return "none";
+  // Mirrors `toggle-folder`: individual selections cannot make a folder
+  // with unfetched pages "all".
+  const partiallyLoaded =
+    !searchResults && (contents[name] ?? UNLOADED).hasMore;
+  return hits === items.length && !partiallyLoaded ? "all" : "some";
+}
+
+// Unselects a fully fetched, wholesale-selected folder once every file in it
+// is opted out. Folders with unfetched pages keep their selection.
+function dropEmptiedFolders(state, names) {
+  let selectedFolders = state.selectedFolders;
+  let deselectedFiles = state.deselectedFiles;
+  for (const name of names) {
+    if (!selectedFolders.has(name)) continue;
+    const entry = state.contents[name] ?? UNLOADED;
+    if (entry.status !== "loaded" || entry.hasMore || !entry.items.length)
+      continue;
+    if (!entry.items.every((file) => deselectedFiles.has(file.id))) continue;
+    if (selectedFolders === state.selectedFolders)
+      selectedFolders = new Set(selectedFolders);
+    if (deselectedFiles === state.deselectedFiles)
+      deselectedFiles = new Set(deselectedFiles);
+    selectedFolders.delete(name);
+    for (const file of entry.items) deselectedFiles.delete(file.id);
+  }
+  return { ...state, selectedFolders, deselectedFiles };
 }
 
 function sameMembers(a, b) {
@@ -201,22 +259,29 @@ function reducer(state, action) {
       };
 
     case "toggle-file": {
-      const { id, folderName } = action;
+      const { file, folderName } = action;
+      const { id } = file;
       const inSelectedFolder = state.selectedFolders.has(folderName);
       const isOn =
         (inSelectedFolder && !state.deselectedFiles.has(id)) ||
         state.selectedFiles.has(id);
-      return {
-        ...state,
-        selectedFiles: withToggled(state.selectedFiles, id, !isOn),
-        // Turning a file off inside a wholesale-selected folder records an
-        // exception; turning it back on clears that exception.
-        deselectedFiles: withToggled(
-          state.deselectedFiles,
-          id,
-          isOn && inSelectedFolder
-        ),
-      };
+      const selectedFiles = new Map(state.selectedFiles);
+      if (isOn) selectedFiles.delete(id);
+      else selectedFiles.set(id, { ...file, folderName });
+      return dropEmptiedFolders(
+        {
+          ...state,
+          selectedFiles,
+          // Turning a file off inside a wholesale-selected folder records an
+          // exception; turning it back on clears that exception.
+          deselectedFiles: withToggled(
+            state.deselectedFiles,
+            id,
+            isOn && inSelectedFolder
+          ),
+        },
+        [folderName]
+      );
     }
 
     case "toggle-folder": {
@@ -240,7 +305,7 @@ function reducer(state, action) {
           !partiallyLoaded &&
           items.every((file) => state.selectedFiles.has(file.id));
       const turningOn = !fullySelected;
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       // Individual entries are redundant once the folder itself carries the
       // selection, so drop them either way to keep the sets canonical.
@@ -248,6 +313,8 @@ function reducer(state, action) {
         selectedFiles.delete(file.id);
         deselectedFiles.delete(file.id);
       }
+      for (const [id, file] of selectedFiles)
+        if (file.folderName === name) selectedFiles.delete(id);
       return {
         ...state,
         selectedFolders: withToggled(state.selectedFolders, name, turningOn),
@@ -260,7 +327,7 @@ function reducer(state, action) {
       return {
         ...state,
         selectedFolders: new Set(state.folders.map((f) => f.name)),
-        selectedFiles: EMPTY_SET,
+        selectedFiles: EMPTY_MAP,
         deselectedFiles: EMPTY_SET,
       };
 
@@ -268,33 +335,49 @@ function reducer(state, action) {
       return {
         ...state,
         selectedFolders: EMPTY_SET,
-        selectedFiles: EMPTY_SET,
+        selectedFiles: EMPTY_MAP,
         deselectedFiles: EMPTY_SET,
       };
 
-    case "select-files": {
-      if (!action.ids.length) return state;
-      const selectedFiles = new Set(state.selectedFiles);
+    // Files in a wholesale-selected folder are tracked as exceptions to it.
+    case "set-files": {
+      if (!action.files.length) return state;
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
-      for (const id of action.ids) {
-        selectedFiles.add(id);
-        deselectedFiles.delete(id);
+      for (const file of action.files) {
+        if (state.selectedFolders.has(file.folderName)) {
+          action.on
+            ? deselectedFiles.delete(file.id)
+            : deselectedFiles.add(file.id);
+          continue;
+        }
+        action.on
+          ? selectedFiles.set(file.id, file)
+          : selectedFiles.delete(file.id);
+        deselectedFiles.delete(file.id);
       }
-      return { ...state, selectedFiles, deselectedFiles };
+      return dropEmptiedFolders(
+        { ...state, selectedFiles, deselectedFiles },
+        new Set(action.files.map((file) => file.folderName))
+      );
     }
 
     // Wholesale selection, so files on pages not fetched yet are included.
-    case "select-folders": {
+    // Turning a folder off also drops its individual entries.
+    case "set-folders": {
       if (!action.names.length) return state;
       const selectedFolders = new Set(state.selectedFolders);
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       for (const name of action.names) {
-        selectedFolders.add(name);
+        action.on ? selectedFolders.add(name) : selectedFolders.delete(name);
         for (const file of (state.contents[name] ?? UNLOADED).items) {
           selectedFiles.delete(file.id);
           deselectedFiles.delete(file.id);
         }
+        // Search-only selections from unloaded pages are not in `items`.
+        for (const [id, file] of selectedFiles)
+          if (file.folderName === name) selectedFiles.delete(id);
       }
       return { ...state, selectedFolders, selectedFiles, deselectedFiles };
     }
@@ -325,7 +408,7 @@ function reducer(state, action) {
                   : entry.fetched,
               };
       }
-      const selectedFiles = new Set(state.selectedFiles);
+      const selectedFiles = new Map(state.selectedFiles);
       const deselectedFiles = new Set(state.deselectedFiles);
       for (const id of removed) {
         selectedFiles.delete(id);
@@ -460,45 +543,12 @@ export default function useDocumentPicker({ slug }) {
   /* -------------------------------- selection ------------------------------ */
 
   const isFileSelected = useCallback(
-    (folderName, id) => {
-      const { selectedFolders, deselectedFiles, selectedFiles } = state;
-      if (selectedFolders.has(folderName) && !deselectedFiles.has(id))
-        return true;
-      return selectedFiles.has(id);
-    },
+    (folderName, id) => fileIsSelected(state, folderName, id),
     [state]
   );
 
-  /**
-   * @param {string} name folder name
-   * @param {Array<object>} [visibleFiles] the files actually rendered for this
-   * folder. Search mode renders match lists rather than the fetched page, so
-   * the caller has to say which set the checkbox should reflect.
-   * @returns {'none'|'some'|'all'} tri-state for a folder's own checkbox.
-   */
   const folderSelectionState = useCallback(
-    (name, visibleFiles) => {
-      const {
-        selectedFolders,
-        deselectedFiles,
-        selectedFiles,
-        contents,
-        searchResults,
-      } = state;
-      const items = visibleFiles ?? (contents[name] ?? UNLOADED).items;
-      if (selectedFolders.has(name)) {
-        const opted = items.some((f) => deselectedFiles.has(f.id));
-        return opted ? "some" : "all";
-      }
-      if (items.length === 0) return "none";
-      const hits = items.filter((f) => selectedFiles.has(f.id)).length;
-      if (hits === 0) return "none";
-      // Mirrors `toggle-folder`: individual selections cannot make a folder
-      // with unfetched pages "all".
-      const partiallyLoaded =
-        !searchResults && (contents[name] ?? UNLOADED).hasMore;
-      return hits === items.length && !partiallyLoaded ? "all" : "some";
-    },
+    (name, visibleFiles) => folderStateOf(state, name, visibleFiles),
     [state]
   );
 
@@ -526,7 +576,7 @@ export default function useDocumentPicker({ slug }) {
       count += Math.max(0, total - opted);
       entry.items.forEach((f) => counted.add(f.id));
     }
-    for (const id of selectedFiles) if (!counted.has(id)) count += 1;
+    for (const id of selectedFiles.keys()) if (!counted.has(id)) count += 1;
     return count;
   }, [state]);
 
@@ -542,8 +592,7 @@ export default function useDocumentPicker({ slug }) {
     state.selectedFolders.size > 0 || state.selectedFiles.size > 0;
 
   const toggleFile = useCallback(
-    (file, folderName) =>
-      dispatch({ type: "toggle-file", id: file.id, folderName }),
+    (file, folderName) => dispatch({ type: "toggle-file", file, folderName }),
     []
   );
   const toggleFolder = useCallback(
@@ -556,6 +605,31 @@ export default function useDocumentPicker({ slug }) {
     []
   );
   const selectAll = useCallback(() => dispatch({ type: "select-all" }), []);
+  const setFiles = useCallback(
+    (files, on) => dispatch({ type: "set-files", files, on }),
+    []
+  );
+  // Every row in the range takes the anchor's state. Collapsed folders change
+  // as a unit; expanded ones only through their file rows in the range.
+  const selectRange = useCallback((rows, anchor) => {
+    const state = stateRef.current;
+    const on =
+      anchor.kind === "folder"
+        ? folderStateOf(state, anchor.name, anchor.files) === "all"
+        : fileIsSelected(state, anchor.file.folderName, anchor.file.id);
+    dispatch({
+      type: "set-folders",
+      names: rows
+        .filter((row) => row.kind === "folder" && !row.expanded)
+        .map((row) => row.name),
+      on,
+    });
+    dispatch({
+      type: "set-files",
+      files: rows.filter((row) => row.kind === "file").map((row) => row.file),
+      on,
+    });
+  }, []);
   const clearSelection = useCallback(
     () => dispatch({ type: "clear-selection" }),
     []
@@ -564,9 +638,13 @@ export default function useDocumentPicker({ slug }) {
   /**
    * Expand the current selection into concrete file records, fetching whole
    * folders on demand. Files already embedded in this workspace are skipped.
+   * @param {object} [options]
+   * @param {Set<string>} [options.partialFolders] filled with the names of
+   * wholesale-selected folders that have at least one file opted out. Delete
+   * uses it to remove only the resolved files of those folders, not the folder.
    * @returns {Promise<Array<object & {folderName: string}>>}
    */
-  const resolveSelection = useCallback(async () => {
+  const resolveSelection = useCallback(async ({ partialFolders } = {}) => {
     const {
       folders,
       contents,
@@ -591,23 +669,38 @@ export default function useDocumentPicker({ slug }) {
           );
         }
         for (const file of items) {
-          if (deselectedFiles.has(file.id) || seen.has(file.id)) continue;
+          if (deselectedFiles.has(file.id)) {
+            partialFolders?.add(folder.name);
+            continue;
+          }
+          if (seen.has(file.id)) continue;
           seen.add(file.id);
           resolved.push({ ...file, folderName: folder.name });
         }
-        continue;
       }
+    }
 
-      for (const file of items) {
-        if (!selectedFiles.has(file.id) || seen.has(file.id)) continue;
-        seen.add(file.id);
-        resolved.push({ ...file, folderName: folder.name });
-      }
+    // Individual selections may come from search results outside loaded pages.
+    const folderNames = new Set(folders.map((folder) => folder.name));
+    for (const file of selectedFiles.values()) {
+      if (
+        selectedFolders.has(file.folderName) ||
+        !folderNames.has(file.folderName) ||
+        workspaceDocpaths.has(`${file.folderName}/${file.name}`) ||
+        seen.has(file.id)
+      )
+        continue;
+      seen.add(file.id);
+      resolved.push(file);
     }
     return resolved;
   }, []);
 
-  /** Folder names selected wholesale (used by delete, which removes folders). */
+  /**
+   * Folder names selected wholesale (used by delete, which removes folders).
+   * Some may have files opted out; `resolveSelection({ partialFolders })`
+   * reports those.
+   */
   const selectedFolderNames = useMemo(
     () => [...state.selectedFolders],
     [state.selectedFolders]
@@ -698,7 +791,7 @@ export default function useDocumentPicker({ slug }) {
       changed.map((folder) => System.localFiles(folder.name, 0, PAGE_SIZE))
     );
 
-    const freshIds = [];
+    const freshFiles = [];
     const freshFolders = [];
     changed.forEach((folder, i) => {
       const result = pages[i];
@@ -721,11 +814,12 @@ export default function useDocumentPicker({ slug }) {
         return;
       }
       for (const file of items)
-        if (!knownIds.has(file.id)) freshIds.push(file.id);
+        if (!knownIds.has(file.id))
+          freshFiles.push({ ...file, folderName: folder.name });
     });
 
-    dispatch({ type: "select-folders", names: freshFolders });
-    dispatch({ type: "select-files", ids: freshIds });
+    dispatch({ type: "set-folders", names: freshFolders, on: true });
+    dispatch({ type: "set-files", files: freshFiles, on: true });
   }, [refresh]);
 
   return {
@@ -745,6 +839,8 @@ export default function useDocumentPicker({ slug }) {
     toggleFile,
     toggleFolder,
     selectAll,
+    setFiles,
+    selectRange,
     clearSelection,
     resolveSelection,
     removeFiles,

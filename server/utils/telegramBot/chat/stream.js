@@ -68,7 +68,7 @@ async function streamResponse({
   await ctx.bot.sendChatAction(chatId, "typing");
 
   const chatMode = workspace.chatMode || "chat";
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const { rawHistory, chatHistory } = await recentChatHistory({
     workspace,
     thread,

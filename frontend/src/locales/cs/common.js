@@ -303,6 +303,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Odpověď dosáhla maximálního limitu tokenů. Zvyšte maximální počet tokenů, které model může generovat, aby bylo možné získat delší odpovědi.",
+    no_response: "Model nedokázal odpovědět.",
+    agent_session_exited: "Ukončili jste relaci agenta.",
   },
   "vector-workspace": {
     identifier: "Identifikátor vektorové databáze",
@@ -1030,6 +1032,11 @@ const TRANSLATIONS = {
           "Pokud vaše nasazení používá model uvažování (o1, o1-mini, o3-mini atd.), nastavte to na 'Uvažování'. Jinak se vaše požadavky chatu mohou selhat.",
         default: "Výchozí",
         reasoning: "Uvažování",
+        agent_api: "API agenta",
+        agent_api_tooltip:
+          "API používané pro volání agenta. Ponechte Chat Completions, pokud vaše nasazení nevyžaduje Responses API (např. GPT-6 s nástroji). Ne každý model nebo region podporuje Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

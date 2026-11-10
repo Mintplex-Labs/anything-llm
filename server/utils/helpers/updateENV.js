@@ -55,6 +55,15 @@ const KEY_MAPPING = {
           : "Invalid model type. Must be one of: default, reasoning.",
     ],
   },
+  AzureOpenAiAgentApi: {
+    envKey: "AZURE_OPENAI_AGENT_API",
+    checks: [
+      (input) =>
+        ["chat", "responses"].includes(input)
+          ? null
+          : "Invalid agent API. Must be one of: chat, responses.",
+    ],
+  },
 
   // Anthropic Settings
   AnthropicApiKey: {
@@ -708,6 +717,10 @@ const KEY_MAPPING = {
   },
   AgentFirecrawlApiKey: {
     envKey: "AGENT_FIRECRAWL_API_KEY",
+    checks: [],
+  },
+  AgentDeepSeekApiKey: {
+    envKey: "AGENT_DEEPSEEK_API_KEY",
     checks: [],
   },
 
@@ -1615,6 +1628,7 @@ function dumpENV() {
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
     "DISABLE_SWAGGER_DOCS",
+    "DISABLE_METRICS_ENDPOINT",
     "WORKSPACE_DELETION_PROTECTION",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",

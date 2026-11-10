@@ -8,7 +8,7 @@ const {
   getVectorDbClass,
   resolveProviderConnector,
 } = require("../../../utils/helpers");
-const { multiUserMode, reqBody } = require("../../../utils/http");
+const { multiUserMode, reqBody, toBoundedInt } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
 const { EventLogs } = require("../../../models/eventLogs");
@@ -431,7 +431,7 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        const validLimit = Math.max(1, parseInt(limit));
+        const validLimit = toBoundedInt(limit, 100, { min: 1 });
         const validOrderBy = ["asc", "desc"].includes(orderBy)
           ? orderBy
           : "asc";

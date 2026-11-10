@@ -306,6 +306,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Odgovor je dostigao maksimalni limit za broj tokena. Povećajte maksimalni broj tokena koji model može generirati, kako biste omogućili duže odgovore.",
+    no_response: "Model nije uspio odgovoriti.",
+    agent_session_exited: "Završili ste sesiju agenta.",
   },
   "vector-workspace": {
     identifier: "Identifikator vektorske baze podataka",
@@ -1033,6 +1035,11 @@ const TRANSLATIONS = {
           "Ako vaša implementacija koristi model za rezoniranje (o1, o1-mini, o3-mini, itd.), postavite ovo na „Rezoniranje“. Inače vaši zahtjevi razgovora mogu ne uspjeti.",
         default: "Zadano",
         reasoning: "Rezoniranje",
+        agent_api: "API agenta",
+        agent_api_tooltip:
+          "API koji se koristi za pozive agenta. Zadržite Chat Completions osim ako vaša implementacija ne zahtijeva Responses API (npr. GPT-6 s alatima). Ne podržavaju svi modeli ni regije Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

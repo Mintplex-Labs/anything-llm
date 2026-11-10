@@ -295,6 +295,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Atbildē tika sasniegts maksimālais izvades tokenu limits. Palieliniet modeļa maksimālo izvades tokenu skaitu, lai varētu saņemt garākas atbildes.",
+    no_response: "Modelis nespēja atbildēt.",
+    agent_session_exited: "Jūs beidzāt aģenta sesiju.",
   },
   "vector-workspace": {
     identifier: "Vektoru datubāzes identifikators",
@@ -1028,6 +1030,11 @@ const TRANSLATIONS = {
         model_type: "Modeļa veids",
         default: "Standarta",
         reasoning: "Pamatojums",
+        agent_api: "Aģenta API",
+        agent_api_tooltip:
+          "API, ko izmanto aģenta izsaukumiem. Atstājiet Chat Completions, ja vien jūsu izvietošanai nav nepieciešams Responses API (piem., GPT-6 ar rīkiem). Ne visi modeļi vai reģioni atbalsta Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Ja jūsu lietojums izmanto loģiskā modelī (o1, o1-mini, o3-mini utt.), norādiet, ka tas ir "Loģisks". Citi gadījumā jūsu sarunu pieprasījumi var neizpildīties.',
       },

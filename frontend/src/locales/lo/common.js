@@ -301,6 +301,8 @@ const TRANSLATIONS = {
       },
     },
     token_limit_reached: null,
+    no_response: "ໂມເດວບໍ່ສາມາດຕອບໄດ້.",
+    agent_session_exited: "ທ່ານໄດ້ຈົບເຊດຊັນເອເຈນແລ້ວ.",
   },
   "vector-workspace": {
     identifier: "ຕົວລະບຸຖານຂໍ້ມູນເວກເຕີ",
@@ -979,6 +981,11 @@ const TRANSLATIONS = {
           "ຖ້າ Deployment ຂອງທ່ານໃຊ້ແບບຈຳລອງແບບໃຫ້ເຫດຜົນ (o1, o1-mini, o3-mini, ແລະ ອື່ນໆ), ໃຫ້ຕັ້ງເປັນ “Reasoning”. ບໍ່ດັ່ງນັ້ນການແຊັດອາດຈະລົ້ມເຫຼວ.",
         default: "ຄ່າເລີ່ມຕົ້ນ",
         reasoning: "ການໃຫ້ເຫດຜົນ (Reasoning)",
+        agent_api: "API ຂອງເອເຈັນ",
+        agent_api_tooltip:
+          "API ທີ່ໃຊ້ສຳລັບການເອີ້ນເອເຈັນ. ໃຫ້ໃຊ້ Chat Completions ເວັ້ນເສຍແຕ່ການຕິດຕັ້ງຂອງທ່ານຕ້ອງການ Responses API (ເຊັ່ນ GPT-6 ທີ່ມີເຄື່ອງມື). ບໍ່ແມ່ນທຸກໂມເດວ ຫຼື ທຸກພາກພື້ນທີ່ຮອງຮັບ Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

@@ -173,6 +173,7 @@ const SystemSettings = {
             "keenable-search",
             "anysearch-search",
             "firecrawl-search",
+            "deepseek-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -623,6 +624,7 @@ const SystemSettings = {
       AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
       AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
       AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
+      AgentDeepSeekApiKey: !!process.env.AGENT_DEEPSEEK_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -894,7 +896,7 @@ const SystemSettings = {
     return {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4.1-nano",
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-5.6-luna",
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
@@ -904,6 +906,7 @@ const SystemSettings = {
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
       AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",
+      AzureOpenAiAgentApi: process.env.AZURE_OPENAI_AGENT_API || "chat",
 
       // Anthropic Keys
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,

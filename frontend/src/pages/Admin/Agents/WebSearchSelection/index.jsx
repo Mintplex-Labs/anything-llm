@@ -17,6 +17,7 @@ import YouSearchIcon from "./icons/you.png";
 import KeenableSearchIcon from "./icons/keenable.png";
 import AnySearchSearchIcon from "./icons/anysearch.png";
 import FirecrawlSearchIcon from "./icons/firecrawl.png";
+import DeepSeekSearchIcon from "@/media/llmprovider/deepseek.png";
 import { ListMagnifyingGlass } from "@phosphor-icons/react";
 import Toggle from "@/components/lib/Toggle";
 import { DefaultBadge } from "../Badges/default";
@@ -41,6 +42,7 @@ import {
   KeenableSearchOptions,
   AnySearchOptions,
   FirecrawlSearchOptions,
+  DeepSeekSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -171,6 +173,13 @@ const SEARCH_PROVIDERS = [
     logo: FirecrawlSearchIcon,
     options: (settings) => <FirecrawlSearchOptions settings={settings} />,
     description: "Web search API for AI agents. Requires a free API key.",
+  },
+  {
+    name: "DeepSeek",
+    value: "deepseek-search",
+    logo: DeepSeekSearchIcon,
+    options: (settings) => <DeepSeekSearchOptions settings={settings} />,
+    description: "DeepSeek's web search tool API. Requires a DeepSeek API key.",
   },
 ];
 

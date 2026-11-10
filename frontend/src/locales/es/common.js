@@ -298,6 +298,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "La respuesta alcanzó el límite máximo de tokens de salida. Aumente el número máximo de tokens de salida del modelo para permitir respuestas más largas.",
+    no_response: "El modelo no pudo responder.",
+    agent_session_exited: "Has finalizado la sesión del agente.",
   },
   "vector-workspace": {
     identifier: "Identificador de la base de datos vectorial",
@@ -1053,6 +1055,11 @@ const TRANSLATIONS = {
         model_type: "Tipo de modelo",
         default: "Predeterminado",
         reasoning: "Razonamiento",
+        agent_api: "API del agente",
+        agent_api_tooltip:
+          "La API que se usa para las llamadas del agente. Mantén Chat Completions a menos que tu despliegue requiera la Responses API (p. ej., GPT-6 con herramientas). No todos los modelos ni regiones admiten la Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Si su implementación utiliza un modelo de razonamiento (o1, o1-mini, o3-mini, etc.), configure esto como "Razonamiento". De lo contrario, sus solicitudes de chat podrían fallar.',
       },

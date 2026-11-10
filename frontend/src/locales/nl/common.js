@@ -260,6 +260,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Het antwoord heeft het maximale aantal uitvoertokens bereikt. Verhoog het maximale aantal uitvoertokens van het model om langere antwoorden mogelijk te maken.",
+    no_response: "Model kon niet reageren.",
+    agent_session_exited: "Je hebt de agentsessie beëindigd.",
   },
   "vector-workspace": {
     identifier: "Vector database-identificator",
@@ -864,6 +866,11 @@ const TRANSLATIONS = {
         model_type: "Model Type",
         default: "Standaard",
         reasoning: "Redeneren",
+        agent_api: "Agent-API",
+        agent_api_tooltip:
+          "De API die wordt gebruikt voor agentaanroepen. Houd Chat Completions aan, tenzij je deployment de Responses API vereist (bijv. GPT-6 met tools). Niet elk model of elke regio ondersteunt de Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "Als uw implementatie een redeneermodel gebruikt (o1, o1-mini, o3-mini, enz.), stel dit dan in op 'Redeneren'. Anders kunnen uw chatverzoeken mislukken.",
       },

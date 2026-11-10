@@ -302,6 +302,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Atsakymas pasiekė maksimalų išvesties žetonų limitą. Padidinkite modelio maksimalų išvesties žetonų skaičių, kad būtų galimi ilgesni atsakymai.",
+    no_response: "Modelis nesugebėjo atsakyti.",
+    agent_session_exited: "Jūs baigėte agento seansą.",
   },
   "vector-workspace": {
     identifier: "Vektorių duomenų bazės identifikatorius",
@@ -1032,6 +1034,11 @@ const TRANSLATIONS = {
           "Jei jūsų diegimas naudoja mąstymo modelį (o1, o1-mini, o3-mini ir kt.), nustatykite „Reasoning“. Priešingu atveju jūsų užklausos gali nepavykti.",
         default: "Numatytasis",
         reasoning: "Mąstymo (Reasoning)",
+        agent_api: "Agento API",
+        agent_api_tooltip:
+          "API, naudojama agento užklausoms. Palikite Chat Completions, nebent jūsų diegimui reikia Responses API (pvz., GPT-6 su įrankiais). Ne visi modeliai ar regionai palaiko Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
       },
     },
   },

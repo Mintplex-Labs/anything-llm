@@ -257,6 +257,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "応答が最大出力トークン数の上限に達しました。より長い応答を生成するには、モデルの最大出力トークン数を増やしてください。",
+    no_response: "モデルが応答できませんでした。",
+    agent_session_exited: "エージェントセッションを終了しました。",
   },
   "vector-workspace": {
     identifier: "ベクターデータベース識別子",
@@ -844,6 +846,11 @@ const TRANSLATIONS = {
         model_type: "モデルの種類",
         default: "デフォルト",
         reasoning: "理由",
+        agent_api: "エージェント API",
+        agent_api_tooltip:
+          "エージェント呼び出しに使用する API です。デプロイで Responses API が必要な場合（例: ツールを使う GPT-6）を除き、Chat Completions のままにしてください。すべてのモデルやリージョンが Responses API に対応しているわけではありません。",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "もし、あなたのシステムが推論モデル（o1、o1-mini、o3-miniなど）を使用している場合、この設定を「推論」に設定してください。そうでない場合、チャットの要求が失敗する可能性があります。",
       },

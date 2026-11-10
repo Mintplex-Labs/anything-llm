@@ -23,6 +23,25 @@ async function userCanToggleTools(userId = null) {
 }
 
 /**
+ * Agent follow-ups arrive over the socket rather than the HTTP chat routes, so
+ * the 24-hour message limit is checked here before each of the agent's turns.
+ * Returns the quota message when the user is over their limit, otherwise null.
+ * Single-user mode, admins, and users without a limit always pass.
+ * @param {number|null} userId - User id from the agent invocation.
+ * @returns {Promise<string|null>}
+ */
+async function chatQuotaExceededMessage(userId = null) {
+  if (!userId) return null;
+  const { SystemSettings } = require("../../../../models/systemSettings");
+  if (!(await SystemSettings.isMultiUserMode())) return null;
+
+  const { User } = require("../../../../models/user");
+  const user = await User.get({ id: Number(userId) });
+  if (!user || (await User.canSendChat(user))) return null;
+  return `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`;
+}
+
+/**
  * Returns the timeout in ms for agent tool-call approval prompts.
  * Reads from `TOOL_CALL_APPROVAL_TIMEOUT_MS` env var; defaults to 120 000 ms (2 min).
  * @returns {number}
@@ -61,6 +80,19 @@ const WEBSOCKET_BAIL_COMMANDS = [
   "/halt",
   "/reset", // Will not reset but will bail. Powerusers always do this and the LLM responds.
 ];
+
+/**
+ * Tells the frontend the user ended the agent session with a bail command so
+ * it can note that in the chat. /reset clears the chat right after, so it gets
+ * no notice.
+ * @param {object} socket
+ * @param {string} command - the feedback the user sent
+ */
+function notifySessionExited(socket, command) {
+  if (command === "/reset" || !WEBSOCKET_BAIL_COMMANDS.includes(command))
+    return;
+  socket.send(JSON.stringify({ type: "agentSessionExited", content: command }));
+}
 /**
  * Detects the /img slash command (optionally followed by a prompt) so it can be
  * handled inline during an active agent session instead of being handed to the
@@ -355,16 +387,34 @@ const websocket = {
             let timeoutId = null;
             let held = false;
 
-            const handleTimeout = (ms) => {
+            const settle = (result) => {
               delete socket.handleClarificationResponse;
-              console.log(
-                chalk.yellow(`Clarification request timed out after ${ms}ms`)
-              );
-              resolve({
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // Abort and timeout both mean no answers will arrive, so both
+            // resolve with every question marked skipped.
+            const settleUnanswered = () =>
+              settle({
                 skipped: false,
                 timedOut: true,
                 answers: questions.map(() => ({ skipped: true, answer: null })),
               });
+
+            // The socket is gone once the session aborts, so settle now instead of
+            // waiting out the timeout.
+            function abortListener() {
+              settleUnanswered();
+            }
+            aibitat.emitter.once("abort", abortListener);
+
+            const handleTimeout = (ms) => {
+              console.log(
+                chalk.yellow(`Clarification request timed out after ${ms}ms`)
+              );
+              settleUnanswered();
             };
 
             socket.handleClarificationResponse = (message) => {
@@ -385,11 +435,8 @@ const websocket = {
 
                 if (data?.type !== "clarificationResponse") return;
 
-                delete socket.handleClarificationResponse;
-                clearTimeout(timeoutId);
-
                 if (data.skipped) {
-                  return resolve({
+                  return settle({
                     skipped: true,
                     timedOut: false,
                     answers: questions.map(() => ({
@@ -407,7 +454,7 @@ const websocket = {
                     answer: a.answer ?? null,
                   };
                 });
-                return resolve({
+                return settle({
                   skipped: false,
                   timedOut: false,
                   answers: normalized,
@@ -448,9 +495,19 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const { feedback, attachments, reasoningEffort } =
+          const { feedback, attachments, reasoningEffort, timedOut } =
             await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
+            if (!timedOut) notifySessionExited(socket, feedback);
+            socket.close();
+            return;
+          }
+
+          const quotaMessage = await chatQuotaExceededMessage(userId);
+          if (quotaMessage) {
+            socket.send(
+              JSON.stringify({ type: "wssFailure", content: quotaMessage })
+            );
             socket.close();
             return;
           }
@@ -488,7 +545,11 @@ const websocket = {
                       `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
                     )
                   );
-                  resolve({ feedback: "exit", attachments: [] });
+                  resolve({
+                    feedback: "exit",
+                    attachments: [],
+                    timedOut: true,
+                  });
                   return;
                 }, SOCKET_TIMEOUT_MS);
               };
@@ -544,5 +605,6 @@ const websocket = {
 module.exports = {
   websocket,
   WEBSOCKET_BAIL_COMMANDS,
+  notifySessionExited,
   toolApprovalTimeoutMs,
 };

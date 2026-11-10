@@ -259,6 +259,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Câu trả lời đã đạt đến giới hạn số lượng token tối đa. Tăng giới hạn số lượng token tối đa cho mô hình để cho phép câu trả lời dài hơn.",
+    no_response: "Mô hình không thể phản hồi.",
+    agent_session_exited: "Bạn đã kết thúc phiên tác tử.",
   },
   "vector-workspace": {
     identifier: "Định danh cơ sở dữ liệu vector",
@@ -857,6 +859,11 @@ const TRANSLATIONS = {
         model_type: "Loại Mô hình",
         default: "Mặc định",
         reasoning: "Lý luận",
+        agent_api: "API của tác tử",
+        agent_api_tooltip:
+          "API được dùng cho các lệnh gọi tác tử. Hãy giữ Chat Completions trừ khi bản triển khai của bạn yêu cầu Responses API (ví dụ: GPT-6 có công cụ). Không phải mô hình hoặc khu vực nào cũng hỗ trợ Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'Nếu triển khai của bạn sử dụng mô hình lý luận (o1, o1-mini, o3-mini, v.v.), hãy đặt thành "Lý luận". Nếu không, yêu cầu trò chuyện của bạn có thể thất bại.',
       },

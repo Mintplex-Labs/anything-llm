@@ -122,6 +122,49 @@ export default function AzureAiOptions({ settings }) {
             </option>
           </select>
         </div>
+
+        <div className="flex flex-col w-60">
+          <div className="flex items-center gap-1 mb-3">
+            <label className="text-white text-sm font-semibold block">
+              {t("llm.providers.azure_openai.agent_api")}
+            </label>
+            <Tooltip
+              id="azure-openai-agent-api"
+              place="top"
+              delayShow={300}
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            />
+            <div
+              type="button"
+              className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
+              data-tooltip-id="azure-openai-agent-api"
+              data-tooltip-place="top"
+              data-tooltip-content={t(
+                "llm.providers.azure_openai.agent_api_tooltip"
+              )}
+            >
+              <Info size={18} className="text-theme-text-secondary" />
+            </div>
+          </div>
+          <select
+            name="AzureOpenAiAgentApi"
+            defaultValue={settings?.AzureOpenAiAgentApi || "chat"}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            required={true}
+          >
+            <option value="chat">
+              {t("llm.providers.azure_openai.chat_completions")}
+            </option>
+            <option value="responses">
+              {t("llm.providers.azure_openai.responses")}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
   );

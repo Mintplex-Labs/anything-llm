@@ -7,6 +7,7 @@ import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import ImageGenerationPending from "./ImageGenerationPending";
 import ScheduledJobCreatedCard from "./ScheduledJobCreatedCard";
+import AgentSessionExited from "./AgentSessionExited";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -300,6 +301,8 @@ function buildMessages({
       acc.push(<FileDownloadCard key={props.uuid} props={props} />);
     } else if (props.type === "scheduledJobCreated" && !!props.content) {
       acc.push(<ScheduledJobCreatedCard key={props.uuid} props={props} />);
+    } else if (props.type === "agentSessionExited") {
+      acc.push(<AgentSessionExited key={props.uuid} />);
     } else if (props.type === "imageGenerationPending") {
       acc.push(
         <ImageGenerationPending
@@ -321,7 +324,10 @@ function buildMessages({
             content: thought,
           });
         }
-        if (!hasVisible) return acc;
+        // A saved reply with no text and no thought is an unanswered prompt,
+        // which HistoricalMessage renders as a placeholder.
+        const isUnanswered = !!props.chatId && !thought;
+        if (!hasVisible && !isUnanswered) return acc;
       }
 
       if (isLastBotReply && props.animate) {

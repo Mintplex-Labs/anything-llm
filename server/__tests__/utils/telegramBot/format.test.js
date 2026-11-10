@@ -67,6 +67,14 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("escapes double quotes inside a link URL", () => {
+      expect(
+        markdownToTelegram('see [search](https://example.com/q?x="hi") here')
+      ).toBe(
+        'see <a href="https://example.com/q?x=&quot;hi&quot;">search</a> here'
+      );
+    });
+
     test("converts headings to <b>", () => {
       expect(markdownToTelegram("# Title\nbody")).toBe("<b>Title</b>\nbody");
       expect(markdownToTelegram("### Subsection")).toBe("<b>Subsection</b>");
@@ -76,6 +84,20 @@ describe("markdownToTelegram", () => {
       expect(markdownToTelegram("- one\n- two\n* three")).toBe(
         "• one\n• two\n• three"
       );
+    });
+
+    test("keeps emphasis inside a * bullet item", () => {
+      expect(markdownToTelegram("* Use *caution* here")).toBe(
+        "• Use <i>caution</i> here"
+      );
+      expect(
+        markdownToTelegram("* **Step 1:** install\n* *optional* step")
+      ).toBe("• <b>Step 1:</b> install\n• <i>optional</i> step");
+    });
+
+    test("does not italicize * surrounded by spaces", () => {
+      expect(markdownToTelegram("2 * 3 and 4 * 5")).toBe("2 * 3 and 4 * 5");
+      expect(markdownToTelegram("a * b *c*")).toBe("a * b <i>c</i>");
     });
 
     test("converts blockquotes to <i>", () => {

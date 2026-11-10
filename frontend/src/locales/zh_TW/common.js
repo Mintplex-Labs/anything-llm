@@ -249,6 +249,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "回應已達到最大輸出token限制。請增加模型的最大輸出token數量，以便產生更長的回應。",
+    no_response: "模型未能回應。",
+    agent_session_exited: "你已結束代理程式工作階段。",
   },
   "vector-workspace": {
     identifier: "向量資料庫識別碼",
@@ -808,6 +810,11 @@ const TRANSLATIONS = {
         model_type: "模型類型",
         default: "預設",
         reasoning: "推理",
+        agent_api: "代理 API",
+        agent_api_tooltip:
+          "代理呼叫所使用的 API。除非您的部署需要 Responses API（例如搭配工具的 GPT-6），否則請保留 Chat Completions。並非所有模型或區域都支援 Responses API。",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "如果您的部署使用推理模型（例如 o1、o1-mini、o3-mini 等），請將此設定設為「推理」。否則，您的對話請求可能會失敗。",
       },

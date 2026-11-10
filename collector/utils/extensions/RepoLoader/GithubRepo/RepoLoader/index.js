@@ -300,10 +300,14 @@ class GitHubRepoLoader {
    */
   async fetchSingleFile(sourceFilePath) {
     try {
+      const encodedFilePath = String(sourceFilePath)
+        .split("/")
+        .map((segment) => encodeURIComponent(segment))
+        .join("/");
       return fetch(
         `${this.apiBase}/repos/${this.author}/${
           this.project
-        }/contents/${sourceFilePath}?ref=${encodeURIComponent(this.branch)}`,
+        }/contents/${encodedFilePath}?ref=${encodeURIComponent(this.branch)}`,
         {
           method: "GET",
           headers: {

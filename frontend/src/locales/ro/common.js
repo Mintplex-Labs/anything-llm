@@ -296,6 +296,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "Răspunsul a atins limita maximă de token-uri pentru ieșire. Crește numărul maxim de token-uri pe care modelul le poate genera, pentru a permite răspunsuri mai lungi.",
+    no_response: "Modelul nu a putut răspunde.",
+    agent_session_exited: "Ați încheiat sesiunea agentului.",
   },
   vector: {
     title: "Baza de date vectorială",
@@ -1595,6 +1597,11 @@ const TRANSLATIONS = {
         model_type: "Tip model",
         default: "Implicit",
         reasoning: "Raționament",
+        agent_api: "API agent",
+        agent_api_tooltip:
+          "API-ul folosit pentru apelurile agentului. Păstrați Chat Completions, cu excepția cazului în care implementarea dvs. necesită Responses API (de ex. GPT-6 cu instrumente). Nu toate modelele sau regiunile acceptă Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           "Dacă implementarea dvs. utilizează un model de raționament (o1, o1-mini, o3-mini, etc.), setați această opțiune la „Raționament”. În caz contrar, cererile dvs. de chat pot eșua.",
       },

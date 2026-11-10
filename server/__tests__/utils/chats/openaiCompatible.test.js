@@ -3,6 +3,7 @@ const { OpenAICompatibleChat } = require('../../../utils/chats/openaiCompatible'
 const { WorkspaceChats } = require('../../../models/workspaceChats');
 const { getVectorDbClass, getLLMProvider, resolveProviderConnector } = require('../../../utils/helpers');
 const { extractTextContent, extractAttachments } = require('../../../endpoints/api/openai/helpers');
+const { handleDefaultStreamResponseV2 } = require('../../../utils/helpers/chat/responses');
 
 // Mock dependencies
 jest.mock('../../../models/workspaceChats');
@@ -248,6 +249,33 @@ describe('OpenAICompatibleChat', () => {
           })
         })
       );
+    });
+
+    test('should preserve literal data: prefixes in streamed text', async () => {
+      const upstream = (async function* () {
+        yield { choices: [{ delta: { content: 'before ' }, finish_reason: null }] };
+        yield { choices: [{ delta: { content: 'data: value' }, finish_reason: null }] };
+        yield { choices: [{ delta: { content: ' after' }, finish_reason: null }] };
+        yield { choices: [{ delta: {}, finish_reason: 'stop' }] };
+      })();
+      upstream.endMeasurement = jest.fn();
+      mockLLMConnector.streamGetChatCompletion.mockResolvedValue(upstream);
+      mockLLMConnector.handleStream.mockImplementation(handleDefaultStreamResponseV2);
+
+      await OpenAICompatibleChat.streamChat({
+        workspace: mockWorkspace,
+        response: mockResponse,
+        prompt: 'Show a YAML data field.',
+        systemPrompt: 'You are a helpful assistant',
+      });
+
+      const choices = mockResponse.write.mock.calls.map(
+        ([frame]) => JSON.parse(frame.slice('data: '.length)).choices[0]
+      );
+      expect(choices.map(({ delta }) => delta.content).join('')).toBe(
+        'before data: value after'
+      );
+      expect(choices.at(-1).finish_reason).toBe('stop');
     });
   });
 });

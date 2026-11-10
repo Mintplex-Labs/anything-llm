@@ -7,6 +7,8 @@ const {
   normalizePath,
   isWithin,
   moveProcessedDocsToFolder,
+  normalizeFolderName,
+  isFolderFilePath,
   viewLocalFiles,
 } = require("../../../utils/files");
 const { reqBody, safeJsonParse, queryParams } = require("../../../utils/http");
@@ -119,7 +121,7 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const { addToWorkspaces = "", metadata: _metadata = {} } =
           reqBody(request);
         const metadata =
@@ -140,8 +142,9 @@ function apiDocumentEndpoints(app) {
         }
 
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
 
         if (!success) {
@@ -266,7 +269,7 @@ function apiDocumentEndpoints(app) {
       }
       */
       try {
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const { addToWorkspaces = "", metadata: _metadata = {} } =
           reqBody(request);
         const metadata =
@@ -289,8 +292,9 @@ function apiDocumentEndpoints(app) {
 
         // Process the uploaded document with metadata
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
         if (!success) {
           return response
@@ -1009,7 +1013,15 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { name } = reqBody(request);
-        const storagePath = path.join(documentsPath, normalizePath(name));
+        let folder;
+        try {
+          folder = normalizeFolderName(name);
+        } catch (e) {
+          response.status(400).json({ success: false, message: e.message });
+          return;
+        }
+
+        const storagePath = path.join(documentsPath, folder);
         if (!isWithin(path.resolve(documentsPath), path.resolve(storagePath)))
           throw new Error("Invalid path name");
 
@@ -1139,6 +1151,15 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { files } = reqBody(request);
+        const invalidMove = files.find(({ to }) => !isFolderFilePath(to));
+        if (invalidMove) {
+          response.status(400).json({
+            success: false,
+            message: `Invalid destination "${invalidMove.to}". Files can only be moved into a top-level folder (folder/file.json).`,
+          });
+          return;
+        }
+
         const docpaths = files.map(({ from }) => from);
         const documents = await Document.where({ docpath: { in: docpaths } });
         const embeddedFiles = documents.map((doc) => doc.docpath);

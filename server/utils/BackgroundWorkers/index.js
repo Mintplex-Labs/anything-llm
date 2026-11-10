@@ -300,7 +300,8 @@ class BackgroundService {
    */
   addScheduledJob(job) {
     this.removeScheduledJob(job.id);
-    const sched = later.parse.cron(job.schedule);
+    const { ScheduledJob } = require("../../models/scheduledJob");
+    const sched = ScheduledJob.parseCron(job.schedule);
     const timer = later.setInterval(() => {
       this.enqueueScheduledJob(job.id);
     }, sched);

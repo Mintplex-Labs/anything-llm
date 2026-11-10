@@ -260,6 +260,8 @@ const TRANSLATIONS = {
     },
     token_limit_reached:
       "پاسخ به حداکثر تعداد توکن‌های خروجی رسیده است. برای امکان تولید پاسخ‌های طولانی‌تر، حداکثر تعداد توکن‌های خروجی مدل را افزایش دهید.",
+    no_response: "مدل نتوانست پاسخ دهد.",
+    agent_session_exited: "شما جلسه عامل را پایان دادید.",
   },
   "vector-workspace": {
     identifier: "شناسه پایگاه داده برداری",
@@ -850,6 +852,11 @@ const TRANSLATIONS = {
         model_type: "نوع مدل",
         default: "پیش‌فرض",
         reasoning: "استدلال",
+        agent_api: "API عامل",
+        agent_api_tooltip:
+          "API مورد استفاده برای فراخوانی‌های عامل. Chat Completions را نگه دارید مگر اینکه استقرار شما به Responses API نیاز داشته باشد (مثلاً GPT-6 با ابزارها). همه مدل‌ها یا مناطق از Responses API پشتیبانی نمی‌کنند.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
         model_type_tooltip:
           'اگر سیستم شما از یک مدل استدلال (مانند o1، o1-mini، o3-mini و غیره) استفاده می‌کند، این گزینه را روی "استدلال" تنظیم کنید. در غیر این صورت، درخواست‌های چت شما ممکن است با شکست مواجه شوند.',
       },

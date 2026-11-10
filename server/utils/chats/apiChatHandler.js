@@ -82,13 +82,16 @@ async function processDocumentAttachments(attachments = []) {
       const filename = sanitizeFileName(
         normalizePath(attachment.name || `attachment-${uuidv4()}`)
       );
-      const filePath = normalizePath(path.join(hotdirPath, filename));
+      const hotdirFilename = `${uuidv4().split("-")[0]}-${filename}`;
+      const filePath = normalizePath(path.join(hotdirPath, hotdirFilename));
       if (!isWithin(hotdirPath, filePath))
         throw new Error(`Invalid file path for attachment ${filename}`);
       fs.writeFileSync(filePath, buffer);
 
-      const { success, reason, documents } =
-        await Collector.parseDocument(filename);
+      const { success, reason, documents } = await Collector.parseDocument(
+        hotdirFilename,
+        { originalFilename: filename }
+      );
       if (success && documents?.length > 0) parsedDocuments.push(...documents);
       else console.warn(`Failed to parse attachment ${filename}:`, reason);
     } catch (error) {
@@ -266,7 +269,7 @@ async function chatSync({
     });
 
   const VectorDb = getVectorDbClass();
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
@@ -657,7 +660,7 @@ async function streamChat({
   abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
