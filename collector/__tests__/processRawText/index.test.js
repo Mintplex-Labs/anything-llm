@@ -105,6 +105,17 @@ describe("processRawText title", () => {
   });
 
   test.each([
+    ["会议纪要", "会议纪要.txt"],
+    ["회의록.md", "회의록.txt"],
+    ["שלום עולם", "שלום-עולם.txt"],
+    ["नमस्ते.txt", "नमस्ते.txt"],
+    ["Q3 会议纪要.pdf", "q3-会议纪要.txt"],
+  ])("non-Latin title %p keeps its text as %p", async (title, expected) => {
+    const doc = await run({ title });
+    expect(doc.title).toBe(expected);
+  });
+
+  test.each([
     ["../../etc/passwd", ".txt"],
     ["../../evil.txt", "evil.txt"],
     ["..\\..\\windows.txt", "windows.txt"],
