@@ -35,6 +35,17 @@ const EMAIL_SKILLS = {
 const REPLY_ACTIONS = { send: "reply", draft: "draft_reply" };
 const DRAFT_ACTIONS = ["draft", "draft_reply", "update_draft"];
 
+// Cc and Bcc are the standard header abbreviations in every locale, so they are
+// not translated. "To" and "Subject" are localized by mail clients and stay in i18n.
+const CC_LABEL = "Cc";
+const BCC_LABEL = "Bcc";
+
+function recipientLabel(t, field) {
+  if (field === "cc") return `${CC_LABEL}:`;
+  if (field === "bcc") return `${BCC_LABEL}:`;
+  return t("chat_window.agent_invocation.email.to");
+}
+
 /**
  * Whether a tool approval request is for composing, replying, drafting or
  * sending an email and should render as the email card instead of the generic
@@ -217,7 +228,7 @@ export default function EmailApprovalRequest({
             )}
             {showCc && (
               <RecipientRow
-                label={t("chat_window.agent_invocation.email.cc")}
+                label={recipientLabel(t, "cc")}
                 recipients={draft.cc}
                 onChange={(cc) => updateDraft({ cc })}
                 editing={editing && canEditHeader}
@@ -226,7 +237,7 @@ export default function EmailApprovalRequest({
             )}
             {showBcc && (
               <RecipientRow
-                label={t("chat_window.agent_invocation.email.bcc")}
+                label={recipientLabel(t, "bcc")}
                 recipients={draft.bcc}
                 onChange={(bcc) => updateDraft({ bcc })}
                 editing={editing && canEditHeader}
@@ -271,7 +282,7 @@ export default function EmailApprovalRequest({
                 className="border-none h-8 px-3 rounded-lg flex items-center gap-2 text-sm leading-5 font-medium bg-white text-zinc-950 light:bg-slate-950 light:text-white hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ApproveIcon size={16} />
-                {t("chat_window.agent_invocation.email.approve")}
+                {t("chat_window.agent_invocation.approve")}
               </button>
             </div>
           </div>
@@ -319,7 +330,6 @@ function CardHeader({
 }
 
 function RevealLinks({ showCc, showBcc, onReveal }) {
-  const { t } = useTranslation();
   if (showCc && showBcc) return null;
   return (
     <div className="flex items-center gap-2.5 shrink-0 text-sm leading-5 text-zinc-400 light:text-slate-600">
@@ -329,7 +339,7 @@ function RevealLinks({ showCc, showBcc, onReveal }) {
           onClick={() => onReveal("cc")}
           className="border-none bg-transparent p-0 hover:text-white light:hover:text-slate-900"
         >
-          {t("chat_window.agent_invocation.email.add_cc")}
+          {CC_LABEL}
         </button>
       )}
       {!showBcc && (
@@ -338,7 +348,7 @@ function RevealLinks({ showCc, showBcc, onReveal }) {
           onClick={() => onReveal("bcc")}
           className="border-none bg-transparent p-0 hover:text-white light:hover:text-slate-900"
         >
-          {t("chat_window.agent_invocation.email.add_bcc")}
+          {BCC_LABEL}
         </button>
       )}
     </div>
@@ -472,7 +482,7 @@ function EmailPreview({ draft }) {
         {rows.map((field) => (
           <RecipientRow
             key={field}
-            label={t(`chat_window.agent_invocation.email.${field}`)}
+            label={recipientLabel(t, field)}
             recipients={draft[field]}
             onChange={() => {}}
             editing={false}
