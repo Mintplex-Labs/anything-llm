@@ -10,10 +10,9 @@ const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
 const { MODEL_MAP } = require("../modelMap");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 class CerebrasLLM {
-  static modelContextWindows = {};
-
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI: OpenAIApi } = require("openai");
     if (!process.env.CEREBRAS_API_KEY)
@@ -26,12 +25,11 @@ class CerebrasLLM {
     });
     this.model =
       modelPreference || process.env.CEREBRAS_MODEL_PREF || "gpt-oss-120b";
-    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
-    this.limits = null;
-
     this.embedder = embedder ?? new NativeEmbedder();
 
-    CerebrasLLM.cacheContextWindows(true);
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
+    this.limits = null;
+    CerebrasLLM.contextWindows.ensure(this.model);
     this.#log(`Initialized with model: ${this.model}`);
   }
 
@@ -45,7 +43,7 @@ class CerebrasLLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await CerebrasLLM.cacheContextWindows();
+    await CerebrasLLM.contextWindows.ensure(this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -53,45 +51,28 @@ class CerebrasLLM {
     };
   }
 
+  /** @see ContextWindowCache */
+  static contextWindows = new ContextWindowCache({
+    fetchAll: async () => {
+      const res = await fetch("https://api.cerebras.ai/public/v1/models");
+      if (!res.ok) throw new Error(`Cerebras:/models ${res.statusText}`);
+
+      const { data: models = [] } = await res.json();
+      const limits = {};
+      for (const model of models)
+        limits[model.id] = model.limits?.max_context_length;
+      return limits;
+    },
+    log: (...args) => CerebrasLLM.#slog(...args),
+  });
+
   /**
-   * Cache the context windows for the LMStudio models.
-   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
-   *
-   * This is a convenience to ensure that the context windows are correct and that the user
-   * does not have to manually set the context window for each model.
-   * @param {boolean} force - Force the cache to be refreshed.
-   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
    */
   static async cacheContextWindows(force = false) {
-    try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(CerebrasLLM.modelContextWindows).length > 0 && !force)
-        return;
-
-      await fetch("https://api.cerebras.ai/public/v1/models")
-        .then((res) => {
-          if (!res.ok)
-            throw new Error(`Cerebras:cacheContextWindows - ${res.statusText}`);
-          return res.json();
-        })
-        .then(({ data: models }) => {
-          models.forEach((model) => {
-            if (!model.limits.max_context_length) return;
-            if (isNaN(model.limits.max_context_length)) return;
-            CerebrasLLM.modelContextWindows[model.id] =
-              model.limits.max_context_length;
-          });
-        })
-        .catch((e) => {
-          CerebrasLLM.#slog(`Error caching context windows`, e);
-          return;
-        });
-
-      CerebrasLLM.#slog(`Context windows cached for all models!`);
-    } catch (e) {
-      CerebrasLLM.#slog(`Error caching context windows`, e);
-      return;
-    }
+    await CerebrasLLM.contextWindows.refresh({ force });
   }
 
   #appendContext(contextTexts = []) {
@@ -111,7 +92,7 @@ class CerebrasLLM {
   }
 
   static promptWindowLimit(modelName) {
-    if (Object.keys(CerebrasLLM.modelContextWindows).length === 0) {
+    if (CerebrasLLM.contextWindows.size === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -121,7 +102,7 @@ class CerebrasLLM {
         128000 // Default to 128000 if no context window is found and modelMap is not available
       );
     }
-    return Number(CerebrasLLM.modelContextWindows[modelName]) || 128000;
+    return Number(CerebrasLLM.contextWindows.get(modelName)) || 128000;
   }
 
   promptWindowLimit() {

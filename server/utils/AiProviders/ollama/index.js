@@ -16,14 +16,10 @@ const {
   PROVIDER_REASONING_EFFORTS,
   reasoningParams,
 } = require("../../helpers/reasoningEffort");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
-  static #currentContextCache = null;
-  static #contextWindowTTL = 5 * 60 * 1000;
-  #contextCache;
-  #contextWindowRequest;
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
@@ -46,13 +42,9 @@ class OllamaAILLM {
     });
     this.embedder = embedder ?? new NativeEmbedder();
 
-    // Start fetching metadata while the caller prepares the rest of the prompt.
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
     this.limits = null;
-    this.#contextCache = OllamaAILLM.#getContextCache();
-    this.#contextWindowRequest = OllamaAILLM.#cacheModelContextWindow(
-      this.#contextCache,
-      this.model
-    );
+    OllamaAILLM.contextWindows.ensure(this.model);
     this.#log(`initialized with model: ${this.model}`);
   }
 
@@ -66,101 +58,76 @@ class OllamaAILLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await this.#contextWindowRequest;
-    const limit = this.promptWindowLimit();
+    await OllamaAILLM.contextWindows.ensure(this.model);
     this.limits = {
-      history: limit * 0.15,
-      system: limit * 0.15,
-      user: limit * 0.7,
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
     };
     this.#log(
-      `model ${this.model} is using a max context window of ${limit}/${OllamaAILLM.maxContextWindow(this.model, this.#contextCache)} tokens.`
+      `model ${this.model} is using a max context window of ${this.promptWindowLimit()}/${OllamaAILLM.maxContextWindow(this.model)} tokens.`
     );
   }
 
-  static #getContextCache() {
+  static #contextClient() {
     const authToken = process.env.OLLAMA_AUTH_TOKEN;
-    const basePath = process.env.OLLAMA_BASE_PATH;
-    const cache = this.#currentContextCache;
-    if (cache && cache.basePath === basePath && cache.authToken === authToken)
-      return cache;
-
-    // Pending requests keep their own cache when the connection changes.
-    this.#currentContextCache = {
-      basePath,
-      authToken,
-      client: new Ollama({
-        host: basePath,
-        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
-      }),
-      windows: new Map(),
-      pending: new Map(),
-      inventoryRefresh: null,
-    };
-    return this.#currentContextCache;
+    return new Ollama({
+      host: process.env.OLLAMA_BASE_PATH,
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+    });
   }
 
-  static #modelKey(model) {
-    return model.split("/").at(-1).includes(":") ? model : `${model}:latest`;
+  /**
+   * Context window of a single model from /api/show.
+   * @returns {Promise<number|null>} null for embedding models.
+   */
+  static async #fetchModelContextWindow(model, client = this.#contextClient()) {
+    const { capabilities = [], model_info = {} } = await client.show({
+      model,
+    });
+    if (capabilities.includes("embedding")) return null;
+    const contextKey = Object.keys(model_info).find((key) =>
+      key.endsWith(".context_length")
+    );
+    return contextKey ? model_info[contextKey] : 4096;
   }
 
-  static async cacheModelContextWindow(model) {
-    await this.#cacheModelContextWindow(this.#getContextCache(), model);
-  }
-
-  static async #cacheModelContextWindow(cache, model, force = false) {
-    if (!model) return;
-    const key = this.#modelKey(model);
-    const cached = cache.windows.get(key);
-    if (!force && cached?.expiresAt > Date.now()) return;
-
-    if (!cache.pending.has(key)) {
-      const request = cache.client
-        .show({ model })
-        .then(({ capabilities = [], model_info = {} }) => {
-          if (capabilities.includes("embedding")) return;
-          const contextKey = Object.keys(model_info).find((key) =>
-            key.endsWith(".context_length")
-          );
-          cache.windows.set(key, {
-            limit: model_info[contextKey] ?? 4096,
-            expiresAt: Date.now() + this.#contextWindowTTL,
-          });
-        })
-        .catch((error) => {
-          // Keep the last known window if a refresh fails.
-          this.#slog(
-            `Error caching context window for ${model}`,
-            error.message
-          );
-        })
-        .finally(() => cache.pending.delete(key));
-      cache.pending.set(key, request);
-    }
-
-    await cache.pending.get(key);
-  }
-
-  /** Preload the model inventory for callers that need limits before chat. */
-  static async cacheContextWindows(force = false) {
-    const cache = this.#getContextCache();
-    if (!force && cache.windows.size > 0) return;
-
-    cache.inventoryRefresh ??= cache.client
-      .list()
-      .then(({ models }) =>
-        Promise.all(
-          models.map(({ name }) =>
-            this.#cacheModelContextWindow(cache, name, force)
-          )
+  /** @see ContextWindowCache */
+  static contextWindows = new ContextWindowCache({
+    connection: () =>
+      `${process.env.OLLAMA_BASE_PATH}|${process.env.OLLAMA_AUTH_TOKEN ?? ""}`,
+    // Ollama resolves an untagged model name to its :latest tag.
+    normalize: (model) =>
+      model.split("/").at(-1).includes(":") ? model : `${model}:latest`,
+    fetchOne: (model) => OllamaAILLM.#fetchModelContextWindow(model),
+    fetchAll: async () => {
+      const client = OllamaAILLM.#contextClient();
+      const { models = [] } = await client.list();
+      const limits = {};
+      await Promise.all(
+        models.map(({ name }) =>
+          OllamaAILLM.#fetchModelContextWindow(name, client)
+            .then((limit) => (limits[name] = limit))
+            .catch((e) =>
+              OllamaAILLM.#slog(
+                `Error caching context window for ${name}`,
+                e.message
+              )
+            )
         )
-      )
-      .catch((error) => this.#slog("Error caching context windows", error))
-      .finally(() => {
-        cache.inventoryRefresh = null;
-      });
+      );
+      return limits;
+    },
+    log: (...args) => OllamaAILLM.#slog(...args),
+  });
 
-    await cache.inventoryRefresh;
+  /**
+   * Refresh the context windows of every installed model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
+   */
+  static async cacheContextWindows(force = false) {
+    await OllamaAILLM.contextWindows.refresh({ force });
   }
 
   #appendContext(contextTexts = []) {
@@ -219,8 +186,8 @@ class OllamaAILLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(modelName, cache = this.#getContextCache()) {
-    if (cache.windows.size === 0) {
+  static promptWindowLimit(modelName) {
+    if (OllamaAILLM.contextWindows.size === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -228,7 +195,7 @@ class OllamaAILLM {
     }
 
     let userDefinedLimit = null;
-    const systemDefinedLimit = this.maxContextWindow(modelName, cache);
+    const systemDefinedLimit = OllamaAILLM.maxContextWindow(modelName);
 
     if (
       process.env.OLLAMA_MODEL_TOKEN_LIMIT &&
@@ -249,12 +216,12 @@ class OllamaAILLM {
   }
 
   promptWindowLimit() {
-    return OllamaAILLM.promptWindowLimit(this.model, this.#contextCache);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
-  static maxContextWindow(modelName = null, cache = this.#getContextCache()) {
-    if (cache.windows.size === 0 || !modelName) return 4096;
-    return Number(cache.windows.get(this.#modelKey(modelName))?.limit) || 16384;
+  static maxContextWindow(modelName = null) {
+    if (OllamaAILLM.contextWindows.size === 0 || !modelName) return 4096;
+    return Number(OllamaAILLM.contextWindows.get(modelName)) || 16384;
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -319,7 +286,6 @@ class OllamaAILLM {
     messages = null,
     { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
-    await this.#contextWindowRequest;
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -377,7 +343,6 @@ class OllamaAILLM {
     messages = null,
     { temperature = this.temperature, reasoningEffort = null } = {}
   ) {
-    await this.#contextWindowRequest;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
