@@ -22,12 +22,16 @@ async function executeApiCall(config, context) {
   };
 
   if (["POST", "PUT", "PATCH"].includes(method)) {
+    const hasContentType = Object.keys(requestConfig.headers).some(
+      (name) => name.toLowerCase() === "content-type"
+    );
     if (bodyType === "form") {
       const formDataObj = new URLSearchParams();
       formData.forEach(({ key, value }) => formDataObj.append(key, value));
       requestConfig.body = formDataObj.toString();
-      requestConfig.headers["Content-Type"] =
-        "application/x-www-form-urlencoded";
+      if (!hasContentType)
+        requestConfig.headers["Content-Type"] =
+          "application/x-www-form-urlencoded";
     } else if (bodyType === "json") {
       const parsedBody = safeJsonParse(body, null);
       if (parsedBody !== null) {
@@ -37,7 +41,8 @@ async function executeApiCall(config, context) {
           "The request body of this API Call block is not valid JSON. Open the flow in the Agent Builder and check the body for syntax errors such as missing commas, brackets, or quotes."
         );
       }
-      requestConfig.headers["Content-Type"] = "application/json";
+      if (!hasContentType)
+        requestConfig.headers["Content-Type"] = "application/json";
     } else if (bodyType === "text") {
       requestConfig.body = String(body);
     } else {
