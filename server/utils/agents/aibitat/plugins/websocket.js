@@ -57,8 +57,12 @@ const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying q
 // Once the user starts interacting with the clarification card they are present and
 // should not race the clock - this ceiling only exists so an abandoned card cannot hang the turn.
 const CLARIFICATION_ENGAGED_TIMEOUT_MS = 15 * 60 * 1_000; // 15 mins
-// Same ceiling once the user starts editing an email on the tool approval card.
-const TOOL_APPROVAL_ENGAGED_TIMEOUT_MS = CLARIFICATION_ENGAGED_TIMEOUT_MS;
+// Same ceiling once the user starts editing an email on the tool approval card,
+// but never shorter than the configured approval timeout.
+const TOOL_APPROVAL_ENGAGED_TIMEOUT_MS = Math.max(
+  TOOL_APPROVAL_TIMEOUT_MS,
+  CLARIFICATION_ENGAGED_TIMEOUT_MS
+);
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback

@@ -12,6 +12,8 @@ jest.mock("../../../../../models/agentSkillWhitelist", () => ({
   AgentSkillWhitelist: { isWhitelisted: jest.fn().mockResolvedValue(false) },
 }));
 
+// The approval timeout is read from the env at module load; pin it to the default.
+delete process.env.TOOL_CALL_APPROVAL_TIMEOUT_MS;
 const {
   websocket,
 } = require("../../../../../utils/agents/aibitat/plugins/websocket.js");
@@ -36,7 +38,7 @@ const MALFORMED_TEXT_FRAMES = [
 const flushPromises = () =>
   new Promise(jest.requireActual("timers").setImmediate);
 
-function setupPlugin({ userId = null } = {}) {
+function setupPlugin({ userId = null, plugin = websocket } = {}) {
   const socket = { send: jest.fn(), close: jest.fn() };
   const aibitat = {
     onError: jest.fn(),
@@ -46,8 +48,8 @@ function setupPlugin({ userId = null } = {}) {
     terminate: jest.fn(),
     toggleAgentTool: jest.fn(),
   };
-  websocket.plugin
-    .call(websocket, { socket, introspection: true, userId })
+  plugin.plugin
+    .call(plugin, { socket, introspection: true, userId })
     .setup(aibitat);
   return { socket, aibitat };
 }
@@ -402,7 +404,11 @@ describe("websocket plugin requestToolApproval", () => {
     const { socket, aibitat } = setupPlugin();
     const { pending, requestId } = await requestApproval(aibitat, socket);
     socket.handleToolApproval(
-      JSON.stringify({ type: "toolApprovalResponse", requestId, approved: true })
+      JSON.stringify({
+        type: "toolApprovalResponse",
+        requestId,
+        approved: true,
+      })
     );
     await expect(pending).resolves.toMatchObject({
       approved: true,
@@ -456,7 +462,11 @@ describe("websocket plugin requestToolApproval", () => {
     );
     expect(socket.handleToolApproval).toBeDefined();
     socket.handleToolApproval(
-      JSON.stringify({ type: "toolApprovalResponse", requestId, approved: true })
+      JSON.stringify({
+        type: "toolApprovalResponse",
+        requestId,
+        approved: true,
+      })
     );
     await expect(pending).resolves.toMatchObject({ approved: true });
   });
@@ -498,11 +508,39 @@ describe("websocket plugin requestToolApproval", () => {
   it("still gives up on an abandoned edit", async () => {
     const { socket, aibitat } = setupPlugin();
     const { pending, requestId } = await requestApproval(aibitat, socket);
+    const hold = JSON.stringify({ type: "toolApprovalHold", requestId });
+    socket.handleToolApproval(hold);
+    jest.advanceTimersByTime(TOOL_APPROVAL_ENGAGED_TIMEOUT_MS - 60_000);
+    // Repeated holds must not push the ceiling out indefinitely.
+    socket.handleToolApproval(hold);
+    jest.advanceTimersByTime(59_999);
+    expect(socket.handleToolApproval).toBeDefined();
+    jest.advanceTimersByTime(1);
+    await expect(pending).resolves.toEqual({
+      approved: false,
+      message: "Tool approval request timed out. User did not respond in time.",
+    });
+    expect(socket.handleToolApproval).toBeUndefined();
+  });
+
+  it("never shortens a configured approval timeout longer than the edit ceiling", async () => {
+    const configuredMs = TOOL_APPROVAL_ENGAGED_TIMEOUT_MS * 2;
+    process.env.TOOL_CALL_APPROVAL_TIMEOUT_MS = String(configuredMs);
+    let plugin;
+    jest.isolateModules(() => {
+      plugin =
+        require("../../../../../utils/agents/aibitat/plugins/websocket.js").websocket;
+    });
+    delete process.env.TOOL_CALL_APPROVAL_TIMEOUT_MS;
+
+    const { socket, aibitat } = setupPlugin({ plugin });
+    const { pending, requestId } = await requestApproval(aibitat, socket);
     socket.handleToolApproval(
       JSON.stringify({ type: "toolApprovalHold", requestId })
     );
-    jest.advanceTimersByTime(TOOL_APPROVAL_ENGAGED_TIMEOUT_MS);
+    jest.advanceTimersByTime(configuredMs - 1);
+    expect(socket.handleToolApproval).toBeDefined();
+    jest.advanceTimersByTime(1);
     await expect(pending).resolves.toMatchObject({ approved: false });
-    expect(socket.handleToolApproval).toBeUndefined();
   });
 });
