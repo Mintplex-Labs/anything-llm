@@ -1072,6 +1072,25 @@ class OutlookBridge {
   }
 
   /**
+   * Subject and recipients a reply to this message will go out with, so the
+   * approval card can show them. Best effort: an unreadable message yields {}.
+   * @param {string} messageId - The message being replied to
+   * @param {boolean} replyAll - Whether the reply goes to everyone on the message
+   * @returns {Promise<{subject?: string, to?: string}>}
+   */
+  async getReplyContext(messageId, replyAll = false) {
+    const result = await this.request(
+      `/me/messages/${messageId}?$select=subject,from,toRecipients,ccRecipients`
+    );
+    if (!result.success) return {};
+    const message = mapGraphMessage(result.data);
+    const to = replyAll
+      ? [message.from, message.to, message.cc].filter(Boolean).join(", ")
+      : message.from;
+    return { subject: message.subject, to };
+  }
+
+  /**
    * Create a new draft email.
    * @param {string} to - Recipient email
    * @param {string} subject - Email subject
@@ -1234,7 +1253,8 @@ class OutlookBridge {
     if (updates.to) {
       message.toRecipients = parseEmailRecipients(updates.to);
     }
-    if (updates.cc) {
+    // An empty string clears the Cc list; undefined leaves it untouched.
+    if (updates.cc !== undefined) {
       message.ccRecipients = parseEmailRecipients(updates.cc);
     }
 

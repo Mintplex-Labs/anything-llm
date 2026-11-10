@@ -1,5 +1,6 @@
 const outlookLib = require("../lib.js");
 const { prepareAttachmentsWithValidation, handleSkillError } = outlookLib;
+const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.OutlookSendEmail = {
   name: "outlook-send-email",
@@ -142,7 +143,16 @@ module.exports.OutlookSendEmail = {
                 const approval = await this.super.requestToolApproval({
                   skillName: this.name,
                   payload: isReply
-                    ? { replyToMessageId, replyAll, body }
+                    ? {
+                        replyToMessageId,
+                        replyAll,
+                        ...(await outlookLib.getReplyContext(
+                          replyToMessageId,
+                          replyAll
+                        )),
+                        body,
+                        attachmentCount: preparedAttachments.length,
+                      }
                     : {
                         to,
                         subject,
@@ -159,6 +169,15 @@ module.exports.OutlookSendEmail = {
                   );
                   return approval.message;
                 }
+
+                ({ to, subject, body, cc, bcc } = applyEmailEdits(
+                  { to, subject, body, cc, bcc },
+                  approval.payload
+                ));
+                if (!isReply && (!to || !subject)) {
+                  return "Error: 'to' and 'subject' are required for new emails. For replies, provide 'replyToMessageId'.";
+                }
+                if (!body) return "Error: 'body' is required.";
               }
 
               let result;

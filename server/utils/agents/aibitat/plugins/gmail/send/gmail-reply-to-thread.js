@@ -1,6 +1,7 @@
 const gmailLib = require("../lib.js");
 const { prepareAttachment, MAX_TOTAL_ATTACHMENT_SIZE } = require("../lib.js");
 const { humanFileSize } = require("../../../../../helpers");
+const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.GmailReplyToThread = {
   name: "gmail-reply-to-thread",
@@ -172,6 +173,7 @@ module.exports.GmailReplyToThread = {
                   payload: {
                     threadId,
                     replyAll,
+                    ...(await gmailLib.getReplyContext(threadId, replyAll)),
                     body,
                     ...(cc ? { cc } : {}),
                     ...(bcc ? { bcc } : {}),
@@ -186,6 +188,12 @@ module.exports.GmailReplyToThread = {
                   );
                   return approval.message;
                 }
+
+                ({ body, cc, bcc, htmlBody } = applyEmailEdits(
+                  { body, cc, bcc, htmlBody },
+                  approval.payload
+                ));
+                if (!body) return "Error: 'threadId' and 'body' are required.";
               }
 
               this.super.introspect(

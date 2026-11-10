@@ -3,6 +3,9 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
+import EmailApprovalRequest, {
+  isEmailApprovalRequest,
+} from "./EmailApprovalRequest";
 import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import ImageGenerationPending from "./ImageGenerationPending";
@@ -267,8 +270,11 @@ function buildMessages({
     }
 
     if (props.type === "toolApprovalRequest") {
+      const ApprovalCard = isEmailApprovalRequest(props)
+        ? EmailApprovalRequest
+        : ToolApprovalRequest;
       acc.push(
-        <ToolApprovalRequest
+        <ApprovalCard
           key={`tool-approval-${props.requestId}`}
           requestId={props.requestId}
           skillName={props.skillName}
