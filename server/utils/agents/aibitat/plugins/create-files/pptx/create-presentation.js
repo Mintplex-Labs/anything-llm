@@ -7,10 +7,6 @@ const { renderDeck } = require("./render.js");
 const { normalizeCover } = require("./slides.js");
 
 const MAX_SECTIONS = 5;
-// Recent chat passed to every section call, so it is kept small enough not to
-// crowd out the outline and research on small local models.
-const CONTEXT_MESSAGES = 10;
-const CONTEXT_MESSAGE_CHARS = 500;
 const THEME_HELP = Object.entries(PALETTES)
   .map(([id, t]) => `${id} (${t.description})`)
   .join("; ");
@@ -166,7 +162,7 @@ module.exports.CreatePptxPresentation = {
                       type: "array",
                       items: { type: "string" },
                       description:
-                        "Key points this section should cover. They are expanded into detailed slides.",
+                        "Key points this section should cover, expanded into detailed slides. Include every specific number, name and fact from the conversation this section needs; each section is written separately from this outline.",
                     },
                     instructions: {
                       type: "string",
@@ -232,23 +228,20 @@ module.exports.CreatePptxPresentation = {
                 }
               }
 
-              const context = (this.super._chats ?? [])
+              // Section calls never see the chat directly; they can search it
+              // with a lookup tool when the outline leaves a detail out.
+              const history = (this.super._chats ?? [])
                 .filter(
                   (c) => c.state === "success" && typeof c.content === "string"
                 )
-                .slice(-CONTEXT_MESSAGES)
-                .map(
-                  (c) =>
-                    `${c.from}: ${c.content.slice(0, CONTEXT_MESSAGE_CHARS)}`
-                )
-                .join("\n");
+                .map((c) => ({ from: c.from, content: c.content }));
               const { slides, citations, built } = await buildDeck(this.super, {
                 say,
                 title,
                 subtitle,
                 sections,
                 research,
-                context,
+                history,
               });
               if (this.super._aborted)
                 return "Presentation generation was cancelled.";

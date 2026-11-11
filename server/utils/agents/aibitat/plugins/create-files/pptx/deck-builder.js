@@ -12,9 +12,11 @@ const {
 /**
  * Turns a presentation outline into slides. Research is done by this module
  * (one web search per deck, plus one per section that has its own
- * instructions) and each section is then exactly one model call whose only
- * job is to fill in SLIDE_SCHEMA, so cost is fixed and small local models
- * never have to plan or call tools themselves.
+ * instructions) and each section is then one model call whose job is to
+ * fill in SLIDE_SCHEMA, so cost stays small and fixed and small local models
+ * never have to plan. The only other tool a section call gets is an optional
+ * conversation lookup, so the chat history costs tokens only in the sections
+ * that ask for it.
  */
 
 // Search results are injected into a single model call, so they are capped to
@@ -24,6 +26,11 @@ const RESEARCH_CHAR_LIMIT = 2500;
 const RESEARCH_RESULT_LIMIT = 6;
 // Search engines truncate or reject long queries.
 const QUERY_CHAR_LIMIT = 100;
+// Most conversation text one lookup returns, for the same reason as above.
+const CONVERSATION_CHAR_LIMIT = 3000;
+// Room for a conversation lookup, and one refined lookup, before the submit
+// call. AIbitat counts calls from zero, so 2 allows three.
+const SECTION_TOOL_CALLS = 2;
 
 const SYSTEM_PROMPT = `You write the slides for ONE section of a PowerPoint presentation. You must call the submit-section-slides tool exactly once with all slides for this section. Never reply with plain text or raw JSON.
 
@@ -109,7 +116,7 @@ function childOf(parent) {
     ...parent.defaultProvider,
     chats: [],
     handlerProps: parent.handlerProps,
-    maxToolCalls: 1,
+    maxToolCalls: SECTION_TOOL_CALLS,
   });
   // Stopping the parent session also stops this sub-agent.
   const signal = parent.abortController.signal;
@@ -189,7 +196,71 @@ function jsonFromText(text) {
   return safeJsonParse(text.slice(start, text.lastIndexOf("}") + 1), null);
 }
 
-function sectionPrompt({ section, title, notes, context, layouts }) {
+/**
+ * Lines of the conversation that mention any of the query terms, or the
+ * latest lines when there is no query. The newest lines are kept when the
+ * matches exceed CONVERSATION_CHAR_LIMIT; the result reads oldest first.
+ * @param {{from: string, content: string}[]} history - Oldest first
+ * @param {string} [query] - Words to look for
+ * @returns {string}
+ */
+function readConversation(history, query) {
+  const terms = String(query ?? "")
+    .toLowerCase()
+    .split(/[\s,.;:!?()"']+/)
+    .filter((term) => term.length > 1);
+  const lines = history.flatMap(({ from, content }) =>
+    String(content)
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => `${from}: ${line}`)
+  );
+  const matches = terms.length
+    ? lines.filter((line) =>
+        terms.some((term) => line.toLowerCase().includes(term))
+      )
+    : lines;
+  const kept = [];
+  let size = 0;
+  for (const line of matches.reverse()) {
+    if (size + line.length > CONVERSATION_CHAR_LIMIT) break;
+    kept.unshift(line);
+    size += line.length + 1;
+  }
+  if (kept.length) return kept.join("\n");
+  return terms.length
+    ? `Nothing in the conversation mentions "${query}".`
+    : "The conversation is empty.";
+}
+
+/**
+ * The tool a section call can use to pull details from the user's
+ * conversation that its key points refer to but leave out. Registered only
+ * when there is a conversation, so it costs nothing otherwise.
+ * @param {{from: string, content: string}[]} history
+ */
+function conversationTool(history) {
+  return {
+    name: "read-conversation",
+    description:
+      "Look up details from the user's conversation (figures, names, pasted data) that the key points refer to but do not include. Only call it when you need such a detail, then call submit-section-slides.",
+    parameters: {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        query: {
+          type: "string",
+          description:
+            "Words to look for, e.g. 'revenue Q3 churn'. Leave empty for the latest messages.",
+        },
+      },
+    },
+    handler: ({ query } = {}) => readConversation(history, query),
+  };
+}
+
+function sectionPrompt({ section, title, notes, layouts }) {
   const parts = [`Presentation: "${title}"`, `Section: ${section.title}`];
   const keyPoints = [].concat(section.keyPoints ?? []);
   if (keyPoints.length)
@@ -198,7 +269,6 @@ function sectionPrompt({ section, title, notes, context, layouts }) {
     );
   if (section.instructions) parts.push(`Instructions: ${section.instructions}`);
   if (notes) parts.push(`Research:\n${notes}`);
-  if (context) parts.push(`Conversation context:\n${context}`);
   if (layouts.length < CONTENT_LAYOUTS.length)
     parts.push(
       `Content layouts for this section: ${layouts.join(", ")}. Earlier sections used the others.`
@@ -214,7 +284,7 @@ function sectionPrompt({ section, title, notes, context, layouts }) {
  */
 async function buildSection(
   parent,
-  { section, title, notes, context, layouts, label }
+  { section, title, notes, history, layouts, label }
 ) {
   const child = childOf(parent);
   let submitted = null;
@@ -230,9 +300,10 @@ async function buildSection(
     { role: "system", content: SYSTEM_PROMPT },
     {
       role: "user",
-      content: sectionPrompt({ section, title, notes, context, layouts }),
+      content: sectionPrompt({ section, title, notes, layouts }),
     },
   ];
+  if (history.length) child.function(conversationTool(history));
   const functions = [...child.functions.values()];
   const agent = `[${label}] @section-builder`;
   const { log } = parent.handlerProps;
@@ -277,13 +348,13 @@ async function buildSection(
  * @param {string} deck.subtitle
  * @param {{title: string, keyPoints?: string[], instructions?: string}[]} deck.sections
  * @param {boolean} deck.research - Search the web before writing
- * @param {string} deck.context - Recent conversation, for facts the outline left out
+ * @param {{from: string, content: string}[]} [deck.history] - The conversation, oldest first, which section calls can search for facts the outline left out
  * @returns {Promise<{slides: import("./slides.js").Slide[], citations: object[], built: string[]}>}
  *   built holds the titles of the sections that produced at least one content slide.
  */
 async function buildDeck(
   parent,
-  { say, title, subtitle, sections, research, context }
+  { say, title, subtitle, sections, research, history = [] }
 ) {
   const citations = [];
   const search = async (query) => {
@@ -311,7 +382,7 @@ async function buildDeck(
       section,
       title,
       notes,
-      context,
+      history,
       layouts: openLayouts(used, previous),
       label,
     });
@@ -329,4 +400,9 @@ async function buildDeck(
   return { slides: pruneDividers(slides), citations, built };
 }
 
-module.exports = { buildDeck, decodeHtmlEntities, openLayouts };
+module.exports = {
+  buildDeck,
+  decodeHtmlEntities,
+  openLayouts,
+  readConversation,
+};

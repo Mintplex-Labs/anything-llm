@@ -1,11 +1,12 @@
 /* eslint-env jest */
 const { getEventListeners } = require("events");
 
-// Each section call goes to `mockModel`, which receives the submit tool the
-// section was offered and returns the slides to submit (or null to submit
-// nothing, or an Error to fail the call).
+// Each section call goes to `mockModel`, which receives the tools the section
+// was offered (by name) and the prompt, and returns the slides to submit (or
+// null to submit nothing, or an Error to fail the call).
 let mockModel;
 const mockOfferedLayouts = [];
+const mockOfferedTools = [];
 jest.mock("../../../../../../../utils/agents/aibitat/index.js", () =>
   jest.fn().mockImplementation(() => {
     const child = {
@@ -20,13 +21,15 @@ jest.mock("../../../../../../../utils/agents/aibitat/index.js", () =>
         getCumulativeUsage: () => ({ prompt_tokens: 0, completion_tokens: 0 }),
       }),
       async handleExecution(messages, functions) {
-        const [tool] = functions;
+        const tools = Object.fromEntries(functions.map((f) => [f.name, f]));
+        const submit = tools["submit-section-slides"];
+        mockOfferedTools.push(Object.keys(tools));
         mockOfferedLayouts.push(
-          tool.parameters.properties.slides.items.properties.layout.enum
+          submit.parameters.properties.slides.items.properties.layout.enum
         );
-        const slides = mockModel(tool, messages);
+        const slides = mockModel(tools, messages);
         if (slides instanceof Error) throw slides;
-        if (slides) tool.handler({ slides });
+        if (slides) submit.handler({ slides });
         return "";
       },
     };
@@ -38,6 +41,7 @@ const {
   buildDeck,
   decodeHtmlEntities,
   openLayouts,
+  readConversation,
 } = require("../../../../../../../utils/agents/aibitat/plugins/create-files/pptx/deck-builder.js");
 
 function parentAgent() {
@@ -51,20 +55,21 @@ function parentAgent() {
   };
 }
 
-const build = (parent, sections) =>
+const build = (parent, sections, history = []) =>
   buildDeck(parent, {
     say: () => {},
     title: "Deck",
     subtitle: "",
     sections,
     research: false,
-    context: "",
+    history,
   });
 
 /** A model that always picks the first offered content layouts it can fill. */
-const favourite = (layouts) => (tool) => {
+const favourite = (layouts) => (tools) => {
   const offered =
-    tool.parameters.properties.slides.items.properties.layout.enum;
+    tools["submit-section-slides"].parameters.properties.slides.items.properties
+      .layout.enum;
   const pick = layouts.filter((l) => offered.includes(l)).slice(0, 2);
   return [
     { layout: "section", title: "S" },
@@ -82,6 +87,7 @@ const favourite = (layouts) => (tool) => {
 
 beforeEach(() => {
   mockOfferedLayouts.length = 0;
+  mockOfferedTools.length = 0;
 });
 
 describe("decodeHtmlEntities", () => {
@@ -199,5 +205,86 @@ describe("buildDeck", () => {
     };
     const { built } = await build(parent, [{ title: "A" }, { title: "B" }]);
     expect(built).toEqual(["A"]);
+  });
+});
+
+describe("readConversation", () => {
+  const history = [
+    {
+      from: "USER",
+      content: "Here are our numbers:\nRevenue Q3: $4.2M\nChurn: 3.1%",
+    },
+    { from: "@agent", content: "Thanks, noted.\nHeadcount is 48." },
+  ];
+
+  test("returns only the lines that mention a query term, in order", () => {
+    expect(readConversation(history, "revenue, churn")).toBe(
+      "USER: Revenue Q3: $4.2M\nUSER: Churn: 3.1%"
+    );
+  });
+
+  test("matches regardless of case and language", () => {
+    const spanish = [{ from: "USER", content: "Ingresos del año: 1,2 M€" }];
+    expect(readConversation(spanish, "INGRESOS")).toBe(
+      "USER: Ingresos del año: 1,2 M€"
+    );
+  });
+
+  test("returns the latest lines without a query", () => {
+    expect(readConversation(history).split("\n")).toHaveLength(5);
+    expect(readConversation(history, "  ")).toBe(readConversation(history));
+  });
+
+  test("says so when nothing matches or there is nothing to read", () => {
+    expect(readConversation(history, "ebitda")).toBe(
+      'Nothing in the conversation mentions "ebitda".'
+    );
+    expect(readConversation([])).toBe("The conversation is empty.");
+  });
+
+  test("keeps the newest lines when the matches are too long", () => {
+    const long = Array.from({ length: 200 }, (_, i) => ({
+      from: "USER",
+      content: `revenue line ${i} ${"x".repeat(40)}`,
+    }));
+    const lines = readConversation(long, "revenue").split("\n");
+    expect(lines.join("\n").length).toBeLessThanOrEqual(3000);
+    expect(lines.at(-1)).toContain("revenue line 199");
+    expect(lines.length).toBeLessThan(200);
+  });
+});
+
+describe("buildDeck conversation lookup", () => {
+  test("is offered only when there is a conversation", async () => {
+    mockModel = favourite(["bullets"]);
+    await build(parentAgent(), [{ title: "A" }]);
+    await build(
+      parentAgent(),
+      [{ title: "A" }],
+      [{ from: "USER", content: "hi" }]
+    );
+    expect(mockOfferedTools).toEqual([
+      ["submit-section-slides"],
+      ["submit-section-slides", "read-conversation"],
+    ]);
+  });
+
+  test("lets a section pull a figure the outline left out, without the chat in its prompt", async () => {
+    const history = [
+      { from: "USER", content: "Q3 revenue was $4.2M\nWeather was nice" },
+    ];
+    let prompt;
+    mockModel = (tools, messages) => {
+      prompt = messages.map((m) => m.content).join("\n");
+      const found = tools["read-conversation"].handler({ query: "revenue" });
+      return [{ layout: "bullets", title: "Results", bullets: [found] }];
+    };
+    const { slides } = await build(
+      parentAgent(),
+      [{ title: "Results" }],
+      history
+    );
+    expect(prompt).not.toContain("$4.2M");
+    expect(slides[0].bullets).toEqual(["USER: Q3 revenue was $4.2M"]);
   });
 });
