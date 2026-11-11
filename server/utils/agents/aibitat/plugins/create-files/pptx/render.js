@@ -206,7 +206,8 @@ function addLabel(slide, pptx, label, color, x = 76) {
   addText(slide, text, {
     x,
     y: 80,
-    w: w + 40,
+    // Wide enough for the label on one line even at the widest glyph estimate.
+    w: Math.max(w, (text.length * 16 * GLYPH_W.bold) / WRAP_SLACK) + 40,
     h: 24,
     size: 16,
     bold: true,
@@ -255,7 +256,7 @@ function renderTitleSlide(slide, pptx, t, { title, subtitle, number, label }) {
       x: 1653,
       y: 71,
       w: 200,
-      h: 110,
+      h: 120,
       size: 100,
       bold: true,
       color,
@@ -1027,4 +1028,4 @@ async function renderDeck(
   return pptx.write({ outputType: "nodebuffer" });
 }
 
-module.exports = { renderDeck, fitText };
+module.exports = { renderDeck, fitText, textHeight };

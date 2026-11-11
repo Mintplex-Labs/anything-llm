@@ -4,6 +4,7 @@ const { safeJsonParse } = require("../../../../../http");
 const { PALETTES, getTheme } = require("./themes.js");
 const { buildDeck } = require("./deck-builder.js");
 const { renderDeck } = require("./render.js");
+const { normalizeCover } = require("./slides.js");
 
 const MAX_SECTIONS = 5;
 // Recent chat passed to every section call, so it is kept small enough not to
@@ -13,6 +14,33 @@ const CONTEXT_MESSAGE_CHARS = 500;
 const THEME_HELP = Object.entries(PALETTES)
   .map(([id, t]) => `${id} (${t.description})`)
   .join("; ");
+
+/**
+ * The tool result for the calling agent. It names every requested section
+ * that is missing from the deck and why, so the agent can tell the user.
+ */
+function deckSummary({ title, slides, theme, requested, built }) {
+  const titles = (list) => list.map((s) => `"${s.title ?? s}"`).join(", ");
+  const overCap = requested.slice(MAX_SECTIONS);
+  const failed = requested
+    .slice(0, MAX_SECTIONS)
+    .filter((s) => !built.includes(s.title));
+  const lines = [
+    `Successfully created presentation "${title}" with ${pluralize("slide", slides.length, true)} using the ${theme.name} theme.`,
+    `Sections built: ${built.length ? titles(built) : "none"}.`,
+  ];
+  if (overCap.length)
+    lines.push(
+      `Left out because a presentation holds at most ${MAX_SECTIONS} sections: ${titles(overCap)}.`
+    );
+  if (failed.length)
+    lines.push(
+      `Left out because no slides could be written: ${titles(failed)}.`
+    );
+  if (overCap.length || failed.length)
+    lines.push("Tell the user which sections were left out.");
+  return lines.join(" ");
+}
 
 module.exports.CreatePptxPresentation = {
   name: "create-pptx-presentation",
@@ -174,10 +202,12 @@ module.exports.CreatePptxPresentation = {
               // Small models pass arrays as JSON strings and booleans as strings.
               if (typeof sections === "string")
                 sections = safeJsonParse(sections, []);
-              sections = (Array.isArray(sections) ? sections : [])
-                .filter((s) => s && typeof s === "object" && s.title)
-                .slice(0, MAX_SECTIONS);
+              const requested = (
+                Array.isArray(sections) ? sections : []
+              ).filter((s) => s && typeof s === "object" && s.title);
+              sections = requested.slice(0, MAX_SECTIONS);
               research = research === true || research === "true";
+              filename = String(filename);
               if (!filename.toLowerCase().endsWith(".pptx"))
                 filename += ".pptx";
               const theme = getTheme(themeName, accentColor);
@@ -212,7 +242,7 @@ module.exports.CreatePptxPresentation = {
                     `${c.from}: ${c.content.slice(0, CONTEXT_MESSAGE_CHARS)}`
                 )
                 .join("\n");
-              const { slides, citations } = await buildDeck(this.super, {
+              const { slides, citations, built } = await buildDeck(this.super, {
                 say,
                 title,
                 subtitle,
@@ -232,8 +262,7 @@ module.exports.CreatePptxPresentation = {
               // open the deck.
               const buffer = await renderDeck(
                 createFilesLib.stripInvalidXmlChars({
-                  title,
-                  subtitle,
+                  ...normalizeCover({ title, subtitle }),
                   author,
                   slides,
                 }),
@@ -258,7 +287,7 @@ module.exports.CreatePptxPresentation = {
               );
 
               say(`Successfully created presentation "${title}"`);
-              return `Successfully created presentation "${title}" with ${slides.length} slides using the ${theme.name} theme. Sections built: ${sections.map((s) => s.title).join(", ")}. A presentation holds at most ${MAX_SECTIONS} sections, so tell the user if anything they asked for was left out.`;
+              return deckSummary({ title, slides, theme, requested, built });
             } catch (e) {
               this.super.handlerProps.log(
                 `create-pptx-presentation error: ${e.message}`

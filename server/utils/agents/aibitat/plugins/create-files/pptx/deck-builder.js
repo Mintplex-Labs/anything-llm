@@ -30,7 +30,7 @@ const SYSTEM_PROMPT = `You write the slides for ONE section of a PowerPoint pres
 RULES:
 - First slide is a "section" divider with the section title, then 2 content slides (3 only if the section truly needs it)
 - Vary the layouts. Never use "bullets" for every slide; pick the layout that fits the content
-- Keep text short: bullets under 12 words, card/step text one sentence
+- Keep text short: slide titles under 7 words, bullets under 12 words, card/step text one sentence
 - Be specific. Use numbers from the research notes when they exist; never invent statistics
 - Never write placeholders like "(insert %)" or "TBD"; if a figure is unknown, describe it in words instead
 - Tables: at most 6 rows and 4 columns, short cell text
@@ -42,17 +42,61 @@ ${Object.entries(LAYOUTS)
   .map(([name, { hint }]) => `- "${name}": ${hint}`)
   .join("\n")}`;
 
-const SUBMIT_TOOL = {
-  name: "submit-section-slides",
-  description:
-    "Submit the finished slides for this section. Call this exactly once.",
-  parameters: {
-    $schema: "http://json-schema.org/draft-07/schema#",
-    type: "object",
-    properties: { slides: { type: "array", items: SLIDE_SCHEMA } },
-    required: ["slides"],
-  },
-};
+// A content layout is closed to the next section once the deck has used it
+// this many times, so one favourite layout cannot fill the deck.
+const MAX_LAYOUT_USES = 3;
+// General-purpose layouts that fit any content. At least one always stays
+// open so a section is never forced into a chart, table or quote it has no
+// material for.
+const TEXT_LAYOUTS = ["bullets", "cards", "steps", "two-column"];
+const CONTENT_LAYOUTS = Object.keys(LAYOUTS).filter((l) => l !== "section");
+
+/**
+ * The content layouts a section may use: every one except those the previous
+ * section used and those already used MAX_LAYOUT_USES times in the deck.
+ * @param {Object<string, number>} used - Uses of each layout so far in the deck
+ * @param {Set<string>} previous - Layouts the previous section used
+ * @returns {string[]}
+ */
+function openLayouts(used, previous) {
+  const open = CONTENT_LAYOUTS.filter(
+    (l) => !previous.has(l) && (used[l] || 0) < MAX_LAYOUT_USES
+  );
+  if (!open.some((l) => TEXT_LAYOUTS.includes(l))) {
+    const leastUsed = [...TEXT_LAYOUTS].sort(
+      (a, b) => (used[a] || 0) - (used[b] || 0)
+    )[0];
+    open.push(leastUsed);
+  }
+  return open;
+}
+
+/**
+ * The tool a section call submits its slides with. Its layout enum holds
+ * only the open layouts, which models follow far more reliably than an
+ * instruction in the prompt.
+ * @param {string[]} layouts - Open content layouts
+ */
+function submitTool(layouts) {
+  const slide = {
+    ...SLIDE_SCHEMA,
+    properties: {
+      ...SLIDE_SCHEMA.properties,
+      layout: { type: "string", enum: ["section", ...layouts] },
+    },
+  };
+  return {
+    name: "submit-section-slides",
+    description:
+      "Submit the finished slides for this section. Call this exactly once.",
+    parameters: {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: { slides: { type: "array", items: slide } },
+      required: ["slides"],
+    },
+  };
+}
 
 /**
  * A child AIbitat on the parent's provider that shares its log and
@@ -145,7 +189,7 @@ function jsonFromText(text) {
   return safeJsonParse(text.slice(start, text.lastIndexOf("}") + 1), null);
 }
 
-function sectionPrompt({ section, title, notes, context, used }) {
+function sectionPrompt({ section, title, notes, context, layouts }) {
   const parts = [`Presentation: "${title}"`, `Section: ${section.title}`];
   const keyPoints = [].concat(section.keyPoints ?? []);
   if (keyPoints.length)
@@ -155,12 +199,9 @@ function sectionPrompt({ section, title, notes, context, used }) {
   if (section.instructions) parts.push(`Instructions: ${section.instructions}`);
   if (notes) parts.push(`Research:\n${notes}`);
   if (context) parts.push(`Conversation context:\n${context}`);
-  const tally = Object.entries(used)
-    .sort((a, b) => b[1] - a[1])
-    .map(([layout, count]) => `${layout} x${count}`);
-  if (tally.length)
+  if (layouts.length < CONTENT_LAYOUTS.length)
     parts.push(
-      `Layouts already used by earlier sections: ${tally.join(", ")}. Prefer layouts not on this list.`
+      `Content layouts for this section: ${layouts.join(", ")}. Earlier sections used the others.`
     );
   parts.push("Call submit-section-slides now with the slides.");
   return parts.join("\n\n");
@@ -173,12 +214,12 @@ function sectionPrompt({ section, title, notes, context, used }) {
  */
 async function buildSection(
   parent,
-  { section, title, notes, context, used, label }
+  { section, title, notes, context, layouts, label }
 ) {
   const child = childOf(parent);
   let submitted = null;
   child.function({
-    ...SUBMIT_TOOL,
+    ...submitTool(layouts),
     handler: ({ slides }) => {
       submitted = slides;
       child.skipHandleExecution = true;
@@ -189,7 +230,7 @@ async function buildSection(
     { role: "system", content: SYSTEM_PROMPT },
     {
       role: "user",
-      content: sectionPrompt({ section, title, notes, context, used }),
+      content: sectionPrompt({ section, title, notes, context, layouts }),
     },
   ];
   const functions = [...child.functions.values()];
@@ -237,7 +278,8 @@ async function buildSection(
  * @param {{title: string, keyPoints?: string[], instructions?: string}[]} deck.sections
  * @param {boolean} deck.research - Search the web before writing
  * @param {string} deck.context - Recent conversation, for facts the outline left out
- * @returns {Promise<{slides: import("./slides.js").Slide[], citations: object[]}>}
+ * @returns {Promise<{slides: import("./slides.js").Slide[], citations: object[], built: string[]}>}
+ *   built holds the titles of the sections that produced at least one content slide.
  */
 async function buildDeck(
   parent,
@@ -253,6 +295,8 @@ async function buildDeck(
   const deckNotes = research ? await search(`${title} ${subtitle}`.trim()) : "";
   const slides = [];
   const used = {};
+  const built = [];
+  let previous = new Set();
   for (const [i, section] of sections.entries()) {
     if (parent._aborted) break;
     const label = `${i + 1}/${sections.length}`;
@@ -268,18 +312,21 @@ async function buildDeck(
       title,
       notes,
       context,
-      used,
+      layouts: openLayouts(used, previous),
       label,
     });
-    for (const slide of sectionSlides)
-      if (slide.layout !== "section")
-        used[slide.layout] = (used[slide.layout] || 0) + 1;
+    const content = sectionSlides
+      .map((slide) => slide.layout)
+      .filter((layout) => layout !== "section");
+    for (const layout of content) used[layout] = (used[layout] || 0) + 1;
+    previous = new Set(content);
+    if (content.length) built.push(section.title);
     slides.push(...sectionSlides);
     say(
       `[${label}] Section "${section.title}" complete — ${pluralize("slide", sectionSlides.length, true)}`
     );
   }
-  return { slides: pruneDividers(slides), citations };
+  return { slides: pruneDividers(slides), citations, built };
 }
 
-module.exports = { buildDeck, decodeHtmlEntities };
+module.exports = { buildDeck, decodeHtmlEntities, openLayouts };
