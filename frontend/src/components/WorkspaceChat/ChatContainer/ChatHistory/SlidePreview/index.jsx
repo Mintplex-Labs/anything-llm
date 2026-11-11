@@ -8,15 +8,22 @@ const THUMB_H = 72;
 /**
  * A compact row of a presentation's slides while the agent builds it,
  * filled in from "pptxSlidePreview" socket events. Each slide arrives as an
- * image the server baked, so no page style touches it. The row follows the
- * newest slide, arrows appear on whichever side has more to scroll, and a
- * slide opens in the lightbox. It exists for this session only; the
- * downloadable file is the lasting result.
+ * image the server baked, so no page style touches it. New slides fade in
+ * and the row follows them until the user scrolls or clicks it; arrows
+ * appear on whichever side has more to scroll, and a slide opens in the
+ * lightbox. It exists for this session only; the downloadable file is the
+ * lasting result.
  * @param {{content: {slides: (string|undefined)[], done: boolean}}} props - slides are image data URLs, by position in the deck
  */
 function SlidePreviewCard({ props }) {
   const { slides = [], done = false } = props.content || {};
   const rowRef = useRef(null);
+  // The row follows new slides until the user scrolls, clicks or uses the
+  // arrows, so a new batch never pulls them away from where they are.
+  const followRef = useRef(true);
+  const stopFollowing = () => {
+    followRef.current = false;
+  };
   const [edges, setEdges] = useState({ left: false, right: false });
   const ready = slides
     .map((image, index) => ({ image, index }))
@@ -35,7 +42,8 @@ function SlidePreviewCard({ props }) {
   useEffect(() => {
     const row = rowRef.current;
     if (!row) return;
-    if (!done) row.scrollTo({ left: row.scrollWidth, behavior: "smooth" });
+    if (!done && followRef.current)
+      row.scrollTo({ left: row.scrollWidth, behavior: "smooth" });
     updateEdges();
   }, [ready.length, done, updateEdges]);
 
@@ -45,6 +53,7 @@ function SlidePreviewCard({ props }) {
   }, [updateEdges]);
 
   const scrollBy = (direction) => {
+    stopFollowing();
     const row = rowRef.current;
     if (!row) return;
     row.scrollBy({
@@ -71,6 +80,8 @@ function SlidePreviewCard({ props }) {
         <div
           ref={rowRef}
           onScroll={updateEdges}
+          onWheel={stopFollowing}
+          onPointerDown={stopFollowing}
           className="flex gap-x-2 overflow-x-auto rounded-xl p-2 bg-zinc-800 light:bg-slate-100 light:border light:border-slate-200/50 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {ready.map(({ image, index }, position) => (
@@ -78,7 +89,7 @@ function SlidePreviewCard({ props }) {
               type="button"
               key={index}
               onClick={() => openSlide(position)}
-              className="flex-shrink-0 rounded-md overflow-hidden border-none p-0 cursor-pointer ring-1 ring-white/10 light:ring-slate-300 hover:ring-white/40 light:hover:ring-slate-400 transition-shadow"
+              className="flex-shrink-0 rounded-md overflow-hidden border-none p-0 cursor-pointer ring-1 ring-white/10 light:ring-slate-300 hover:ring-white/40 light:hover:ring-slate-400 transition-shadow animate-fade-in"
             >
               <img
                 src={image}
