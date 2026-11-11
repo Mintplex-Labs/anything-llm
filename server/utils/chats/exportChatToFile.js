@@ -34,6 +34,8 @@ function extractThoughtChain(text = "") {
 
 // Strip the assistant's thought chain so the export only contains the response.
 function stripThoughtChain(text = "") {
+  // Stray wrapper tags must match a lowercase tag name exactly, so code such
+  // as Promise<Response> stays.
   return text
     .replace(
       new RegExp(
@@ -42,7 +44,10 @@ function stripThoughtChain(text = "") {
       ),
       ""
     )
-    .replace(new RegExp(`</?(${THOUGHT_TAGS}|response|answer)[^>]*>`, "gi"), "")
+    .replace(
+      new RegExp(`</?(${THOUGHT_TAGS}|response|answer)(?:\\s[^>]*)?>`, "g"),
+      ""
+    )
     .trim();
 }
 
