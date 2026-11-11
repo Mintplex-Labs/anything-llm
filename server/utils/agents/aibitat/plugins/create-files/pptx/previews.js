@@ -1,13 +1,15 @@
 const { v4 } = require("uuid");
 const { createPreviewer } = require("./render.js");
+const { slideThumbnail } = require("./thumbnail.js");
 
 /**
- * Streams thumbnails of a deck's slides to the chat UI while the deck is
- * built, as "pptxSlidePreview" events on the agent socket. Each event holds
- * one slide drawn by the same renderer as the file (see createPreviewer), so
- * what the user watches is what they download. Previews are never stored: a
- * reload shows only the finished file. A preview that fails is logged and
- * skipped; it never stops the deck.
+ * Streams images of a deck's slides to the chat UI while the deck is built,
+ * as "pptxSlidePreview" events on the agent socket. Each image is drawn by
+ * the same renderer as the file (see createPreviewer) and baked into a JPEG
+ * (see slideThumbnail), so what the user watches is what they download.
+ * Previews are never stored: a reload shows only the finished file. A
+ * preview that fails is logged and the rest are skipped; it never stops the
+ * deck.
  * @param {import("../../../index.js")} aibitat - The agent that owns the tool call
  * @param {{title: string, subtitle: string}} deck
  * @param {object} theme - From getTheme
@@ -17,20 +19,28 @@ const { createPreviewer } = require("./render.js");
 function slidePreviews(aibitat, deck, theme) {
   const deckId = v4();
   const preview = createPreviewer(deck, theme);
+  const log = (message) =>
+    aibitat.handlerProps?.log?.(`[DeckPreview] ${message}`);
   let index = 0;
+  let broken = false;
   const send = (content) => {
     try {
       aibitat.socket?.send("pptxSlidePreview", { deckId, ...content });
     } catch (error) {
-      aibitat.handlerProps?.log?.(`[DeckPreview] ${error.message}`);
+      log(error.message);
     }
   };
   return {
     add(slide) {
+      const position = index++;
+      if (broken) return;
       try {
-        send({ index: index++, slide: preview(slide) });
+        send({ index: position, image: slideThumbnail(preview(slide)) });
       } catch (error) {
-        aibitat.handlerProps?.log?.(`[DeckPreview] ${error.message}`);
+        // Most likely canvas is unavailable here; later slides would fail
+        // the same way.
+        broken = true;
+        log(`Previews disabled: ${error.message}`);
       }
     },
     end() {
