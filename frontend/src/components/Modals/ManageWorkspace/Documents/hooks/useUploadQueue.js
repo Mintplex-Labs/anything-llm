@@ -34,7 +34,7 @@ export default function useUploadQueue() {
    */
   const enqueueDrop = useCallback((accepted = [], rejections = []) => {
     const grouped = groupDroppedFiles(accepted);
-    setFiles([
+    const nextFiles = [
       ...grouped.looseFiles.map((file) => ({ uid: v4(), file })),
       ...grouped.folders.flatMap(({ folderName, files: folderFiles }) =>
         folderFiles.map(({ file, relativePath }) => ({
@@ -50,6 +50,10 @@ export default function useUploadQueue() {
         rejected: true,
         reason: rejection.errors[0].code,
       })),
+    ];
+    setFiles((prev) => [
+      ...prev.filter((file) => !file.rejected),
+      ...nextFiles,
     ]);
   }, []);
 
@@ -65,14 +69,16 @@ export default function useUploadQueue() {
       folderName
     );
     if (targeted.length > 0) {
-      setFiles(
-        targeted.map(({ file, relativePath }) => ({
-          uid: v4(),
-          file,
-          folderName,
-          relativePath,
-        }))
-      );
+      const nextFiles = targeted.map(({ file, relativePath }) => ({
+        uid: v4(),
+        file,
+        folderName,
+        relativePath,
+      }));
+      setFiles((prev) => [
+        ...prev.filter((file) => !file.rejected),
+        ...nextFiles,
+      ]);
     }
     return { queued: targeted.length, skipped };
   }, []);
