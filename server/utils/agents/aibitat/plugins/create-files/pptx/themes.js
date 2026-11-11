@@ -1,6 +1,11 @@
 /**
- * Themes for generated presentations. The model picks one by name and never
+ * Themes for generated presentations. The model can name one but never
  * writes styling itself, so every layout in render.js works with every theme.
+ *
+ * Palettes are described by how they look, not by topic, because a topic
+ * hint makes a model give every deck on that subject the same colors. A deck
+ * that names no theme gets one picked from its title (see getTheme), so
+ * decks vary while a regenerated deck keeps its colors.
  *
  * A theme is one Tailwind color scale plus the shade its dark slides use
  * (700 for bright themes, 950 for deep ones). Layouts pick shades from the
@@ -29,49 +34,63 @@ const SCALES = {
 const PALETTES = {
   slate: {
     name: "Slate",
-    description:
-      "Near-black and cool gray, minimal and monochrome. Safe default for any business deck.",
+    description: "Near-black and cool gray, minimal and monochrome.",
     dark: 950,
   },
   indigo: {
     name: "Indigo",
-    description: "Bright indigo, confident and modern. Product and strategy.",
+    description: "Bright indigo on cool gray.",
     dark: 700,
     tint: "slate",
   },
   blue: {
     name: "Blue",
-    description: "Classic bright blue. Corporate, finance, consulting.",
+    description: "Classic bright blue.",
     dark: 700,
   },
   emerald: {
     name: "Emerald",
-    description: "Deep green. Sustainability, health, growth.",
+    description: "Deep forest green.",
     dark: 950,
   },
   cyan: {
     name: "Cyan",
-    description: "Deep teal and cyan. Data, science, engineering.",
+    description: "Deep teal and cyan.",
     dark: 950,
   },
   sky: {
     name: "Sky",
-    description: "Bright sky blue. SaaS, product updates, education.",
+    description: "Bright sky blue, light and airy.",
     dark: 700,
   },
   violet: {
     name: "Violet",
-    description: "Bright violet. Creative, marketing, AI.",
+    description: "Bright violet.",
     dark: 700,
   },
   pink: {
     name: "Pink",
-    description: "Deep wine and pink. Brand, consumer, events.",
+    description: "Deep wine and pink.",
     dark: 950,
   },
 };
 
-const DEFAULT_THEME = "indigo";
+/**
+ * A palette picked from a string, the same one every time for that string.
+ * @param {string} seed
+ * @returns {string} A key of PALETTES
+ */
+function paletteFor(seed) {
+  // FNV-1a, then a final mix so every character moves the low bits the
+  // modulo below reads.
+  let hash = 0x811c9dc5;
+  for (const char of String(seed))
+    hash = Math.imul(hash ^ char.charCodeAt(0), 0x01000193);
+  hash = Math.imul(hash ^ (hash >>> 16), 0x85ebca6b);
+  hash = (hash ^ (hash >>> 13)) >>> 0;
+  const ids = Object.keys(PALETTES);
+  return ids[hash % ids.length];
+}
 
 /**
  * Perceived brightness of a hex color, 0 (black) to 1 (white).
@@ -123,17 +142,18 @@ function scaleFromColor(hex) {
 }
 
 /**
- * Resolves a theme name into the token object render.js draws with, falling
- * back to the default theme for unknown names.
- * @param {string} name - A key of PALETTES
+ * Resolves a theme name into the token object render.js draws with. A
+ * missing or unknown name gets the palette `seed` picks (see paletteFor).
+ * @param {string} [name] - A key of PALETTES
  * @param {string} [accentColor] - Optional hex brand color that replaces the theme's scale
+ * @param {string} [seed] - Usually the deck title
  * @returns {{name: string, scale: Object<number, string>, dark: string, light: string, stripe: string}}
  */
-function getTheme(name, accentColor) {
+function getTheme(name, accentColor, seed = "") {
   const key = String(name || "")
     .toLowerCase()
     .trim();
-  const id = PALETTES[key] ? key : DEFAULT_THEME;
+  const id = PALETTES[key] ? key : paletteFor(seed);
   const palette = PALETTES[id];
   const accent = String(accentColor || "")
     .replace("#", "")

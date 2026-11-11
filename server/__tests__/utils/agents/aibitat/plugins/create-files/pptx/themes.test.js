@@ -4,10 +4,20 @@ const {
 } = require("../../../../../../../utils/agents/aibitat/plugins/create-files/pptx/themes.js");
 
 describe("getTheme", () => {
-  test("falls back to indigo for unknown or missing names", () => {
-    expect(getTheme("midnight").name).toBe("Indigo");
-    expect(getTheme(undefined).name).toBe("Indigo");
-    expect(getTheme("  Emerald ").name).toBe("Emerald");
+  test("uses a named theme whatever the title", () => {
+    expect(getTheme("  Emerald ", undefined, "AI Trends").name).toBe("Emerald");
+  });
+
+  test("picks a palette from the title when the name is missing or unknown, the same one each time", () => {
+    const titles = Array.from({ length: 40 }, (_, i) => `Deck ${i}`);
+    const picked = titles.map((title) => getTheme(undefined, "", title).name);
+    expect(new Set(picked).size).toBeGreaterThanOrEqual(6);
+    expect(titles.map((title) => getTheme("midnight", "", title).name)).toEqual(
+      picked
+    );
+    expect(getTheme(undefined, "", "Q3 Review")).toEqual(
+      getTheme(undefined, "", "Q3 Review")
+    );
   });
 
   test("builds the scale around a brand color as its 600 shade", () => {

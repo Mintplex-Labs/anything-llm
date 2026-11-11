@@ -50,8 +50,8 @@ module.exports.CreatePptxPresentation = {
           name: this.name,
           description:
             "Create a professional PowerPoint presentation (PPTX). " +
-            "Provide a title, a theme you choose to fit the topic, and section outlines with key points. " +
-            "The user does not need to specify a theme, layouts or slide count; pick them yourself. " +
+            "Provide a title and section outlines with key points. " +
+            "The user does not need to specify colors, layouts or slide count. " +
             `Use 3-${MAX_SECTIONS} sections; a typical deck is 10-16 slides. ` +
             "Each section is built separately; set research to true to run a web search first.",
           examples: [
@@ -60,7 +60,6 @@ module.exports.CreatePptxPresentation = {
               call: JSON.stringify({
                 filename: "project-updates.pptx",
                 title: "Q1 Project Updates",
-                theme: "blue",
                 sections: [
                   {
                     title: "Overview",
@@ -84,11 +83,11 @@ module.exports.CreatePptxPresentation = {
               }),
             },
             {
-              prompt: "Make a powerpoint about AI trends",
+              prompt: "Make a green powerpoint about AI trends",
               call: JSON.stringify({
                 filename: "ai-trends.pptx",
                 title: "AI Trends 2025",
-                theme: "violet",
+                theme: "emerald",
                 sections: [
                   {
                     title: "Large Language Models",
@@ -135,7 +134,7 @@ module.exports.CreatePptxPresentation = {
                 type: "string",
                 enum: Object.keys(PALETTES),
                 description:
-                  "Color palette for the presentation. Choose the one that best fits the topic and audience: " +
+                  "Only set this when the user asks for a color or style; otherwise leave it out and the presentation gets a palette of its own. Palettes: " +
                   THEME_HELP,
               },
               accentColor: {
@@ -175,7 +174,7 @@ module.exports.CreatePptxPresentation = {
                 },
               },
             },
-            required: ["filename", "title", "theme", "sections"],
+            required: ["filename", "title", "sections"],
             additionalProperties: false,
           },
 
@@ -208,7 +207,7 @@ module.exports.CreatePptxPresentation = {
               filename = String(filename);
               if (!filename.toLowerCase().endsWith(".pptx"))
                 filename += ".pptx";
-              const theme = getTheme(themeName, accentColor);
+              const theme = getTheme(themeName, accentColor, title);
 
               say(
                 `Planning presentation "${title}" — ${pluralize("section", sections.length, true)}, ${theme.name} theme`
