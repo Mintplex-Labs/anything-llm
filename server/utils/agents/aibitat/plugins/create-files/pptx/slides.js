@@ -1,107 +1,77 @@
 const { safeJsonParse } = require("../../../../../http");
 
 /**
- * The slide contract between the model and the renderer: the layouts that
- * exist, what the model may submit for one (SLIDE_SCHEMA) and how any model
- * output is turned into the one shape every renderer trusts (normalizeSlides).
+ * The slide contract between the model and the renderer.
+ *
+ * The model writes content only: a title and one kind of content per slide
+ * (SLIDE_SCHEMA). Code decides everything visual: normalizeSlides turns any
+ * model output into canonical slides, drops figures and quotes the sources
+ * do not back up, and clips text to what the layouts hold; assignLayouts
+ * then picks each slide's layout from the shape of its content. A small
+ * model never makes a design decision, so it cannot repeat one layout across
+ * a deck or invent statistics to fill a stats layout.
  *
  * @typedef {Object} Slide
- * @property {string} layout - A key of LAYOUTS
+ * @property {string} layout - A key of LAYOUTS, or "section" for a divider
  * @property {string} title
- * @property {string} subtitle
- * @property {string[]} bullets
- * @property {{title: string, text: string, bullets: string[]}[]} items
- * @property {{headers: string[], rows: string[][]}|null} table
+ * @property {string} subtitle - Section dividers only
+ * @property {string[]} points
+ * @property {{title: string, text: string}[]} items
+ * @property {boolean} ordered - The items are steps or a timeline
+ * @property {{value: string, label: string}[]} figures
  * @property {{type: string, categories: string[], values: number[]}|null} chart
+ * @property {{headers: string[], rows: string[][]}|null} table
+ * @property {{text: string, by: string}|null} quote
  * @property {string} notes
  */
 
 const CHART_TYPES = ["bar", "line", "pie", "doughnut", "area"];
-const MAX_TABLE_COLS = 6;
-const MAX_TABLE_ROWS = 8;
-// Axis and legend labels are laid out by PowerPoint, which wraps long ones
-// until they crowd out the chart itself.
-const MAX_CATEGORY_CHARS = 32;
-
-// A stat title is the big number, so prose or bare "0"/"1" wordplay is not one.
-const isStat = (item) =>
-  /\d/.test(item.title) &&
-  !/^[01]$/.test(item.title) &&
-  item.title.length <= 14;
 
 /**
- * The most text a layout holds at its smallest font size in render.js:
- * counts for lists and characters for strings. Longer model output is cut at
- * a word boundary so no text box overflows. render.test.js renders every
- * layout filled to these limits, so a change on either side that breaks the
- * fit fails there.
+ * The most of each kind of content one slide holds: counts for lists,
+ * characters for strings. Longer model output is cut at a word boundary.
+ * render.test.js renders every layout with more than this, so a change on
+ * either side that lets text overflow fails there.
  */
-const DEFAULT_LIMITS = {
-  title: 50,
-  subtitle: 160,
-  bullets: 6,
-  bullet: 140,
+const LIMITS = {
+  title: 60,
+  subtitle: 120,
+  points: 6,
+  point: 120,
   items: 6,
   itemTitle: 40,
-  itemText: 110,
-  itemBullets: 6,
-  itemBullet: 120,
-  cell: 48,
+  itemText: 140,
+  figures: 6,
+  figureValue: 12,
+  figureLabel: 60,
+  quote: 240,
+  quoteBy: 60,
+  tableCols: 6,
+  tableRows: 6,
+  cell: 40,
+  chartValues: 12,
+  category: 32,
 };
 
 /** Limits for the cover slide, whose title and subtitle come from the outline. */
 const COVER_LIMITS = { title: 90, subtitle: 160 };
 
 /**
- * Every layout: the one-line description the builder prompt shows the model,
- * the rule a normalized slide must pass to render with it and the text
- * limits it is clipped to (see DEFAULT_LIMITS).
+ * Every content layout and the content shape it can show. assignLayouts
+ * tries a slide's candidate layouts in order (see candidates).
  */
 const LAYOUTS = {
-  section: {
-    hint: "divider. title + subtitle",
-    fits: (s) => !!s.title,
-    limits: { title: 90 },
-  },
-  bullets: {
-    hint: "title + bullets (3-6 short strings)",
-    fits: (s) => s.bullets.length > 0,
-  },
-  "two-column": {
-    hint: "compare or contrast. title + items (exactly 2, each with title + bullets)",
-    fits: (s) => s.items.length > 1,
-    limits: { items: 2, itemTitle: 60 },
-  },
-  stats: {
-    hint: 'real measured figures only (money, percentages, counts with a source), e.g. "42%" or "$1.2B". title + items (2-6, each title is the number, text is the label). Never use it for wordplay like "0", "1 app" or "∞"',
-    fits: (s) => s.items.length > 0 && s.items.every(isStat),
-    limits: { title: 100, itemText: 80, bullets: 4, bullet: 120 },
-  },
-  cards: {
-    hint: "parallel ideas. title + items (2-6, each with title + one-sentence text)",
-    fits: (s) => s.items.length > 0,
-    limits: { title: 70 },
-  },
-  steps: {
-    hint: "process or timeline. title + items (3-5, each with title + short text)",
-    fits: (s) => s.items.length > 0,
-    limits: { itemText: 200 },
-  },
-  chart: {
-    hint: `title + chart { type: ${CHART_TYPES.join("|")}, categories, values } + optional bullets`,
-    fits: (s) => !!s.chart,
-    limits: { title: 60, bullets: 5, bullet: 120 },
-  },
-  table: {
-    hint: "title + table { headers, rows }",
-    fits: (s) => !!s.table,
-    limits: { title: 60 },
-  },
-  quote: {
-    hint: "title is the quote text, subtitle is who said it",
-    fits: (s) => !!s.title,
-    limits: { title: 300, subtitle: 80 },
-  },
+  bullets: (s) => s.points.length > 0 || s.items.length > 0,
+  split: (s) =>
+    (s.points.length > 0 && s.points.length <= 5) ||
+    (s.items.length > 0 && s.items.length <= 5),
+  cards: (s) => s.items.length >= 2,
+  steps: (s) => s.items.length >= 3 && s.ordered,
+  comparison: (s) => s.items.length === 2,
+  stats: (s) => s.figures.length >= 2,
+  chart: (s) => !!s.chart,
+  table: (s) => !!s.table,
+  quote: (s) => !!s.quote,
 };
 
 // Field meanings live in the builder prompt; the schema stays bare so it
@@ -109,19 +79,21 @@ const LAYOUTS = {
 const SLIDE_SCHEMA = {
   type: "object",
   properties: {
-    layout: { type: "string", enum: Object.keys(LAYOUTS) },
     title: { type: "string" },
-    subtitle: { type: "string" },
-    bullets: { type: "array", items: { type: "string" } },
+    points: { type: "array", items: { type: "string" } },
     items: {
       type: "array",
       items: {
         type: "object",
-        properties: {
-          title: { type: "string" },
-          text: { type: "string" },
-          bullets: { type: "array", items: { type: "string" } },
-        },
+        properties: { title: { type: "string" }, text: { type: "string" } },
+      },
+    },
+    ordered: { type: "boolean" },
+    figures: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { value: { type: "string" }, label: { type: "string" } },
       },
     },
     chart: {
@@ -142,9 +114,13 @@ const SLIDE_SCHEMA = {
         },
       },
     },
+    quote: {
+      type: "object",
+      properties: { text: { type: "string" }, by: { type: "string" } },
+    },
     notes: { type: "string" },
   },
-  required: ["layout", "title"],
+  required: ["title"],
 };
 
 const text = (v) => (v == null ? "" : String(v).trim());
@@ -160,101 +136,6 @@ const cells = (row) =>
         ? Object.values(row).map(text)
         : [];
 
-function normalizeItems(raw) {
-  return list(raw)
-    .map((item) =>
-      item && typeof item === "object"
-        ? {
-            title: text(item.title),
-            text: text(item.text),
-            bullets: strings(item.bullets),
-          }
-        : { title: text(item), text: "", bullets: [] }
-    )
-    .filter((item) => item.title || item.text || item.bullets.length);
-}
-
-function normalizeTable(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const rows = list(raw.rows)
-    .map(cells)
-    .filter((row) => row.some(Boolean))
-    .slice(0, MAX_TABLE_ROWS);
-  // A header row alone renders as an empty table.
-  if (rows.length === 0) return null;
-  const headers = cells(raw.headers);
-  const cols = Math.min(
-    MAX_TABLE_COLS,
-    Math.max(headers.length, ...rows.map((r) => r.length))
-  );
-  if (cols === 0) return null;
-  const pad = (row) => Array.from({ length: cols }, (_, i) => row[i] || "");
-  return { headers: headers.length ? pad(headers) : [], rows: rows.map(pad) };
-}
-
-function normalizeChart(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const series = list(raw.series)[0];
-  const categories = strings(raw.categories).map((c) =>
-    clip(c, MAX_CATEGORY_CHARS)
-  );
-  // Each value stays paired with its category, so dropping one that is not a
-  // number never shifts the rest onto the wrong label.
-  const points = list(series?.values ?? raw.values)
-    .map((v, i) => ({
-      value: typeof v === "string" && v.trim() ? Number(v) : v,
-      category: categories[i] || `${i + 1}`,
-    }))
-    .filter((p) => typeof p.value === "number" && Number.isFinite(p.value));
-  const values = points.map((p) => p.value);
-  // Identical values are placeholders, not data.
-  if (values.length < 2 || new Set(values).size < 2) return null;
-  return {
-    type: CHART_TYPES.includes(raw.type) ? raw.type : "bar",
-    categories: points.map((p) => p.category),
-    values,
-  };
-}
-
-/** The requested layout when the slide's data supports it, else the richest one that does. */
-function resolveLayout(slide, requested) {
-  if (LAYOUTS[requested]?.fits(slide)) return requested;
-  if (slide.chart) return "chart";
-  if (slide.table) return "table";
-  if (slide.items.length) return "cards";
-  if (slide.bullets.length) return "bullets";
-  return null;
-}
-
-/**
- * Turns whatever the model submitted into canonical slides. Accepts a JSON
- * string, a single slide object or an array; drops slides with no content.
- * @param {*} raw - Model output for one section
- * @param {string} sectionTitle - Fallback title for untitled slides
- * @returns {Slide[]}
- */
-function normalizeSlides(raw, sectionTitle = "") {
-  if (typeof raw === "string") raw = safeJsonParse(raw, null);
-  if (raw && !Array.isArray(raw) && typeof raw === "object")
-    raw = Array.isArray(raw.slides) ? raw.slides : [raw];
-  return list(raw)
-    .filter((s) => s && typeof s === "object")
-    .map((s) => {
-      const slide = {
-        title: text(s.title) || sectionTitle,
-        subtitle: text(s.subtitle),
-        bullets: strings(s.bullets),
-        items: normalizeItems(s.items),
-        table: normalizeTable(s.table),
-        chart: normalizeChart(s.chart),
-        notes: text(s.notes),
-      };
-      const layout = resolveLayout(slide, text(s.layout));
-      return layout ? { layout, ...applyLimits(slide, layout) } : null;
-    })
-    .filter(Boolean);
-}
-
 /**
  * Cuts a string to at most `max` characters, ending on a word boundary with
  * an ellipsis when it has to cut.
@@ -269,28 +150,282 @@ function clip(str, max) {
   return `${(space > max / 2 ? cut.slice(0, space) : cut).trimEnd()}…`;
 }
 
-/** Clips a normalized slide to the text its layout can hold. */
-function applyLimits(slide, layout) {
-  const max = { ...DEFAULT_LIMITS, ...LAYOUTS[layout].limits };
-  const cell = (c) => clip(c, max.cell);
+const squash = (str) =>
+  String(str)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}%$€£.]/gu, "");
+const withoutThousands = (str) =>
+  String(str).replace(/(\d),(?=\d{3}\b)/g, "$1");
+
+/**
+ * What the model is allowed to cite: the numbers and the text of its
+ * sources (outline, research, conversation lookups). With no sources every
+ * figure is trusted, for callers that pass hand-written slides.
+ * @param {string|undefined} sources
+ */
+function evidence(sources) {
+  if (sources == null) return null;
+  const plain = withoutThousands(sources);
   return {
-    ...slide,
-    title: clip(slide.title, max.title),
-    subtitle: clip(slide.subtitle, max.subtitle),
-    bullets: slide.bullets
-      .slice(0, max.bullets)
-      .map((b) => clip(b, max.bullet)),
-    items: slide.items.slice(0, max.items).map((item) => ({
-      title: clip(item.title, max.itemTitle),
-      text: clip(item.text, max.itemText),
-      bullets: item.bullets
-        .slice(0, max.itemBullets)
-        .map((b) => clip(b, max.itemBullet)),
-    })),
-    table: slide.table && {
-      headers: slide.table.headers.map(cell),
-      rows: slide.table.rows.map((row) => row.map(cell)),
-    },
+    numbers: new Set((plain.match(/\d+(?:\.\d+)?/g) || []).map(Number)),
+    words: squash(plain),
+  };
+}
+
+/**
+ * True when a figure's number appears in the sources. A one-digit number
+ * matches too easily by chance, so it must appear together with its unit.
+ */
+function isBacked(value, proof) {
+  if (!proof) return true;
+  const plain = withoutThousands(value);
+  const number = plain.match(/\d+(?:\.\d+)?/)?.[0];
+  if (!number || !proof.numbers.has(Number(number))) return false;
+  return (
+    number.replace(".", "").length > 1 || proof.words.includes(squash(plain))
+  );
+}
+
+// A number that states a quantity: a percentage, money, a multiplier, a
+// number with a unit or magnitude, or any number of 100 or more except a
+// year. "3 steps" and "Llama 3.1" are not claims; "under 100ms" is.
+const QUANTITY =
+  /(?:[$€£]\s?\d[\d,.]*|\d[\d,.]*\s?(?:%|x\b|k\b|m\b|b\b|ms\b|s\b|gb\b|mb\b|tb\b|percent|thousand|million|billion|trillion|hours?|minutes?|seconds?|days?|weeks?|months?|years?|times|users|customers|requests|languages|people|employees)|\b\d{3,}(?:[.,]\d+)?\b)/gi;
+const isYear = (n) => Number.isInteger(n) && n >= 1900 && n <= 2099;
+
+/**
+ * True when text states a quantity the sources do not contain, which is how
+ * small models invent statistics inside otherwise fine sentences.
+ */
+function inventsQuantity(str, proof) {
+  if (!proof) return false;
+  return (withoutThousands(str).match(QUANTITY) || []).some((quantity) => {
+    const number = Number(quantity.match(/\d+(?:\.\d+)?/)[0]);
+    return !isYear(number) && !proof.numbers.has(number);
+  });
+}
+
+function normalizeItems(raw, proof) {
+  return list(raw)
+    .map((item) =>
+      item && typeof item === "object"
+        ? { title: text(item.title), text: text(item.text ?? item.description) }
+        : { title: "", text: text(item) }
+    )
+    .filter((item) => item.title || item.text)
+    .filter((item) => !inventsQuantity(`${item.title} ${item.text}`, proof))
+    .slice(0, LIMITS.items)
+    .map((item) => ({
+      title: clip(item.title, LIMITS.itemTitle),
+      text: clip(item.text, LIMITS.itemText),
+    }));
+}
+
+// A figure is a number someone can check, not prose or "0"/"1" wordplay.
+const isFigure = (value) =>
+  /\d/.test(value) &&
+  !/^[01]$/.test(value) &&
+  value.length <= LIMITS.figureValue;
+
+function normalizeFigures(raw, proof) {
+  return list(raw)
+    .filter((f) => f && typeof f === "object")
+    .map((f) => ({
+      value: text(f.value ?? f.title),
+      label: clip(text(f.label ?? f.text), LIMITS.figureLabel),
+    }))
+    .filter((f) => isFigure(f.value) && isBacked(f.value, proof))
+    .slice(0, LIMITS.figures);
+}
+
+function normalizeTable(raw, proof) {
+  if (!raw || typeof raw !== "object") return null;
+  const rows = list(raw.rows)
+    .map(cells)
+    .filter((row) => row.some(Boolean))
+    .filter((row) => !inventsQuantity(row.join(" "), proof))
+    .slice(0, LIMITS.tableRows);
+  // A header row alone renders as an empty table.
+  if (rows.length === 0) return null;
+  const headers = cells(raw.headers);
+  const cols = Math.min(
+    LIMITS.tableCols,
+    Math.max(headers.length, ...rows.map((r) => r.length))
+  );
+  const pad = (row) =>
+    Array.from({ length: cols }, (_, i) => clip(row[i] || "", LIMITS.cell));
+  return { headers: headers.length ? pad(headers) : [], rows: rows.map(pad) };
+}
+
+function normalizeChart(raw, proof) {
+  if (!raw || typeof raw !== "object") return null;
+  const series = list(raw.series)[0];
+  const categories = strings(raw.categories).map((c) =>
+    clip(c, LIMITS.category)
+  );
+  // Each value stays paired with its category, so dropping one that is not
+  // a number, or not in the sources, never shifts the rest onto the wrong
+  // label.
+  const points = list(series?.values ?? raw.values)
+    .map((v, i) => ({
+      value: typeof v === "string" && v.trim() ? Number(v) : v,
+      category: categories[i] || `${i + 1}`,
+    }))
+    .filter(
+      (p) =>
+        typeof p.value === "number" &&
+        Number.isFinite(p.value) &&
+        (!proof || proof.numbers.has(p.value))
+    )
+    .slice(0, LIMITS.chartValues);
+  const values = points.map((p) => p.value);
+  // Fewer than three points or identical values are placeholders, not data.
+  if (values.length < 3 || new Set(values).size < 2) return null;
+  return {
+    type: CHART_TYPES.includes(raw.type) ? raw.type : "bar",
+    categories: points.map((p) => p.category),
+    values,
+  };
+}
+
+function normalizeQuote(raw, proof) {
+  const quote =
+    typeof raw === "string"
+      ? { text: text(raw), by: "" }
+      : raw && typeof raw === "object"
+        ? { text: text(raw.text), by: text(raw.by ?? raw.author) }
+        : null;
+  if (!quote?.text) return null;
+  const words = quote.text.replace(/^["“”']+|["“”']+$/g, "");
+  // Quotes are only kept when the sources contain them word for word.
+  if (proof && !proof.words.includes(squash(words))) return null;
+  return {
+    text: clip(words, LIMITS.quote),
+    by: clip(quote.by.replace(/^[-–—\s]+/, ""), LIMITS.quoteBy),
+  };
+}
+
+/**
+ * Turns one slide of model output into a canonical slide without a layout,
+ * or null when nothing in it can be shown.
+ */
+function normalizeSlide(s, fallbackTitle, proof) {
+  const slide = {
+    title: clip(text(s.title) || fallbackTitle, LIMITS.title),
+    points: strings(s.points ?? s.bullets)
+      .filter((p) => !inventsQuantity(p, proof))
+      .map((p) => clip(p, LIMITS.point)),
+    items: normalizeItems(s.items, proof),
+    ordered: s.ordered === true || s.ordered === "true",
+    figures: normalizeFigures(s.figures ?? s.stats, proof),
+    chart: normalizeChart(s.chart, proof),
+    table: normalizeTable(s.table, proof),
+    quote: normalizeQuote(s.quote, proof),
+    notes: text(s.notes),
+  };
+  // One item or one figure is too few for a layout of its own; it reads
+  // as a point.
+  if (slide.items.length === 1) {
+    const [item] = slide.items;
+    slide.points.unshift(
+      clip([item.title, item.text].filter(Boolean).join(": "), LIMITS.point)
+    );
+    slide.items = [];
+  }
+  if (slide.figures.length === 1) {
+    const [figure] = slide.figures;
+    slide.points.unshift(
+      clip(`${figure.value} ${figure.label}`.trim(), LIMITS.point)
+    );
+    slide.figures = [];
+  }
+  slide.points = slide.points.slice(0, LIMITS.points);
+  const showable = Object.values(LAYOUTS).some((fits) => fits(slide));
+  return showable ? slide : null;
+}
+
+/**
+ * Turns whatever the model submitted for one section into canonical content
+ * slides, without layouts. Accepts a JSON string, a {slides} wrapper, a
+ * single slide or an array. Section dividers in the output are ignored;
+ * the deck builder adds its own.
+ * @param {*} raw - Model output for one section
+ * @param {Object} [options]
+ * @param {string} [options.fallbackTitle] - Title for untitled slides
+ * @param {string} [options.sources] - Text figures, chart values and quotes must come from
+ * @returns {Omit<Slide, "layout"|"subtitle">[]}
+ */
+function normalizeSlides(raw, { fallbackTitle = "", sources } = {}) {
+  if (typeof raw === "string") raw = safeJsonParse(raw, null);
+  if (raw && !Array.isArray(raw) && typeof raw === "object")
+    raw = Array.isArray(raw.slides) ? raw.slides : [raw];
+  const proof = evidence(sources);
+  return list(raw)
+    .filter((s) => s && typeof s === "object" && s.layout !== "section")
+    .map((s) => normalizeSlide(s, fallbackTitle, proof))
+    .filter(Boolean);
+}
+
+/**
+ * The layouts that can show a slide, best first. Data has one natural
+ * layout; lists of ideas can be shown several ways, which is where variety
+ * comes from.
+ */
+function candidates(slide) {
+  if (slide.chart) return ["chart"];
+  if (slide.table) return ["table"];
+  if (slide.figures.length) return ["stats"];
+  if (slide.quote) return ["quote"];
+  const ideas = slide.items.length;
+  if (ideas === 2) return ["comparison", "split", "cards", "bullets"];
+  if (ideas && slide.ordered) return ["steps", "cards", "bullets", "split"];
+  if (ideas) return ["cards", "bullets", "split"];
+  return ["bullets", "split"];
+}
+
+/**
+ * Gives each slide a layout: the best candidate that is not the layout
+ * right before it, preferring layouts the deck has used least. `state`
+ * carries the deck's history across sections.
+ * @param {Omit<Slide, "layout"|"subtitle">[]} slides
+ * @param {{used: Object<string, number>, previous: string|null}} state - Updated in place
+ * @returns {Slide[]}
+ */
+function assignLayouts(slides, state) {
+  return slides.map((slide) => {
+    const options = candidates(slide).filter((l) => LAYOUTS[l](slide));
+    const score = (layout) =>
+      options.indexOf(layout) +
+      3 * (state.used[layout] || 0) +
+      (layout === state.previous ? 100 : 0);
+    const layout = options.reduce((best, l) =>
+      score(l) < score(best) ? l : best
+    );
+    state.used[layout] = (state.used[layout] || 0) + 1;
+    state.previous = layout;
+    return { layout, subtitle: "", ...slide };
+  });
+}
+
+/**
+ * A section divider slide.
+ * @param {string} title
+ * @param {string} [subtitle]
+ * @returns {Slide}
+ */
+function sectionSlide(title, subtitle = "") {
+  return {
+    layout: "section",
+    title: clip(text(title), LIMITS.title),
+    subtitle: clip(text(subtitle), LIMITS.subtitle),
+    points: [],
+    items: [],
+    ordered: false,
+    figures: [],
+    chart: null,
+    table: null,
+    quote: null,
+    notes: "",
   };
 }
 
@@ -306,26 +441,13 @@ function normalizeCover({ title, subtitle }) {
   };
 }
 
-/**
- * Drops section dividers with no content slide after them so a deck never
- * ends on, or stacks, empty dividers.
- * @param {Slide[]} slides
- * @returns {Slide[]}
- */
-function pruneDividers(slides) {
-  return slides.filter(
-    (slide, i) =>
-      slide.layout !== "section" ||
-      (slides[i + 1] && slides[i + 1].layout !== "section")
-  );
-}
-
 module.exports = {
   LAYOUTS,
-  DEFAULT_LIMITS,
+  LIMITS,
   COVER_LIMITS,
   SLIDE_SCHEMA,
   normalizeSlides,
+  assignLayouts,
+  sectionSlide,
   normalizeCover,
-  pruneDividers,
 };

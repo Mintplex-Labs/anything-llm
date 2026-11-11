@@ -2,45 +2,40 @@
 const { getEventListeners } = require("events");
 
 // Each section call goes to `mockModel`, which receives the tools the section
-// was offered (by name) and the prompt, and returns the slides to submit (or
-// null to submit nothing, or an Error to fail the call).
+// was offered (by name) and the prompt, and returns what to submit: a
+// {intro, slides} object, a slides array, null to submit nothing, or an
+// Error to fail the call.
 let mockModel;
-const mockOfferedLayouts = [];
 const mockOfferedTools = [];
 jest.mock("../../../../../../../utils/agents/aibitat/index.js", () =>
-  jest.fn().mockImplementation(() => {
-    const child = {
-      functions: new Map(),
-      function(def) {
-        this.functions.set(def.name, def);
-      },
-      abort: jest.fn(),
-      getProviderForConfig: () => ({
-        attachHandlerProps() {},
-        supportsAgentStreaming: false,
-        getCumulativeUsage: () => ({ prompt_tokens: 0, completion_tokens: 0 }),
-      }),
-      async handleExecution(messages, functions) {
-        const tools = Object.fromEntries(functions.map((f) => [f.name, f]));
-        const submit = tools["submit-section-slides"];
-        mockOfferedTools.push(Object.keys(tools));
-        mockOfferedLayouts.push(
-          submit.parameters.properties.slides.items.properties.layout.enum
+  jest.fn().mockImplementation(() => ({
+    functions: new Map(),
+    function(def) {
+      this.functions.set(def.name, def);
+    },
+    abort: jest.fn(),
+    getProviderForConfig: () => ({
+      attachHandlerProps() {},
+      supportsAgentStreaming: false,
+      getCumulativeUsage: () => ({ prompt_tokens: 0, completion_tokens: 0 }),
+    }),
+    async handleExecution(messages, functions) {
+      const tools = Object.fromEntries(functions.map((f) => [f.name, f]));
+      mockOfferedTools.push(Object.keys(tools));
+      const out = mockModel(tools, messages);
+      if (out instanceof Error) throw out;
+      if (out)
+        tools["submit-section-slides"].handler(
+          Array.isArray(out) ? { slides: out } : out
         );
-        const slides = mockModel(tools, messages);
-        if (slides instanceof Error) throw slides;
-        if (slides) submit.handler({ slides });
-        return "";
-      },
-    };
-    return child;
-  })
+      return "";
+    },
+  }))
 );
 
 const {
   buildDeck,
   decodeHtmlEntities,
-  openLayouts,
   readConversation,
 } = require("../../../../../../../utils/agents/aibitat/plugins/create-files/pptx/deck-builder.js");
 
@@ -65,28 +60,14 @@ const build = (parent, sections, history = []) =>
     history,
   });
 
-/** A model that always picks the first offered content layouts it can fill. */
-const favourite = (layouts) => (tools) => {
-  const offered =
-    tools["submit-section-slides"].parameters.properties.slides.items.properties
-      .layout.enum;
-  const pick = layouts.filter((l) => offered.includes(l)).slice(0, 2);
-  return [
-    { layout: "section", title: "S" },
-    ...pick.map((layout) => ({
-      layout,
-      title: layout,
-      bullets: ["a", "b"],
-      items: [
-        { title: "x", text: "y", bullets: ["z"] },
-        { title: "x2", text: "y2", bullets: ["z2"] },
-      ],
-    })),
-  ];
-};
+const ideas = (n) =>
+  Array.from({ length: n }, (_, i) => ({
+    title: `Idea ${i}`,
+    text: "Why it matters",
+  }));
+const layoutsOf = (slides) => slides.map((s) => s.layout);
 
 beforeEach(() => {
-  mockOfferedLayouts.length = 0;
   mockOfferedTools.length = 0;
 });
 
@@ -107,104 +88,6 @@ describe("decodeHtmlEntities", () => {
     expect(decodeHtmlEntities("&nope; &#99999999; & plain")).toBe(
       "&nope; &#99999999; & plain"
     );
-  });
-});
-
-describe("openLayouts", () => {
-  test("offers every content layout to the first section", () => {
-    expect(openLayouts({}, new Set())).toEqual([
-      "bullets",
-      "two-column",
-      "stats",
-      "cards",
-      "steps",
-      "chart",
-      "table",
-      "quote",
-    ]);
-  });
-
-  test("closes layouts the previous section used and any used three times", () => {
-    const open = openLayouts({ cards: 3, chart: 1 }, new Set(["bullets"]));
-    expect(open).not.toContain("bullets");
-    expect(open).not.toContain("cards");
-    expect(open).toContain("chart");
-  });
-
-  test("keeps the least used text layout open when all of them are closed", () => {
-    const used = { bullets: 3, cards: 3, steps: 2, "two-column": 3 };
-    const open = openLayouts(used, new Set(["steps"]));
-    expect(open).toEqual(["stats", "chart", "table", "quote", "steps"]);
-  });
-});
-
-describe("buildDeck", () => {
-  test("never offers a section the layouts the previous section used", async () => {
-    mockModel = favourite(["bullets", "cards", "steps", "two-column"]);
-    const { slides } = await build(parentAgent(), [
-      { title: "A" },
-      { title: "B" },
-      { title: "C" },
-    ]);
-    expect(mockOfferedLayouts[0]).toContain("bullets");
-    expect(mockOfferedLayouts[1]).not.toContain("bullets");
-    expect(mockOfferedLayouts[1]).not.toContain("cards");
-    expect(mockOfferedLayouts[2]).toContain("bullets");
-    const content = slides.filter((s) => s.layout !== "section");
-    expect(content.map((s) => s.layout)).toEqual([
-      "bullets",
-      "cards",
-      "steps",
-      "two-column",
-      "bullets",
-      "cards",
-    ]);
-  });
-
-  test("falls back to key points, and reports sections that produced nothing", async () => {
-    mockModel = () => new Error("model offline");
-    const { slides, built } = await build(parentAgent(), [
-      { title: "With points", keyPoints: ["one", "two"] },
-      { title: "Without points" },
-    ]);
-    expect(built).toEqual(["With points"]);
-    expect(slides).toEqual([
-      expect.objectContaining({ layout: "section", title: "With points" }),
-      expect.objectContaining({ layout: "bullets", bullets: ["one", "two"] }),
-    ]);
-  });
-
-  test("recovers slides a model wrote as text instead of a tool call", async () => {
-    mockModel = () => null;
-    const AIbitat = require("../../../../../../../utils/agents/aibitat/index.js");
-    AIbitat.mockImplementationOnce(() => {
-      const child = AIbitat.getMockImplementation()();
-      child.handleExecution = async () =>
-        'Here you go: {"slides": [{"layout": "cards", "title": "T", "items": [{"title": "a", "text": "b"}]}]}';
-      return child;
-    });
-    const { built, slides } = await build(parentAgent(), [{ title: "A" }]);
-    expect(built).toEqual(["A"]);
-    expect(slides[0].layout).toBe("cards");
-  });
-
-  test("detaches every sub-agent from the parent's abort signal when done", async () => {
-    mockModel = favourite(["bullets"]);
-    const parent = parentAgent();
-    await build(parent, [{ title: "A" }, { title: "B" }]);
-    expect(
-      getEventListeners(parent.abortController.signal, "abort")
-    ).toHaveLength(0);
-  });
-
-  test("stops building once the parent is aborted", async () => {
-    const parent = parentAgent();
-    mockModel = (tool) => {
-      parent._aborted = true;
-      return favourite(["bullets"])(tool);
-    };
-    const { built } = await build(parent, [{ title: "A" }, { title: "B" }]);
-    expect(built).toEqual(["A"]);
   });
 });
 
@@ -254,9 +137,90 @@ describe("readConversation", () => {
   });
 });
 
-describe("buildDeck conversation lookup", () => {
-  test("is offered only when there is a conversation", async () => {
-    mockModel = favourite(["bullets"]);
+describe("buildDeck", () => {
+  test("adds a divider with the model's intro and keeps at most three slides a section", async () => {
+    mockModel = () => ({
+      intro: "Why this matters",
+      slides: Array.from({ length: 5 }, (_, i) => ({
+        title: `S${i}`,
+        points: ["p"],
+      })),
+    });
+    const { slides, built } = await build(parentAgent(), [{ title: "A" }]);
+    expect(built).toEqual(["A"]);
+    expect(slides[0]).toEqual(
+      expect.objectContaining({
+        layout: "section",
+        title: "A",
+        subtitle: "Why this matters",
+      })
+    );
+    expect(slides.slice(1).map((s) => s.title)).toEqual(["S0", "S1", "S2"]);
+  });
+
+  test("never puts the same layout on consecutive content slides across sections", async () => {
+    mockModel = () => Array(3).fill({ title: "T", items: ideas(3) });
+    const { slides } = await build(parentAgent(), [
+      { title: "A" },
+      { title: "B" },
+      { title: "C" },
+    ]);
+    const content = layoutsOf(slides.filter((s) => s.layout !== "section"));
+    expect(content).toHaveLength(9);
+    for (let i = 1; i < content.length; i++)
+      expect(content[i]).not.toBe(content[i - 1]);
+  });
+
+  test("keeps figures from the key points and drops invented ones", async () => {
+    mockModel = () => [
+      {
+        title: "Results",
+        figures: [
+          { value: "38%", label: "fewer tickets" },
+          { value: "$180k", label: "saved" },
+          { value: "99%", label: "accuracy" },
+        ],
+        points: ["Answers in under 100ms", "Support teams adopted it first"],
+      },
+    ];
+    const { slides } = await build(parentAgent(), [
+      { title: "A", keyPoints: ["Tickets fell 38%", "Saved $180k a year"] },
+    ]);
+    expect(slides[1].figures.map((f) => f.value)).toEqual(["38%", "$180k"]);
+    expect(slides[1].points).toEqual(["Support teams adopted it first"]);
+  });
+
+  test("counts figures found through the conversation lookup as sourced", async () => {
+    const history = [
+      { from: "USER", content: "Q3 revenue was $4.2M\nChurn was 3.1%" },
+    ];
+    let prompt;
+    mockModel = (tools, messages) => {
+      prompt = messages.map((m) => m.content).join("\n");
+      tools["read-conversation"].handler({ query: "revenue churn" });
+      return [
+        {
+          title: "Q3",
+          figures: [
+            { value: "$4.2M", label: "revenue" },
+            { value: "3.1%", label: "churn" },
+            { value: "48%", label: "margin" },
+          ],
+        },
+      ];
+    };
+    const { slides } = await build(
+      parentAgent(),
+      [{ title: "Results" }],
+      history
+    );
+    expect(prompt).not.toContain("$4.2M");
+    expect(slides[1].layout).toBe("stats");
+    expect(slides[1].figures.map((f) => f.value)).toEqual(["$4.2M", "3.1%"]);
+  });
+
+  test("offers the conversation lookup only when there is a conversation", async () => {
+    mockModel = () => [{ title: "T", points: ["p"] }];
     await build(parentAgent(), [{ title: "A" }]);
     await build(
       parentAgent(),
@@ -269,22 +233,47 @@ describe("buildDeck conversation lookup", () => {
     ]);
   });
 
-  test("lets a section pull a figure the outline left out, without the chat in its prompt", async () => {
-    const history = [
-      { from: "USER", content: "Q3 revenue was $4.2M\nWeather was nice" },
-    ];
-    let prompt;
-    mockModel = (tools, messages) => {
-      prompt = messages.map((m) => m.content).join("\n");
-      const found = tools["read-conversation"].handler({ query: "revenue" });
-      return [{ layout: "bullets", title: "Results", bullets: [found] }];
+  test("falls back to key points, and leaves out sections that produced nothing", async () => {
+    mockModel = () => new Error("model offline");
+    const { slides, built } = await build(parentAgent(), [
+      { title: "With points", keyPoints: ["one", "two"] },
+      { title: "Without points" },
+    ]);
+    expect(built).toEqual(["With points"]);
+    expect(layoutsOf(slides)).toEqual(["section", "bullets"]);
+    expect(slides[1].points).toEqual(["one", "two"]);
+  });
+
+  test("recovers slides a model wrote as text instead of a tool call", async () => {
+    mockModel = () => null;
+    const AIbitat = require("../../../../../../../utils/agents/aibitat/index.js");
+    AIbitat.mockImplementationOnce(() => {
+      const child = AIbitat.getMockImplementation()();
+      child.handleExecution = async () =>
+        'Here you go: {"slides": [{"title": "T", "items": [{"title": "a", "text": "b"}, {"title": "c", "text": "d"}]}]}';
+      return child;
+    });
+    const { built, slides } = await build(parentAgent(), [{ title: "A" }]);
+    expect(built).toEqual(["A"]);
+    expect(slides[1].layout).toBe("comparison");
+  });
+
+  test("detaches every sub-agent from the parent's abort signal when done", async () => {
+    mockModel = () => [{ title: "T", points: ["p"] }];
+    const parent = parentAgent();
+    await build(parent, [{ title: "A" }, { title: "B" }]);
+    expect(
+      getEventListeners(parent.abortController.signal, "abort")
+    ).toHaveLength(0);
+  });
+
+  test("stops building once the parent is aborted", async () => {
+    const parent = parentAgent();
+    mockModel = () => {
+      parent._aborted = true;
+      return [{ title: "T", points: ["p"] }];
     };
-    const { slides } = await build(
-      parentAgent(),
-      [{ title: "Results" }],
-      history
-    );
-    expect(prompt).not.toContain("$4.2M");
-    expect(slides[0].bullets).toEqual(["USER: Q3 revenue was $4.2M"]);
+    const { built } = await build(parent, [{ title: "A" }, { title: "B" }]);
+    expect(built).toEqual(["A"]);
   });
 });

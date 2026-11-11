@@ -1,187 +1,236 @@
 /**
- * Renders a preview deck for every theme, exercising every layout through the
- * production pipeline. Run from repo root:
+ * Renders a preview deck for every theme through the production pipeline:
+ * sample section content as a model would submit it, normalized, given
+ * layouts and dividers the way deck-builder.js does, then rendered. Every
+ * layout appears, with both sparse and full content. Run from repo root:
  *
- *   node server/utils/agents/aibitat/plugins/create-files/pptx/test-themes.js
+ *   node server/utils/agents/aibitat/plugins/create-files/pptx/test-themes.js [outputDir] [theme ...]
  *
- * Output → storage/generated-files/theme-previews/
+ * Output → storage/generated-files/theme-previews/ unless a directory is given.
  */
 
 const path = require("path");
 const fs = require("fs/promises");
 const createFilesLib = require("../lib.js");
 const { PALETTES, getTheme } = require("./themes.js");
-const { normalizeSlides } = require("./slides.js");
+const { normalizeSlides, assignLayouts, sectionSlide } = require("./slides.js");
 const { renderDeck } = require("./render.js");
 
-const SAMPLE_SLIDES = [
+const SAMPLE_SECTIONS = [
   {
-    layout: "section",
-    title: "Executive Summary",
-    subtitle: "Where we are and where we are going",
-  },
-  {
-    layout: "bullets",
-    title: "Highlights",
-    subtitle: "FY2025 at a glance",
-    bullets: [
-      "Revenue grew 23% year-over-year to $4.2B",
-      "Operating margin expanded 180bps to 28.4%",
-      "Customer retention rate improved to 94.7%",
-      "Three strategic acquisitions completed in Q3",
-    ],
-    notes: "Emphasize the margin expansion story",
-  },
-  {
-    layout: "stats",
-    title: "By the Numbers",
-    items: [
-      { title: "$4.2B", text: "Annual revenue, up 23% YoY" },
-      { title: "28.4%", text: "Operating margin" },
-      { title: "94.7%", text: "Net customer retention" },
-    ],
-  },
-  {
-    layout: "stats",
-    title: "Operating Metrics",
-    items: [
-      { title: "+200%", text: "Partner integrations" },
-      { title: "$80k", text: "Average contract value" },
-      { title: "$1.8M", text: "Net new ARR in Q4" },
-      { title: "12", text: "New markets" },
-      { title: "4.8/5", text: "Customer satisfaction" },
-      { title: "38%", text: "Gross margin uplift" },
-    ],
-  },
-  {
-    layout: "two-column",
-    title: "Opportunities vs. Risks",
-    items: [
+    title: "Why AnythingLLM",
+    intro: "One private workspace for every model and document",
+    slides: [
       {
-        title: "Opportunities",
-        bullets: [
-          "Global TAM estimated at $180B by 2027",
-          "Two adjacent markets ready for entry",
-          "Pricing power in enterprise tier",
+        title: "What AnythingLLM Is",
+        points: [
+          "A desktop and Docker app for chatting with your documents",
+          "Works with local models or any cloud provider",
+          "Your data stays on your machine by default",
         ],
       },
       {
-        title: "Risks",
-        bullets: [
-          "FX headwinds in EMEA",
-          "Integration load from three acquisitions",
-          "Talent competition in core engineering",
+        title: "Built for Privacy",
+        items: [
+          {
+            title: "Local first",
+            text: "Documents, embeddings and chats are stored on your own hardware.",
+          },
+          {
+            title: "Bring your own model",
+            text: "Run Ollama or LM Studio locally, or connect OpenAI, Anthropic and others.",
+          },
         ],
       },
     ],
   },
   {
-    layout: "cards",
-    title: "Strategic Priorities",
-    items: [
+    title: "Core Features",
+    intro: "What teams use every day",
+    slides: [
       {
-        title: "Platform Modernization",
-        text: "Migrate the core stack to a unified cloud architecture by Q3.",
+        title: "Workspaces and Agents",
+        items: [
+          {
+            title: "Workspaces",
+            text: "Separate document sets and settings per team or project.",
+          },
+          {
+            title: "Agents",
+            text: "Agents browse the web, query SQL and create files on request.",
+          },
+          {
+            title: "Embeddable chat",
+            text: "Drop a chat widget trained on your docs into any website.",
+          },
+        ],
       },
       {
-        title: "Geographic Expansion",
-        text: "Open two new regional hubs with local go-to-market teams.",
+        title: "Getting Started",
+        ordered: true,
+        items: [
+          {
+            title: "Install",
+            text: "Download the desktop app or pull the Docker image.",
+          },
+          {
+            title: "Pick a model",
+            text: "Choose a local or cloud LLM in settings.",
+          },
+          {
+            title: "Add documents",
+            text: "Upload files or sync a website or repository.",
+          },
+          {
+            title: "Chat",
+            text: "Ask questions and get answers with citations.",
+          },
+        ],
       },
       {
-        title: "Customer Success",
-        text: "Cut time-to-value in half through guided onboarding.",
-      },
-      {
-        title: "Operational Excellence",
-        text: "Automate reporting and reduce close cycle to five days.",
+        title: "Usage at a Glance",
+        figures: [
+          { value: "54k", label: "GitHub stars" },
+          { value: "30+", label: "LLM providers supported" },
+          { value: "1M+", label: "Desktop downloads" },
+        ],
       },
     ],
   },
   {
-    layout: "steps",
-    title: "Roadmap",
-    items: [
-      { title: "Q1", text: "Launch Phase 2 of platform modernization" },
-      { title: "Q2", text: "Complete integration of acquired entities" },
-      { title: "Q3", text: "Enter two new geographic markets" },
-      { title: "Q4", text: "Reach $5B annual revenue run-rate" },
-    ],
-  },
-  {
-    layout: "steps",
-    title: "How We Ship",
-    items: [
-      { title: "Discover", text: "Interview customers and size the problem" },
+    title: "Deployment Options",
+    intro: "Desktop for individuals, Docker for teams",
+    slides: [
       {
-        title: "Design",
-        text: "Prototype the flow and test it with five users",
+        title: "Desktop vs Docker",
+        table: {
+          headers: ["", "Desktop", "Docker"],
+          rows: [
+            ["Users", "Single user", "Multi-user with roles"],
+            ["Setup", "One installer", "One container"],
+            ["Best for", "Personal knowledge base", "Teams and businesses"],
+            ["Updates", "Automatic", "Pull a new image"],
+          ],
+        },
       },
-      { title: "Build", text: "Ship behind a flag to a pilot group" },
-      { title: "Launch", text: "Roll out to everyone with docs and training" },
+      {
+        title: "Monthly Active Workspaces",
+        chart: {
+          type: "bar",
+          categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+          values: [1200, 1850, 2400, 3100, 3900, 4600],
+        },
+        points: [
+          "Growth nearly quadrupled in six months",
+          "Docker installs drove most of the gain",
+        ],
+      },
+      {
+        title: "Rollout Plan",
+        ordered: true,
+        items: [
+          {
+            title: "Pilot",
+            text: "One team runs the Docker build for two weeks.",
+          },
+          {
+            title: "Security review",
+            text: "IT checks storage, auth and network access.",
+          },
+          {
+            title: "Connect data",
+            text: "Sync the wiki, drive and support docs.",
+          },
+          {
+            title: "Train users",
+            text: "A one-hour session on workspaces and agents.",
+          },
+          { title: "Company launch", text: "Open access to every department." },
+          {
+            title: "Review",
+            text: "Measure usage and gather feedback after 30 days.",
+          },
+        ],
+      },
     ],
   },
   {
-    layout: "chart",
-    title: "Revenue by Quarter",
-    chart: {
-      type: "bar",
-      categories: ["Q1", "Q2", "Q3", "Q4"],
-      values: [950, 1000, 1100, 1150],
-    },
-    bullets: [
-      "Every quarter beat the prior year",
-      "Q4 driven by enterprise renewals",
-      "Run-rate now above $4.5B",
+    title: "Customer Stories",
+    intro: "How teams describe it",
+    slides: [
+      {
+        title: "What Users Say",
+        quote: {
+          text: "We replaced three internal tools with one private assistant our whole support team actually uses.",
+          by: "Head of Customer Success",
+        },
+      },
+      {
+        title: "Results After One Quarter",
+        figures: [
+          { value: "38%", label: "Fewer escalated tickets" },
+          { value: "2.4x", label: "Faster answers for new hires" },
+          { value: "$180k", label: "Annual tooling savings" },
+          { value: "94%", label: "Weekly active staff" },
+          { value: "12", label: "Departments onboarded" },
+          { value: "4.8/5", label: "Internal satisfaction score" },
+        ],
+      },
+      {
+        title: "Where It Helps Most",
+        items: [
+          {
+            title: "Support",
+            text: "Answers from the help center in seconds.",
+          },
+          { title: "Sales", text: "Proposal drafts from past wins." },
+          {
+            title: "Engineering",
+            text: "Search across code, docs and tickets.",
+          },
+          { title: "HR", text: "Policy questions answered privately." },
+          { title: "Legal", text: "Contract review against templates." },
+          { title: "Finance", text: "Summaries of reports and filings." },
+        ],
+      },
+      {
+        title: "Next Steps",
+        points: [
+          "Expand agent access to the CRM and ticketing system",
+          "Add a second local model for code questions",
+          "Publish an internal guide to writing good prompts",
+          "Review costs and usage again at the end of next quarter",
+        ],
+      },
     ],
-  },
-  {
-    layout: "chart",
-    title: "Revenue Mix",
-    chart: {
-      type: "doughnut",
-      categories: ["Enterprise", "Mid-market", "SMB", "Services"],
-      values: [52, 24, 16, 8],
-    },
-  },
-  {
-    layout: "table",
-    title: "Financial Performance",
-    table: {
-      headers: ["Metric", "FY2024", "FY2025", "Growth"],
-      rows: [
-        ["Revenue", "$3.4B", "$4.2B", "+23%"],
-        ["Gross Margin", "62.1%", "64.8%", "+270bps"],
-        ["Operating Income", "$910M", "$1.19B", "+31%"],
-        ["Free Cash Flow", "$780M", "$1.02B", "+31%"],
-      ],
-    },
-  },
-  {
-    layout: "quote",
-    title:
-      "The best way to predict the future is to build it. This year we built more than ever.",
-    subtitle: "Jane Doe, Chief Executive Officer",
-  },
-  {
-    layout: "quote",
-    title: "Customers do not buy features, they buy outcomes.",
-    subtitle: "Head of Customer Success",
   },
 ];
 
+/** The sample deck's slides, built the way deck-builder.js builds them. */
+function sampleSlides() {
+  const layouts = { used: {}, previous: null };
+  return SAMPLE_SECTIONS.flatMap((section) => [
+    sectionSlide(section.title, section.intro),
+    ...assignLayouts(
+      normalizeSlides(section.slides, { fallbackTitle: section.title }),
+      layouts
+    ),
+  ]);
+}
+
 async function main() {
-  const outputDir = path.join(
-    await createFilesLib.getOutputDirectory(),
-    "theme-previews"
-  );
+  const [dir, ...names] = process.argv.slice(2);
+  const outputDir =
+    dir ||
+    path.join(await createFilesLib.getOutputDirectory(), "theme-previews");
   await fs.mkdir(outputDir, { recursive: true });
-  const slides = normalizeSlides(SAMPLE_SLIDES);
-  for (const name of Object.keys(PALETTES)) {
+  const slides = sampleSlides();
+  for (const name of names.length ? names : Object.keys(PALETTES)) {
     const theme = getTheme(name);
     const buffer = await renderDeck(
       {
-        title: `${theme.name} Theme`,
-        subtitle: "FY2025 Annual Review",
+        title: "AnythingLLM Features",
+        subtitle: "A private AI workspace for every team",
         author: "AnythingLLM",
         slides,
       },
@@ -196,4 +245,6 @@ async function main() {
   console.log(`\nDone! Previews saved to:\n  ${outputDir}`);
 }
 
-main().catch(console.error);
+if (require.main === module) main().catch(console.error);
+
+module.exports = { sampleSlides };

@@ -3,20 +3,21 @@ const AIbitat = require("../../../index.js");
 const { webBrowsing } = require("../../web-browsing.js");
 const { safeJsonParse } = require("../../../../../http");
 const {
-  LAYOUTS,
   SLIDE_SCHEMA,
   normalizeSlides,
-  pruneDividers,
+  assignLayouts,
+  sectionSlide,
 } = require("./slides.js");
 
 /**
  * Turns a presentation outline into slides. Research is done by this module
  * (one web search per deck, plus one per section that has its own
- * instructions) and each section is then one model call whose job is to
- * fill in SLIDE_SCHEMA, so cost stays small and fixed and small local models
- * never have to plan. The only other tool a section call gets is an optional
- * conversation lookup, so the chat history costs tokens only in the sections
- * that ask for it.
+ * instructions) and each section is then one model call whose only job is
+ * to write content into SLIDE_SCHEMA: titles, points, items, figures. Every
+ * visual decision (layouts, dividers, sizes) is made in code, so cost stays
+ * small and fixed and small local models never have to plan or design. The
+ * only other tool a section call gets is an optional conversation lookup,
+ * so the chat history costs tokens only in the sections that ask for it.
  */
 
 // Search results are injected into a single model call, so they are capped to
@@ -31,79 +32,36 @@ const CONVERSATION_CHAR_LIMIT = 3000;
 // Room for a conversation lookup, and one refined lookup, before the submit
 // call. AIbitat counts calls from zero, so 2 allows three.
 const SECTION_TOOL_CALLS = 2;
+// Content slides kept per section, whatever the model returns.
+const MAX_SECTION_SLIDES = 3;
 
-const SYSTEM_PROMPT = `You write the slides for ONE section of a PowerPoint presentation. You must call the submit-section-slides tool exactly once with all slides for this section. Never reply with plain text or raw JSON.
+const SYSTEM_PROMPT = `You write the content for ONE section of a slide deck. Call the submit-section-slides tool exactly once with all slides. Never reply with plain text.
 
-RULES:
-- First slide is a "section" divider with the section title, then 2 content slides (3 only if the section truly needs it)
-- Vary the layouts. Never use "bullets" for every slide; pick the layout that fits the content
-- Keep text short: slide titles under 7 words, bullets under 12 words, card/step text one sentence
-- Be specific. Use numbers from the research notes when they exist; never invent statistics
-- Never write placeholders like "(insert %)" or "TBD"; if a figure is unknown, describe it in words instead
-- Tables: at most 6 rows and 4 columns, short cell text
-- Charts only for real numeric data with at least 3 differing values; never chart concepts or placeholder values
-- Every value in one chart must use the same unit; never mix money, counts and percentages in one chart
+Write 2 slides (3 only if the section truly needs it). Each slide has a title under 7 words and ONE kind of content:
+- points: 3-5 statements, each under 12 words
+- items: 2-6 ideas, each a title of 1-4 words and one sentence of text. Set "ordered": true when they are steps or a timeline
+- figures: 2-6 numbers, each a value like "42%" or "$1.2M" and a short label. Only numbers written in the key points, instructions, research or conversation
+- chart: categories and numeric values in one unit, only real data with 3 or more values
+- table: headers and up to 6 rows of short cells
+- quote: text and who said it, only a real quote from the research or conversation
 
-Layouts and the fields each one uses:
-${Object.entries(LAYOUTS)
-  .map(([name, { hint }]) => `- "${name}": ${hint}`)
-  .join("\n")}`;
+Never invent statistics, quotes or names. Never write placeholders like "TBD". If a number is unknown, describe the idea in words instead.
+Also write "intro": one short line that introduces the section.`;
 
-// A content layout is closed to the next section once the deck has used it
-// this many times, so one favourite layout cannot fill the deck.
-const MAX_LAYOUT_USES = 3;
-// General-purpose layouts that fit any content. At least one always stays
-// open so a section is never forced into a chart, table or quote it has no
-// material for.
-const TEXT_LAYOUTS = ["bullets", "cards", "steps", "two-column"];
-const CONTENT_LAYOUTS = Object.keys(LAYOUTS).filter((l) => l !== "section");
-
-/**
- * The content layouts a section may use: every one except those the previous
- * section used and those already used MAX_LAYOUT_USES times in the deck.
- * @param {Object<string, number>} used - Uses of each layout so far in the deck
- * @param {Set<string>} previous - Layouts the previous section used
- * @returns {string[]}
- */
-function openLayouts(used, previous) {
-  const open = CONTENT_LAYOUTS.filter(
-    (l) => !previous.has(l) && (used[l] || 0) < MAX_LAYOUT_USES
-  );
-  if (!open.some((l) => TEXT_LAYOUTS.includes(l))) {
-    const leastUsed = [...TEXT_LAYOUTS].sort(
-      (a, b) => (used[a] || 0) - (used[b] || 0)
-    )[0];
-    open.push(leastUsed);
-  }
-  return open;
-}
-
-/**
- * The tool a section call submits its slides with. Its layout enum holds
- * only the open layouts, which models follow far more reliably than an
- * instruction in the prompt.
- * @param {string[]} layouts - Open content layouts
- */
-function submitTool(layouts) {
-  const slide = {
-    ...SLIDE_SCHEMA,
+const SUBMIT_TOOL = {
+  name: "submit-section-slides",
+  description:
+    "Submit the finished slides for this section. Call this exactly once.",
+  parameters: {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type: "object",
     properties: {
-      ...SLIDE_SCHEMA.properties,
-      layout: { type: "string", enum: ["section", ...layouts] },
+      intro: { type: "string" },
+      slides: { type: "array", items: SLIDE_SCHEMA },
     },
-  };
-  return {
-    name: "submit-section-slides",
-    description:
-      "Submit the finished slides for this section. Call this exactly once.",
-    parameters: {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      type: "object",
-      properties: { slides: { type: "array", items: slide } },
-      required: ["slides"],
-    },
-  };
-}
+    required: ["slides"],
+  },
+};
 
 /**
  * A child AIbitat on the parent's provider that shares its log and
@@ -237,10 +195,12 @@ function readConversation(history, query) {
 /**
  * The tool a section call can use to pull details from the user's
  * conversation that its key points refer to but leave out. Registered only
- * when there is a conversation, so it costs nothing otherwise.
+ * when there is a conversation, so it costs nothing otherwise. Every result
+ * is passed to `onRead`, so figures found this way count as sourced.
  * @param {{from: string, content: string}[]} history
+ * @param {(text: string) => void} onRead
  */
-function conversationTool(history) {
+function conversationTool(history, onRead) {
   return {
     name: "read-conversation",
     description:
@@ -256,11 +216,15 @@ function conversationTool(history) {
         },
       },
     },
-    handler: ({ query } = {}) => readConversation(history, query),
+    handler: ({ query } = {}) => {
+      const found = readConversation(history, query);
+      onRead(found);
+      return found;
+    },
   };
 }
 
-function sectionPrompt({ section, title, notes, layouts }) {
+function sectionPrompt({ section, title, notes }) {
   const parts = [`Presentation: "${title}"`, `Section: ${section.title}`];
   const keyPoints = [].concat(section.keyPoints ?? []);
   if (keyPoints.length)
@@ -269,41 +233,41 @@ function sectionPrompt({ section, title, notes, layouts }) {
     );
   if (section.instructions) parts.push(`Instructions: ${section.instructions}`);
   if (notes) parts.push(`Research:\n${notes}`);
-  if (layouts.length < CONTENT_LAYOUTS.length)
-    parts.push(
-      `Content layouts for this section: ${layouts.join(", ")}. Earlier sections used the others.`
-    );
   parts.push("Call submit-section-slides now with the slides.");
   return parts.join("\n\n");
 }
 
 /**
- * One model call that writes the slides for one section. Falls back to a
- * divider plus the outline's key points when the model produces nothing.
- * @returns {Promise<import("./slides.js").Slide[]>}
+ * One model call that writes the content for one section. Falls back to the
+ * outline's key points when the model produces nothing usable.
+ * @returns {Promise<{intro: string, slides: Object[]}>} Content slides without layouts
  */
-async function buildSection(
-  parent,
-  { section, title, notes, history, layouts, label }
-) {
+async function buildSection(parent, { section, title, notes, history, label }) {
   const child = childOf(parent);
+  // Everything the model was given; figures, chart values and quotes not
+  // found here are dropped as invented.
+  const sources = [
+    title,
+    section.title,
+    [].concat(section.keyPoints ?? []).join("\n"),
+    section.instructions ?? "",
+    notes,
+  ];
   let submitted = null;
   child.function({
-    ...submitTool(layouts),
-    handler: ({ slides }) => {
-      submitted = slides;
+    ...SUBMIT_TOOL,
+    handler: (args) => {
+      submitted = args;
       child.skipHandleExecution = true;
       return "Slides submitted.";
     },
   });
+  if (history.length)
+    child.function(conversationTool(history, (found) => sources.push(found)));
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
-    {
-      role: "user",
-      content: sectionPrompt({ section, title, notes, layouts }),
-    },
+    { role: "user", content: sectionPrompt({ section, title, notes }) },
   ];
-  if (history.length) child.function(conversationTool(history));
   const functions = [...child.functions.values()];
   const agent = `[${label}] @section-builder`;
   const { log } = parent.handlerProps;
@@ -320,21 +284,23 @@ async function buildSection(
   }
 
   const usage = child.providerInstance.getCumulativeUsage();
-  const slides = normalizeSlides(
-    submitted ?? jsonFromText(text),
-    section.title
-  );
+  const output = submitted ?? jsonFromText(text);
+  const slides = normalizeSlides(output, {
+    fallbackTitle: section.title,
+    sources: sources.join("\n"),
+  }).slice(0, MAX_SECTION_SLIDES);
   log(
     `[DeckBuilder] "${section.title}" produced ${slides.length} slides, ${usage.prompt_tokens + usage.completion_tokens} tokens`
   );
-  if (slides.length) return slides;
-  return normalizeSlides(
-    [
-      { layout: "section", title: section.title },
-      { layout: "bullets", title: section.title, bullets: section.keyPoints },
-    ],
-    section.title
-  );
+  const intro = typeof output?.intro === "string" ? output.intro : "";
+  if (slides.length) return { intro, slides };
+  return {
+    intro: "",
+    slides: normalizeSlides(
+      { title: section.title, points: section.keyPoints },
+      { fallbackTitle: section.title }
+    ),
+  };
 }
 
 /**
@@ -350,7 +316,7 @@ async function buildSection(
  * @param {boolean} deck.research - Search the web before writing
  * @param {{from: string, content: string}[]} [deck.history] - The conversation, oldest first, which section calls can search for facts the outline left out
  * @returns {Promise<{slides: import("./slides.js").Slide[], citations: object[], built: string[]}>}
- *   built holds the titles of the sections that produced at least one content slide.
+ *   built holds the titles of the sections that produced at least one slide.
  */
 async function buildDeck(
   parent,
@@ -365,9 +331,10 @@ async function buildDeck(
 
   const deckNotes = research ? await search(`${title} ${subtitle}`.trim()) : "";
   const slides = [];
-  const used = {};
   const built = [];
-  let previous = new Set();
+  // Layout history across the whole deck, so sections do not repeat each
+  // other's layouts.
+  const layouts = { used: {}, previous: null };
   for (const [i, section] of sections.entries()) {
     if (parent._aborted) break;
     const label = `${i + 1}/${sections.length}`;
@@ -378,31 +345,25 @@ async function buildDeck(
       research && (section.instructions || !deckNotes)
         ? await search(`${section.title} ${title}`)
         : deckNotes;
-    const sectionSlides = await buildSection(parent, {
+    const content = await buildSection(parent, {
       section,
       title,
       notes,
       history,
-      layouts: openLayouts(used, previous),
       label,
     });
-    const content = sectionSlides
-      .map((slide) => slide.layout)
-      .filter((layout) => layout !== "section");
-    for (const layout of content) used[layout] = (used[layout] || 0) + 1;
-    previous = new Set(content);
-    if (content.length) built.push(section.title);
-    slides.push(...sectionSlides);
+    if (content.slides.length) {
+      built.push(section.title);
+      slides.push(
+        sectionSlide(section.title, content.intro),
+        ...assignLayouts(content.slides, layouts)
+      );
+    }
     say(
-      `[${label}] Section "${section.title}" complete — ${pluralize("slide", sectionSlides.length, true)}`
+      `[${label}] Section "${section.title}" complete — ${pluralize("slide", content.slides.length, true)}`
     );
   }
-  return { slides: pruneDividers(slides), citations, built };
+  return { slides, citations, built };
 }
 
-module.exports = {
-  buildDeck,
-  decodeHtmlEntities,
-  openLayouts,
-  readConversation,
-};
+module.exports = { buildDeck, decodeHtmlEntities, readConversation };

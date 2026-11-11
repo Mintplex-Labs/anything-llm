@@ -7,23 +7,41 @@ const createFilesLib = require("../lib.js");
  * relies on PowerPoint autofit: every text box is sized up front by fitText
  * because "shrink text on overflow" is not applied until a box is edited.
  *
- * Every position and font size is written in pixels of the 1920 × 1080 Figma
- * frames the layouts were designed in, so numbers can be checked against the
- * design directly. LAYOUT_WIDE is 13.333 × 7.5 in, so 144 px is one inch and
- * a 2 px font is one point.
+ * Positions and font sizes are pixels of a 1920 × 1080 frame. LAYOUT_WIDE is
+ * 13.333 × 7.5 in, so 144 px is one inch and a 2 px font is one point.
+ * Content slides share one grid: the title at the top and the content as one
+ * block centred in the space below it, sized as large as that space allows,
+ * so a slide with little content never looks empty and a full one never
+ * overflows.
  */
 
 const PX_PER_IN = 144;
-const FONT = "Plus Jakarta Sans";
+// Aptos ships with Microsoft 365 on Windows and macOS; viewers without it
+// substitute a similar sans serif.
+const FONT = "Aptos";
+const HEADING_FONT = "Aptos Display";
 const SLIDE_W = 1920;
 const SLIDE_H = 1080;
+const MARGIN = 120;
+const CONTENT_W = SLIDE_W - 2 * MARGIN;
+const TITLE_Y = 110;
+// Content stays above the footer.
+const CONTENT_BOTTOM = 960;
+const INK = "1F2937";
+const MUTED = "6B7280";
 
-// Average glyph width as a fraction of the font size, on the safe side for
-// Plus Jakarta Sans so text never overflows. Word wrapping wastes part of
-// every line, hence WRAP_SLACK.
-const GLYPH_W = { regular: 0.55, bold: 0.6, caps: 0.72 };
+// Average glyph width as a fraction of the font size. Aptos measures 0.44
+// regular, 0.47 bold, 0.56 in capitals and 0.43 for Aptos Display Bold
+// headings; these are about 13% wider, which covers strings of wide letters
+// and viewers that substitute a slightly wider font. wrappedLines models
+// word wrapping itself, so WRAP_SLACK only keeps a little room at the end
+// of each line.
+const GLYPH_W = { regular: 0.5, bold: 0.53, caps: 0.62, heading: 0.49 };
 const LINE_H = 1.2;
-const WRAP_SLACK = 0.85;
+const WRAP_SLACK = 0.96;
+// Space after each list paragraph, as a fraction of the font size.
+const LIST_GAP = 0.7;
+const LIST_INDENT = 1.6;
 
 const inches = (px) => px / PX_PER_IN;
 const points = (px) => px / 2;
@@ -128,15 +146,66 @@ function sharedSize(texts, box) {
 }
 
 /**
+ * Font size for a heading in Aptos Display Bold: like fitText, but it gives
+ * up to 15% of the size to save a line, so a title does not wrap one word
+ * onto a line of its own.
+ * @param {string} text
+ * @param {object} box - Same as fitText, without glyph
+ * @returns {number}
+ */
+function headingSize(text, box) {
+  const size = fitText(text, { ...box, glyph: "heading" });
+  const lines = (s) => lineCount([text], s, box.w, "heading");
+  for (let s = size - 2; s >= Math.max(box.min ?? 12, size * 0.85); s -= 2)
+    if (lines(s) < lines(size)) return s;
+  return size;
+}
+
+/**
+ * Largest font size from `max` down to `min` at which a block of content,
+ * measured by `heightAt(size)`, fits `room` px of height.
+ * @returns {number}
+ */
+function fitBlock({ max, min }, room, heightAt) {
+  for (let size = max; size > min; size -= 2)
+    if (heightAt(size) <= room) return size;
+  return min;
+}
+
+/** Top of a block `h` px tall in an area: centred, sitting slightly high. */
+function placeIn(area, h) {
+  return area.top + Math.max(0, (area.bottom - area.top - h) * 0.4);
+}
+
+/**
  * Text box positioned and sized in px. Pass `size` for a fixed font size or
  * `fit: { max, min?, maxLines? }` to size the text to the box.
  */
 function addText(
   slide,
   str,
-  { x, y, w, h, size, fit, bold = false, caps = false, spacing, color, ...opts }
+  {
+    x,
+    y,
+    w,
+    h,
+    size,
+    fit,
+    bold = false,
+    caps = false,
+    font = FONT,
+    spacing,
+    color,
+    ...opts
+  }
 ) {
-  const glyph = caps ? "caps" : bold ? "bold" : "regular";
+  const glyph = caps
+    ? "caps"
+    : bold && font === HEADING_FONT
+      ? "heading"
+      : bold
+        ? "bold"
+        : "regular";
   const fontSize = fit ? fitText(str, { w, h, glyph, ...fit }) : size;
   slide.addText(caps ? String(str).toUpperCase() : str, {
     x: inches(x),
@@ -144,7 +213,7 @@ function addText(
     w: inches(w),
     h: inches(h),
     margin: 0,
-    fontFace: FONT,
+    fontFace: font,
     fontSize: points(fontSize),
     bold,
     color,
@@ -154,65 +223,139 @@ function addText(
   });
 }
 
-/** Filled rectangle in px; `radius` rounds the corners. */
-function addRect(slide, pptx, { x, y, w, h, color, radius, line }) {
-  slide.addShape(radius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, {
+/** Rectangle, rounded rectangle (`radius`) or ellipse in px. */
+function addShape(
+  slide,
+  pptx,
+  { x, y, w, h, color, radius, ellipse, line, transparency }
+) {
+  const type = ellipse
+    ? pptx.ShapeType.ellipse
+    : radius
+      ? pptx.ShapeType.roundRect
+      : pptx.ShapeType.rect;
+  slide.addShape(type, {
     x: inches(x),
     y: inches(y),
     w: inches(w),
     h: inches(h),
     ...(radius && { rectRadius: inches(radius) }),
-    fill: color ? { color } : { type: "none" },
+    fill: color
+      ? { color, ...(transparency && { transparency }) }
+      : { type: "none" },
     line: line ?? { type: "none" },
   });
 }
 
-/** Bulleted paragraphs in one text box. */
-function addBullets(slide, bullets, { size, color, ...box }) {
-  if (bullets.length === 0) return;
-  slide.addText(
-    bullets.map((text) => ({
-      text,
-      options: {
-        bullet: { indent: points(size * 1.5) },
-        paraSpaceAfter: points(size * 0.5),
-      },
-    })),
-    {
-      x: inches(box.x),
-      y: inches(box.y),
-      w: inches(box.w),
-      h: inches(box.h),
-      margin: 0,
-      fontFace: FONT,
-      fontSize: points(size),
-      color,
-      valign: box.valign ?? "top",
-    }
-  );
+/** A slide's list entries: items as a bold lead-in and its text, or points. */
+function entriesOf(data) {
+  return data.items.length
+    ? data.items
+    : data.points.map((point) => ({ title: "", text: point }));
 }
 
-/** Bullet font size that fits a box, with room for the bullet indent. */
-function bulletSize(bullets, { w, h, max, min = 14 }) {
-  return fitText(bullets, { w: w - max * 1.5, h, max, min, lineGap: 0.5 });
+const entryText = (entry) =>
+  [entry.title, entry.text].filter(Boolean).join(" — ");
+
+function listHeight(entries, size, w) {
+  return textHeight(entries.map(entryText), size, {
+    w: w - size * LIST_INDENT,
+    lineGap: LIST_GAP,
+  });
 }
 
-/** The small rule and caption in the top-left corner of the design. */
-function addLabel(slide, pptx, label, color, x = 76) {
+/** A bulleted list in one text box, so PowerPoint flows the paragraphs. */
+function addList(slide, entries, { x, y, w, h, size, color, lead }) {
+  const runs = entries.flatMap((entry, i) => {
+    const parts = [];
+    if (entry.title)
+      parts.push({
+        text: entry.text ? `${entry.title} — ` : entry.title,
+        options: { bold: true, color: lead },
+      });
+    if (entry.text) parts.push({ text: entry.text, options: { color } });
+    parts[0].options.bullet = {
+      characterCode: "25AA",
+      indent: points(size * LIST_INDENT),
+    };
+    parts[0].options.paraSpaceAfter = points(size * LIST_GAP);
+    parts[parts.length - 1].options.breakLine = i < entries.length - 1;
+    return parts;
+  });
+  slide.addText(runs, {
+    x: inches(x),
+    y: inches(y),
+    w: inches(w),
+    h: inches(h),
+    margin: 0,
+    fontFace: FONT,
+    fontSize: points(size),
+    color,
+    valign: "top",
+  });
+}
+
+/**
+ * The title of a content slide, under a short accent rule.
+ * @returns {{top: number, bottom: number}} The area left for content
+ */
+function addTitle(slide, pptx, title, t) {
+  addShape(slide, pptx, {
+    x: MARGIN,
+    y: TITLE_Y - 34,
+    w: 72,
+    h: 8,
+    radius: 4,
+    color: t.scale[500],
+  });
+  const size = headingSize(title, {
+    w: CONTENT_W,
+    h: 210,
+    max: 84,
+    min: 56,
+    maxLines: 2,
+  });
+  const h = textHeight(title, size, { w: CONTENT_W, glyph: "heading" });
+  addText(slide, title, {
+    x: MARGIN,
+    y: TITLE_Y,
+    w: CONTENT_W,
+    h,
+    size,
+    bold: true,
+    font: HEADING_FONT,
+    color: t.scale[950],
+  });
+  return { top: TITLE_Y + h + 64, bottom: CONTENT_BOTTOM };
+}
+
+/** Large soft circles that give dark slides some depth. */
+function addDecor(slide, pptx, t) {
+  addShape(slide, pptx, {
+    x: 1180,
+    y: -320,
+    w: 1100,
+    h: 1100,
+    ellipse: true,
+    color: t.scale[400],
+    transparency: 86,
+  });
+  addShape(slide, pptx, {
+    x: 1500,
+    y: 600,
+    w: 640,
+    h: 640,
+    ellipse: true,
+    color: t.scale[300],
+    transparency: 90,
+  });
+}
+
+/** The deck title in the bottom-left corner. */
+function addLabel(slide, label, color) {
   if (!label) return;
   const text = label.length > 60 ? `${label.slice(0, 59).trim()}…` : label;
-  const w = Math.max(124, text.length * 16 * 0.6);
-  addRect(slide, pptx, { x, y: 71, w, h: 1, color });
-  addText(slide, text, {
-    x,
-    y: 80,
-    // Wide enough for the label on one line even at the widest glyph estimate.
-    w: Math.max(w, (text.length * 16 * GLYPH_W.bold) / WRAP_SLACK) + 40,
-    h: 24,
-    size: 16,
-    bold: true,
-    color,
-  });
+  addText(slide, text, { x: MARGIN, y: 1000, w: 1200, h: 32, size: 22, color });
 }
 
 /** The "Created with AnythingLLM" mark in the bottom-right corner. */
@@ -247,563 +390,580 @@ function addBrand(slide, dark) {
   else addText(slide, "AnythingLLM", { ...brand, y: 1030, h: 30, size: 16 });
 }
 
-/** Big title block shared by the cover and section dividers. */
-function renderTitleSlide(slide, pptx, t, { title, subtitle, number, label }) {
-  const color = t.scale[50];
-  addLabel(slide, pptx, label, color);
-  if (number)
-    addText(slide, String(number).padStart(2, "0"), {
-      x: 1653,
-      y: 71,
-      w: 200,
-      h: 120,
-      size: 100,
+/**
+ * A heading block on a dark slide: an optional kicker line above the title
+ * and a subtitle below, centred vertically.
+ */
+function addHeadingBlock(
+  slide,
+  pptx,
+  t,
+  { kicker, title, subtitle, titleMax, titleMin }
+) {
+  const w = 1500;
+  const titleSize = headingSize(title, {
+    w,
+    h: 560,
+    max: titleMax,
+    min: titleMin,
+    maxLines: 3,
+  });
+  const titleH = textHeight(title, titleSize, { w, glyph: "heading" });
+  const subSize = subtitle
+    ? fitText(subtitle, { w, h: 130, max: 44, min: 30, maxLines: 2 })
+    : 0;
+  const subH = subtitle ? textHeight(subtitle, subSize, { w }) : 0;
+  const kickerH = kicker ? 80 : 12 + 48;
+  const blockH = kickerH + titleH + (subtitle ? 40 + subH : 0);
+  let y = (SLIDE_H - blockH) / 2;
+  if (kicker)
+    addText(slide, kicker, {
+      x: MARGIN,
+      y,
+      w: 400,
+      h: 68,
+      size: 56,
       bold: true,
-      color,
-      align: "right",
+      font: HEADING_FONT,
+      color: t.scale[300],
     });
-  addText(slide, title || "Untitled", {
-    x: 76,
-    y: 200,
-    w: 1768,
-    h: 647,
-    fit: { max: 250, min: 80, maxLines: 3 },
-    bold: true,
-    color,
-    valign: "bottom",
-  });
-  if (subtitle)
-    addText(slide, subtitle, {
-      x: 76,
-      y: 877,
-      w: 1500,
-      h: 120,
-      fit: { max: 54, min: 28, maxLines: 2 },
-      color,
+  else
+    addShape(slide, pptx, {
+      x: MARGIN,
+      y,
+      w: 120,
+      h: 12,
+      radius: 6,
+      color: t.scale[400],
     });
-}
-
-function renderSection(slide, pptx, data, t, meta) {
-  renderTitleSlide(slide, pptx, t, {
-    ...data,
-    number: meta.sectionIndex,
-    label: meta.label,
-  });
-}
-
-function renderBullets(slide, pptx, data, t, meta) {
-  const color = t.scale[900];
-  addLabel(slide, pptx, meta.label, color);
-  const x = 764;
-  const w = 1080;
-  const titleSize = fitText(data.title, {
-    w,
-    h: 260,
-    max: 100,
-    min: 56,
-    maxLines: 2,
-    glyph: "bold",
-  });
-  const titleH = textHeight(data.title, titleSize, { w, glyph: "bold" });
-  // The block sits low on the right like the design, growing upward.
-  const bottom = 960;
-  const size = bulletSize(data.bullets, {
-    w,
-    h: bottom - 150 - titleH - 50,
-    max: 32,
-    min: 18,
-  });
-  const bulletsH = Math.min(
-    bottom - 150 - titleH - 50,
-    textHeight(data.bullets, size, { w: w - size * 1.5, lineGap: 0.5 })
-  );
-  const bulletsY = bottom - bulletsH;
-  addText(slide, data.title, {
-    x,
-    y: bulletsY - 50 - titleH,
+  y += kickerH;
+  addText(slide, title, {
+    x: MARGIN,
+    y,
     w,
     h: titleH,
     size: titleSize,
     bold: true,
-    color,
-    valign: "bottom",
+    font: HEADING_FONT,
+    color: "FFFFFF",
   });
-  addBullets(slide, data.bullets, {
-    x,
-    y: bulletsY,
+  if (subtitle)
+    addText(slide, subtitle, {
+      x: MARGIN,
+      y: y + titleH + 40,
+      w,
+      h: subH,
+      size: subSize,
+      color: t.scale[200],
+    });
+}
+
+function renderCover(slide, pptx, t, { title, subtitle }) {
+  addDecor(slide, pptx, t);
+  addHeadingBlock(slide, pptx, t, {
+    title: title || "Untitled",
+    subtitle,
+    titleMax: 132,
+    titleMin: 80,
+  });
+}
+
+function renderSection(slide, pptx, data, t, meta) {
+  addDecor(slide, pptx, t);
+  addHeadingBlock(slide, pptx, t, {
+    kicker: String(meta.sectionIndex).padStart(2, "0"),
+    title: data.title,
+    subtitle: data.subtitle,
+    titleMax: 112,
+    titleMin: 64,
+  });
+}
+
+function renderBullets(slide, pptx, data, t) {
+  const area = addTitle(slide, pptx, data.title, t);
+  const entries = entriesOf(data);
+  const w = 1440;
+  const size = fitBlock({ max: 52, min: 28 }, area.bottom - area.top, (s) =>
+    listHeight(entries, s, w)
+  );
+  const h = listHeight(entries, size, w);
+  addList(slide, entries, {
+    x: MARGIN,
+    y: placeIn(area, h),
     w,
-    h: bulletsH + size,
+    h,
     size,
-    color,
+    color: INK,
+    lead: t.scale[700],
   });
 }
 
-function renderTwoColumn(slide, pptx, data, t, meta) {
-  addRect(slide, pptx, {
-    x: 0,
-    y: 0,
-    w: SLIDE_W / 2,
-    h: SLIDE_H,
-    color: t.scale[600],
+/** The title on a colored panel to the left of the list. */
+function renderSplit(slide, pptx, data, t) {
+  const panelW = 760;
+  addShape(slide, pptx, { x: 0, y: 0, w: panelW, h: SLIDE_H, color: t.dark });
+  const titleW = panelW - 2 * 100;
+  const titleSize = headingSize(data.title, {
+    w: titleW,
+    h: 640,
+    max: 80,
+    min: 48,
+    maxLines: 6,
   });
-  addLabel(slide, pptx, meta.label, "FFFFFF");
-  const columns = data.items.slice(0, 2);
-  const w = 640;
-  // One size for both columns so the halves read as a pair.
-  const headingSize = sharedSize(
-    columns.map((item) => item.title),
-    { w, h: 90, max: 32, min: 22, glyph: "caps" }
-  );
-  const lists = columns.map((item) =>
-    item.bullets.length ? item.bullets : [item.text].filter(Boolean)
-  );
-  const size = Math.min(
-    ...lists.map((list) =>
-      bulletSize(list, { w, h: 700 - headingSize * 2.4 - 50, max: 28 })
-    )
-  );
-  // Both columns share one top so their headings and lists line up.
-  const headingH = Math.max(
-    ...columns.map((item) =>
-      textHeight(item.title, headingSize, { w, glyph: "caps" })
-    )
-  );
-  const listH = Math.max(
-    ...lists.map((list) =>
-      textHeight(list, size, { w: w - size * 1.5, lineGap: 0.5 })
-    )
-  );
-  const top = (SLIDE_H - (headingH + 50 + listH)) / 2;
-  columns.forEach((item, i) => {
-    const x = i * (SLIDE_W / 2) + 160;
-    const color = i === 0 ? "FFFFFF" : t.scale[800];
-    addText(slide, item.title, {
-      x,
-      y: top,
-      w,
-      h: headingH,
-      size: headingSize,
-      bold: true,
-      caps: true,
-      color,
-      align: "center",
-      valign: "bottom",
-    });
-    addBullets(slide, lists[i], {
-      x,
-      y: top + headingH + 50,
-      w,
-      h: listH + size,
-      size,
-      color,
-    });
+  const titleH = textHeight(data.title, titleSize, {
+    w: titleW,
+    glyph: "heading",
   });
-}
-
-/** Up to three stats as outlined cards beside the title, the "Stats" frame with a title. */
-function renderStatsList(slide, pptx, data, t, meta) {
-  addLabel(slide, pptx, meta.label, t.dark, 111);
-  const ink = t.scale[950];
-  addText(slide, data.title, {
-    x: 111,
-    y: 230,
-    w: 880,
-    h: 540,
-    fit: { max: 100, min: 48, maxLines: 4 },
-    color: ink,
-  });
-  const body = data.subtitle || data.bullets.join(" ");
-  if (body)
-    addText(slide, body, {
-      x: 111,
-      y: 800,
-      w: 880,
-      h: 200,
-      fit: { max: 24, min: 16 },
-      color: ink,
-    });
-
-  const items = data.items;
-  const cardH = Math.min(220, (700 - 20 * (items.length - 1)) / items.length);
-  const stackH = items.length * cardH + (items.length - 1) * 20;
-  const top = 580 - stackH / 2;
-  const numberSize = sharedSize(
-    items.map((item) => item.title),
-    { w: 400, h: cardH, max: 100, min: 40, maxLines: 1, glyph: "bold" }
-  );
-  // Short numbers hand their unused width to the labels.
-  const longest = Math.max(...items.map((item) => String(item.title).length));
-  const numberW = Math.min(
-    400,
-    (longest * numberSize * GLYPH_W.bold) / WRAP_SLACK + 40
-  );
-  const labelW = 700 - 60 - numberW - 20 - 40;
-  const labelSize = sharedSize(
-    items.map((item) => item.text),
-    { w: labelW, h: cardH - 32, max: 24, min: 13 }
-  );
-  items.forEach((item, i) => {
-    const y = top + i * (cardH + 20);
-    addRect(slide, pptx, {
-      x: 1088,
-      y,
-      w: 700,
-      h: cardH,
-      radius: 20,
-      line: { color: t.scale[500], width: 1 },
-    });
-    addText(slide, item.title, {
-      x: 1148,
-      y,
-      w: numberW,
-      h: cardH,
-      size: numberSize,
-      bold: true,
-      color: t.dark,
-      valign: "middle",
-    });
-    addText(slide, item.text, {
-      x: 1148 + numberW + 20,
-      y: y + 16,
-      w: labelW,
-      h: cardH - 32,
-      size: labelSize,
-      color: t.scale[600],
-      valign: "middle",
-    });
-  });
-}
-
-/** Four to six stats in two rows split by a rule, the other "Stats" frame. */
-function renderStatsGrid(slide, pptx, data, t, meta) {
-  addLabel(slide, pptx, meta.label, t.dark);
-  addText(slide, data.title, {
-    x: 135,
-    y: 140,
-    w: 1650,
-    h: 100,
-    fit: { max: 64, min: 36, maxLines: 1 },
-    bold: true,
-    color: t.scale[900],
-  });
-  const items = data.items.slice(0, 6);
-  const cols = Math.ceil(items.length / 2);
-  const colW = 1650 / cols;
-  const numberSize = sharedSize(
-    items.map((item) => item.title),
-    { w: colW - 60, h: 120, max: 80, min: 40, maxLines: 1, glyph: "bold" }
-  );
-  const labelSize = sharedSize(
-    items.map((item) => item.text),
-    { w: colW - 60, h: 56, max: 16, min: 12, maxLines: 2, glyph: "caps" }
-  );
-  const rowTops = [330, 640];
-  addRect(slide, pptx, {
-    x: 135,
-    y: 590,
-    w: 1650,
-    h: 1,
+  const titleY = (SLIDE_H - titleH) / 2;
+  addShape(slide, pptx, {
+    x: 100,
+    y: titleY - 44,
+    w: 72,
+    h: 8,
+    radius: 4,
     color: t.scale[300],
   });
-  items.forEach((item, i) => {
-    const x = 135 + (i % cols) * colW;
-    const y = rowTops[Math.floor(i / cols)];
-    addText(slide, item.title, {
-      x,
-      y,
-      w: colW - 60,
-      h: numberSize * LINE_H,
-      size: numberSize,
-      bold: true,
-      color: t.dark,
-    });
-    addText(slide, item.text, {
-      x,
-      y: y + numberSize * LINE_H + 24,
-      w: colW - 60,
-      h: 60,
-      size: labelSize,
-      caps: true,
-      spacing: labelSize / 10,
-      color: t.scale[600],
-    });
+  addText(slide, data.title, {
+    x: 100,
+    y: titleY,
+    w: titleW,
+    h: titleH,
+    size: titleSize,
+    bold: true,
+    font: HEADING_FONT,
+    color: "FFFFFF",
+  });
+
+  const x = panelW + 120;
+  const w = SLIDE_W - x - MARGIN;
+  const area = { top: 120, bottom: CONTENT_BOTTOM };
+  const entries = entriesOf(data);
+  const size = fitBlock({ max: 48, min: 28 }, area.bottom - area.top, (s) =>
+    listHeight(entries, s, w)
+  );
+  const h = listHeight(entries, size, w);
+  addList(slide, entries, {
+    x,
+    y: placeIn(area, h),
+    w,
+    h,
+    size,
+    color: INK,
+    lead: t.scale[700],
   });
 }
 
-function renderStats(slide, pptx, data, t, meta) {
-  if (data.items.length <= 3)
-    return renderStatsList(slide, pptx, data, t, meta);
-  return renderStatsGrid(slide, pptx, data, t, meta);
-}
+/** Columns for a grid of `n` items: one row up to three, then two rows. */
+const gridCols = (n) => (n <= 3 ? n : n === 4 ? 2 : 3);
 
 function renderCards(slide, pptx, data, t) {
-  const light = t.scale[50];
-  addText(slide, data.title, {
-    x: 114,
-    y: 114,
-    w: 860,
-    h: 380,
-    fit: { max: 100, min: 48, maxLines: 3 },
-    bold: true,
-    color: light,
-  });
-  if (data.subtitle)
-    addText(slide, data.subtitle, {
-      x: 1027,
-      y: 114,
-      w: 780,
-      h: 380,
-      fit: { max: 28, min: 18 },
-      color: light,
-    });
-  const items = data.items.slice(0, 6);
-  const cols = items.length <= 3 ? items.length : Math.ceil(items.length / 2);
+  const area = addTitle(slide, pptx, data.title, t);
+  const items = data.items;
+  const cols = gridCols(items.length);
   const rows = Math.ceil(items.length / cols);
-  const gap = 30;
-  const cardW = (1766 - gap * (cols - 1)) / cols;
-  // Cards keep the design's height and sit on the bottom edge; a single
-  // row gets a little more room for longer captions.
-  const cardH = rows === 1 ? 280 : 218;
-  const top = 993 - (rows * cardH + gap * (rows - 1));
-  const innerW = cardW - 64;
-  const titleSize = sharedSize(
-    items.map((item) => item.title),
-    { w: innerW, h: 90, max: 36, min: 20, maxLines: 2, glyph: "caps" }
+  const gap = 32;
+  const pad = 40;
+  const numberH = 34;
+  const cardW = (CONTENT_W - gap * (cols - 1)) / cols;
+  const innerW = cardW - 2 * pad;
+  const measure = (size) => {
+    const titleSize = size + 6;
+    const titleH = Math.max(
+      0,
+      ...items.map((item) =>
+        item.title
+          ? textHeight(item.title, titleSize, { w: innerW, glyph: "bold" })
+          : 0
+      )
+    );
+    const textH = Math.max(
+      0,
+      ...items.map((item) =>
+        item.text ? textHeight(item.text, size, { w: innerW }) : 0
+      )
+    );
+    const cardH =
+      pad + numberH + 20 + titleH + (titleH && textH ? 14 : 0) + textH + pad;
+    return {
+      titleSize,
+      titleH,
+      textH,
+      cardH,
+      blockH: rows * cardH + (rows - 1) * gap,
+    };
+  };
+  const size = fitBlock(
+    { max: 38, min: 22 },
+    area.bottom - area.top,
+    (s) => measure(s).blockH
   );
-  const titleH = Math.max(
-    ...items.map((item) =>
-      textHeight(item.title, titleSize, { w: innerW, glyph: "caps" })
-    )
-  );
-  const textH = cardH - 64 - titleH - 16;
-  const textSize = sharedSize(
-    items.map((item) => item.text),
-    { w: innerW, h: textH, max: 24, min: 12 }
-  );
+  const m = measure(size);
+  const top = placeIn(area, m.blockH);
   items.forEach((item, i) => {
-    const x = 87 + (i % cols) * (cardW + gap);
-    const y = top + Math.floor(i / cols) * (cardH + gap);
-    addRect(slide, pptx, {
+    const row = Math.floor(i / cols);
+    const inRow = Math.min(cols, items.length - row * cols);
+    // A short last row is centred under the full ones.
+    const offset = ((cols - inRow) * (cardW + gap)) / 2;
+    const x = MARGIN + offset + (i % cols) * (cardW + gap);
+    const y = top + row * (m.cardH + gap);
+    addShape(slide, pptx, {
       x,
       y,
       w: cardW,
-      h: cardH,
-      color: light,
-      radius: 16,
+      h: m.cardH,
+      radius: 24,
+      color: "FFFFFF",
+      line: { color: t.scale[100], width: 1 },
     });
-    addText(slide, item.title, {
-      x: x + 32,
-      y: y + 32,
+    addText(slide, String(i + 1).padStart(2, "0"), {
+      x: x + pad,
+      y: y + pad,
       w: innerW,
-      h: titleH,
-      size: titleSize,
+      h: numberH,
+      size: 28,
       bold: true,
-      caps: true,
-      color: t.scale[900],
+      font: HEADING_FONT,
+      color: t.scale[500],
     });
-    addText(slide, item.text, {
-      x: x + 32,
-      y: y + 32 + titleH + 16,
-      w: innerW,
-      h: textH,
-      size: textSize,
-      color: t.scale[600],
-      valign: "bottom",
-    });
+    let textY = y + pad + numberH + 20;
+    if (item.title) {
+      addText(slide, item.title, {
+        x: x + pad,
+        y: textY,
+        w: innerW,
+        h: m.titleH,
+        size: m.titleSize,
+        bold: true,
+        color: t.scale[950],
+      });
+      textY += m.titleH + 14;
+    }
+    if (item.text)
+      addText(slide, item.text, {
+        x: x + pad,
+        y: textY,
+        w: innerW,
+        h: m.textH,
+        size,
+        color: INK,
+      });
   });
 }
 
-/** Numbered badges on a horizontal line, the first "Steps" frame. */
-function renderStepsTimeline(slide, pptx, data, t) {
-  const ink = t.scale[950];
-  addText(slide, data.title, {
-    x: 160,
-    y: 100,
-    w: 1600,
-    h: 110,
-    fit: { max: 36, min: 24, maxLines: 2 },
-    bold: true,
-    caps: true,
-    color: ink,
-    align: "center",
+/** Up to four steps side by side on a line of numbered badges. */
+function renderStepsRow(slide, pptx, data, t, area) {
+  const items = data.items;
+  const gap = 48;
+  const badge = 72;
+  const colW = (CONTENT_W - gap * (items.length - 1)) / items.length;
+  const measure = (size) => {
+    const titleSize = size + 6;
+    const titleH = Math.max(
+      ...items.map((item) =>
+        textHeight(item.title || " ", titleSize, { w: colW, glyph: "bold" })
+      )
+    );
+    const textH = Math.max(
+      0,
+      ...items.map((item) =>
+        item.text ? textHeight(item.text, size, { w: colW }) : 0
+      )
+    );
+    return {
+      titleSize,
+      titleH,
+      textH,
+      blockH: badge + 32 + titleH + 12 + textH,
+    };
+  };
+  const size = fitBlock(
+    { max: 38, min: 22 },
+    area.bottom - area.top,
+    (s) => measure(s).blockH
+  );
+  const m = measure(size);
+  const top = placeIn(area, m.blockH);
+  addShape(slide, pptx, {
+    x: MARGIN + badge / 2,
+    y: top + badge / 2 - 2,
+    w: (items.length - 1) * (colW + gap),
+    h: 4,
+    color: t.scale[200],
   });
-  const items = data.items.slice(0, 6);
-  const gap = 40;
-  const colW = Math.min(440, (1760 - gap * (items.length - 1)) / items.length);
-  const startX =
-    (SLIDE_W - (items.length * colW + gap * (items.length - 1))) / 2;
-  const centerOf = (i) => startX + i * (colW + gap) + colW / 2;
-  const badge = 50;
-  const badgeY = 527;
-  if (items.length > 1)
-    addRect(slide, pptx, {
-      x: centerOf(0),
-      y: badgeY + badge / 2 - 1,
-      w: centerOf(items.length - 1) - centerOf(0),
-      h: 2,
-      color: t.scale[200],
-    });
-  const titleSize = sharedSize(
-    items.map((item) => item.title),
-    { w: colW, h: 160, max: 24, min: 16, maxLines: 3, glyph: "caps" }
-  );
-  const textSize = sharedSize(
-    items.map((item) => item.text),
-    { w: colW, h: 340, max: 24, min: 13 }
-  );
   items.forEach((item, i) => {
-    const x = centerOf(i) - colW / 2;
-    addText(slide, item.title, {
+    const x = MARGIN + i * (colW + gap);
+    addShape(slide, pptx, {
       x,
-      y: 330,
-      w: colW,
-      h: 170,
-      size: titleSize,
-      bold: true,
-      caps: true,
-      color: ink,
-      align: "center",
-      valign: "bottom",
-    });
-    addRect(slide, pptx, {
-      x: centerOf(i) - badge / 2,
-      y: badgeY,
+      y: top,
       w: badge,
       h: badge,
-      radius: 12,
+      ellipse: true,
       color: t.dark,
     });
     addText(slide, String(i + 1), {
-      x: centerOf(i) - badge / 2,
-      y: badgeY,
+      x,
+      y: top,
       w: badge,
       h: badge,
-      size: 28,
+      size: 32,
+      bold: true,
       color: "FFFFFF",
       align: "center",
       valign: "middle",
     });
-    addText(slide, item.text, {
+    const titleY = top + badge + 32;
+    addText(slide, item.title, {
       x,
-      y: 634,
+      y: titleY,
       w: colW,
-      h: 360,
-      size: textSize,
-      color: t.scale[800],
-      align: "center",
+      h: m.titleH,
+      size: m.titleSize,
+      bold: true,
+      color: t.scale[950],
     });
+    if (item.text)
+      addText(slide, item.text, {
+        x,
+        y: titleY + m.titleH + 12,
+        w: colW,
+        h: m.textH,
+        size,
+        color: INK,
+      });
   });
 }
 
-/** A color panel beside a numbered list, the second "Steps" frame. */
-function renderStepsList(slide, pptx, data, t) {
-  addRect(slide, pptx, { x: 0, y: 0, w: 750, h: SLIDE_H, color: t.dark });
-  const ink = t.scale[950];
-  const x = 860;
-  const w = 960;
-  const titleSize = fitText(data.title, {
-    w,
-    h: 250,
-    max: 100,
-    min: 48,
-    maxLines: 2,
-    glyph: "bold",
-  });
-  const titleH = textHeight(data.title, titleSize, { w, glyph: "bold" });
-  addText(slide, data.title, {
-    x,
-    y: 114,
-    w,
-    h: titleH,
-    size: titleSize,
-    bold: true,
-    color: ink,
-  });
-  const items = data.items.slice(0, 6);
-  const top = 114 + titleH + 70;
-  const pitch = Math.min(150, (1000 - top) / items.length);
-  const circle = 67;
-  const textX = x + circle + 60;
-  const textW = 1820 - textX;
-  const lines = items.map((item) =>
-    [item.title, item.text].filter(Boolean).join(": ")
-  );
-  const size = sharedSize(lines, {
-    w: textW,
-    h: pitch - 12,
-    max: 24,
-    min: 13,
-    maxLines: 3,
-  });
+/** Five or six steps as a numbered list. */
+function renderStepsList(slide, pptx, data, t, area) {
+  const items = data.items;
+  const badge = 56;
+  const gap = 24;
+  const x = MARGIN + badge + 40;
+  const w = 1440 - badge - 40;
+  // Every row gets the tallest row's height, so the list keeps one rhythm.
+  const rowH = (size) =>
+    Math.max(
+      badge,
+      ...items.map((item) => textHeight(entryText(item), size, { w }))
+    );
+  const blockH = (size) => items.length * rowH(size) + gap * (items.length - 1);
+  const size = fitBlock({ max: 42, min: 24 }, area.bottom - area.top, blockH);
+  const pitch = rowH(size);
+  let y = placeIn(area, blockH(size));
   items.forEach((item, i) => {
-    const y = top + i * pitch;
-    addRect(slide, pptx, {
-      x,
-      y: y + (pitch - circle) / 2 - 6,
-      w: circle,
-      h: circle,
-      radius: circle / 2,
-      color: t.scale[200],
+    addShape(slide, pptx, {
+      x: MARGIN,
+      y,
+      w: badge,
+      h: badge,
+      ellipse: true,
+      color: t.dark,
     });
     addText(slide, String(i + 1), {
-      x,
-      y: y + (pitch - circle) / 2 - 6,
-      w: circle,
-      h: circle,
-      size: 36,
-      color: ink,
+      x: MARGIN,
+      y,
+      w: badge,
+      h: badge,
+      size: 26,
+      bold: true,
+      color: "FFFFFF",
       align: "center",
       valign: "middle",
     });
     const runs = [
       item.title && {
-        text: item.text ? `${item.title}: ` : item.title,
-        options: { bold: true, color: ink },
+        text: item.text ? `${item.title} — ` : item.title,
+        options: { bold: true, color: t.scale[950] },
       },
-      item.text && { text: item.text, options: { color: t.scale[800] } },
+      item.text && { text: item.text, options: { color: INK } },
     ].filter(Boolean);
     slide.addText(runs, {
-      x: inches(textX),
-      y: inches(y - 6),
-      w: inches(textW),
-      h: inches(pitch - 12),
+      x: inches(x),
+      y: inches(y + Math.max(0, (badge - size * LINE_H) / 2)),
+      w: inches(w),
+      h: inches(pitch),
       margin: 0,
       fontFace: FONT,
       fontSize: points(size),
-      valign: "middle",
+      valign: "top",
+    });
+    y += pitch + gap;
+  });
+}
+
+function renderSteps(slide, pptx, data, t) {
+  const area = addTitle(slide, pptx, data.title, t);
+  if (data.items.length <= 4) renderStepsRow(slide, pptx, data, t, area);
+  else renderStepsList(slide, pptx, data, t, area);
+}
+
+/** Two cards side by side, each under a colored heading. */
+function renderComparison(slide, pptx, data, t) {
+  const area = addTitle(slide, pptx, data.title, t);
+  const items = data.items.slice(0, 2);
+  const gap = 48;
+  const pad = 44;
+  const radius = 24;
+  const cardW = (CONTENT_W - gap) / 2;
+  const innerW = cardW - 2 * pad;
+  const measure = (size) => {
+    const headSize = size + 8;
+    const headH = Math.max(
+      ...items.map((item) =>
+        textHeight(item.title || " ", headSize, { w: innerW, glyph: "bold" })
+      )
+    );
+    const bodyH = Math.max(
+      ...items.map((item) => textHeight(item.text || " ", size, { w: innerW }))
+    );
+    const headerH = headH + 2 * pad;
+    return {
+      headSize,
+      headH,
+      bodyH,
+      headerH,
+      cardH: headerH + bodyH + 2 * pad,
+    };
+  };
+  const size = fitBlock(
+    { max: 42, min: 24 },
+    area.bottom - area.top,
+    (s) => measure(s).cardH
+  );
+  const m = measure(size);
+  const top = placeIn(area, m.cardH);
+  items.forEach((item, i) => {
+    const x = MARGIN + i * (cardW + gap);
+    const headColor = i === 0 ? t.dark : t.scale[600];
+    addShape(slide, pptx, {
+      x,
+      y: top,
+      w: cardW,
+      h: m.cardH,
+      radius,
+      color: "FFFFFF",
+      line: { color: t.scale[100], width: 1 },
+    });
+    addShape(slide, pptx, {
+      x,
+      y: top,
+      w: cardW,
+      h: m.headerH + radius,
+      radius,
+      color: headColor,
+    });
+    // Squares off the bottom of the heading where it meets the card body.
+    addShape(slide, pptx, {
+      x,
+      y: top + m.headerH,
+      w: cardW,
+      h: radius,
+      color: "FFFFFF",
+    });
+    addText(slide, item.title, {
+      x: x + pad,
+      y: top + pad,
+      w: innerW,
+      h: m.headH,
+      size: m.headSize,
+      bold: true,
+      color: "FFFFFF",
+    });
+    addText(slide, item.text, {
+      x: x + pad,
+      y: top + m.headerH + pad,
+      w: innerW,
+      h: m.bodyH,
+      size,
+      color: INK,
     });
   });
 }
 
-function renderSteps(slide, pptx, data, t, meta) {
-  if (meta.variant === 0) return renderStepsTimeline(slide, pptx, data, t);
-  return renderStepsList(slide, pptx, data, t);
+function renderStats(slide, pptx, data, t) {
+  const area = addTitle(slide, pptx, data.title, t);
+  const figures = data.figures;
+  const cols = gridCols(figures.length);
+  const rows = Math.ceil(figures.length / cols);
+  const gap = 64;
+  const colW = (CONTENT_W - gap * (cols - 1)) / cols;
+  const valueSize = sharedSize(
+    figures.map((f) => f.value),
+    { w: colW, h: 170, max: 136, min: 64, maxLines: 1, glyph: "heading" }
+  );
+  const valueH = valueSize * LINE_H;
+  const measure = (size) => {
+    const labelH = Math.max(
+      0,
+      ...figures.map((f) =>
+        f.label ? textHeight(f.label, size, { w: colW }) : 0
+      )
+    );
+    const cellH = 8 + 28 + valueH + 12 + labelH;
+    return { labelH, cellH, blockH: rows * cellH + (rows - 1) * gap };
+  };
+  const size = fitBlock(
+    { max: 36, min: 22 },
+    area.bottom - area.top,
+    (s) => measure(s).blockH
+  );
+  const m = measure(size);
+  const top = placeIn(area, m.blockH);
+  figures.forEach((figure, i) => {
+    const x = MARGIN + (i % cols) * (colW + gap);
+    const y = top + Math.floor(i / cols) * (m.cellH + gap);
+    addShape(slide, pptx, {
+      x,
+      y,
+      w: 80,
+      h: 8,
+      radius: 4,
+      color: t.scale[400],
+    });
+    addText(slide, figure.value, {
+      x,
+      y: y + 36,
+      w: colW,
+      h: valueH,
+      size: valueSize,
+      bold: true,
+      font: HEADING_FONT,
+      color: t.scale[600],
+    });
+    if (figure.label)
+      addText(slide, figure.label, {
+        x,
+        y: y + 36 + valueH + 12,
+        w: colW,
+        h: m.labelH,
+        size,
+        color: INK,
+      });
+  });
 }
 
 function renderChart(slide, pptx, data, t) {
-  const ink = t.scale[900];
-  addText(slide, data.title, {
-    x: 123,
-    y: 114,
-    w: 1674,
-    h: 100,
-    fit: { max: 64, min: 36, maxLines: 1 },
-    bold: true,
-    color: ink,
-  });
+  const area = addTitle(slide, pptx, data.title, t);
   const { type, categories, values } = data.chart;
   const isRound = type === "pie" || type === "doughnut";
-  const hasBullets = data.bullets.length > 0;
-  const chart = { x: 100, y: 270, w: hasBullets ? 1130 : 1720, h: 730 };
-  // Darkest first, so a bar chart steps down the scale like the design.
-  const shades = [900, 800, 700, 600, 500, 400, 300].map((s) => t.scale[s]);
+  const entries = entriesOf(data);
+  const hasList = entries.length > 0;
+  const chart = {
+    x: MARGIN - 20,
+    y: area.top - 20,
+    w: hasList ? 1060 : CONTENT_W + 40,
+    h: area.bottom - area.top + 20,
+  };
+  const ink = t.scale[900];
+  // Darkest first, so a bar chart steps down the scale.
+  const shades = [800, 700, 600, 500, 400, 300, 200].map((s) => t.scale[s]);
   const axisLabel = (size) => ({
     color: ink,
     fontFace: FONT,
     fontSize: points(size),
   });
   const val = axisLabel(24);
-  const cat = axisLabel(22);
+  const cat = axisLabel(24);
 
   slide.addChart(
     pptx.ChartType[type],
@@ -813,175 +973,172 @@ function renderChart(slide, pptx, data, t) {
       y: inches(chart.y),
       w: inches(chart.w),
       h: inches(chart.h),
-      chartColors: type === "line" || type === "area" ? [t.dark] : shades,
-      showValue: false,
+      chartColors: type === "line" || type === "area" ? [t.scale[600]] : shades,
+      showValue: !isRound,
       showPercent: isRound,
       showLegend: isRound,
       legendPos: "r",
       legendColor: ink,
       legendFontFace: FONT,
-      legendFontSize: points(22),
-      dataLabelColor: "FFFFFF",
+      legendFontSize: points(24),
+      dataLabelColor: isRound ? "FFFFFF" : ink,
+      dataLabelPosition: isRound ? undefined : "outEnd",
       dataLabelFontFace: FONT,
       dataLabelFontSize: points(22),
       dataLabelFontBold: true,
-      dataLabelFormatCode: "0%",
+      dataLabelFormatCode: isRound ? "0%" : "General",
       valAxisLabelFormatCode: "General",
       // Bars are compared by length, so a cropped axis exaggerates gaps.
       ...(type === "bar" && Math.min(...values) >= 0 && { valAxisMinVal: 0 }),
-      valAxisLabelColor: val.color,
+      valAxisLabelColor: MUTED,
       valAxisLabelFontFace: val.fontFace,
       valAxisLabelFontSize: val.fontSize,
-      valAxisLabelFontBold: true,
       catAxisLabelColor: cat.color,
       catAxisLabelFontFace: cat.fontFace,
       catAxisLabelFontSize: cat.fontSize,
       catAxisLineShow: false,
       valAxisLineShow: false,
-      valGridLine: { color: t.scale[200], style: "solid", size: 1 },
+      valGridLine: { color: t.scale[100], style: "solid", size: 1 },
       catGridLine: { style: "none" },
-      barGapWidthPct: 12,
-      lineSize: 3,
-      lineDataSymbolSize: 8,
+      barGapWidthPct: 40,
+      lineSize: 4,
+      lineDataSymbolSize: 10,
       holeSize: 55,
-      chartArea: { fill: { color: t.light } },
-      plotArea: { fill: { color: t.light } },
     }
   );
 
-  if (hasBullets) {
-    const box = { x: 1291, y: 270, w: 530, h: 730 };
-    const size = bulletSize(data.bullets, { ...box, max: 24 });
-    addBullets(slide, data.bullets, {
-      ...box,
+  if (hasList) {
+    const x = 1240;
+    const w = SLIDE_W - x - MARGIN;
+    const size = fitBlock({ max: 36, min: 22 }, area.bottom - area.top, (s) =>
+      listHeight(entries, s, w)
+    );
+    const h = listHeight(entries, size, w);
+    addList(slide, entries, {
+      x,
+      y: placeIn(area, h),
+      w,
+      h,
       size,
-      color: ink,
-      valign: "bottom",
+      color: INK,
+      lead: t.scale[700],
     });
   }
 }
 
 function renderTable(slide, pptx, data, t) {
-  addText(slide, data.title, {
-    x: 160,
-    y: 114,
-    w: 1600,
-    h: 100,
-    fit: { max: 64, min: 36, maxLines: 1 },
-    bold: true,
-    color: t.scale[900],
-  });
+  const area = addTitle(slide, pptx, data.title, t);
   const { headers, rows: body } = data.table;
   const rows = headers.length ? [headers, ...body] : body;
   const cols = rows[0].length;
-  const top = 277;
-  const gap = rows.length > 6 ? 12 : 20;
-  const rowH = Math.min(
-    80,
-    (1010 - top - gap * (rows.length - 1)) / rows.length
-  );
-  const pad = 24;
-  const cellW = (1600 - pad * 2 - 20 * (cols - 1)) / cols;
-  const sizeFor = (cells, glyph) =>
-    sharedSize(
-      cells.map((cell) => cell || " "),
-      { w: cellW, h: rowH - 8, max: 24, min: 12, maxLines: 2, glyph }
+  const colW = CONTENT_W / cols;
+  const padX = 24;
+  // Dense tables trade padding for room to wrap.
+  const padY = rows.length > 5 ? 12 : 24;
+  const cellW = colW - 2 * padX;
+  const rowHeights = (size) =>
+    rows.map(
+      (row, r) =>
+        Math.max(
+          ...row.map((cell) =>
+            textHeight(cell || " ", size, {
+              w: cellW,
+              glyph: headers.length && r === 0 ? "bold" : "regular",
+            })
+          )
+        ) +
+        2 * padY
     );
-  const headerSize = headers.length ? sizeFor(headers, "bold") : 0;
-  // Sized per column so one long cell does not shrink the whole table.
-  const columnSizes = rows[0].map((_, c) =>
-    sizeFor(
-      body.map((row) => row[c]),
-      "regular"
-    )
+  const size = fitBlock({ max: 36, min: 20 }, area.bottom - area.top, (s) =>
+    rowHeights(s).reduce((sum, h) => sum + h, 0)
   );
-  rows.forEach((row, r) => {
+  const heights = rowHeights(size);
+  const total = heights.reduce((sum, h) => sum + h, 0);
+  const line = { pt: 1, color: t.scale[200] };
+  const none = { type: "none" };
+  const tableRows = rows.map((row, r) => {
     const isHeader = headers.length > 0 && r === 0;
     const bodyIndex = headers.length ? r - 1 : r;
-    const y = top + r * (rowH + gap);
-    const fill = isHeader ? t.dark : bodyIndex % 2 === 0 ? t.stripe : null;
-    if (fill)
-      addRect(slide, pptx, {
-        x: 160,
-        y,
-        w: 1600,
-        h: rowH,
-        radius: Math.min(16, rowH / 3),
-        color: fill,
-      });
-    row.forEach((cell, c) =>
-      addText(slide, cell, {
-        x: 160 + pad + c * (cellW + 20),
-        y,
-        w: cellW,
-        h: rowH,
-        size: isHeader ? headerSize : columnSizes[c],
+    return row.map((cell) => ({
+      text: cell,
+      options: {
         bold: isHeader,
-        color: isHeader ? "FFFFFF" : t.dark,
-        valign: "middle",
-      })
-    );
+        color: isHeader ? "FFFFFF" : INK,
+        fill: {
+          color: isHeader ? t.dark : bodyIndex % 2 ? t.light : "FFFFFF",
+        },
+        border: [none, none, isHeader ? none : line, none],
+      },
+    }));
+  });
+  slide.addTable(tableRows, {
+    x: inches(MARGIN),
+    y: inches(placeIn(area, total)),
+    w: inches(CONTENT_W),
+    colW: Array(cols).fill(inches(colW)),
+    rowH: heights.map(inches),
+    fontFace: FONT,
+    fontSize: points(size),
+    valign: "middle",
+    margin: [padY, padX, padY, padX].map(inches),
   });
 }
 
-/** Wraps a quote in curly quotes, replacing any the model already added. */
-function quoted(text) {
-  return `“${String(text).replace(/^["“”']+|["“”']+$/g, "")}”`;
-}
-
-function renderQuote(slide, pptx, data, t, meta) {
-  const dark = meta.variant === 0;
-  const color = dark ? "FFFFFF" : t.scale[950];
-  const x = dark ? 149 : 164;
-  const w = dark ? 1622 : 1300;
-  addText(slide, quoted(data.title), {
-    x,
-    y: 110,
-    w,
-    h: 610,
-    fit: { max: dark ? 106 : 96, min: 40 },
+function renderQuote(slide, pptx, data, t) {
+  addDecor(slide, pptx, t);
+  const w = 1500;
+  const { text, by } = data.quote;
+  const size = fitText(text, { w, h: 520, max: 76, min: 44, maxLines: 7 });
+  const textH = textHeight(text, size, { w });
+  const markH = 150;
+  const byH = by ? 40 + 40 : 0;
+  let y = (SLIDE_H - (markH + textH + byH)) / 2;
+  addText(slide, "“", {
+    x: MARGIN - 8,
+    y,
+    w: 200,
+    h: 290,
+    size: 240,
     bold: true,
-    color,
-    align: dark ? "center" : "left",
-    valign: "bottom",
+    font: HEADING_FONT,
+    color: t.scale[300],
   });
-  if (data.subtitle)
-    // The design prefixes the speaker with a dash, so drop any the model wrote.
-    addText(slide, `-${data.subtitle.replace(/^[-–—\s]+/, "")}`, {
-      x: dark ? 160 : x,
-      y: 760,
-      w: 1600,
-      h: 90,
-      fit: { max: 32, min: 20, maxLines: 2 },
-      bold: !dark,
-      caps: true,
-      spacing: 3.2,
-      color,
-      align: dark ? "center" : "left",
+  y += markH;
+  addText(slide, text, {
+    x: MARGIN,
+    y,
+    w,
+    h: textH,
+    size,
+    font: HEADING_FONT,
+    color: "FFFFFF",
+  });
+  if (by)
+    addText(slide, `— ${by}`, {
+      x: MARGIN,
+      y: y + textH + 40,
+      w,
+      h: 40,
+      size: 30,
+      color: t.scale[200],
     });
 }
 
 const RENDERERS = {
   section: renderSection,
   bullets: renderBullets,
-  "two-column": renderTwoColumn,
-  stats: renderStats,
+  split: renderSplit,
   cards: renderCards,
   steps: renderSteps,
+  comparison: renderComparison,
+  stats: renderStats,
   chart: renderChart,
   table: renderTable,
   quote: renderQuote,
 };
 
-/**
- * Background of a slide. Layouts drawn on the theme's dark shade in the
- * design are listed here; the quote alternates between dark and light.
- */
-function backgroundFor(t, layout, variant) {
-  if (layout === "section" || layout === "cards") return t.dark;
-  if (layout === "quote") return variant === 0 ? t.dark : t.scale[50];
-  return t.light;
-}
+// Layouts drawn on the theme's dark shade.
+const DARK_LAYOUTS = new Set(["section", "quote"]);
 
 /**
  * Renders a whole deck to a .pptx buffer.
@@ -1001,27 +1158,20 @@ async function renderDeck(
 
   const cover = pptx.addSlide();
   cover.background = { color: theme.dark };
-  renderTitleSlide(cover, pptx, theme, { title, subtitle });
+  renderCover(cover, pptx, theme, { title, subtitle });
   addBrand(cover, true);
 
   let sectionIndex = 0;
-  // Layouts with two designs alternate between them through the deck.
-  const seen = {};
   slides.forEach((data) => {
     if (data.layout === "section") sectionIndex++;
-    const count = seen[data.layout] ?? 0;
-    seen[data.layout] = count + 1;
-    const variant = count % 2;
+    const dark = DARK_LAYOUTS.has(data.layout);
     const slide = pptx.addSlide();
-    const bg = backgroundFor(theme, data.layout, variant);
-    slide.background = { color: bg };
-    RENDERERS[data.layout](slide, pptx, data, theme, {
-      sectionIndex,
-      variant,
-      // The deck title runs along the top of every slide except the cover.
-      label: title,
-    });
-    addBrand(slide, bg === theme.dark);
+    slide.background = { color: dark ? theme.dark : theme.light };
+    RENDERERS[data.layout](slide, pptx, data, theme, { sectionIndex });
+    // The split layout's label sits on its dark panel.
+    const labelOnDark = dark || data.layout === "split";
+    addLabel(slide, title, labelOnDark ? theme.scale[200] : MUTED);
+    addBrand(slide, dark);
     if (data.notes) slide.addNotes(data.notes);
   });
 
