@@ -3,13 +3,15 @@ const { safeJsonParse } = require("../../../../../http");
 /**
  * The slide contract between the model and the renderer.
  *
- * The model writes content only: a title and one kind of content per slide
- * (SLIDE_SCHEMA). Code decides everything visual: normalizeSlides turns any
- * model output into canonical slides, drops figures and quotes the sources
- * do not back up, and clips text to what the layouts hold; assignLayouts
- * then picks each slide's layout from the shape of its content. A small
- * model never makes a design decision, so it cannot repeat one layout across
- * a deck or invent statistics to fill a stats layout.
+ * The model writes content: a title and one kind of content per slide
+ * (SLIDE_SCHEMA), plus an optional layout it would like. Code makes the
+ * decisions that keep a deck sound: normalizeSlides turns any model output
+ * into canonical slides, drops figures and quotes the sources do not back
+ * up, and clips text to what the layouts hold; assignLayouts then gives each
+ * slide the layout the model asked for when its content fits it and it does
+ * not repeat the slide before, and otherwise the best fit for the content.
+ * A capable model gets to design; a small one that asks for nothing, or the
+ * same layout everywhere, still gets a varied deck.
  *
  * @typedef {Object} Slide
  * @property {string} layout - A key of LAYOUTS, or "section" for a divider
@@ -79,6 +81,7 @@ const LAYOUTS = {
 const SLIDE_SCHEMA = {
   type: "object",
   properties: {
+    layout: { type: "string", enum: Object.keys(LAYOUTS) },
     title: { type: "string" },
     points: { type: "array", items: { type: "string" } },
     items: {
@@ -307,10 +310,13 @@ function normalizeQuote(raw, proof) {
 
 /**
  * Turns one slide of model output into a canonical slide without a layout,
- * or null when nothing in it can be shown.
+ * or null when nothing in it can be shown. The layout the model asked for
+ * is kept as `preferred` for assignLayouts.
  */
 function normalizeSlide(s, fallbackTitle, proof) {
+  const asked = text(s.layout);
   const slide = {
+    preferred: Object.hasOwn(LAYOUTS, asked) ? asked : null,
     title: clip(text(s.title) || fallbackTitle, LIMITS.title),
     points: strings(s.points ?? s.bullets)
       .filter((p) => !inventsQuantity(p, proof))
@@ -384,23 +390,26 @@ function candidates(slide) {
 }
 
 /**
- * Gives each slide a layout: the best candidate that is not the layout
- * right before it, preferring layouts the deck has used least. `state`
- * carries the deck's history across sections.
+ * Gives each slide a layout: the one the model asked for when the content
+ * fits it and it is not the layout right before; otherwise the best
+ * candidate that is not the layout right before, preferring layouts the
+ * deck has used least. `state` carries the deck's history across sections.
  * @param {Omit<Slide, "layout"|"subtitle">[]} slides
  * @param {{used: Object<string, number>, previous: string|null}} state - Updated in place
  * @returns {Slide[]}
  */
 function assignLayouts(slides, state) {
-  return slides.map((slide) => {
+  return slides.map(({ preferred, ...slide }) => {
+    const honored =
+      preferred && LAYOUTS[preferred](slide) && preferred !== state.previous;
     const options = candidates(slide).filter((l) => LAYOUTS[l](slide));
     const score = (layout) =>
       options.indexOf(layout) +
       3 * (state.used[layout] || 0) +
       (layout === state.previous ? 100 : 0);
-    const layout = options.reduce((best, l) =>
-      score(l) < score(best) ? l : best
-    );
+    const layout = honored
+      ? preferred
+      : options.reduce((best, l) => (score(l) < score(best) ? l : best));
     state.used[layout] = (state.used[layout] || 0) + 1;
     state.previous = layout;
     return { layout, subtitle: "", ...slide };

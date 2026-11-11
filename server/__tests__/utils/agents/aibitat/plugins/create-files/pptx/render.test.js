@@ -28,6 +28,7 @@ jest.mock("pptxgenjs", () =>
 const {
   fitText,
   renderDeck,
+  createPreviewer,
   textHeight,
 } = require("../../../../../../../utils/agents/aibitat/plugins/create-files/pptx/render.js");
 const {
@@ -245,4 +246,33 @@ describe("renderDeck with more text than any layout holds", () => {
       expect(overflows()).toEqual([]);
     }
   );
+
+  test("previews every layout as plain shapes and text the chat UI can draw", () => {
+    const theme = getTheme("blue");
+    const preview = createPreviewer({ title: "Deck", subtitle: "Sub" }, theme);
+    const textOf = (shown) =>
+      shown.items
+        .filter((item) => item.kind === "text")
+        .map((item) => item.runs.map((run) => run.text).join(""));
+
+    const cover = preview(null);
+    expect(cover.background).toBe(theme.dark);
+    expect(textOf(cover)).toEqual(["Deck", "Sub"]);
+    expect(textOf(preview(sectionSlide("Intro", "Why")))).toEqual([
+      "01",
+      "Intro",
+      "Why",
+      "Deck",
+    ]);
+    for (const [layout, kind, count] of CASES) {
+      const shown = preview({ layout, subtitle: "", ...overfull(kind, count) });
+      expect(JSON.parse(JSON.stringify(shown))).toEqual(shown);
+      expect(shown.items.length).toBeGreaterThan(0);
+      for (const item of shown.items)
+        for (const key of ["x", "y", "w"])
+          expect(Number.isFinite(item[key])).toBe(true);
+      // The brand mark is left out of previews.
+      expect(textOf(shown)).not.toContain("Created with");
+    }
+  });
 });

@@ -5,6 +5,7 @@ const { PALETTES, getTheme } = require("./themes.js");
 const { buildDeck } = require("./deck-builder.js");
 const { renderDeck } = require("./render.js");
 const { normalizeCover } = require("./slides.js");
+const { slidePreviews } = require("./previews.js");
 
 const MAX_SECTIONS = 5;
 const THEME_HELP = Object.entries(PALETTES)
@@ -149,7 +150,7 @@ module.exports.CreatePptxPresentation = {
               },
               sections: {
                 type: "array",
-                description: `Section outlines for the presentation, 3-${MAX_SECTIONS} of them. Each section becomes a divider plus 2-3 content slides.`,
+                description: `Section outlines for the presentation, 3-${MAX_SECTIONS} of them. Each section becomes a divider plus 2-3 content slides, or up to 6 when it needs them.`,
                 maxItems: MAX_SECTIONS,
                 items: {
                   type: "object",
@@ -188,6 +189,7 @@ module.exports.CreatePptxPresentation = {
             research,
             sections,
           }) {
+            let previews = null;
             try {
               this.super.handlerProps.log(
                 `Using the create-pptx-presentation tool.`
@@ -235,6 +237,12 @@ module.exports.CreatePptxPresentation = {
                   (c) => c.state === "success" && typeof c.content === "string"
                 )
                 .map((c) => ({ from: c.from, content: c.content }));
+              previews = slidePreviews(
+                this.super,
+                normalizeCover({ title, subtitle }),
+                theme
+              );
+              previews.add(null);
               const { slides, citations, built } = await buildDeck(this.super, {
                 say,
                 title,
@@ -242,6 +250,7 @@ module.exports.CreatePptxPresentation = {
                 sections,
                 research,
                 history,
+                onSlides: (batch) => batch.forEach(previews.add),
               });
               if (this.super._aborted)
                 return "Presentation generation was cancelled.";
@@ -287,6 +296,8 @@ module.exports.CreatePptxPresentation = {
               );
               this.super.introspect(`Error: ${e.message}`);
               return `Error creating presentation: ${e.message}`;
+            } finally {
+              previews?.end();
             }
           },
         });

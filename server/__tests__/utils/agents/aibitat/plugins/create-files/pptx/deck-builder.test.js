@@ -2,14 +2,19 @@
 const { getEventListeners } = require("events");
 
 // Each section call goes to `mockModel`, which receives the tools the section
-// was offered (by name) and the prompt, and returns what to submit: a
-// {intro, slides} object, a slides array, null to submit nothing, or an
-// Error to fail the call.
+// was offered (by name) and the prompt, and returns what the model does:
+// a slides array or {intro, slides} object for one add-slides call that
+// completes the section, {calls: [args, ...]} for several add-slides calls
+// (stopping once the tool ends the section), null to do nothing, or an
+// Error to fail the call. `mockToolResults` collects what add-slides
+// answered.
 let mockModel;
 const mockOfferedTools = [];
+const mockToolResults = [];
 jest.mock("../../../../../../../utils/agents/aibitat/index.js", () =>
   jest.fn().mockImplementation(() => ({
     functions: new Map(),
+    skipHandleExecution: false,
     function(def) {
       this.functions.set(def.name, def);
     },
@@ -24,10 +29,14 @@ jest.mock("../../../../../../../utils/agents/aibitat/index.js", () =>
       mockOfferedTools.push(Object.keys(tools));
       const out = mockModel(tools, messages);
       if (out instanceof Error) throw out;
-      if (out)
-        tools["submit-section-slides"].handler(
-          Array.isArray(out) ? { slides: out } : out
-        );
+      if (!out) return "";
+      const calls = Array.isArray(out)
+        ? [{ slides: out, last: true }]
+        : out.calls || [{ last: true, ...out }];
+      for (const args of calls) {
+        mockToolResults.push(tools["add-slides"].handler(args));
+        if (this.skipHandleExecution) break;
+      }
       return "";
     },
   }))
@@ -50,7 +59,7 @@ function parentAgent() {
   };
 }
 
-const build = (parent, sections, history = []) =>
+const build = (parent, sections, history = [], onSlides) =>
   buildDeck(parent, {
     say: () => {},
     title: "Deck",
@@ -58,6 +67,7 @@ const build = (parent, sections, history = []) =>
     sections,
     research: false,
     history,
+    onSlides,
   });
 
 const ideas = (n) =>
@@ -69,6 +79,7 @@ const layoutsOf = (slides) => slides.map((s) => s.layout);
 
 beforeEach(() => {
   mockOfferedTools.length = 0;
+  mockToolResults.length = 0;
 });
 
 describe("decodeHtmlEntities", () => {
@@ -138,7 +149,7 @@ describe("readConversation", () => {
 });
 
 describe("buildDeck", () => {
-  test("adds a divider with the model's intro and keeps at most three slides a section", async () => {
+  test("adds a divider with the model's intro before the section's slides", async () => {
     mockModel = () => ({
       intro: "Why this matters",
       slides: Array.from({ length: 5 }, (_, i) => ({
@@ -155,7 +166,13 @@ describe("buildDeck", () => {
         subtitle: "Why this matters",
       })
     );
-    expect(slides.slice(1).map((s) => s.title)).toEqual(["S0", "S1", "S2"]);
+    expect(slides.slice(1).map((s) => s.title)).toEqual([
+      "S0",
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+    ]);
   });
 
   test("never puts the same layout on consecutive content slides across sections", async () => {
@@ -228,8 +245,8 @@ describe("buildDeck", () => {
       [{ from: "USER", content: "hi" }]
     );
     expect(mockOfferedTools).toEqual([
-      ["submit-section-slides"],
-      ["submit-section-slides", "read-conversation"],
+      ["add-slides"],
+      ["add-slides", "read-conversation"],
     ]);
   });
 
@@ -275,5 +292,80 @@ describe("buildDeck", () => {
     };
     const { built } = await build(parent, [{ title: "A" }, { title: "B" }]);
     expect(built).toEqual(["A"]);
+  });
+});
+
+describe("buildDeck add-slides loop", () => {
+  const slide = (title, extra = {}) => ({ title, points: ["p"], ...extra });
+
+  test("builds a longer section over several add-slides calls", async () => {
+    mockModel = () => ({
+      calls: [
+        { intro: "Start here", slides: [slide("One"), slide("Two")] },
+        { slides: [slide("Three")] },
+        { slides: [slide("Four")], last: true },
+        { slides: [slide("Never sent")] },
+      ],
+    });
+    const { slides } = await build(parentAgent(), [{ title: "A" }]);
+    expect(slides.map((s) => s.title)).toEqual([
+      "A",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+    ]);
+    expect(slides[0].subtitle).toBe("Start here");
+    expect(mockToolResults[0]).toMatch(/Added 2 slides, 2 in this section/);
+    expect(mockToolResults.at(-1)).toBe("Section complete.");
+  });
+
+  test("skips slides a model sends twice and stops at six a section", async () => {
+    mockModel = () => ({
+      calls: [
+        { slides: [slide("One"), slide("Two")] },
+        { slides: [slide("One"), slide("Two")] },
+        { slides: ["3", "4", "5", "6", "7"].map((n) => slide(`S${n}`)) },
+      ],
+    });
+    const { slides } = await build(parentAgent(), [{ title: "A" }]);
+    expect(slides.slice(1).map((s) => s.title)).toEqual([
+      "One",
+      "Two",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+    ]);
+    expect(mockToolResults[1]).toMatch(/No slides were added/);
+    expect(mockToolResults.at(-1)).toBe("Section complete.");
+  });
+
+  test("uses the layout a model asks for when the content fits it", async () => {
+    mockModel = () => [
+      { title: "Asked split", layout: "split", points: ["a", "b"] },
+      { title: "Asked stats", layout: "stats", points: ["no figures here"] },
+      { title: "Asked cards", layout: "cards", items: ideas(3) },
+    ];
+    const { slides } = await build(parentAgent(), [{ title: "A" }]);
+    expect(layoutsOf(slides)).toEqual(["section", "split", "bullets", "cards"]);
+  });
+
+  test("hands each batch to onSlides in deck order, divider first", async () => {
+    mockModel = () => ({
+      calls: [
+        { slides: [slide("One")] },
+        { slides: [slide("Two")], last: true },
+      ],
+    });
+    const batches = [];
+    const { slides } = await build(
+      parentAgent(),
+      [{ title: "A" }, { title: "B" }],
+      [],
+      (batch) => batches.push(batch.map((s) => s.title))
+    );
+    expect(batches).toEqual([["A", "One"], ["Two"], ["B", "One"], ["Two"]]);
+    expect(batches.flat()).toEqual(slides.map((s) => s.title));
   });
 });

@@ -75,6 +75,7 @@ const handledEvents = [
   "rechartVisualize",
   "toolApprovalRequest",
   "clarificationRequest",
+  "pptxSlidePreview",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -315,6 +316,32 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             : msg
         );
       }
+    });
+  }
+
+  // Thumbnails of a presentation while it is built: one card per deck that
+  // gains a slide with each event. They live only in this session.
+  if (data.type === "pptxSlidePreview") {
+    const { deckId, index, slide, done } = data.content;
+    return setChatHistory((prev) => {
+      const card = prev.find((msg) => msg.uuid === deckId);
+      const slides = [...(card?.content?.slides || [])];
+      if (slide && Number.isInteger(index)) slides[index] = slide;
+      const next = {
+        type: "pptxSlidePreview",
+        uuid: deckId,
+        content: { slides, done: !!done || !!card?.content?.done },
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      };
+      return card
+        ? prev.map((msg) => (msg.uuid === deckId ? next : msg))
+        : [...prev.filter((msg) => !!msg.content), next];
     });
   }
 

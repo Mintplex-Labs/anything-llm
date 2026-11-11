@@ -1141,6 +1141,31 @@ const RENDERERS = {
 const DARK_LAYOUTS = new Set(["section", "quote"]);
 
 /**
+ * Draws one slide of a deck: the cover when `data` is null, otherwise a
+ * divider or content slide. Shared by the .pptx file and the previews.
+ * @param {object} slide - A pptxgenjs slide, or a preview target
+ * @param {{title: string, subtitle: string}} deck
+ * @param {import("./slides.js").Slide|null} data
+ * @param {{sectionIndex: number, brand: boolean}} meta
+ */
+function drawSlide(slide, pptx, theme, deck, data, { sectionIndex, brand }) {
+  if (!data) {
+    slide.background = { color: theme.dark };
+    renderCover(slide, pptx, theme, deck);
+    if (brand) addBrand(slide, true);
+    return;
+  }
+  const dark = DARK_LAYOUTS.has(data.layout);
+  slide.background = { color: dark ? theme.dark : theme.light };
+  RENDERERS[data.layout](slide, pptx, data, theme, { sectionIndex });
+  // The split layout's label sits on its dark panel.
+  const labelOnDark = dark || data.layout === "split";
+  addLabel(slide, deck.title, labelOnDark ? theme.scale[200] : MUTED);
+  if (brand) addBrand(slide, dark);
+  if (data.notes) slide.addNotes(data.notes);
+}
+
+/**
  * Renders a whole deck to a .pptx buffer.
  * @param {{title: string, subtitle?: string, author?: string, slides: import("./slides.js").Slide[]}} deck
  * @param {object} theme - From getTheme
@@ -1156,26 +1181,142 @@ async function renderDeck(
   pptx.company = "AnythingLLM";
   if (author) pptx.author = author;
 
-  const cover = pptx.addSlide();
-  cover.background = { color: theme.dark };
-  renderCover(cover, pptx, theme, { title, subtitle });
-  addBrand(cover, true);
-
-  let sectionIndex = 0;
-  slides.forEach((data) => {
-    if (data.layout === "section") sectionIndex++;
-    const dark = DARK_LAYOUTS.has(data.layout);
-    const slide = pptx.addSlide();
-    slide.background = { color: dark ? theme.dark : theme.light };
-    RENDERERS[data.layout](slide, pptx, data, theme, { sectionIndex });
-    // The split layout's label sits on its dark panel.
-    const labelOnDark = dark || data.layout === "split";
-    addLabel(slide, title, labelOnDark ? theme.scale[200] : MUTED);
-    addBrand(slide, dark);
-    if (data.notes) slide.addNotes(data.notes);
+  const deck = { title, subtitle };
+  drawSlide(pptx.addSlide(), pptx, theme, deck, null, {
+    sectionIndex: 0,
+    brand: true,
   });
-
+  let sectionIndex = 0;
+  for (const data of slides) {
+    if (data.layout === "section") sectionIndex++;
+    drawSlide(pptx.addSlide(), pptx, theme, deck, data, {
+      sectionIndex,
+      brand: true,
+    });
+  }
   return pptx.write({ outputType: "nodebuffer" });
 }
 
-module.exports = { renderDeck, fitText, textHeight };
+const toPx = (inches) => Math.round(inches * PX_PER_IN);
+const opacity = (transparency) => (transparency ? 1 - transparency / 100 : 1);
+// The pptxgenjs enums the renderers read, as plain names.
+const PREVIEW_PPTX = {
+  ShapeType: { rect: "rect", roundRect: "roundRect", ellipse: "ellipse" },
+  ChartType: {
+    bar: "bar",
+    line: "line",
+    pie: "pie",
+    doughnut: "doughnut",
+    area: "area",
+  },
+};
+
+/**
+ * A stand-in for a pptxgenjs slide that records what the renderers draw as
+ * plain JSON in px of the 1920 × 1080 frame, so the chat UI can show a
+ * thumbnail of each slide while the deck is still being built. Text stays
+ * text; the UI renders it, never as markup.
+ */
+function previewTarget() {
+  const items = [];
+  const box = (o) => ({
+    x: toPx(o.x),
+    y: toPx(o.y),
+    w: toPx(o.w),
+    h: toPx(o.h),
+  });
+  return {
+    items,
+    background: null,
+    addText(text, o) {
+      const runs = (Array.isArray(text) ? text : [{ text }]).map(
+        ({ text, options = {} }) => ({
+          text: String(text),
+          ...(options.bold !== undefined && { bold: options.bold }),
+          ...(options.color && { color: options.color }),
+          ...(options.bullet && { bullet: options.bullet.indent * 2 }),
+          ...(options.paraSpaceAfter && { gap: options.paraSpaceAfter * 2 }),
+          ...(options.breakLine && { breakLine: true }),
+        })
+      );
+      items.push({
+        kind: "text",
+        ...box(o),
+        size: o.fontSize * 2,
+        heading: o.fontFace === HEADING_FONT,
+        bold: !!o.bold,
+        italic: !!o.italic,
+        color: o.color,
+        align: o.align || "left",
+        valign: o.valign || "top",
+        opacity: opacity(o.transparency),
+        runs,
+      });
+    },
+    addShape(type, o) {
+      items.push({
+        kind: type,
+        ...box(o),
+        radius: o.rectRadius ? toPx(o.rectRadius) : 0,
+        fill: o.fill?.color || null,
+        opacity: opacity(o.fill?.transparency),
+        line: o.line?.color || null,
+      });
+    },
+    addTable(rows, o) {
+      items.push({
+        kind: "table",
+        x: toPx(o.x),
+        y: toPx(o.y),
+        w: toPx(o.w),
+        colW: o.colW.map(toPx),
+        rowH: o.rowH.map(toPx),
+        size: o.fontSize * 2,
+        pad: o.margin.map(toPx),
+        cells: rows.map((row) =>
+          row.map((cell) => ({
+            text: String(cell.text),
+            bold: !!cell.options.bold,
+            color: cell.options.color,
+            fill: cell.options.fill?.color || null,
+          }))
+        ),
+      });
+    },
+    addChart(type, data, o) {
+      items.push({
+        kind: "chart",
+        ...box(o),
+        type,
+        categories: data[0].labels,
+        values: data[0].values,
+        colors: o.chartColors,
+      });
+    },
+    addImage() {},
+    addNotes() {},
+  };
+}
+
+/**
+ * A function that previews deck slides in order for the chat UI: pass null
+ * for the cover, then each slide as it is built. It counts dividers the way
+ * renderDeck does, so previews match the file.
+ * @param {{title: string, subtitle: string}} deck
+ * @param {object} theme - From getTheme
+ * @returns {(data: import("./slides.js").Slide|null) => {background: string, items: object[]}}
+ */
+function createPreviewer(deck, theme) {
+  let sectionIndex = 0;
+  return (data) => {
+    if (data?.layout === "section") sectionIndex++;
+    const target = previewTarget();
+    drawSlide(target, PREVIEW_PPTX, theme, deck, data, {
+      sectionIndex,
+      brand: false,
+    });
+    return { background: target.background.color, items: target.items };
+  };
+}
+
+module.exports = { renderDeck, createPreviewer, fitText, textHeight };

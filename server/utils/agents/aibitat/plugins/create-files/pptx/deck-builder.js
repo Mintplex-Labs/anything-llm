@@ -12,12 +12,12 @@ const {
 /**
  * Turns a presentation outline into slides. Research is done by this module
  * (one web search per deck, plus one per section that has its own
- * instructions) and each section is then one model call whose only job is
- * to write content into SLIDE_SCHEMA: titles, points, items, figures. Every
- * visual decision (layouts, dividers, sizes) is made in code, so cost stays
- * small and fixed and small local models never have to plan or design. The
- * only other tool a section call gets is an optional conversation lookup,
- * so the chat history costs tokens only in the sections that ask for it.
+ * instructions) and each section is then written by a sub-agent whose only
+ * job is to fill in SLIDE_SCHEMA through the add-slides tool. Most sections
+ * take one call; a section that needs more can keep adding slides, and can
+ * look up the conversation for details the outline left out. Code still
+ * makes every decision that keeps the deck sound (dividers, fit, variety,
+ * sourcing), so small local models never have to plan the deck.
  */
 
 // Search results are injected into a single model call, so they are capped to
@@ -29,15 +29,16 @@ const RESEARCH_RESULT_LIMIT = 6;
 const QUERY_CHAR_LIMIT = 100;
 // Most conversation text one lookup returns, for the same reason as above.
 const CONVERSATION_CHAR_LIMIT = 3000;
-// Room for a conversation lookup, and one refined lookup, before the submit
-// call. AIbitat counts calls from zero, so 2 allows three.
-const SECTION_TOOL_CALLS = 2;
-// Content slides kept per section, whatever the model returns.
-const MAX_SECTION_SLIDES = 3;
+// Tool calls one section may make: lookups and several add-slides calls.
+const SECTION_TOOL_CALLS = 8;
+// Content slides kept per section, whatever the model sends.
+const MAX_SECTION_SLIDES = 6;
 
-const SYSTEM_PROMPT = `You write the content for ONE section of a slide deck. Call the submit-section-slides tool exactly once with all slides. Never reply with plain text.
+const SYSTEM_PROMPT = `You write the content for ONE section of a slide deck by calling the add-slides tool. Never reply with plain text.
 
-Write 2 slides (3 only if the section truly needs it). Each slide has a title under 7 words and ONE kind of content:
+Most sections need 2-3 slides: send them in one add-slides call with "last": true. A section that truly needs more can call add-slides again with the next slides, up to ${MAX_SECTION_SLIDES} in all, and sets "last": true on its final call.
+
+Each slide has a title under 7 words and ONE kind of content:
 - points: 3-5 statements, each under 12 words
 - items: 2-6 ideas, each a title of 1-4 words and one sentence of text. Set "ordered": true when they are steps or a timeline
 - figures: 2-6 numbers, each a value like "42%" or "$1.2M" and a short label. Only numbers written in the key points, instructions, research or conversation
@@ -45,19 +46,22 @@ Write 2 slides (3 only if the section truly needs it). Each slide has a title un
 - table: headers and up to 6 rows of short cells
 - quote: text and who said it, only a real quote from the research or conversation
 
-Never invent statistics, quotes or names. Never write placeholders like "TBD". If a number is unknown, describe the idea in words instead.
-Also write "intro": one short line that introduces the section.`;
+Optionally set "layout": bullets, split (title on a panel beside a short list), cards, steps (ordered items), comparison (exactly 2 items), stats (figures), chart, table or quote. It is used when the content fits it; otherwise a fitting layout is chosen.
 
-const SUBMIT_TOOL = {
-  name: "submit-section-slides",
+Never invent statistics, quotes or names. Never write placeholders like "TBD". If a number is unknown, describe the idea in words instead.
+On your first call also write "intro": one short line that introduces the section.`;
+
+const ADD_SLIDES_TOOL = {
+  name: "add-slides",
   description:
-    "Submit the finished slides for this section. Call this exactly once.",
+    'Add slides to this section. Set "last" to true on the call that completes the section.',
   parameters: {
     $schema: "http://json-schema.org/draft-07/schema#",
     type: "object",
     properties: {
       intro: { type: "string" },
       slides: { type: "array", items: SLIDE_SCHEMA },
+      last: { type: "boolean" },
     },
     required: ["slides"],
   },
@@ -233,16 +237,26 @@ function sectionPrompt({ section, title, notes }) {
     );
   if (section.instructions) parts.push(`Instructions: ${section.instructions}`);
   if (notes) parts.push(`Research:\n${notes}`);
-  parts.push("Call submit-section-slides now with the slides.");
+  parts.push("Call add-slides now.");
   return parts.join("\n\n");
 }
 
 /**
- * One model call that writes the content for one section. Falls back to the
- * outline's key points when the model produces nothing usable.
- * @returns {Promise<{intro: string, slides: Object[]}>} Content slides without layouts
+ * The sub-agent that writes one section. Every add-slides call is
+ * normalized, checked against the sources, given layouts and handed to
+ * `onSlides` right away (the first batch behind the section's divider), so
+ * progress can be shown while the section is still being written. Falls
+ * back to the outline's key points when the model adds nothing usable.
+ * @param {AIbitat} parent
+ * @param {Object} options
+ * @param {{used: Object<string, number>, previous: string|null}} options.layouts - The deck's layout history, updated in place
+ * @param {(slides: import("./slides.js").Slide[]) => void} options.onSlides
+ * @returns {Promise<number>} Content slides added
  */
-async function buildSection(parent, { section, title, notes, history, label }) {
+async function buildSection(
+  parent,
+  { section, title, notes, history, label, layouts, onSlides }
+) {
   const child = childOf(parent);
   // Everything the model was given; figures, chart values and quotes not
   // found here are dropped as invented.
@@ -253,13 +267,37 @@ async function buildSection(parent, { section, title, notes, history, label }) {
     section.instructions ?? "",
     notes,
   ];
-  let submitted = null;
+  let intro = "";
+  let added = 0;
+  const titles = new Set();
+  const add = (raw, { checked = true } = {}) => {
+    const fresh = normalizeSlides(raw, {
+      fallbackTitle: section.title,
+      sources: checked ? sources.join("\n") : undefined,
+    })
+      // Small models often resend slides they already added.
+      .filter((slide) => !titles.has(slide.title.toLowerCase()))
+      .slice(0, MAX_SECTION_SLIDES - added);
+    if (!fresh.length) return 0;
+    fresh.forEach((slide) => titles.add(slide.title.toLowerCase()));
+    const placed = assignLayouts(fresh, layouts);
+    onSlides(added ? placed : [sectionSlide(section.title, intro), ...placed]);
+    added += placed.length;
+    return placed.length;
+  };
+
   child.function({
-    ...SUBMIT_TOOL,
-    handler: (args) => {
-      submitted = args;
-      child.skipHandleExecution = true;
-      return "Slides submitted.";
+    ...ADD_SLIDES_TOOL,
+    handler: ({ intro: line, slides, last } = {}) => {
+      if (!intro && typeof line === "string") intro = line;
+      const count = add(slides);
+      if (last === true || last === "true" || added >= MAX_SECTION_SLIDES) {
+        child.skipHandleExecution = true;
+        return "Section complete.";
+      }
+      return count
+        ? `Added ${pluralize("slide", count, true)}, ${added} in this section. Call add-slides with "last": true when the section is complete.`
+        : 'No slides were added: each slide needs a title and content, and numbers must come from the sources. Call add-slides again, or with "last": true if the section is complete.';
     },
   });
   if (history.length)
@@ -283,24 +321,24 @@ async function buildSection(parent, { section, title, notes, history, label }) {
     child.release();
   }
 
-  const usage = child.providerInstance.getCumulativeUsage();
-  const output = submitted ?? jsonFromText(text);
-  const slides = normalizeSlides(output, {
-    fallbackTitle: section.title,
-    sources: sources.join("\n"),
-  }).slice(0, MAX_SECTION_SLIDES);
-  log(
-    `[DeckBuilder] "${section.title}" produced ${slides.length} slides, ${usage.prompt_tokens + usage.completion_tokens} tokens`
-  );
-  const intro = typeof output?.intro === "string" ? output.intro : "";
-  if (slides.length) return { intro, slides };
-  return {
-    intro: "",
-    slides: normalizeSlides(
+  // A model that wrote its slides as text instead of a tool call.
+  if (!added && !parent._aborted) {
+    const output = jsonFromText(text);
+    if (typeof output?.intro === "string") intro = output.intro;
+    add(output);
+  }
+  // The outline's own key points, which need no sourcing.
+  if (!added && !parent._aborted)
+    add(
       { title: section.title, points: section.keyPoints },
-      { fallbackTitle: section.title }
-    ),
-  };
+      { checked: false }
+    );
+
+  const usage = child.providerInstance.getCumulativeUsage();
+  log(
+    `[DeckBuilder] "${section.title}" produced ${added} slides, ${usage.prompt_tokens + usage.completion_tokens} tokens`
+  );
+  return added;
 }
 
 /**
@@ -315,12 +353,13 @@ async function buildSection(parent, { section, title, notes, history, label }) {
  * @param {{title: string, keyPoints?: string[], instructions?: string}[]} deck.sections
  * @param {boolean} deck.research - Search the web before writing
  * @param {{from: string, content: string}[]} [deck.history] - The conversation, oldest first, which section calls can search for facts the outline left out
+ * @param {(slides: import("./slides.js").Slide[]) => void} [deck.onSlides] - Called with each batch of finished slides, in deck order
  * @returns {Promise<{slides: import("./slides.js").Slide[], citations: object[], built: string[]}>}
  *   built holds the titles of the sections that produced at least one slide.
  */
 async function buildDeck(
   parent,
-  { say, title, subtitle, sections, research, history = [] }
+  { say, title, subtitle, sections, research, history = [], onSlides }
 ) {
   const citations = [];
   const search = async (query) => {
@@ -345,22 +384,21 @@ async function buildDeck(
       research && (section.instructions || !deckNotes)
         ? await search(`${section.title} ${title}`)
         : deckNotes;
-    const content = await buildSection(parent, {
+    const count = await buildSection(parent, {
       section,
       title,
       notes,
       history,
       label,
+      layouts,
+      onSlides: (batch) => {
+        slides.push(...batch);
+        onSlides?.(batch);
+      },
     });
-    if (content.slides.length) {
-      built.push(section.title);
-      slides.push(
-        sectionSlide(section.title, content.intro),
-        ...assignLayouts(content.slides, layouts)
-      );
-    }
+    if (count) built.push(section.title);
     say(
-      `[${label}] Section "${section.title}" complete — ${pluralize("slide", content.slides.length, true)}`
+      `[${label}] Section "${section.title}" complete — ${pluralize("slide", count, true)}`
     );
   }
   return { slides, citations, built };

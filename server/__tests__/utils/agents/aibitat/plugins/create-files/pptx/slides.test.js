@@ -258,6 +258,18 @@ describe("assignLayouts", () => {
     expect(new Set(all)).toEqual(new Set(["cards", "bullets", "split"]));
   });
 
+  test("uses the layout the model asks for when the content fits and it is not a repeat", () => {
+    expect(
+      layoutsOf([
+        { title: "A", layout: "split", points: ["a"] },
+        { title: "B", layout: "split", points: ["b"] },
+        { title: "C", layout: "chart", points: ["c"] },
+        { title: "D", layout: "nope", items: items(3) },
+        { title: "E", layout: "bullets", items: items(3) },
+      ])
+    ).toEqual(["split", "bullets", "split", "cards", "bullets"]);
+  });
+
   test("prefers layouts the deck has used least", () => {
     const state = { used: { cards: 5 }, previous: null };
     expect(layoutsOf([{ title: "A", items: items(3) }], state)).toEqual([
