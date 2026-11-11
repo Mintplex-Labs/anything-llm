@@ -13,14 +13,14 @@
  * renderer sizes text with.
  */
 
+const { GLYPH_W } = require("./render.js");
+
 const FRAME_W = 1920;
 const FRAME_H = 1080;
 // Large enough for the chat's lightbox; the row shows it scaled down.
 const THUMB_W = 1024;
 const JPEG_QUALITY = 80;
 const LINE_H = 1.2;
-// Average glyph width as a fraction of the font size, as in render.js.
-const GLYPH_W = { regular: 0.5, bold: 0.53 };
 // Aptos where it is installed; Liberation Sans ships in the Docker image.
 const FONTS = {
   body: "Aptos, 'Segoe UI', 'Liberation Sans', Arial, sans-serif",

@@ -208,7 +208,7 @@ function conversationTool(history, onRead) {
   return {
     name: "read-conversation",
     description:
-      "Look up details from the user's conversation (figures, names, pasted data) that the key points refer to but do not include. Only call it when you need such a detail, then call submit-section-slides.",
+      "Look up details from the user's conversation (figures, names, pasted data) that the key points refer to but do not include. Only call it when you need such a detail, then call add-slides.",
     parameters: {
       $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",

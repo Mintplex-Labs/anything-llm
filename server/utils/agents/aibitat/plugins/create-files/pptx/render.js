@@ -126,7 +126,7 @@ function fitText(
   );
   for (let size = max; size > min; size -= 2) {
     const lines = lineCount(paragraphs, size, w, glyph);
-    const height = textHeight(paragraphs, size, { w, lineGap, glyph });
+    const height = (lines * LINE_H + paragraphs.length * lineGap) * size;
     // A word wider than the box would be broken mid-word.
     const wordFits = longestWord <= charsPerLine(size, w, glyph);
     if (lines <= maxLines && height <= h && wordFits) return size;
@@ -957,13 +957,6 @@ function renderChart(slide, pptx, data, t) {
   const ink = t.scale[900];
   // Darkest first, so a bar chart steps down the scale.
   const shades = [800, 700, 600, 500, 400, 300, 200].map((s) => t.scale[s]);
-  const axisLabel = (size) => ({
-    color: ink,
-    fontFace: FONT,
-    fontSize: points(size),
-  });
-  const val = axisLabel(24);
-  const cat = axisLabel(24);
 
   slide.addChart(
     pptx.ChartType[type],
@@ -991,11 +984,11 @@ function renderChart(slide, pptx, data, t) {
       // Bars are compared by length, so a cropped axis exaggerates gaps.
       ...(type === "bar" && Math.min(...values) >= 0 && { valAxisMinVal: 0 }),
       valAxisLabelColor: MUTED,
-      valAxisLabelFontFace: val.fontFace,
-      valAxisLabelFontSize: val.fontSize,
-      catAxisLabelColor: cat.color,
-      catAxisLabelFontFace: cat.fontFace,
-      catAxisLabelFontSize: cat.fontSize,
+      valAxisLabelFontFace: FONT,
+      valAxisLabelFontSize: points(24),
+      catAxisLabelColor: ink,
+      catAxisLabelFontFace: FONT,
+      catAxisLabelFontSize: points(24),
       catAxisLineShow: false,
       valAxisLineShow: false,
       valGridLine: { color: t.scale[100], style: "solid", size: 1 },
@@ -1213,9 +1206,8 @@ const PREVIEW_PPTX = {
 
 /**
  * A stand-in for a pptxgenjs slide that records what the renderers draw as
- * plain JSON in px of the 1920 × 1080 frame, so the chat UI can show a
- * thumbnail of each slide while the deck is still being built. Text stays
- * text; the UI renders it, never as markup.
+ * plain JSON in px of the 1920 × 1080 frame, which thumbnail.js bakes into
+ * an image for the chat UI while the deck is still being built.
  */
 function previewTarget() {
   const items = [];
@@ -1319,4 +1311,10 @@ function createPreviewer(deck, theme) {
   };
 }
 
-module.exports = { renderDeck, createPreviewer, fitText, textHeight };
+module.exports = {
+  renderDeck,
+  createPreviewer,
+  fitText,
+  textHeight,
+  GLYPH_W,
+};

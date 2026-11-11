@@ -237,11 +237,8 @@ module.exports.CreatePptxPresentation = {
                   (c) => c.state === "success" && typeof c.content === "string"
                 )
                 .map((c) => ({ from: c.from, content: c.content }));
-              previews = slidePreviews(
-                this.super,
-                normalizeCover({ title, subtitle }),
-                theme
-              );
+              const cover = normalizeCover({ title, subtitle });
+              previews = slidePreviews(this.super, cover, theme);
               previews.add(null);
               const { slides, citations, built } = await buildDeck(this.super, {
                 say,
@@ -264,7 +261,7 @@ module.exports.CreatePptxPresentation = {
               // open the deck.
               const buffer = await renderDeck(
                 createFilesLib.stripInvalidXmlChars({
-                  ...normalizeCover({ title, subtitle }),
+                  ...cover,
                   author,
                   slides,
                 }),
