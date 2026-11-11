@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const { loadImage } = require("canvas");
+const sharp = require("sharp");
 const {
   createPreviewer,
 } = require("../../../../../../../utils/agents/aibitat/plugins/create-files/pptx/render.js");
@@ -55,7 +55,7 @@ function everyLayout() {
 
 const decode = (url) => {
   expect(url).toMatch(/^data:image\/jpeg;base64,/);
-  return loadImage(Buffer.from(url.split(",")[1], "base64"));
+  return sharp(Buffer.from(url.split(",")[1], "base64")).metadata();
 };
 
 describe("slideThumbnail", () => {
@@ -66,9 +66,22 @@ describe("slideThumbnail", () => {
       new Set(slides.slice(2).map((s) => s.layout)).size
     ).toBeGreaterThanOrEqual(9);
     for (const slide of slides) {
-      const image = await decode(slideThumbnail(preview(slide)));
-      expect([image.width, image.height]).toEqual([1024, 576]);
+      const image = await decode(await slideThumbnail(preview(slide)));
+      expect([image.format, image.width, image.height]).toEqual([
+        "jpeg",
+        1024,
+        576,
+      ]);
     }
+  });
+
+  test("escapes model text so it cannot break the SVG", async () => {
+    const preview = createPreviewer(
+      { title: `Q&A <b>"quoted"</b> it's`, subtitle: "]]> &amp; <!--" },
+      getTheme("blue")
+    );
+    const image = await decode(await slideThumbnail(preview(null)));
+    expect(image.width).toBe(1024);
   });
 });
 
@@ -82,12 +95,12 @@ describe("slidePreviews", () => {
     };
   };
 
-  test("sends each slide as an image in deck order, then done", () => {
+  test("sends each slide as an image in deck order, then done", async () => {
     const aibitat = agent();
     const previews = slidePreviews(aibitat, deck, getTheme("blue"));
     previews.add(null);
     everyLayout().slice(0, 2).forEach(previews.add);
-    previews.end();
+    await previews.end();
     const { sent } = aibitat;
     expect(sent.map((e) => e.type)).toEqual(Array(4).fill("pptxSlidePreview"));
     expect(new Set(sent.map((e) => e.deckId)).size).toBe(1);
@@ -101,19 +114,19 @@ describe("slidePreviews", () => {
     });
   });
 
-  test("stops previewing after a failure without throwing, and sends nothing when no slide went out", () => {
+  test("stops previewing after a failure without throwing, and sends nothing when no slide went out", async () => {
     const aibitat = agent();
     const previews = slidePreviews(aibitat, deck, getTheme("blue"));
     expect(() => previews.add({ layout: "nope" })).not.toThrow();
     previews.add(null);
-    previews.end();
+    await previews.end();
     expect(aibitat.sent).toEqual([]);
     expect(aibitat.handlerProps.log).toHaveBeenCalledWith(
       expect.stringMatching(/Previews disabled/)
     );
   });
 
-  test("never throws when the socket does", () => {
+  test("never throws when the socket does", async () => {
     const previews = slidePreviews(
       {
         handlerProps: { log: () => {} },
@@ -126,9 +139,7 @@ describe("slidePreviews", () => {
       deck,
       getTheme("blue")
     );
-    expect(() => {
-      previews.add(null);
-      previews.end();
-    }).not.toThrow();
+    previews.add(null);
+    await expect(previews.end()).resolves.toBeUndefined();
   });
 });
