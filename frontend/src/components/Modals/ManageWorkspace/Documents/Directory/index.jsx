@@ -63,6 +63,7 @@ export default function Directory({
   picker,
   workspace,
   hiddenPaths,
+  embeddedCounts,
   setHighlightWorkspace,
   moveToWorkspace,
   variant = "default",
@@ -377,6 +378,7 @@ export default function Directory({
           picker={picker}
           workspace={workspace}
           rows={rows}
+          embeddedCounts={embeddedCounts}
           documentCount={searchResults ? searchResultCount : totalDocCount}
           allSelected={allSelected}
           uploadQueue={uploadQueue}

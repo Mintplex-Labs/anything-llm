@@ -27,6 +27,7 @@ const UPLOAD_FOLDER = "custom-documents";
  * @param {Object} props
  * @param {ReturnType<import("../../hooks/useDocumentPicker").default>} props.picker
  * @param {Array<object>} props.rows - Folder view models built by `Directory`
+ * @param {Record<string, number>} props.embeddedCounts - Per folder, documents already in workspace
  * @param {number} props.documentCount - Total documents, or matches while searching
  * @param {boolean} props.allSelected
  * @param {ReturnType<import("../../hooks/useUploadQueue").default>} props.uploadQueue
@@ -35,6 +36,7 @@ export default function MobileDirectory({
   picker,
   workspace,
   rows,
+  embeddedCounts,
   documentCount,
   allSelected,
   uploadQueue,
@@ -55,6 +57,7 @@ export default function MobileDirectory({
     searchResults,
     hasSelection,
     selectedCount,
+    selectedFolderNames,
     isFileSelected,
     folderSelectionState,
     toggleExpanded,
@@ -66,6 +69,9 @@ export default function MobileDirectory({
     contents,
     prefetchFolder,
   } = picker;
+
+  // An empty folder can be selected so it can be deleted, but it has nothing to move.
+  const hasFiles = selectedCount > 0;
 
   // `syncAfterUpload` pre-selects files it has not seen before, so the upload
   // folder must already be loaded or every existing file in it reads as new.
@@ -155,6 +161,8 @@ export default function MobileDirectory({
         <DirectoryContent
           status={status}
           rows={rows}
+          // Search rows already count matches only.
+          embeddedCounts={searchResults ? {} : embeddedCounts}
           folderSelectionState={folderSelectionState}
           isFileSelected={isFileSelected}
           onToggleExpanded={toggleExpanded}
@@ -166,15 +174,18 @@ export default function MobileDirectory({
 
       <MobileActionBar
         show={hasSelection}
-        label={t("connectors.directory.selected-count", {
-          count: selectedCount,
-        })}
+        label={
+          hasFiles
+            ? t("connectors.directory.selected-count", { count: selectedCount })
+            : selectedFolderNames.join(", ")
+        }
       >
-        <MobileActionButton onClick={onMoveToWorkspace}>
+        <MobileActionButton disabled={!hasFiles} onClick={onMoveToWorkspace}>
           {t("connectors.directory.move-workspace")}
         </MobileActionButton>
         <MobileActionIconButton
           label={t("connectors.directory.move-to-folder")}
+          disabled={!hasFiles}
           onClick={() => setShowFolderSheet(true)}
         >
           <MoveToFolderIcon width={20} height={20} />
@@ -212,6 +223,7 @@ export default function MobileDirectory({
 function DirectoryContent({
   status,
   rows,
+  embeddedCounts,
   folderSelectionState,
   isFileSelected,
   ...handlers
@@ -236,6 +248,7 @@ function DirectoryContent({
     <MobileFolderRow
       key={row.item.name}
       row={row}
+      inWorkspaceCount={embeddedCounts[row.item.name] ?? 0}
       selectionState={folderSelectionState(row.item.name, row.files)}
       isFileSelected={(id) => isFileSelected(row.item.name, id)}
       {...handlers}

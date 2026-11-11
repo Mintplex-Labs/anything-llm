@@ -65,7 +65,7 @@ export function MobileActionIconButton({ label, danger, children, ...props }) {
       type="button"
       aria-label={label}
       {...props}
-      className={`border-none w-11 h-11 shrink-0 rounded-xl flex items-center justify-center bg-zinc-800 light:bg-slate-100 transition-transform duration-100 active:scale-[0.97] ${
+      className={`border-none w-11 h-11 shrink-0 rounded-xl flex items-center justify-center bg-zinc-800 light:bg-slate-100 transition-transform duration-100 active:scale-[0.97] disabled:opacity-50 ${
         danger
           ? "text-red-400 light:text-red-600"
           : "text-slate-50 light:text-slate-900"

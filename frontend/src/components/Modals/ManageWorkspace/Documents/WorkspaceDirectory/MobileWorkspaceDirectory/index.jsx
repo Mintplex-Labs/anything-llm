@@ -48,39 +48,12 @@ export default function MobileWorkspaceDirectory({
       </div>
     );
 
-  if (embeddingProgress)
-    return (
-      <div className="relative flex flex-col flex-1 min-h-0">
-        <div
-          className={`flex-1 min-h-0 overflow-y-auto px-2 ${
-            hasChanges ? "pb-40" : "pb-6"
-          }`}
-        >
-          {Object.entries(embeddingProgress).map(([filename, fileStatus]) => (
-            <EmbeddingFileRow
-              key={filename}
-              filename={filename}
-              status={fileStatus}
-              onRemove={
-                fileStatus.status === "pending"
-                  ? () => onRemoveQueued(filename)
-                  : null
-              }
-            />
-          ))}
-        </div>
-        <MobileActionBar
-          show={hasChanges && movedItems.length > 0}
-          label={t("connectors.directory.ready-to-embed", {
-            count: movedItems.length,
-          })}
-        >
-          <MobileActionButton onClick={onSave}>
-            {t("connectors.directory.add-to-queue")}
-          </MobileActionButton>
-        </MobileActionBar>
-      </div>
-    );
+  // Files still being embedded are listed in their own section until they finish.
+  const embedding = Object.entries(embeddingProgress ?? {});
+  const embeddedFiles = orderedFiles.filter(
+    ({ item, folder }) => !embeddingProgress?.[`${folder.name}/${item.name}`]
+  );
+  const selectable = !hasChanges && embedding.length === 0;
 
   const openActions = (rowActions) => {
     setActions(rowActions);
@@ -96,10 +69,10 @@ export default function MobileWorkspaceDirectory({
       <div className="shrink-0 flex items-center justify-between h-9 px-4 text-xs text-zinc-400 light:text-slate-500">
         <p>
           {t("connectors.directory.total-documents", {
-            count: orderedFiles.length,
+            count: embeddedFiles.length,
           })}
         </p>
-        {!hasChanges && orderedFiles.length > 0 && (
+        {selectable && embeddedFiles.length > 0 && (
           <button
             type="button"
             onClick={onToggleSelectAll}
@@ -117,12 +90,28 @@ export default function MobileWorkspaceDirectory({
           hasChanges || selectedIds.length > 0 ? "pb-40" : "pb-6"
         }`}
       >
-        {orderedFiles.length === 0 && (
+        {embedding.length > 0 && (
+          <div className="mb-2 rounded-xl bg-zinc-800 light:bg-slate-100">
+            {embedding.map(([filename, fileStatus]) => (
+              <EmbeddingFileRow
+                key={filename}
+                filename={filename}
+                status={fileStatus}
+                onRemove={
+                  fileStatus.status === "pending"
+                    ? () => onRemoveQueued(filename)
+                    : null
+                }
+              />
+            ))}
+          </div>
+        )}
+        {embeddedFiles.length === 0 && embedding.length === 0 && (
           <p className="h-full flex items-center justify-center text-sm text-zinc-400 light:text-slate-500">
             {t("connectors.directory.no_docs")}
           </p>
         )}
-        {orderedFiles.map(({ item, folder }) => (
+        {embeddedFiles.map(({ item, folder }) => (
           <MobileWorkspaceFileRow
             key={item.id}
             item={item}
@@ -130,7 +119,7 @@ export default function MobileWorkspaceDirectory({
             workspace={workspace}
             staged={movedItems.some((moved) => moved.id === item.id)}
             selected={!!selectedItems[item.id]}
-            selectable={!hasChanges}
+            selectable={selectable}
             onToggle={onToggleItem}
             onOpenActions={openActions}
           />
@@ -144,11 +133,13 @@ export default function MobileWorkspaceDirectory({
         })}
       >
         <MobileActionButton onClick={onSave}>
-          {t("connectors.directory.save_embed")}
+          {embedding.length > 0
+            ? t("connectors.directory.add-to-queue")
+            : t("connectors.directory.save_embed")}
         </MobileActionButton>
       </MobileActionBar>
       <MobileActionBar
-        show={!hasChanges && selectedIds.length > 0}
+        show={selectable && selectedIds.length > 0}
         label={t("connectors.directory.selected-count", {
           count: selectedIds.length,
         })}

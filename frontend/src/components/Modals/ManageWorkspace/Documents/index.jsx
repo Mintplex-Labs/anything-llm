@@ -123,6 +123,12 @@ export default function DocumentSettings({ workspace, variant = "default" }) {
             picker={picker}
             workspace={workspace}
             hiddenPaths={hiddenPaths}
+            embeddedCounts={Object.fromEntries(
+              embeddedDocs.items.map((folder) => [
+                folder.name,
+                folder.items.length,
+              ])
+            )}
             setHighlightWorkspace={setHighlightWorkspace}
             moveToWorkspace={async () => {
               await moveSelectedItemsToWorkspace();
