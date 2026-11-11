@@ -6,6 +6,28 @@ const { writeResponseChunk } = require("../helpers/chat/responses");
 const { Workspace } = require("../../models/workspace");
 
 /**
+ * Most entries each invocation cache may hold. Entries are deleted as soon as
+ * the agent websocket reads them, so the caches only grow when a websocket
+ * never connects. The cap bounds that growth while staying far above the
+ * number of handshakes that can be in flight at once.
+ */
+const MAX_PENDING_INVOCATIONS = 100;
+
+/**
+ * Store a value for an invocation, evicting the oldest entry once the cache
+ * exceeds MAX_PENDING_INVOCATIONS. Map iterates in insertion order, so the
+ * first key is always the oldest.
+ * @param {Map<string, any>} cache
+ * @param {string} uuid - The invocation UUID
+ * @param {any} value
+ */
+function setPendingInvocationValue(cache, uuid, value) {
+  cache.set(uuid, value);
+  if (cache.size > MAX_PENDING_INVOCATIONS)
+    cache.delete(cache.keys().next().value);
+}
+
+/**
  * In-memory cache for attachments associated with agent invocations.
  * Attachments are stored here when grepAgents creates an invocation,
  * then retrieved by AgentHandler when the websocket connects.
@@ -19,9 +41,8 @@ const invocationAttachmentsCache = new Map();
  * @param {Array} attachments - The attachments array
  */
 function cacheInvocationAttachments(uuid, attachments = []) {
-  if (attachments.length > 0) {
-    invocationAttachmentsCache.set(uuid, attachments);
-  }
+  if (attachments.length > 0)
+    setPendingInvocationValue(invocationAttachmentsCache, uuid, attachments);
 }
 
 /**
@@ -100,7 +121,11 @@ async function grepAgents({
     // Cache attachments for the websocket handler to retrieve later
     cacheInvocationAttachments(newInvocation.uuid, attachments);
     if (reasoningEffort)
-      invocationReasoningEffortCache.set(newInvocation.uuid, reasoningEffort);
+      setPendingInvocationValue(
+        invocationReasoningEffortCache,
+        newInvocation.uuid,
+        reasoningEffort
+      );
 
     writeResponseChunk(response, {
       id: uuid,
