@@ -57,6 +57,8 @@ const SUBMIT_TOOL = {
 /**
  * A child AIbitat on the parent's provider that shares its log and
  * introspection stream but never echoes model text to the chat UI.
+ * Call `child.release()` when done with it so the parent session does not
+ * keep it alive.
  */
 function childOf(parent) {
   const child = new AIbitat({
@@ -66,13 +68,11 @@ function childOf(parent) {
     maxToolCalls: 1,
   });
   // Stopping the parent session also stops this sub-agent.
+  const signal = parent.abortController.signal;
+  const onAbort = () => child.abort();
   if (parent._aborted) child.abort();
-  else
-    parent.abortController.signal.addEventListener(
-      "abort",
-      () => child.abort(),
-      { once: true }
-    );
+  else signal.addEventListener("abort", onAbort, { once: true });
+  child.release = () => signal.removeEventListener("abort", onAbort);
   child.introspect = parent.introspect;
   child.socket = {
     send: (type, content) => {
@@ -130,6 +130,8 @@ async function searchWeb(parent, query) {
       `[DeckBuilder] Search failed for "${query}": ${error.message}`
     );
     return { notes: "", citations: [] };
+  } finally {
+    host.release();
   }
 }
 
@@ -201,6 +203,8 @@ async function buildSection(
       : await child.handleExecution(messages, functions, agent);
   } catch (error) {
     log(`[DeckBuilder] "${section.title}" failed: ${error.message}`);
+  } finally {
+    child.release();
   }
 
   const usage = child.providerInstance.getCumulativeUsage();

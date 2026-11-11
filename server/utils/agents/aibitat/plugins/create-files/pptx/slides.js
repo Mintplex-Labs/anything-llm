@@ -145,6 +145,8 @@ function normalizeTable(raw) {
     .map(cells)
     .filter((row) => row.some(Boolean))
     .slice(0, MAX_TABLE_ROWS);
+  // A header row alone renders as an empty table.
+  if (rows.length === 0) return null;
   const headers = cells(raw.headers);
   const cols = Math.min(
     MAX_TABLE_COLS,
@@ -158,15 +160,21 @@ function normalizeTable(raw) {
 function normalizeChart(raw) {
   if (!raw || typeof raw !== "object") return null;
   const series = list(raw.series)[0];
-  const values = list(series?.values ?? raw.values)
-    .map(Number)
-    .filter((v) => !Number.isNaN(v));
+  const categories = strings(raw.categories);
+  // Each value stays paired with its category, so dropping one that is not a
+  // number never shifts the rest onto the wrong label.
+  const points = list(series?.values ?? raw.values)
+    .map((v, i) => ({
+      value: typeof v === "string" && v.trim() ? Number(v) : v,
+      category: categories[i] || `${i + 1}`,
+    }))
+    .filter((p) => typeof p.value === "number" && Number.isFinite(p.value));
+  const values = points.map((p) => p.value);
   // Identical values are placeholders, not data.
   if (values.length < 2 || new Set(values).size < 2) return null;
-  const categories = strings(raw.categories);
   return {
     type: CHART_TYPES.includes(raw.type) ? raw.type : "bar",
-    categories: values.map((_, i) => categories[i] || `${i + 1}`),
+    categories: points.map((p) => p.category),
     values,
   };
 }
