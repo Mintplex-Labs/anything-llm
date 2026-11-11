@@ -25,7 +25,7 @@ const AGENT_AWAITING_USER_EVENTS = [
 // of these can arrive after the execution loop already finished (e.g.
 // rename_thread fires once the async chat save + thread auto-rename complete),
 // so they must not re-show the stop generation button.
-const AGENT_PASSIVE_EVENTS = ["rename_thread"];
+const AGENT_PASSIVE_EVENTS = ["rename_thread", "pptxSlidePreview"];
 const AGENT_PASSIVE_STREAM_EVENTS = [
   "chatId",
   "usageMetrics",
@@ -325,6 +325,8 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     const { deckId, index, image, done } = data.content;
     return setChatHistory((prev) => {
       const card = prev.find((msg) => msg.uuid === deckId);
+      // A deck that never sent a slide gets no card.
+      if (!card && !image) return prev;
       const slides = [...(card?.content?.slides || [])];
       if (
         Number.isInteger(index) &&

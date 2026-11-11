@@ -62,6 +62,9 @@ function SlidePreviewCard({ props }) {
       position
     );
 
+  // A deck whose previews never arrived shows nothing.
+  if (done && ready.length === 0) return null;
+
   return (
     <div className="flex justify-center w-full my-2">
       <div className="relative w-full max-w-[750px] mr-4">

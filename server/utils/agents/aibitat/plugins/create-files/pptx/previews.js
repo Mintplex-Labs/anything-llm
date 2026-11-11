@@ -22,12 +22,15 @@ function slidePreviews(aibitat, deck, theme) {
   const log = (message) =>
     aibitat.handlerProps?.log?.(`[DeckPreview] ${message}`);
   let index = 0;
+  let sent = 0;
   let broken = false;
   const send = (content) => {
     try {
       aibitat.socket?.send("pptxSlidePreview", { deckId, ...content });
+      return true;
     } catch (error) {
       log(error.message);
+      return false;
     }
   };
   return {
@@ -35,16 +38,18 @@ function slidePreviews(aibitat, deck, theme) {
       const position = index++;
       if (broken) return;
       try {
-        send({ index: position, image: slideThumbnail(preview(slide)) });
+        const image = slideThumbnail(preview(slide));
+        if (send({ index: position, image })) sent++;
       } catch (error) {
         // Most likely canvas is unavailable here; later slides would fail
         // the same way.
         broken = true;
-        log(`Previews disabled: ${error.message}`);
+        log(`Previews disabled: ${error.stack || error.message}`);
       }
     },
     end() {
-      send({ done: true });
+      // The chat only has a card to close once a slide was sent.
+      if (sent) send({ done: true });
     },
   };
 }

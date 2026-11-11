@@ -101,13 +101,13 @@ describe("slidePreviews", () => {
     });
   });
 
-  test("stops previewing after a failure without throwing, and still ends", () => {
+  test("stops previewing after a failure without throwing, and sends nothing when no slide went out", () => {
     const aibitat = agent();
     const previews = slidePreviews(aibitat, deck, getTheme("blue"));
     expect(() => previews.add({ layout: "nope" })).not.toThrow();
     previews.add(null);
     previews.end();
-    expect(aibitat.sent).toEqual([expect.objectContaining({ done: true })]);
+    expect(aibitat.sent).toEqual([]);
     expect(aibitat.handlerProps.log).toHaveBeenCalledWith(
       expect.stringMatching(/Previews disabled/)
     );
