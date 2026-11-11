@@ -1,4 +1,4 @@
-import { memo, useLayoutEffect, useRef, useState } from "react";
+import { memo } from "react";
 
 // Slides are recorded on the server in px of this frame (see the pptx
 // renderer's createPreviewer) and scaled down to fit here.
@@ -228,44 +228,36 @@ function Item({ item }) {
 
 /**
  * One slide preview, drawn from the shapes the server recorded and scaled
- * to the width of its container.
- * @param {{slide: {background: string, items: object[]}}} props
+ * down to `width` px.
+ * @param {{slide: {background: string, items: object[]}, width: number}} props
  */
-function Slide({ slide }) {
-  const ref = useRef(null);
-  const [scale, setScale] = useState(0);
-
-  // Measured before the first paint so the slide never flashes empty, then
-  // kept in step with the container's width.
-  useLayoutEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    setScale(node.clientWidth / FRAME_W);
-    const observer = new ResizeObserver(([entry]) =>
-      setScale(entry.contentRect.width / FRAME_W)
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
+function Slide({ slide, width }) {
+  const scale = width / FRAME_W;
   return (
-    <div ref={ref} className="relative w-full aspect-video overflow-hidden">
-      {scale > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            width: FRAME_W,
-            height: FRAME_H,
-            transform: `scale(${scale})`,
-            transformOrigin: "top left",
-            background: hex(slide.background),
-          }}
-        >
-          {slide.items.map((item, i) => (
-            <Item key={i} item={item} />
-          ))}
-        </div>
-      )}
+    <div
+      style={{
+        position: "relative",
+        width,
+        height: FRAME_H * scale,
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: FRAME_W,
+          height: FRAME_H,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          background: hex(slide.background),
+        }}
+      >
+        {slide.items.map((item, i) => (
+          <Item key={i} item={item} />
+        ))}
+      </div>
     </div>
   );
 }

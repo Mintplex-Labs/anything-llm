@@ -1,66 +1,50 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useRef } from "react";
 import Slide from "./Slide";
 
-// Thumbnails shown once the deck is done; the rest sit behind a "+N" tile.
-const COLLAPSED_COUNT = 6;
+const THUMB_W = 128;
+const THUMB_H = 72;
 
 /**
- * Live thumbnails of a presentation the agent is building, filled in slide
- * by slide from "pptxSlidePreview" socket events. They exist only for this
- * session; the downloadable file is the lasting result. Clicking a
- * thumbnail shows it large.
+ * A compact row of thumbnails of a presentation the agent is building,
+ * filled in slide by slide from "pptxSlidePreview" socket events and
+ * scrolled to the newest one. It only shows the work in progress: it exists
+ * for this session alone and the downloadable file is the lasting result.
  * @param {{content: {slides: ({background: string, items: object[]}|undefined)[], done: boolean}}} props
  */
 function SlidePreviewCard({ props }) {
   const { slides = [], done = false } = props.content || {};
-  const [selected, setSelected] = useState(null);
-  const [expanded, setExpanded] = useState(false);
+  const rowRef = useRef(null);
+  const count = slides.filter(Boolean).length;
 
-  const ready = slides
-    .map((slide, index) => ({ slide, index }))
-    .filter(({ slide }) => !!slide);
-  const collapsed = done && !expanded && ready.length > COLLAPSED_COUNT + 1;
-  const shown = collapsed ? ready.slice(0, COLLAPSED_COUNT) : ready;
-  const big = selected !== null ? slides[selected] : null;
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    row.scrollTo({ left: row.scrollWidth, behavior: "smooth" });
+  }, [count, done]);
 
   return (
     <div className="flex justify-center w-full my-2">
-      <div className="w-full max-w-[750px] mr-4 flex flex-col gap-y-2">
-        {big && (
-          <button
-            type="button"
-            onClick={() => setSelected(null)}
-            className="block w-full rounded-lg overflow-hidden ring-1 ring-white/10 light:ring-slate-300"
-          >
-            <Slide slide={big} />
-          </button>
-        )}
-        <div className="grid grid-cols-3 gap-2">
-          {shown.map(({ slide, index }) => (
-            <button
-              type="button"
-              key={index}
-              onClick={() => setSelected(selected === index ? null : index)}
-              className={`block rounded-md overflow-hidden transition-opacity hover:opacity-90 ${
-                selected === index
-                  ? "ring-2 ring-sky-400"
-                  : "ring-1 ring-white/10 light:ring-slate-300"
-              }`}
-            >
-              <Slide slide={slide} />
-            </button>
-          ))}
-          {collapsed && (
-            <button
-              type="button"
-              onClick={() => setExpanded(true)}
-              className="aspect-video rounded-md flex items-center justify-center bg-zinc-800 light:bg-slate-100 ring-1 ring-white/10 light:ring-slate-300 text-white light:text-slate-700 text-lg font-semibold hover:opacity-90"
-            >
-              +{ready.length - COLLAPSED_COUNT}
-            </button>
+      <div className="w-full max-w-[750px] mr-4">
+        <div
+          ref={rowRef}
+          className="flex gap-x-2 overflow-x-auto rounded-xl p-2 bg-zinc-800 light:bg-slate-100 light:border light:border-slate-200/50 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {slides.map(
+            (slide, index) =>
+              slide && (
+                <div
+                  key={index}
+                  className="flex-shrink-0 rounded-md overflow-hidden ring-1 ring-white/10 light:ring-slate-300"
+                >
+                  <Slide slide={slide} width={THUMB_W} />
+                </div>
+              )
           )}
           {!done && (
-            <div className="aspect-video rounded-md bg-zinc-800 light:bg-slate-200 animate-pulse" />
+            <div
+              style={{ width: THUMB_W, height: THUMB_H }}
+              className="flex-shrink-0 rounded-md bg-zinc-700 light:bg-slate-200 animate-pulse"
+            />
           )}
         </div>
       </div>
