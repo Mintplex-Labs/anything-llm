@@ -8,16 +8,26 @@ const { slideThumbnail } = require("./thumbnail.js");
  * the same renderer as the file (see createPreviewer) and baked into a JPEG
  * (see slideThumbnail), so what the user watches is what they download.
  * Images are baked one at a time in deck order without holding up the
- * deck. Previews are never stored: a reload shows only the finished file. A
- * preview that fails is logged and the rest are skipped; it never stops the
- * deck.
+ * deck; a slide whose picture is still being generated holds back the
+ * slides after it until the picture is ready. Previews are never stored: a
+ * reload shows only the finished file. A preview that fails is logged and
+ * the rest are skipped; it never stops the deck.
  * @param {import("../../../index.js")} aibitat - The agent that owns the tool call
- * @param {{title: string, subtitle: string}} deck
+ * @param {{title: string, subtitle: string, image?: *, credit?: string}} deck - image may be a promise
  * @param {object} theme - From getTheme
  * @returns {{add: (slide: import("./slides.js").Slide|null) => void, end: () => Promise<void>}}
  *   add takes null for the cover; end marks the deck finished or stopped
  *   once every queued image has been sent.
  */
+/** A picture that may still be loading, or null if loading failed. */
+async function settled(picture) {
+  try {
+    return (await picture) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function slidePreviews(aibitat, deck, theme) {
   const deckId = v4();
   const preview = createPreviewer(deck, theme);
@@ -39,20 +49,14 @@ function slidePreviews(aibitat, deck, theme) {
   return {
     add(slide) {
       const position = index++;
-      if (broken) return;
-      // Recorded now, while the previewer's divider count matches the deck.
-      let recorded;
-      try {
-        recorded = preview(slide);
-      } catch (error) {
-        broken = true;
-        log(`Previews disabled: ${error.stack || error.message}`);
-        return;
-      }
+      // Slides are recorded in the order added, which keeps the previewer's
+      // divider count in step with the deck.
       queue = queue.then(async () => {
         if (broken) return;
         try {
-          const image = await slideThumbnail(recorded);
+          const owner = slide ?? deck;
+          owner.image = await settled(owner.image);
+          const image = await slideThumbnail(preview(slide));
           if (send({ index: position, image })) sent++;
         } catch (error) {
           // Later slides would most likely fail the same way.
@@ -71,4 +75,4 @@ function slidePreviews(aibitat, deck, theme) {
   };
 }
 
-module.exports = { slidePreviews };
+module.exports = { slidePreviews, settled };

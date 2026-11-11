@@ -29,6 +29,10 @@ const TITLE_Y = 110;
 const CONTENT_BOTTOM = 960;
 const INK = "1F2937";
 const MUTED = "6B7280";
+// Left edge of the picture on cover and divider slides that have one.
+const HERO_X = 1056;
+// Left edge of the picture panel on "image" slides.
+const PANEL_X = 1008;
 
 // Average glyph width as a fraction of the font size. Aptos measures 0.44
 // regular, 0.47 bold, 0.56 in capitals and 0.43 for Aptos Display Bold
@@ -297,9 +301,16 @@ function addList(slide, entries, { x, y, w, h, size, color, lead }) {
 
 /**
  * The title of a content slide, under a short accent rule.
+ * @param {{w?: number, h?: number, max?: number, min?: number, maxLines?: number}} [box] - Defaults to the full content width
  * @returns {{top: number, bottom: number}} The area left for content
  */
-function addTitle(slide, pptx, title, t) {
+function addTitle(
+  slide,
+  pptx,
+  title,
+  t,
+  { w = CONTENT_W, h = 210, max = 84, min = 56, maxLines = 2 } = {}
+) {
   addShape(slide, pptx, {
     x: MARGIN,
     y: TITLE_Y - 34,
@@ -308,25 +319,89 @@ function addTitle(slide, pptx, title, t) {
     radius: 4,
     color: t.scale[500],
   });
-  const size = headingSize(title, {
-    w: CONTENT_W,
-    h: 210,
-    max: 84,
-    min: 56,
-    maxLines: 2,
-  });
-  const h = textHeight(title, size, { w: CONTENT_W, glyph: "heading" });
+  const size = headingSize(title, { w, h, max, min, maxLines });
+  const titleH = textHeight(title, size, { w, glyph: "heading" });
   addText(slide, title, {
     x: MARGIN,
     y: TITLE_Y,
-    w: CONTENT_W,
-    h,
+    w,
+    h: titleH,
     size,
     bold: true,
     font: HEADING_FONT,
     color: t.scale[950],
   });
-  return { top: TITLE_Y + h + 64, bottom: CONTENT_BOTTOM };
+  return { top: TITLE_Y + titleH + 64, bottom: CONTENT_BOTTOM };
+}
+
+/**
+ * Places a picture in a box: "cover" fills the box and crops the overflow,
+ * "contain" shows the whole picture centred in it.
+ * @param {import("./images.js").Picture} picture
+ * @returns {{x: number, y: number, w: number, h: number}} Where it was drawn
+ */
+function addPicture(slide, picture, box, fit) {
+  const ratio = picture.height / picture.width;
+  if (fit === "cover") {
+    slide.addImage({
+      data: picture.data,
+      x: inches(box.x),
+      y: inches(box.y),
+      // pptxgenjs crops from the picture's own proportions to the box.
+      w: inches(box.w),
+      h: inches(box.w * ratio),
+      sizing: { type: "cover", w: inches(box.w), h: inches(box.h) },
+    });
+    return box;
+  }
+  const w = Math.min(box.w, box.h / ratio);
+  const h = w * ratio;
+  const placed = {
+    x: box.x + (box.w - w) / 2,
+    y: box.y + (box.h - h) / 2,
+    w,
+    h,
+  };
+  slide.addImage({
+    data: picture.data,
+    x: inches(placed.x),
+    y: inches(placed.y),
+    w: inches(placed.w),
+    h: inches(placed.h),
+  });
+  return placed;
+}
+
+/** Where a picture came from, on a dark tag in a corner of its frame. */
+function addCredit(slide, pptx, credit, frame) {
+  if (!credit) return;
+  const size = 18;
+  const w = Math.min(frame.w - 48, credit.length * size * 0.53 + 32);
+  const y = frame.y + frame.h - 24 - 40;
+  addShape(slide, pptx, {
+    x: frame.x + 24,
+    y,
+    w,
+    h: 40,
+    radius: 8,
+    color: "000000",
+    transparency: 45,
+  });
+  addText(slide, credit, {
+    x: frame.x + 40,
+    y: y + 9,
+    w: w - 32,
+    h: 22,
+    size,
+    color: "FFFFFF",
+  });
+}
+
+/** A picture filling the right of a cover or divider. */
+function addHero(slide, pptx, image, credit) {
+  const frame = { x: HERO_X, y: 0, w: SLIDE_W - HERO_X, h: SLIDE_H };
+  addPicture(slide, image, frame, "cover");
+  addCredit(slide, pptx, credit, frame);
 }
 
 /** Large soft circles that give dark slides some depth. */
@@ -352,10 +427,12 @@ function addDecor(slide, pptx, t) {
 }
 
 /** The deck title in the bottom-left corner. */
-function addLabel(slide, label, color) {
+function addLabel(slide, label, color, w = 1200) {
   if (!label) return;
-  const text = label.length > 60 ? `${label.slice(0, 59).trim()}…` : label;
-  addText(slide, text, { x: MARGIN, y: 1000, w: 1200, h: 32, size: 22, color });
+  const max = Math.min(60, Math.floor(w / (22 * GLYPH_W.regular)));
+  const text =
+    label.length > max ? `${label.slice(0, max - 1).trim()}…` : label;
+  addText(slide, text, { x: MARGIN, y: 1000, w, h: 32, size: 22, color });
 }
 
 /** The "Created with AnythingLLM" mark in the bottom-right corner. */
@@ -398,9 +475,8 @@ function addHeadingBlock(
   slide,
   pptx,
   t,
-  { kicker, title, subtitle, titleMax, titleMin }
+  { kicker, title, subtitle, titleMax, titleMin, w = 1500 }
 ) {
-  const w = 1500;
   const titleSize = headingSize(title, {
     w,
     h: 560,
@@ -458,25 +534,98 @@ function addHeadingBlock(
     });
 }
 
-function renderCover(slide, pptx, t, { title, subtitle }) {
-  addDecor(slide, pptx, t);
+// Heading width beside a hero picture.
+const HERO_TEXT_W = HERO_X - MARGIN - 80;
+
+function renderCover(slide, pptx, t, { title, subtitle, image, credit }) {
+  if (image) addHero(slide, pptx, image, credit);
+  else addDecor(slide, pptx, t);
   addHeadingBlock(slide, pptx, t, {
     title: title || "Untitled",
     subtitle,
-    titleMax: 132,
-    titleMin: 80,
+    titleMax: image ? 104 : 132,
+    titleMin: image ? 64 : 80,
+    ...(image && { w: HERO_TEXT_W }),
   });
 }
 
 function renderSection(slide, pptx, data, t, meta) {
-  addDecor(slide, pptx, t);
+  if (data.image) addHero(slide, pptx, data.image, data.credit);
+  else addDecor(slide, pptx, t);
   addHeadingBlock(slide, pptx, t, {
     kicker: String(meta.sectionIndex).padStart(2, "0"),
     title: data.title,
     subtitle: data.subtitle,
-    titleMax: 112,
-    titleMin: 64,
+    titleMax: data.image ? 96 : 112,
+    titleMin: data.image ? 56 : 64,
+    ...(data.image && { w: HERO_TEXT_W }),
   });
+}
+
+/** The title and a short list on the left, a picture filling the right. */
+function renderImage(slide, pptx, data, t) {
+  const panel = { x: PANEL_X, y: 0, w: SLIDE_W - PANEL_X, h: SLIDE_H };
+  if (data.fit === "contain") {
+    addShape(slide, pptx, { ...panel, color: t.scale[100] });
+    addPicture(
+      slide,
+      data.image,
+      { x: panel.x + 56, y: 96, w: panel.w - 112, h: SLIDE_H - 192 },
+      "contain"
+    );
+  } else addPicture(slide, data.image, panel, "cover");
+  addCredit(slide, pptx, data.credit, panel);
+
+  const w = PANEL_X - MARGIN - 96;
+  const area = addTitle(slide, pptx, data.title, t, {
+    w,
+    h: 300,
+    max: 72,
+    min: 44,
+    maxLines: 3,
+  });
+  const entries = entriesOf(data);
+  const size = fitBlock({ max: 48, min: 22 }, area.bottom - area.top, (s) =>
+    listHeight(entries, s, w)
+  );
+  const h = listHeight(entries, size, w);
+  addList(slide, entries, {
+    x: MARGIN,
+    y: placeIn(area, h),
+    w,
+    h,
+    size,
+    color: INK,
+    lead: t.scale[700],
+  });
+}
+
+/** One picture shown whole under the title, with its caption below. */
+function renderImageFeature(slide, pptx, data, t) {
+  const area = addTitle(slide, pptx, data.title, t);
+  const caption = [data.caption, data.credit].filter(Boolean).join(" · ");
+  const captionH = caption ? 24 + 36 : 0;
+  const placed = addPicture(
+    slide,
+    data.image,
+    {
+      x: MARGIN,
+      y: area.top,
+      w: CONTENT_W,
+      h: area.bottom - area.top - captionH,
+    },
+    "contain"
+  );
+  if (caption)
+    addText(slide, caption, {
+      x: MARGIN,
+      y: placed.y + placed.h + 24,
+      w: CONTENT_W,
+      h: 36,
+      fit: { max: 26, min: 18, maxLines: 1 },
+      color: MUTED,
+      align: "center",
+    });
 }
 
 function renderBullets(slide, pptx, data, t) {
@@ -1128,6 +1277,8 @@ const RENDERERS = {
   chart: renderChart,
   table: renderTable,
   quote: renderQuote,
+  image: renderImage,
+  "image-feature": renderImageFeature,
 };
 
 // Layouts drawn on the theme's dark shade.
@@ -1151,21 +1302,29 @@ function drawSlide(slide, pptx, theme, deck, data, { sectionIndex, brand }) {
   const dark = DARK_LAYOUTS.has(data.layout);
   slide.background = { color: dark ? theme.dark : theme.light };
   RENDERERS[data.layout](slide, pptx, data, theme, { sectionIndex });
-  // The split layout's label sits on its dark panel.
+  // The split layout's label sits on its dark panel; labels stay clear of
+  // pictures.
   const labelOnDark = dark || data.layout === "split";
-  addLabel(slide, deck.title, labelOnDark ? theme.scale[200] : MUTED);
+  const labelW =
+    data.layout === "image"
+      ? PANEL_X - MARGIN - 96
+      : data.layout === "section" && data.image
+        ? HERO_TEXT_W
+        : 1200;
+  addLabel(slide, deck.title, labelOnDark ? theme.scale[200] : MUTED, labelW);
   if (brand) addBrand(slide, dark);
   if (data.notes) slide.addNotes(data.notes);
 }
 
 /**
- * Renders a whole deck to a .pptx buffer.
- * @param {{title: string, subtitle?: string, author?: string, slides: import("./slides.js").Slide[]}} deck
+ * Renders a whole deck to a .pptx buffer. Pictures must be loaded, not
+ * promises.
+ * @param {{title: string, subtitle?: string, author?: string, image?: import("./images.js").Picture|null, credit?: string, slides: import("./slides.js").Slide[]}} deck - image is the cover picture
  * @param {object} theme - From getTheme
  * @returns {Promise<Buffer>}
  */
 async function renderDeck(
-  { title, subtitle = "", author = "", slides },
+  { title, subtitle = "", author = "", image = null, credit = "", slides },
   theme
 ) {
   const pptx = new PptxGenJS();
@@ -1174,7 +1333,7 @@ async function renderDeck(
   pptx.company = "AnythingLLM";
   if (author) pptx.author = author;
 
-  const deck = { title, subtitle };
+  const deck = { title, subtitle, image, credit };
   drawSlide(pptx.addSlide(), pptx, theme, deck, null, {
     sectionIndex: 0,
     brand: true,
@@ -1285,7 +1444,18 @@ function previewTarget() {
         colors: o.chartColors,
       });
     },
-    addImage() {},
+    addImage(o) {
+      items.push({
+        kind: "image",
+        x: toPx(o.x),
+        y: toPx(o.y),
+        // A cropped picture fills its sizing box.
+        w: toPx(o.sizing?.w ?? o.w),
+        h: toPx(o.sizing?.h ?? o.h),
+        fit: o.sizing ? "cover" : "fill",
+        data: o.data,
+      });
+    },
     addNotes() {},
   };
 }
@@ -1294,7 +1464,7 @@ function previewTarget() {
  * A function that previews deck slides in order for the chat UI: pass null
  * for the cover, then each slide as it is built. It counts dividers the way
  * renderDeck does, so previews match the file.
- * @param {{title: string, subtitle: string}} deck
+ * @param {{title: string, subtitle: string, image?: import("./images.js").Picture|null, credit?: string}} deck - Read when the cover is drawn
  * @param {object} theme - From getTheme
  * @returns {(data: import("./slides.js").Slide|null) => {background: string, items: object[]}}
  */

@@ -7,6 +7,8 @@ const {
   normalizeSlides,
   assignLayouts,
   sectionSlide,
+  fitsImage,
+  pictureSlide,
 } = require("./slides.js");
 
 /**
@@ -122,7 +124,8 @@ function decodeHtmlEntities(str) {
  * Runs one web search through the web-browsing skill without any model call.
  * Only snippets are kept: links reach the user as citations and titles mostly
  * repeat the snippet, so both are tokens the model never needs.
- * @returns {Promise<{notes: string, citations: object[]}>}
+ * @returns {Promise<{notes: string, citations: object[], links: string[]}>}
+ *   links are the result pages, best first
  */
 async function searchWeb(parent, query) {
   const host = childOf(parent);
@@ -137,12 +140,15 @@ async function searchWeb(parent, query) {
       .join("\n")
       .replace(/\s+/g, " ")
       .slice(0, RESEARCH_CHAR_LIMIT);
-    return { notes, citations: host._pendingCitations };
+    const links = results
+      .map((r) => r.link || r.url)
+      .filter((link) => typeof link === "string" && /^https?:\/\//.test(link));
+    return { notes, citations: host._pendingCitations, links };
   } catch (error) {
     parent.handlerProps.log(
       `[DeckBuilder] Search failed for "${query}": ${error.message}`
     );
-    return { notes: "", citations: [] };
+    return { notes: "", citations: [], links: [] };
   } finally {
     host.release();
   }
@@ -247,15 +253,20 @@ function sectionPrompt({ section, title, notes }) {
  * `onSlides` right away (the first batch behind the section's divider), so
  * progress can be shown while the section is still being written. Falls
  * back to the outline's key points when the model adds nothing usable.
+ *
+ * A section's picture goes beside the first slide whose content leaves room
+ * for one, or on a slide of its own at the end of the section when none
+ * does. A generated divider picture goes on the divider.
  * @param {AIbitat} parent
  * @param {Object} options
  * @param {{used: Object<string, number>, previous: string|null}} options.layouts - The deck's layout history, updated in place
  * @param {(slides: import("./slides.js").Slide[]) => void} options.onSlides
+ * @param {import("./images.js").SectionImages|null} [options.images]
  * @returns {Promise<number>} Content slides added
  */
 async function buildSection(
   parent,
-  { section, title, notes, history, label, layouts, onSlides }
+  { section, title, notes, history, label, layouts, onSlides, images }
 ) {
   const child = childOf(parent);
   // Everything the model was given; figures, chart values and quotes not
@@ -269,7 +280,20 @@ async function buildSection(
   ];
   let intro = "";
   let added = 0;
+  let picture = images?.inline ?? null;
   const titles = new Set();
+  const place = (slide) => {
+    Object.assign(slide, {
+      image: picture.image,
+      fit: picture.fit,
+      credit: picture.credit ?? "",
+    });
+    if (picture.url)
+      slide.notes = [slide.notes, `Image source: ${picture.url}`]
+        .filter(Boolean)
+        .join("\n");
+    picture = null;
+  };
   const add = (raw, { checked = true } = {}) => {
     const fresh = normalizeSlides(raw, {
       fallbackTitle: section.title,
@@ -280,8 +304,15 @@ async function buildSection(
       .slice(0, MAX_SECTION_SLIDES - added);
     if (!fresh.length) return 0;
     fresh.forEach((slide) => titles.add(slide.title.toLowerCase()));
+    const host = picture && fresh.find(fitsImage);
+    if (host) place(host);
     const placed = assignLayouts(fresh, layouts);
-    onSlides(added ? placed : [sectionSlide(section.title, intro), ...placed]);
+    const divider = () => {
+      const slide = sectionSlide(section.title, intro);
+      if (images?.hero) slide.image = images.hero;
+      return slide;
+    };
+    onSlides(added ? placed : [divider(), ...placed]);
     added += placed.length;
     return placed.length;
   };
@@ -334,6 +365,17 @@ async function buildSection(
       { checked: false }
     );
 
+  // No slide had room for the section's picture, so it gets its own.
+  if (picture && added && !parent._aborted) {
+    const [slide] = assignLayouts(
+      [pictureSlide(picture.caption || section.title, picture)],
+      layouts
+    );
+    if (picture.url) slide.notes = `Image source: ${picture.url}`;
+    onSlides([slide]);
+    added++;
+  }
+
   const usage = child.providerInstance.getCumulativeUsage();
   log(
     `[DeckBuilder] "${section.title}" produced ${added} slides, ${usage.prompt_tokens + usage.completion_tokens} tokens`
@@ -354,21 +396,39 @@ async function buildSection(
  * @param {boolean} deck.research - Search the web before writing
  * @param {{from: string, content: string}[]} [deck.history] - The conversation, oldest first, which section calls can search for facts the outline left out
  * @param {(slides: import("./slides.js").Slide[]) => void} [deck.onSlides] - Called with each batch of finished slides, in deck order
+ * @param {(found: {links: string[]}) => Promise<{sections: import("./images.js").SectionImages[]}>} [deck.planImages]
+ *   Called once after the deck-level search, with the pages it found,
+ *   to choose each section's pictures
  * @returns {Promise<{slides: import("./slides.js").Slide[], citations: object[], built: string[]}>}
  *   built holds the titles of the sections that produced at least one slide.
  */
 async function buildDeck(
   parent,
-  { say, title, subtitle, sections, research, history = [], onSlides }
+  {
+    say,
+    title,
+    subtitle,
+    sections,
+    research,
+    history = [],
+    onSlides,
+    planImages,
+  }
 ) {
   const citations = [];
+
   const search = async (query) => {
     const found = await searchWeb(parent, query.slice(0, QUERY_CHAR_LIMIT));
     citations.push(...found.citations);
-    return found.notes;
+    return found;
   };
 
-  const deckNotes = research ? await search(`${title} ${subtitle}`.trim()) : "";
+  const deckSearch = research
+    ? await search(`${title} ${subtitle}`.trim())
+    : null;
+  const deckNotes = deckSearch?.notes ?? "";
+  const links = deckSearch?.links ?? [];
+  const pictures = (await planImages?.({ links }))?.sections ?? [];
   const slides = [];
   const built = [];
   // Layout history across the whole deck, so sections do not repeat each
@@ -382,7 +442,7 @@ async function buildDeck(
     // search will not have, so it gets one search of its own.
     const notes =
       research && (section.instructions || !deckNotes)
-        ? await search(`${section.title} ${title}`)
+        ? (await search(`${section.title} ${title}`)).notes
         : deckNotes;
     const count = await buildSection(parent, {
       section,
@@ -391,6 +451,7 @@ async function buildDeck(
       history,
       label,
       layouts,
+      images: pictures[i] ?? null,
       onSlides: (batch) => {
         slides.push(...batch);
         onSlides?.(batch);

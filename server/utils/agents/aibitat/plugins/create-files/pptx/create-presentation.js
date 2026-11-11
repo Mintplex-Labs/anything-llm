@@ -5,7 +5,14 @@ const { PALETTES, getTheme } = require("./themes.js");
 const { buildDeck } = require("./deck-builder.js");
 const { renderDeck } = require("./render.js");
 const { normalizeCover } = require("./slides.js");
-const { slidePreviews } = require("./previews.js");
+const { slidePreviews, settled } = require("./previews.js");
+const {
+  attachedPictures,
+  webPictures,
+  canGenerateImages,
+  illustrator,
+  assignPictures,
+} = require("./images.js");
 
 const MAX_SECTIONS = 5;
 const THEME_HELP = Object.entries(PALETTES)
@@ -16,7 +23,7 @@ const THEME_HELP = Object.entries(PALETTES)
  * The tool result for the calling agent. It names every requested section
  * that is missing from the deck and why, so the agent can tell the user.
  */
-function deckSummary({ title, slides, theme, requested, built }) {
+function deckSummary({ title, slides, theme, requested, built, pictures }) {
   const titles = (list) => list.map((s) => `"${s.title ?? s}"`).join(", ");
   const overCap = requested.slice(MAX_SECTIONS);
   const failed = requested
@@ -26,6 +33,7 @@ function deckSummary({ title, slides, theme, requested, built }) {
     `Successfully created presentation "${title}" with ${pluralize("slide", slides.length, true)} using the ${theme.name} theme.`,
     `Sections built: ${built.length ? titles(built) : "none"}.`,
   ];
+  if (pictures) lines.push(`It has ${pluralize("picture", pictures, true)}.`);
   if (overCap.length)
     lines.push(
       `Left out because a presentation holds at most ${MAX_SECTIONS} sections: ${titles(overCap)}.`
@@ -45,6 +53,8 @@ module.exports.CreatePptxPresentation = {
     return {
       name: "create-pptx-presentation",
       setup(aibitat) {
+        // Generation is only offered when it can work.
+        const canGenerate = canGenerateImages();
         aibitat.function({
           super: aibitat,
           name: this.name,
@@ -142,6 +152,16 @@ module.exports.CreatePptxPresentation = {
                 description:
                   "Optional 6-digit hex color (e.g. 'ED1C24') to use as the accent color instead of the palette default. Use for brand colors when the user asks.",
               },
+              images: {
+                type: "string",
+                enum: ["none", "web", ...(canGenerate ? ["generate"] : [])],
+                description:
+                  "Pictures for the slides. Leave it out unless the user asks for images, pictures or visuals. web: photos from web pages found by searching." +
+                  (canGenerate
+                    ? " generate: new illustrations from the image generator."
+                    : "") +
+                  " Images the user attached are used without this.",
+              },
               research: {
                 type: "boolean",
                 description:
@@ -169,6 +189,11 @@ module.exports.CreatePptxPresentation = {
                       description:
                         "Optional guidance for the section builder (e.g. 'research recent statistics', 'compare with competitors', 'include a data table').",
                     },
+                    image: {
+                      type: "integer",
+                      description:
+                        "Only when the user attached images: the number of the attached image to show in this section (1 = the first image they attached).",
+                    },
                   },
                   required: ["title"],
                 },
@@ -186,6 +211,7 @@ module.exports.CreatePptxPresentation = {
             theme: themeName,
             accentColor,
             research,
+            images: imageMode,
             sections,
           }) {
             let previews = null;
@@ -204,6 +230,13 @@ module.exports.CreatePptxPresentation = {
               ).filter((s) => s && typeof s === "object" && s.title);
               sections = requested.slice(0, MAX_SECTIONS);
               research = research === true || research === "true";
+              const mode =
+                imageMode === "web" ||
+                (imageMode === "generate" && canGenerateImages())
+                  ? imageMode
+                  : "none";
+              // Web pictures come from the pages a search finds.
+              if (mode === "web") research = true;
               filename = String(filename);
               if (!filename.toLowerCase().endsWith(".pptx"))
                 filename += ".pptx";
@@ -220,8 +253,13 @@ module.exports.CreatePptxPresentation = {
                     title,
                     sectionCount: sections.length,
                     sectionTitles: sections.map((s) => s.title),
+                    images: mode,
                   },
-                  description: `Create PowerPoint presentation "${title}" with ${sections.length} sections`,
+                  description:
+                    `Create PowerPoint presentation "${title}" with ${sections.length} sections` +
+                    (mode === "generate"
+                      ? ` and ${sections.length + 1} generated images`
+                      : ""),
                 });
                 if (!approval.approved) {
                   say(`User rejected the ${this.name} request.`);
@@ -236,9 +274,44 @@ module.exports.CreatePptxPresentation = {
                   (c) => c.state === "success" && typeof c.content === "string"
                 )
                 .map((c) => ({ from: c.from, content: c.content }));
-              const cover = normalizeCover({ title, subtitle });
+              const log = (msg) => this.super.handlerProps.log(msg);
+              const signal = this.super.abortController?.signal;
+              const attached = await attachedPictures(this.super.chats);
+              const cover = {
+                ...normalizeCover({ title, subtitle }),
+                image: null,
+                credit: "",
+              };
               previews = slidePreviews(this.super, cover, theme);
-              previews.add(null);
+              // Chooses every picture once the deck-level search has found
+              // its pages; the cover preview waits for the cover picture.
+              const planImages = async ({ links }) => {
+                let web = [];
+                if (mode === "web" && links.length) {
+                  say("Looking for pictures on the pages found");
+                  web = await webPictures(links, { log, signal });
+                }
+                const generate =
+                  mode === "generate"
+                    ? illustrator({ theme, log, signal })
+                    : null;
+                if (generate)
+                  say(
+                    `Generating ${pluralize("illustration", sections.length + 1, true)} while the slides are written`
+                  );
+                const plan = assignPictures({
+                  mode,
+                  title: cover.title,
+                  sections,
+                  attached,
+                  web,
+                  generate,
+                });
+                cover.image = plan.cover?.image ?? null;
+                cover.credit = plan.cover?.credit ?? "";
+                previews.add(null);
+                return plan;
+              };
               const { slides, citations, built } = await buildDeck(this.super, {
                 say,
                 title,
@@ -247,6 +320,7 @@ module.exports.CreatePptxPresentation = {
                 research,
                 history,
                 onSlides: (batch) => batch.forEach(previews.add),
+                planImages,
               });
               if (this.super._aborted)
                 return "Presentation generation was cancelled.";
@@ -255,6 +329,11 @@ module.exports.CreatePptxPresentation = {
               say(
                 `Assembling final deck — ${pluralize("slide", slides.length, true)}`
               );
+              cover.image = await settled(cover.image);
+              for (const slide of slides)
+                if (slide.image) slide.image = await settled(slide.image);
+              const pictures =
+                slides.filter((s) => s.image).length + (cover.image ? 1 : 0);
               // Model output can carry XML 1.0 illegal control characters (e.g.
               // a form feed from a LaTeX `\frac`); strip them so PowerPoint can
               // open the deck.
@@ -285,7 +364,14 @@ module.exports.CreatePptxPresentation = {
               );
 
               say(`Successfully created presentation "${title}"`);
-              return deckSummary({ title, slides, theme, requested, built });
+              return deckSummary({
+                title,
+                slides,
+                theme,
+                requested,
+                built,
+                pictures,
+              });
             } catch (e) {
               this.super.handlerProps.log(
                 `create-pptx-presentation error: ${e.message}`

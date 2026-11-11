@@ -25,6 +25,12 @@ const { safeJsonParse } = require("../../../../../http");
  * @property {{headers: string[], rows: string[][]}|null} table
  * @property {{text: string, by: string}|null} quote
  * @property {string} notes
+ * @property {import("./images.js").Picture|Promise<import("./images.js").Picture|null>|null} [image]
+ *   Set by code only: a picture beside the content ("image"), on its own
+ *   ("image-feature"), or a generated picture on a section divider
+ * @property {"cover"|"contain"} [fit] - How an "image" or "image-feature" picture fills its frame
+ * @property {string} [caption] - Shown under an "image-feature" picture
+ * @property {string} [credit] - Where the picture came from, shown on the slide
  */
 
 const CHART_TYPES = ["bar", "line", "pie", "doughnut", "area"];
@@ -393,16 +399,36 @@ function candidates(slide) {
 }
 
 /**
+ * True when a slide's content is a short list, which leaves room for a
+ * picture beside it.
+ * @param {Omit<Slide, "layout"|"subtitle">} slide
+ */
+function fitsImage(slide) {
+  if (slide.chart || slide.table || slide.quote || slide.figures.length)
+    return false;
+  const entries = slide.items.length || slide.points.length;
+  return entries > 0 && entries <= 5;
+}
+
+/**
  * Gives each slide a layout: the one the model asked for when the content
  * fits it and it is not the layout right before; otherwise the best
  * candidate that is not the layout right before, preferring layouts the
- * deck has used least. `state` carries the deck's history across sections.
+ * deck has used least. A slide code gave a picture always shows it: beside
+ * its list ("image") or on its own ("image-feature"). `state` carries the
+ * deck's history across sections.
  * @param {Omit<Slide, "layout"|"subtitle">[]} slides
  * @param {{used: Object<string, number>, previous: string|null}} state - Updated in place
  * @returns {Slide[]}
  */
 function assignLayouts(slides, state) {
   return slides.map(({ preferred, ...slide }) => {
+    if (slide.image) {
+      const layout = fitsImage(slide) ? "image" : "image-feature";
+      state.used[layout] = (state.used[layout] || 0) + 1;
+      state.previous = layout;
+      return { layout, subtitle: "", ...slide };
+    }
     const honored =
       preferred && LAYOUTS[preferred](slide) && preferred !== state.previous;
     const options = candidates(slide).filter((l) => LAYOUTS[l](slide));
@@ -442,6 +468,27 @@ function sectionSlide(title, subtitle = "") {
 }
 
 /**
+ * A slide that shows one picture under a title, before assignLayouts.
+ * @param {string} title
+ * @param {import("./images.js").InlineImage} picture
+ * @returns {Omit<Slide, "layout"|"subtitle">}
+ */
+function pictureSlide(title, picture) {
+  const {
+    layout: _layout,
+    subtitle: _subtitle,
+    ...empty
+  } = sectionSlide(title);
+  return {
+    ...empty,
+    image: picture.image,
+    fit: picture.fit,
+    caption: clip(text(picture.caption), LIMITS.point),
+    credit: text(picture.credit),
+  };
+}
+
+/**
  * The cover slide's title and subtitle, clipped like any slide's.
  * @param {{title: *, subtitle: *}} cover
  * @returns {{title: string, subtitle: string}}
@@ -462,4 +509,6 @@ module.exports = {
   assignLayouts,
   sectionSlide,
   normalizeCover,
+  fitsImage,
+  pictureSlide,
 };

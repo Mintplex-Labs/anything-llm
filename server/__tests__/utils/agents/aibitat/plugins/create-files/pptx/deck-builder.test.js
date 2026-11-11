@@ -369,3 +369,67 @@ describe("buildDeck add-slides loop", () => {
     expect(batches.flat()).toEqual(slides.map((s) => s.title));
   });
 });
+
+describe("buildDeck pictures", () => {
+  const photo = { data: "data:image/jpeg;base64,AA", width: 1600, height: 900 };
+
+  test("puts a section's picture beside its first short list, or on a slide of its own", async () => {
+    mockModel = (tools, messages) =>
+      messages[1].content.includes("Section: Data")
+        ? [{ title: "Numbers", table: { headers: ["a"], rows: [["1"]] } }]
+        : [
+            { title: "Numbers", table: { headers: ["a"], rows: [["1"]] } },
+            { title: "Ideas", points: ["One idea", "Another idea"] },
+          ];
+    const hero = Promise.resolve(photo);
+    const planImages = jest.fn(async () => ({
+      sections: [
+        {
+          hero,
+          inline: {
+            image: photo,
+            fit: "cover",
+            credit: "Image: news.com",
+            url: "https://news.com/a.jpg",
+          },
+        },
+        {
+          hero: null,
+          inline: { image: photo, fit: "contain", caption: "The dashboard" },
+        },
+      ],
+    }));
+    const { slides } = await buildDeck(parentAgent(), {
+      say: () => {},
+      title: "Deck",
+      subtitle: "",
+      sections: [{ title: "Story" }, { title: "Data" }],
+      research: false,
+      planImages,
+    });
+    expect(planImages).toHaveBeenCalledWith({ links: [] });
+    expect(layoutsOf(slides)).toEqual([
+      "section",
+      "table",
+      "image",
+      "section",
+      "table",
+      "image-feature",
+    ]);
+    expect(slides[0].image).toBe(hero);
+    expect(slides[2]).toMatchObject({
+      title: "Ideas",
+      image: photo,
+      fit: "cover",
+      credit: "Image: news.com",
+      notes: "Image source: https://news.com/a.jpg",
+    });
+    expect(slides[3].image).toBeUndefined();
+    expect(slides[5]).toMatchObject({
+      title: "The dashboard",
+      caption: "The dashboard",
+      fit: "contain",
+      image: photo,
+    });
+  });
+});
