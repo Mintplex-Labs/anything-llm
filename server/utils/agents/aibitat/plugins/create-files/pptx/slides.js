@@ -126,18 +126,22 @@ const SLIDE_SCHEMA = {
   required: ["title"],
 };
 
-const text = (v) => (v == null ? "" : String(v).trim());
-const list = (v) => (Array.isArray(v) ? v : typeof v === "string" ? [v] : []);
+// Bounds on raw model output, applied before any other parsing. A model
+// stuck repeating itself can send megabytes; this caps the work (and the
+// regex backtracking) on it while leaving room for anything a slide shows.
+const MAX_TEXT = 1000;
+const MAX_LIST = 24;
+
+const text = (v) => (v == null ? "" : String(v).slice(0, MAX_TEXT).trim());
+const list = (v) =>
+  Array.isArray(v) ? v.slice(0, MAX_LIST) : typeof v === "string" ? [v] : [];
 const strings = (v) => list(v).map(text).filter(Boolean);
 // "a | b | c" strings and objects are common small-model substitutes for arrays.
 const cells = (row) =>
-  Array.isArray(row)
-    ? row.map(text)
-    : typeof row === "string"
-      ? row.split(/\s*[|;\t]\s*/).map(text)
-      : row && typeof row === "object"
-        ? Object.values(row).map(text)
-        : [];
+  (typeof row === "string"
+    ? text(row).split(/\s*[|;\t]\s*/)
+    : list(row && typeof row === "object" ? Object.values(row) : [])
+  ).map((cell) => clip(text(cell), LIMITS.cell));
 
 /**
  * Cuts a string to at most `max` characters, ending on a word boundary with
@@ -215,13 +219,13 @@ function normalizeItems(raw, proof) {
         ? { title: text(item.title), text: text(item.text ?? item.description) }
         : { title: "", text: text(item) }
     )
-    .filter((item) => item.title || item.text)
-    .filter((item) => !inventsQuantity(`${item.title} ${item.text}`, proof))
-    .slice(0, LIMITS.items)
     .map((item) => ({
       title: clip(item.title, LIMITS.itemTitle),
       text: clip(item.text, LIMITS.itemText),
-    }));
+    }))
+    .filter((item) => item.title || item.text)
+    .filter((item) => !inventsQuantity(`${item.title} ${item.text}`, proof))
+    .slice(0, LIMITS.items);
 }
 
 // A figure is a number someone can check, not prose or "0"/"1" wordplay.
@@ -255,8 +259,7 @@ function normalizeTable(raw, proof) {
     LIMITS.tableCols,
     Math.max(headers.length, ...rows.map((r) => r.length))
   );
-  const pad = (row) =>
-    Array.from({ length: cols }, (_, i) => clip(row[i] || "", LIMITS.cell));
+  const pad = (row) => Array.from({ length: cols }, (_, i) => row[i] || "");
   return { headers: headers.length ? pad(headers) : [], rows: rows.map(pad) };
 }
 
@@ -319,8 +322,8 @@ function normalizeSlide(s, fallbackTitle, proof) {
     preferred: Object.hasOwn(LAYOUTS, asked) ? asked : null,
     title: clip(text(s.title) || fallbackTitle, LIMITS.title),
     points: strings(s.points ?? s.bullets)
-      .filter((p) => !inventsQuantity(p, proof))
-      .map((p) => clip(p, LIMITS.point)),
+      .map((p) => clip(p, LIMITS.point))
+      .filter((p) => !inventsQuantity(p, proof)),
     items: normalizeItems(s.items, proof),
     ordered: s.ordered === true || s.ordered === "true",
     figures: normalizeFigures(s.figures ?? s.stats, proof),

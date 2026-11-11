@@ -189,6 +189,31 @@ describe("normalizeSlides with sources", () => {
     expect(slide.items.map((i) => i.title)).toEqual(["Lean", "Open"]);
   });
 
+  test("checks only the text a slide shows, and stays fast on runaway model output", () => {
+    const tail = `${"word ".repeat(30)}and 999% more`;
+    expect(normalize({ title: "A", points: [tail] }).points).toHaveLength(1);
+
+    // Repetition loops like these made the quantity and cell regexes
+    // backtrack for seconds on the server's only thread.
+    const runaway = [
+      "1,".repeat(50000),
+      " ".repeat(100000),
+      "1.".repeat(50000),
+    ];
+    const many = Array(1000).fill(runaway[0]);
+    const started = Date.now();
+    for (const s of runaway)
+      normalize({
+        title: s,
+        points: many,
+        items: many.map((x) => ({ title: x, text: s })),
+        table: { headers: many, rows: [s, many, { a: s }] },
+        chart: { values: many, categories: many },
+        quote: s,
+      });
+    expect(Date.now() - started).toBeLessThan(1000);
+  });
+
   test("drops table rows with invented quantities and chart values not in the sources", () => {
     const slide = normalize({
       title: "A",
