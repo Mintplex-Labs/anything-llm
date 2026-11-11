@@ -51,7 +51,6 @@ export default function useUploadQueue() {
         reason: rejection.errors[0].code,
       })),
     ];
-    // Rejected entries have no running upload or automatic removal.
     setFiles((prev) => [
       ...prev.filter((file) => !file.rejected),
       ...nextFiles,
