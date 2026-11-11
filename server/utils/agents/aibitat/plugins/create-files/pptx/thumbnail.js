@@ -250,7 +250,7 @@ function chart(item, background) {
 function image(item) {
   const aspect = item.fit === "cover" ? "xMidYMid slice" : "none";
   const id = `clip${Math.round(item.x)}_${Math.round(item.y)}`;
-  return `<clipPath id="${id}"><rect x="${num(item.x)}" y="${num(item.y)}" width="${num(item.w)}" height="${num(item.h)}"/></clipPath><image clip-path="url(#${id})" x="${num(item.x)}" y="${num(item.y)}" width="${num(item.w)}" height="${num(item.h)}" preserveAspectRatio="${aspect}" href="${escape(item.data)}" xlink:href="${escape(item.data)}"/>`;
+  return `<clipPath id="${id}"><rect x="${num(item.x)}" y="${num(item.y)}" width="${num(item.w)}" height="${num(item.h)}"/></clipPath><image clip-path="url(#${id})" x="${num(item.x)}" y="${num(item.y)}" width="${num(item.w)}" height="${num(item.h)}" preserveAspectRatio="${aspect}" href="${escape(item.data)}"/>`;
 }
 
 /**
@@ -272,7 +272,7 @@ function slideSvg(slide) {
               : shape(item)
     )
     .join("");
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${FRAME_W}" height="${FRAME_H}" viewBox="0 0 ${FRAME_W} ${FRAME_H}"><rect width="${FRAME_W}" height="${FRAME_H}" fill="${hex(slide.background, "#ffffff")}"/>${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${FRAME_W}" height="${FRAME_H}" viewBox="0 0 ${FRAME_W} ${FRAME_H}"><rect width="${FRAME_W}" height="${FRAME_H}" fill="${hex(slide.background, "#ffffff")}"/>${body}</svg>`;
 }
 
 /**

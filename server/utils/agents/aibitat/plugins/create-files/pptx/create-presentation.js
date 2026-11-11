@@ -215,6 +215,7 @@ module.exports.CreatePptxPresentation = {
             sections,
           }) {
             let previews = null;
+            let stopImages = () => {};
             try {
               this.super.handlerProps.log(
                 `Using the create-pptx-presentation tool.`
@@ -275,8 +276,22 @@ module.exports.CreatePptxPresentation = {
                 )
                 .map((c) => ({ from: c.from, content: c.content }));
               const log = (msg) => this.super.handlerProps.log(msg);
-              const signal = this.super.abortController?.signal;
-              const attached = await attachedPictures(this.super.chats);
+              // Downloads and generations stop when the session is stopped
+              // or this call ends early, so a failed deck stops paying for
+              // images.
+              const imageWork = new AbortController();
+              const session = this.super.abortController?.signal;
+              const relay = () => imageWork.abort();
+              session?.addEventListener("abort", relay, { once: true });
+              stopImages = () => {
+                session?.removeEventListener("abort", relay);
+                imageWork.abort();
+              };
+              const signal = imageWork.signal;
+              const attached = await attachedPictures(
+                this.super.chats,
+                new Set(sections.map((s) => Number(s.image)))
+              );
               const cover = {
                 ...normalizeCover({ title, subtitle }),
                 image: null,
@@ -379,6 +394,7 @@ module.exports.CreatePptxPresentation = {
               this.super.introspect(`Error: ${e.message}`);
               return `Error creating presentation: ${e.message}`;
             } finally {
+              stopImages();
               previews?.end();
             }
           },

@@ -55,7 +55,7 @@ function slidePreviews(aibitat, deck, theme) {
         if (broken) return;
         try {
           const owner = slide ?? deck;
-          owner.image = await settled(owner.image);
+          if (owner.image) owner.image = await settled(owner.image);
           const image = await slideThumbnail(preview(slide));
           if (send({ index: position, image })) sent++;
         } catch (error) {

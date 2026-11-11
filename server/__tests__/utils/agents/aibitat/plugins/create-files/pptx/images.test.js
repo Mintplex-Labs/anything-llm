@@ -46,6 +46,13 @@ describe("isPublicIp and assertPublicUrl", () => {
       "fc00::1",
       "fe80::1",
       "::ffff:127.0.0.1",
+      // The same addresses as Node writes them after parsing a URL.
+      "::ffff:7f00:1",
+      "::ffff:a9fe:a9fe",
+      "::7f00:1",
+      "64:ff9b::7f00:1",
+      "2002:7f00:1::1",
+      "2001:0:7f00:1::1",
       "not an ip",
     ])
       expect([ip, isPublicIp(ip)]).toEqual([ip, false]);
@@ -53,13 +60,17 @@ describe("isPublicIp and assertPublicUrl", () => {
       expect([ip, isPublicIp(ip)]).toEqual([ip, true]);
   });
 
-  test("rejects other schemes and hosts on the server's own network", async () => {
+  test("rejects other schemes and hosts on the server's own network, however they are written", async () => {
     for (const url of [
       "file:///etc/passwd",
       "ftp://8.8.8.8/a.png",
       "http://127.0.0.1/a.png",
+      "http://127.1/a.png",
+      "http://2130706433/a.png",
       "http://localhost:3001/a.png",
       "http://[::1]/a.png",
+      "http://[::ffff:127.0.0.1]/a.png",
+      "http://[::ffff:a9fe:a9fe]/latest/meta-data",
       "http://169.254.169.254/latest/meta-data",
     ])
       await expect(assertPublicUrl(url)).rejects.toThrow();
@@ -70,65 +81,96 @@ describe("isPublicIp and assertPublicUrl", () => {
 });
 
 describe("downloadImage", () => {
-  const realFetch = global.fetch;
-  afterEach(() => {
-    global.fetch = realFetch;
-  });
-  const respond = ({ status = 200, headers = {}, body = [] }) => ({
-    status,
-    ok: status >= 200 && status < 300,
-    headers: new Headers(headers),
-    body: (async function* () {
-      for (const chunk of body) yield chunk;
-    })(),
-  });
+  const http = require("http");
+  let server;
+  let base;
+  const hits = [];
+  const routes = {
+    "/ok.png": (res) => {
+      res.writeHead(200, { "content-type": "image/png" });
+      res.write("ab");
+      res.end("cd");
+    },
+    "/page.html": (res) => {
+      res.writeHead(200, { "content-type": "text/html" });
+      res.end("<html>");
+    },
+    "/vector.svg": (res) => {
+      res.writeHead(200, { "content-type": "image/svg+xml" });
+      res.end("<svg/>");
+    },
+    "/missing.png": (res) => {
+      res.writeHead(404, { "content-type": "image/png" });
+      res.end();
+    },
+    "/huge.jpg": (res) => {
+      res.writeHead(200, { "content-type": "image/jpeg" });
+      const chunk = Buffer.alloc(1024 * 1024);
+      for (let i = 0; i < 9; i++) res.write(chunk);
+      res.end();
+    },
+    "/hop": (res) => {
+      res.writeHead(302, { location: "/ok.png" });
+      res.end();
+    },
+    "/to-v6-loopback": (res) => {
+      res.writeHead(302, { location: "http://[::ffff:7f00:1]/secret" });
+      res.end();
+    },
+  };
+  // The server listens on loopback, so tests that need to reach it allow
+  // exactly that address.
+  const loopbackOnly = (ip) => ip === "127.0.0.1";
 
-  test("never fetches a private host, including through a redirect", async () => {
-    global.fetch = jest.fn();
-    await expect(downloadImage("http://127.0.0.1/a.png")).rejects.toThrow();
-    expect(global.fetch).not.toHaveBeenCalled();
-
-    global.fetch = jest.fn(async () =>
-      respond({ status: 302, headers: { location: "http://10.0.0.5/secret" } })
-    );
-    await expect(downloadImage("http://93.184.216.34/a.png")).rejects.toThrow(
-      /not a public address/
-    );
-    expect(global.fetch).toHaveBeenCalledTimes(1);
-  });
-
-  test("returns the bytes of a raster image and refuses anything else", async () => {
-    global.fetch = jest.fn(async () =>
-      respond({
-        headers: { "content-type": "image/png" },
-        body: [Buffer.from("ab"), Buffer.from("cd")],
+  beforeAll(
+    () =>
+      new Promise((resolve) => {
+        server = http.createServer((req, res) => {
+          hits.push(req.url);
+          (routes[req.url] || routes["/missing.png"])(res);
+        });
+        server.listen(0, "127.0.0.1", () => {
+          base = `http://127.0.0.1:${server.address().port}`;
+          resolve();
+        });
       })
-    );
-    expect((await downloadImage("http://93.184.216.34/a.png")).toString()).toBe(
-      "abcd"
-    );
+  );
+  afterAll(() => new Promise((resolve) => server.close(resolve)));
+  beforeEach(() => hits.splice(0));
 
-    for (const type of ["text/html", "image/svg+xml", ""]) {
-      global.fetch = jest.fn(async () =>
-        respond({ headers: { "content-type": type }, body: [Buffer.from("x")] })
-      );
+  test("refuses this host by default, by name or by address, without connecting", async () => {
+    const port = server.address().port;
+    for (const url of [
+      `${base}/ok.png`,
+      `http://localhost:${port}/ok.png`,
+      `http://[::ffff:127.0.0.1]:${port}/ok.png`,
+    ])
+      await expect(downloadImage(url)).rejects.toThrow(/not a public address/);
+    expect(hits).toEqual([]);
+  });
+
+  test("checks every redirect before following it", async () => {
+    expect(
+      (
+        await downloadImage(`${base}/hop`, { isAllowed: loopbackOnly })
+      ).toString()
+    ).toBe("abcd");
+    await expect(
+      downloadImage(`${base}/to-v6-loopback`, { isAllowed: loopbackOnly })
+    ).rejects.toThrow(/not a public address/);
+    expect(hits).toEqual(["/hop", "/ok.png", "/to-v6-loopback"]);
+  });
+
+  test("returns only raster images that load and fit under the size cap", async () => {
+    for (const [path, error] of [
+      ["/page.html", /not a raster image/],
+      ["/vector.svg", /not a raster image/],
+      ["/missing.png", /HTTP 404/],
+      ["/huge.jpg", /too large/],
+    ])
       await expect(
-        downloadImage("http://93.184.216.34/a.png")
-      ).rejects.toThrow();
-    }
-  });
-
-  test("stops reading an image that grows past the size cap", async () => {
-    const chunk = Buffer.alloc(1024 * 1024);
-    global.fetch = jest.fn(async () =>
-      respond({
-        headers: { "content-type": "image/jpeg" },
-        body: Array(9).fill(chunk),
-      })
-    );
-    await expect(downloadImage("http://93.184.216.34/a.jpg")).rejects.toThrow(
-      /too large/
-    );
+        downloadImage(`${base}${path}`, { isAllowed: loopbackOnly })
+      ).rejects.toThrow(error);
   });
 });
 
@@ -214,7 +256,7 @@ describe("attachedPictures", () => {
       mime: "image/png",
       contentString: `data:image/png;base64,${(await png(64, 64)).toString("base64")}`,
     });
-    const pictures = await attachedPictures([
+    const chats = [
       { from: "USER", attachments: [await attachment("old.png")] },
       { from: "@agent", attachments: [await attachment("agent.png")] },
       {
@@ -225,18 +267,25 @@ describe("attachedPictures", () => {
           { name: "broken.png", mime: "image/png", contentString: "bm9wZQ==" },
         ],
       },
-    ]);
-    expect(
+    ];
+    const summary = (pictures) =>
       pictures.map(({ number, name, latest, image }) => [
         number,
         name,
         latest,
         !!image,
-      ])
-    ).toEqual([
-      [1, "old.png", false, true],
+      ]);
+    // An older image is only decoded when the outline asks for it.
+    expect(summary(await attachedPictures(chats))).toEqual([
+      [1, "old.png", false, false],
       [2, "new.png", true, true],
       [3, "broken.png", true, false],
+    ]);
+    expect(summary(await attachedPictures(chats, new Set([1])))[0]).toEqual([
+      1,
+      "old.png",
+      false,
+      true,
     ]);
   });
 });

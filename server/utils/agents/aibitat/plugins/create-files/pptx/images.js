@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const net = require("net");
-const dns = require("dns").promises;
+const dns = require("dns");
+const http = require("http");
+const https = require("https");
 
 /**
  * Pictures for a deck, from three sources: images the user attached to the
@@ -73,65 +75,111 @@ async function preparePicture(buffer) {
   };
 }
 
+// Addresses a page must not be able to reach through the server: this
+// host, private networks, link-local (cloud metadata), carrier-grade NAT,
+// benchmarking, multicast and reserved ranges. BlockList also checks
+// IPv4-mapped IPv6 addresses ("::ffff:7f00:1") against these.
+const PRIVATE_V4 = new net.BlockList();
+for (const [address, prefix] of [
+  ["0.0.0.0", 8],
+  ["10.0.0.0", 8],
+  ["100.64.0.0", 10],
+  ["127.0.0.0", 8],
+  ["169.254.0.0", 16],
+  ["172.16.0.0", 12],
+  ["192.0.0.0", 24],
+  ["192.168.0.0", 16],
+  ["198.18.0.0", 15],
+  ["224.0.0.0", 3],
+])
+  PRIVATE_V4.addSubnet(address, prefix, "ipv4");
+// Public IPv6 is global unicast (2000::/3), minus the ranges that carry an
+// IPv4 address inside them (6to4, Teredo) and documentation addresses.
+const GLOBAL_V6 = new net.BlockList();
+GLOBAL_V6.addSubnet("2000::", 3, "ipv6");
+const TUNNELED_V6 = new net.BlockList();
+TUNNELED_V6.addSubnet("2002::", 16, "ipv6");
+TUNNELED_V6.addSubnet("2001::", 32, "ipv6");
+TUNNELED_V6.addSubnet("2001:db8::", 32, "ipv6");
+
 /**
- * True for an address on the public internet; false for loopback, private,
- * link-local, carrier-grade NAT, multicast and reserved ranges.
+ * True only for an address on the public internet.
  * @param {string} ip
  */
 function isPublicIp(ip) {
-  if (net.isIPv4(ip)) {
-    const [a, b] = ip.split(".").map(Number);
-    return !(
-      a === 0 ||
-      a === 10 ||
-      a === 127 ||
-      a >= 224 ||
-      (a === 100 && b >= 64 && b <= 127) ||
-      (a === 169 && b === 254) ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && (b === 168 || b === 0)) ||
-      (a === 198 && (b === 18 || b === 19))
-    );
-  }
+  if (net.isIPv4(ip)) return !PRIVATE_V4.check(ip, "ipv4");
   if (!net.isIPv6(ip)) return false;
-  const v6 = ip.toLowerCase();
-  const mapped = v6.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  if (mapped) return isPublicIp(mapped[1]);
-  return !(
-    v6 === "::" ||
-    v6 === "::1" ||
-    /^f[cd]/.test(v6) ||
-    /^fe[89ab]/.test(v6) ||
-    v6.startsWith("ff")
+  return (
+    !PRIVATE_V4.check(ip, "ipv6") &&
+    GLOBAL_V6.check(ip, "ipv6") &&
+    !TUNNELED_V6.check(ip, "ipv6")
   );
 }
 
 /**
- * Throws unless a URL is http(s) and its host resolves only to public
- * addresses, so a page cannot point the server at its own network.
+ * Throws unless a URL is http(s) and its host is, or resolves only to,
+ * allowed addresses.
  * @param {string} url
+ * @param {(ip: string) => boolean} [isAllowed]
  */
-async function assertPublicUrl(url) {
+async function assertPublicUrl(url, isAllowed = isPublicIp) {
   const { protocol, hostname } = new URL(url);
   if (protocol !== "http:" && protocol !== "https:")
     throw new Error(`${protocol} URLs are not allowed`);
   const host = hostname.replace(/^\[|\]$/g, "");
   const addresses = net.isIP(host)
     ? [{ address: host }]
-    : await dns.lookup(host, { all: true });
-  if (!addresses.length || !addresses.every((a) => isPublicIp(a.address)))
+    : await dns.promises.lookup(host, { all: true });
+  if (!addresses.length || !addresses.every((a) => isAllowed(a.address)))
     throw new Error(`${host} is not a public address`);
 }
 
 /**
- * Downloads an image from the public web: every redirect is checked like the
- * first URL, and the response must be a raster image under
- * MAX_DOWNLOAD_BYTES that arrives within DOWNLOAD_TIMEOUT_MS.
+ * A DNS lookup for http.get that refuses to connect anywhere but allowed
+ * addresses. Checking at connect time, rather than before the request,
+ * means a host cannot pass the check and then resolve somewhere else.
+ */
+const guardedLookup = (isAllowed) => (hostname, options, callback) => {
+  dns.lookup(hostname, { ...options, all: true }, (error, addresses) => {
+    if (error) return callback(error);
+    if (!addresses.length || !addresses.every((a) => isAllowed(a.address)))
+      return callback(new Error(`${hostname} is not a public address`));
+    if (options.all) return callback(null, addresses);
+    callback(null, addresses[0].address, addresses[0].family);
+  });
+};
+
+/** One GET request, resolving with the response once headers arrive. */
+function get(url, { signal, isAllowed }) {
+  const client = new URL(url).protocol === "https:" ? https : http;
+  return new Promise((resolve, reject) => {
+    const req = client.get(
+      url,
+      {
+        signal,
+        lookup: guardedLookup(isAllowed),
+        headers: {
+          Accept: "image/avif,image/webp,image/png,image/jpeg",
+          // Some image hosts (Wikimedia among them) refuse clients that do
+          // not name themselves.
+          "User-Agent": "AnythingLLM-DeckBuilder/1.0",
+        },
+      },
+      resolve
+    );
+    req.on("error", reject);
+  });
+}
+
+/**
+ * Downloads an image from the public web: the first URL and every redirect
+ * may only connect to allowed addresses, and the response must be a raster
+ * image under MAX_DOWNLOAD_BYTES that arrives within DOWNLOAD_TIMEOUT_MS.
  * @param {string} url
- * @param {AbortSignal} [signal]
+ * @param {{signal?: AbortSignal, isAllowed?: (ip: string) => boolean}} [options] - isAllowed defaults to isPublicIp
  * @returns {Promise<Buffer>}
  */
-async function downloadImage(url, signal) {
+async function downloadImage(url, { signal, isAllowed = isPublicIp } = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT_MS);
   const stop = () => controller.abort();
@@ -139,35 +187,35 @@ async function downloadImage(url, signal) {
   try {
     let current = url;
     for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-      await assertPublicUrl(current);
-      const res = await fetch(current, {
-        redirect: "manual",
+      // Literal IPs never reach the lookup, so they are checked here.
+      await assertPublicUrl(current, isAllowed);
+      const res = await get(current, {
         signal: controller.signal,
-        headers: {
-          Accept: "image/avif,image/webp,image/png,image/jpeg",
-          // Some image hosts (Wikimedia among them) refuse clients that do
-          // not name themselves.
-          "User-Agent": "AnythingLLM-DeckBuilder/1.0",
-        },
+        isAllowed,
       });
-      const location = res.headers.get("location");
-      if (res.status >= 300 && res.status < 400 && location) {
-        current = new URL(location, current).href;
+      const { statusCode: status, headers } = res;
+      if (status >= 300 && status < 400 && headers.location) {
+        res.resume();
+        current = new URL(headers.location, current).href;
         continue;
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (!WEB_TYPES.test(res.headers.get("content-type") || ""))
-        throw new Error("not a raster image");
-      if (Number(res.headers.get("content-length")) > MAX_DOWNLOAD_BYTES)
-        throw new Error("image too large");
-      const chunks = [];
-      let size = 0;
-      for await (const chunk of res.body) {
-        size += chunk.length;
-        if (size > MAX_DOWNLOAD_BYTES) throw new Error("image too large");
-        chunks.push(chunk);
+      try {
+        if (status < 200 || status >= 300) throw new Error(`HTTP ${status}`);
+        if (!WEB_TYPES.test(headers["content-type"] || ""))
+          throw new Error("not a raster image");
+        if (Number(headers["content-length"]) > MAX_DOWNLOAD_BYTES)
+          throw new Error("image too large");
+        const chunks = [];
+        let size = 0;
+        for await (const chunk of res) {
+          size += chunk.length;
+          if (size > MAX_DOWNLOAD_BYTES) throw new Error("image too large");
+          chunks.push(chunk);
+        }
+        return Buffer.concat(chunks);
+      } finally {
+        res.destroy();
       }
-      return Buffer.concat(chunks);
     }
     throw new Error("too many redirects");
   } finally {
@@ -336,7 +384,9 @@ async function webPictures(links, { log, signal }) {
       for (const url of downloadUrls(candidate.url)) {
         if (signal?.aborted) return null;
         try {
-          const image = await preparePicture(await downloadImage(url, signal));
+          const image = await preparePicture(
+            await downloadImage(url, { signal })
+          );
           const ratio = image.width / image.height;
           const sized =
             image.width >= MIN_WEB_W &&
@@ -360,12 +410,15 @@ async function webPictures(links, { log, signal }) {
 
 /**
  * The images the user attached in the conversation, oldest first, so "1"
- * is the first image they attached. An image that cannot be read keeps its
- * number but has no picture.
+ * is the first image they attached. Only the images a deck can use are
+ * decoded: the numbers in `wanted` and those attached to the latest
+ * message. Any other image, or one that cannot be read, keeps its number
+ * but has no picture.
  * @param {object[]} chats - The agent's chat log
+ * @param {Set<number>} [wanted] - Image numbers the outline asks for
  * @returns {Promise<{number: number, name: string, latest: boolean, image: Picture|null}[]>}
  */
-async function attachedPictures(chats = []) {
+async function attachedPictures(chats = [], wanted = new Set()) {
   const { resolveImageBuffers } = require("../../../../../chats/commands/img");
   const fromUser = chats.filter((chat) => chat.from === "USER");
   const latest = fromUser[fromUser.length - 1];
@@ -376,12 +429,15 @@ async function attachedPictures(chats = []) {
   );
   return Promise.all(
     attached.map(async ({ attachment, latest }, i) => {
-      const [buffer] = resolveImageBuffers([attachment]);
+      const number = i + 1;
       let image = null;
-      try {
-        if (buffer) image = await preparePicture(buffer);
-      } catch {}
-      return { number: i + 1, name: attachment.name || "", latest, image };
+      if (latest || wanted.has(number)) {
+        const [buffer] = resolveImageBuffers([attachment]);
+        try {
+          if (buffer) image = await preparePicture(buffer);
+        } catch {}
+      }
+      return { number, name: attachment.name || "", latest, image };
     })
   );
 }
