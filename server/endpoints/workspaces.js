@@ -47,6 +47,28 @@ const {
   workspaceDeletionProtection,
 } = require("../utils/middleware/workspaceDeletionProtection");
 
+/**
+ * Most entries the TTS response cache may hold. Synthesized audio buffers are
+ * large (hundreds of KB to a few MB each) and were previously retained for the
+ * lifetime of the process, so the cap bounds total memory while staying far
+ * above the number of messages a user replays between restarts.
+ */
+const MAX_TTS_CACHE_ENTRIES = 100;
+
+/**
+ * Store a value in a cache, evicting the oldest entry once the cache exceeds
+ * MAX_TTS_CACHE_ENTRIES. Map iterates in insertion order, so the first key is
+ * always the oldest.
+ * @param {Map<string, any>} cache
+ * @param {string} cacheKey
+ * @param {{buffer: Buffer, mime: string}} value
+ */
+function setTtsCacheValue(cache, cacheKey, value) {
+  cache.set(cacheKey, value);
+  if (cache.size > MAX_TTS_CACHE_ENTRIES)
+    cache.delete(cache.keys().next().value);
+}
+
 function workspaceEndpoints(app) {
   if (!app) return;
   const responseCache = new Map();
@@ -716,7 +738,7 @@ function workspaceEndpoints(app) {
         if (buffer === null) return response.sendStatus(204).end();
 
         const { mime } = getAudioFileInfo(buffer);
-        responseCache.set(cacheKey, { buffer, mime });
+        setTtsCacheValue(responseCache, cacheKey, { buffer, mime });
         response.writeHead(200, {
           "Content-Type": mime,
         });
