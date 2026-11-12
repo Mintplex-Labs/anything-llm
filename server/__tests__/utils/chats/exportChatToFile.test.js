@@ -31,12 +31,20 @@ describe("sendChatHistoryFile", () => {
       "A Spring controller returns `ResponseEntity<AnswerDto>`.",
       "A Rust handler returns `Result<Response, Error>`.",
       "Notes are kept in a `List<Thought>`.",
+      'Render it with `<Thought text="x">body</Thought>`.',
     ].join("\n");
     expect(await exportedReply(reply)).toBe(reply);
   });
 
-  test("still removes answer and response wrapper tags", async () => {
+  test("removes thought blocks and wrapper tags", async () => {
     expect(await exportedReply("<answer>42</answer>")).toBe("42");
+    expect(await exportedReply('<answer id="a">42</answer >')).toBe("42");
     expect(await exportedReply("<response>Hi</response>")).toBe("Hi");
+    expect(
+      await exportedReply(
+        "<thinking>\nplan\n</thinking>\n\n<answer>Done</answer>"
+      )
+    ).toBe("Done");
+    expect(await exportedReply('<think mode="x">a</think>B')).toBe("B");
   });
 });

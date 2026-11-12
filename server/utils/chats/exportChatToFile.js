@@ -5,6 +5,11 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
+// Tag names match exactly and case-sensitively, like the chat window's
+// ThoughtContainer patterns, so code such as Promise<Response> or a JSX
+// <Thought> component in a reply is kept.
+const TAG_ATTRS = "(?:\\s[^>]*)?";
+const THOUGHT_BLOCK = `<(${THOUGHT_TAGS})${TAG_ATTRS}>([\\s\\S]*?)</(${THOUGHT_TAGS})\\s*>`;
 const THUMB_EDGE = 96;
 const THUMB_GAP = 8;
 const THUMB_COLUMNS = 4;
@@ -23,10 +28,7 @@ const validExportTypes = ["pdf", "markdown", "plaintext", "json", "html"];
 // Extract thought chain content from assistant messages.
 function extractThoughtChain(text = "") {
   const matches = [];
-  const regex = new RegExp(
-    `<(${THOUGHT_TAGS})[^>]*>([\\s\\S]*?)</(${THOUGHT_TAGS})\\s*>`,
-    "gi"
-  );
+  const regex = new RegExp(THOUGHT_BLOCK, "g");
   let m;
   while ((m = regex.exec(text)) !== null) matches.push(m[2].trim());
   return matches.join("\n\n") || null;
@@ -34,18 +36,10 @@ function extractThoughtChain(text = "") {
 
 // Strip the assistant's thought chain so the export only contains the response.
 function stripThoughtChain(text = "") {
-  // Stray wrapper tags must match a lowercase tag name exactly, so code such
-  // as Promise<Response> stays.
   return text
+    .replace(new RegExp(THOUGHT_BLOCK, "g"), "")
     .replace(
-      new RegExp(
-        `<(${THOUGHT_TAGS})[^>]*>[\\s\\S]*?</(${THOUGHT_TAGS})\\s*>`,
-        "gi"
-      ),
-      ""
-    )
-    .replace(
-      new RegExp(`</?(${THOUGHT_TAGS}|response|answer)(?:\\s[^>]*)?>`, "g"),
+      new RegExp(`</?(${THOUGHT_TAGS}|response|answer)${TAG_ATTRS}>`, "g"),
       ""
     )
     .trim();
