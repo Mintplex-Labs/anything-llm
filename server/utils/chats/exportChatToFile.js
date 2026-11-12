@@ -5,9 +5,9 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
-// Tag names match exactly and case-sensitively, like the chat window's
-// ThoughtContainer patterns, so code such as Promise<Response> or a JSX
-// <Thought> component in a reply is kept.
+// A thought or wrapper tag is the exact lowercase name, optionally followed by
+// whitespace and attributes, the same rule the chat window uses. Anything else
+// in angle brackets, like Promise<Response> or a JSX <Thought>, is reply text.
 const TAG_ATTRS = "(?:\\s[^>]*)?";
 const THOUGHT_BLOCK = `<(${THOUGHT_TAGS})${TAG_ATTRS}>([\\s\\S]*?)</(${THOUGHT_TAGS})\\s*>`;
 const THUMB_EDGE = 96;
