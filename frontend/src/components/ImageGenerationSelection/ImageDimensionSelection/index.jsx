@@ -14,7 +14,9 @@ const PROVIDER_DIMENSIONS = {
     "4:5",
     "21:9",
   ],
+  "minimax-imggen": ["auto", "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"],
 };
+const ASPECT_RATIO_PROVIDERS = ["gemini-imggen", "minimax-imggen"];
 const DEFAULT_DIMENSIONS = ["512x512", "1024x1024"];
 
 const INPUT_CLASSES =
@@ -31,7 +33,9 @@ export default function ImageDimensionSelection({ provider, settings }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        {provider === "gemini-imggen" ? "Aspect Ratio" : "Image Dimensions"}
+        {ASPECT_RATIO_PROVIDERS.includes(provider)
+          ? "Aspect Ratio"
+          : "Image Dimensions"}
       </label>
       <select
         name="ImageGenerationDimensions"
