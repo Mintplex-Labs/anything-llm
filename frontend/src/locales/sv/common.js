@@ -842,6 +842,7 @@ const TRANSLATIONS = {
       at: "Skickat den",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

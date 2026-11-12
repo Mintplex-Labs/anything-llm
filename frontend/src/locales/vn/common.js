@@ -807,6 +807,7 @@ const TRANSLATIONS = {
       at: "Gửi lúc",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

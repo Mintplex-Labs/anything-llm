@@ -800,6 +800,7 @@ const TRANSLATIONS = {
       at: "زمان ارسال",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

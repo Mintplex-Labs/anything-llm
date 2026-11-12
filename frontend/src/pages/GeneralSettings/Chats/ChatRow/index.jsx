@@ -1,5 +1,4 @@
 import moment from "moment";
-import truncate from "truncate";
 import { Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
 import Modal, { ModalHeader, ModalBody } from "@/components/lib/Modal";
@@ -8,6 +7,29 @@ import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
 import useMultiUserMode from "@/hooks/useMultiUserMode";
 import { useTranslation } from "react-i18next";
+import {
+  THOUGHT_REGEX_COMPLETE,
+  THOUGHT_REGEX_OPEN,
+} from "@/components/WorkspaceChat/ChatContainer/ChatHistory/ThoughtContainer";
+
+// Longest text put in a preview cell. CSS cuts it to one line; this only keeps
+// very long prompts and responses out of the DOM.
+const PREVIEW_MAX_CHARS = 300;
+
+/**
+ * Single-line preview of a chat response without its reasoning: complete
+ * <think>-style blocks are removed and an unclosed one (reasoning that never
+ * finished) is cut off. The response modal still shows the full text.
+ * @param {string} text
+ * @returns {string}
+ */
+function responsePreview(text) {
+  if (typeof text !== "string") return "";
+  let visible = text.replace(new RegExp(THOUGHT_REGEX_COMPLETE, "g"), "");
+  const unclosed = visible.search(THOUGHT_REGEX_OPEN);
+  if (unclosed !== -1) visible = visible.slice(0, unclosed);
+  return visible.trim().slice(0, PREVIEW_MAX_CHARS);
+}
 
 export default function ChatRow({ chat, onDelete, formatCost }) {
   const multiUserMode = useMultiUserMode();
@@ -21,6 +43,8 @@ export default function ChatRow({ chat, onDelete, formatCost }) {
     openModal: openResponseModal,
     closeModal: closeResponseModal,
   } = useModal();
+
+  const response = safeJsonParse(chat.response, {});
 
   const handleDelete = async () => {
     if (
@@ -45,22 +69,24 @@ export default function ChatRow({ chat, onDelete, formatCost }) {
           </td>
         )}
         <td className="px-6">{chat.workspace?.name}</td>
+        <ModelCell metrics={response?.metrics} />
         <td
           onClick={openPromptModal}
           className="px-6 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
-          {truncate(chat.prompt, 40)}
+          <div className="max-w-[220px] truncate">
+            {chat.prompt?.slice(0, PREVIEW_MAX_CHARS)}
+          </div>
         </td>
         <td
           onClick={openResponseModal}
           className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
-          {truncate(safeJsonParse(chat.response, {})?.text, 40)}
+          <div className="max-w-[220px] truncate">
+            {responsePreview(response?.text) || "—"}
+          </div>
         </td>
-        <CostCell
-          metrics={safeJsonParse(chat.response, {})?.metrics}
-          formatCost={formatCost}
-        />
+        <CostCell metrics={response?.metrics} formatCost={formatCost} />
         <td className="px-6">{moment(chat.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
@@ -76,11 +102,7 @@ export default function ChatRow({ chat, onDelete, formatCost }) {
       </Modal>
       <Modal isOpen={isResponseOpen} onClose={closeResponseModal}>
         <TextPreview
-          text={
-            <MarkdownRenderer
-              content={safeJsonParse(chat.response, {})?.text}
-            />
-          }
+          text={<MarkdownRenderer content={response?.text} />}
           closeModal={closeResponseModal}
         />
       </Modal>
@@ -99,6 +121,23 @@ const TextPreview = ({ text, closeModal }) => {
     </form>
   );
 };
+
+/**
+ * The provider class and model that produced the response, on one line.
+ * Chats recorded without metrics show a dash.
+ */
+function ModelCell({ metrics }) {
+  const label = [metrics?.provider, metrics?.model]
+    .filter((part) => typeof part === "string" && part)
+    .join(" / ");
+  if (!label) return <td className="px-6 whitespace-nowrap">—</td>;
+
+  return (
+    <td className="px-6" title={label}>
+      <div className="max-w-[200px] truncate">{label}</div>
+    </td>
+  );
+}
 
 function CostCell({ metrics, formatCost }) {
   const { t } = useTranslation();

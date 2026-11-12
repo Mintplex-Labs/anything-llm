@@ -1441,6 +1441,7 @@ const TRANSLATIONS = {
       at: "Trimis la",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

@@ -847,6 +847,7 @@ const TRANSLATIONS = {
       at: "Küldés ideje",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

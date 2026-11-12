@@ -794,6 +794,7 @@ const TRANSLATIONS = {
       at: "送信日時",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

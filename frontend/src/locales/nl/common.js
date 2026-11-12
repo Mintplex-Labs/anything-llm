@@ -814,6 +814,7 @@ const TRANSLATIONS = {
       at: "Verzonden Om",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

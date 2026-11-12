@@ -839,6 +839,7 @@ const TRANSLATIONS = {
       at: "भेजा गया समय",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

@@ -851,6 +851,7 @@ const TRANSLATIONS = {
       at: "Išsiųsta",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

@@ -852,6 +852,7 @@ const TRANSLATIONS = {
       at: "Poslano u",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

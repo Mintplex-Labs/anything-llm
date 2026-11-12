@@ -821,6 +821,7 @@ const TRANSLATIONS = {
       at: "Gönderilme Zamanı",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

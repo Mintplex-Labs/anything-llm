@@ -867,6 +867,7 @@ const TRANSLATIONS = {
       at: "Enviat el",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

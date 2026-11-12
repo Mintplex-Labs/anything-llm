@@ -759,6 +759,7 @@ const TRANSLATIONS = {
       at: "傳送時間",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

@@ -831,6 +831,7 @@ const TRANSLATIONS = {
       at: "Saadetud",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

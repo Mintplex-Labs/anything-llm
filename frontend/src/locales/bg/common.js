@@ -852,6 +852,7 @@ const TRANSLATIONS = {
       at: "Изпратено на",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

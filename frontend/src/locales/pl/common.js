@@ -858,6 +858,7 @@ const TRANSLATIONS = {
       at: "Wysłane o",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

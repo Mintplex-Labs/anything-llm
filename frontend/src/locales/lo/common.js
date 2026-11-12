@@ -809,6 +809,7 @@ const TRANSLATIONS = {
       at: "ສົ່ງເມື່ອ",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

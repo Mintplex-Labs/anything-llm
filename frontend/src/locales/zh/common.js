@@ -795,6 +795,7 @@ const TRANSLATIONS = {
       at: "发送时间",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

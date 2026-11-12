@@ -821,6 +821,7 @@ const TRANSLATIONS = {
       at: "보낸 시각",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

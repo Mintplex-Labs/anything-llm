@@ -845,6 +845,7 @@ const TRANSLATIONS = {
       at: "Dikirim Pada",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

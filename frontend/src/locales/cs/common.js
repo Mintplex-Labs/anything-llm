@@ -851,6 +851,7 @@ const TRANSLATIONS = {
       at: "Odesláno v",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

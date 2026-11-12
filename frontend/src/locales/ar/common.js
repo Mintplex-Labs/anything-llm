@@ -801,6 +801,7 @@ const TRANSLATIONS = {
       at: "أرسلت في",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {

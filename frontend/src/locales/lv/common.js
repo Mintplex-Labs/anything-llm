@@ -848,6 +848,7 @@ const TRANSLATIONS = {
       at: "Nosūtīts",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

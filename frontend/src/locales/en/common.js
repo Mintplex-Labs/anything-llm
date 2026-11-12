@@ -837,6 +837,7 @@ const TRANSLATIONS = {
       workspace: "Workspace",
       prompt: "Prompt",
       response: "Response",
+      model: "Model",
       cost: "Cost",
       at: "Sent At",
       "cost-breakdown":

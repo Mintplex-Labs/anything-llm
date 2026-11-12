@@ -817,6 +817,7 @@ const TRANSLATIONS = {
       at: "נשלח ב",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {

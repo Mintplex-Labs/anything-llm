@@ -827,6 +827,7 @@ const TRANSLATIONS = {
       at: "Inviato a",
       cost: null,
       "cost-breakdown": null,
+      model: null,
     },
   },
   api: {
