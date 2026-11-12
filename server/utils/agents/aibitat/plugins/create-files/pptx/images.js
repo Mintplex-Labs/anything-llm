@@ -176,10 +176,18 @@ function get(url, { signal, isAllowed }) {
  * may only connect to allowed addresses, and the response must be a raster
  * image under MAX_DOWNLOAD_BYTES that arrives within DOWNLOAD_TIMEOUT_MS.
  * @param {string} url
- * @param {{signal?: AbortSignal, isAllowed?: (ip: string) => boolean}} [options] - isAllowed defaults to isPublicIp
+ * @param {{signal?: AbortSignal, isAllowed?: (ip: string) => boolean, types?: RegExp, maxBytes?: number}} [options] - isAllowed defaults to isPublicIp, types (matched against content-type) to WEB_TYPES, maxBytes to MAX_DOWNLOAD_BYTES
  * @returns {Promise<Buffer>}
  */
-async function downloadImage(url, { signal, isAllowed = isPublicIp } = {}) {
+async function downloadImage(
+  url,
+  {
+    signal,
+    isAllowed = isPublicIp,
+    types = WEB_TYPES,
+    maxBytes = MAX_DOWNLOAD_BYTES,
+  } = {}
+) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT_MS);
   const stop = () => controller.abort();
@@ -201,15 +209,15 @@ async function downloadImage(url, { signal, isAllowed = isPublicIp } = {}) {
       }
       try {
         if (status < 200 || status >= 300) throw new Error(`HTTP ${status}`);
-        if (!WEB_TYPES.test(headers["content-type"] || ""))
+        if (!types.test(headers["content-type"] || ""))
           throw new Error("not a raster image");
-        if (Number(headers["content-length"]) > MAX_DOWNLOAD_BYTES)
+        if (Number(headers["content-length"]) > maxBytes)
           throw new Error("image too large");
         const chunks = [];
         let size = 0;
         for await (const chunk of res) {
           size += chunk.length;
-          if (size > MAX_DOWNLOAD_BYTES) throw new Error("image too large");
+          if (size > maxBytes) throw new Error("image too large");
           chunks.push(chunk);
         }
         return Buffer.concat(chunks);

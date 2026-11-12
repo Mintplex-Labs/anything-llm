@@ -3,6 +3,8 @@
  * Uses marked for parsing, jsdom for HTML traversal, and docx for document generation.
  */
 
+const { downloadImage } = require("../pptx/images");
+
 /**
  * Document style presets for professional-looking documents.
  */
@@ -92,6 +94,8 @@ async function loadLibraries() {
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const IMAGE_FETCH_TIMEOUT_MS = 2000;
+// The magic-byte check decides the format, so any content type is accepted.
+const ANY_CONTENT_TYPE = /(?:)/;
 
 /**
  * Image magic bytes and their corresponding types.
@@ -197,35 +201,14 @@ async function fetchImage(src, log) {
       );
 
       try {
-        const response = await fetch(src, {
+        // Image URLs come from model output, so they must not reach this
+        // host or private networks.
+        imageBuffer = await downloadImage(src, {
           signal: controller.signal,
+          types: ANY_CONTENT_TYPE,
+          maxBytes: MAX_IMAGE_SIZE,
         });
         clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          log(
-            `create-docx-file: Failed to fetch image from ${src}: ${response.status}`
-          );
-          return null;
-        }
-
-        const contentLength = response.headers.get("content-length");
-        if (contentLength && parseInt(contentLength, 10) > MAX_IMAGE_SIZE) {
-          log(
-            `create-docx-file: Image too large (${(parseInt(contentLength, 10) / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
-          );
-          return null;
-        }
-
-        const arrayBuffer = await response.arrayBuffer();
-        imageBuffer = Buffer.from(arrayBuffer);
-
-        if (imageBuffer.length > MAX_IMAGE_SIZE) {
-          log(
-            `create-docx-file: Downloaded image too large (${(imageBuffer.length / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
-          );
-          return null;
-        }
 
         const validation = validateImageMagicBytes(imageBuffer);
         if (!validation.valid) {

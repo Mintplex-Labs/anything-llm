@@ -99,6 +99,10 @@ describe("downloadImage", () => {
       res.writeHead(200, { "content-type": "image/svg+xml" });
       res.end("<svg/>");
     },
+    "/untyped.gif": (res) => {
+      res.writeHead(200, { "content-type": "application/octet-stream" });
+      res.end("GIF89a");
+    },
     "/missing.png": (res) => {
       res.writeHead(404, { "content-type": "image/png" });
       res.end();
@@ -171,6 +175,28 @@ describe("downloadImage", () => {
       await expect(
         downloadImage(`${base}${path}`, { isAllowed: loopbackOnly })
       ).rejects.toThrow(error);
+  });
+
+  test("accepts other content types only when the caller allows them", async () => {
+    await expect(
+      downloadImage(`${base}/untyped.gif`, { isAllowed: loopbackOnly })
+    ).rejects.toThrow(/not a raster image/);
+    expect(
+      (
+        await downloadImage(`${base}/untyped.gif`, {
+          isAllowed: loopbackOnly,
+          types: /(?:)/,
+        })
+      ).toString()
+    ).toBe("GIF89a");
+  });
+
+  test("lets the caller raise the size cap", async () => {
+    const image = await downloadImage(`${base}/huge.jpg`, {
+      isAllowed: loopbackOnly,
+      maxBytes: 10 * 1024 * 1024,
+    });
+    expect(image.length).toBe(9 * 1024 * 1024);
   });
 });
 
