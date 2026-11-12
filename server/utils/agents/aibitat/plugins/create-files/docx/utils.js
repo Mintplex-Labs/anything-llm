@@ -3,6 +3,8 @@
  * Uses marked for parsing, jsdom for HTML traversal, and docx for document generation.
  */
 
+const { loadImage } = require("../images.js");
+
 /**
  * Document style presets for professional-looking documents.
  */
@@ -90,209 +92,61 @@ async function loadLibraries() {
   };
 }
 
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const IMAGE_FETCH_TIMEOUT_MS = 2000;
+// The formats docx ImageRun can embed.
+const DOCX_IMAGE_FORMATS = ["png", "jpg", "gif", "bmp"];
 
 /**
- * Image magic bytes and their corresponding types.
- * This is hardcoded and there might be a better way to do this but this is for simple image validation.
- * @type {Object}
- */
-const IMAGE_MAGIC_BYTES = {
-  png: { bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], type: "png" },
-  jpg: { bytes: [0xff, 0xd8, 0xff], type: "jpg" },
-  gif87a: { bytes: [0x47, 0x49, 0x46, 0x38, 0x37, 0x61], type: "gif" },
-  gif89a: { bytes: [0x47, 0x49, 0x46, 0x38, 0x39, 0x61], type: "gif" },
-  bmp: { bytes: [0x42, 0x4d], type: "bmp" },
-  webp: {
-    bytes: [0x52, 0x49, 0x46, 0x46],
-    type: "webp",
-    offset4: [0x57, 0x45, 0x42, 0x50],
-  },
-};
-
-/**
- * Validates image buffer by checking magic bytes to determine actual image type.
- * @param {Buffer} buffer - The image buffer to validate
- * @returns {{valid: boolean, type: string|null}} Validation result with detected type
- */
-function validateImageMagicBytes(buffer) {
-  if (!buffer || buffer.length < 12) {
-    return { valid: false, type: null };
-  }
-
-  for (const [, signature] of Object.entries(IMAGE_MAGIC_BYTES)) {
-    const matches = signature.bytes.every((byte, i) => buffer[i] === byte);
-    if (matches) {
-      if (signature.offset4) {
-        const offset4Matches = signature.offset4.every(
-          (byte, i) => buffer[8 + i] === byte
-        );
-        if (!offset4Matches) continue;
-      }
-      return { valid: true, type: signature.type };
-    }
-  }
-
-  return { valid: false, type: null };
-}
-
-/**
- * Fetches an image from a URL or processes a base64 data string.
+ * Loads an image from a base64 data URL or a public URL and sizes it for the page.
  * @param {string} src - Image source (URL or base64)
  * @param {Function} log - Logging function
  * @returns {Promise<{buffer: Buffer, type: string, width: number, height: number} | null>}
  */
 async function fetchImage(src, log) {
+  let image;
   try {
-    let imageBuffer;
-    let imageType = "png";
-
-    if (src.startsWith("data:")) {
-      const match = src.match(/^data:image\/(\w+);base64,(.+)$/);
-      if (match) {
-        imageBuffer = Buffer.from(match[2], "base64");
-
-        if (imageBuffer.length > MAX_IMAGE_SIZE) {
-          log(
-            `create-docx-file: Base64 image too large (${(imageBuffer.length / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
-          );
-          return null;
-        }
-
-        const validation = validateImageMagicBytes(imageBuffer);
-        if (!validation.valid) {
-          log(
-            `create-docx-file: Base64 data is not a valid image (magic bytes check failed)`
-          );
-          return null;
-        }
-        imageType = validation.type;
-
-        log(
-          `create-docx-file: Processed base64 image, type: ${imageType}, size: ${imageBuffer.length} bytes`
-        );
-      } else {
-        log(`create-docx-file: Invalid base64 image format, skipping`);
-        return null;
-      }
-    } else if (src.startsWith("http://") || src.startsWith("https://")) {
-      let parsedUrl;
-      try {
-        parsedUrl = new URL(src);
-      } catch {
-        log(`create-docx-file: Invalid URL: ${src}`);
-        return null;
-      }
-
-      if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-        log(`create-docx-file: Invalid URL protocol: ${parsedUrl.protocol}`);
-        return null;
-      }
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        IMAGE_FETCH_TIMEOUT_MS
-      );
-
-      try {
-        const response = await fetch(src, {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          log(
-            `create-docx-file: Failed to fetch image from ${src}: ${response.status}`
-          );
-          return null;
-        }
-
-        const contentLength = response.headers.get("content-length");
-        if (contentLength && parseInt(contentLength, 10) > MAX_IMAGE_SIZE) {
-          log(
-            `create-docx-file: Image too large (${(parseInt(contentLength, 10) / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
-          );
-          return null;
-        }
-
-        const arrayBuffer = await response.arrayBuffer();
-        imageBuffer = Buffer.from(arrayBuffer);
-
-        if (imageBuffer.length > MAX_IMAGE_SIZE) {
-          log(
-            `create-docx-file: Downloaded image too large (${(imageBuffer.length / 1024 / 1024).toFixed(2)}MB), max ${MAX_IMAGE_SIZE / 1024 / 1024}MB`
-          );
-          return null;
-        }
-
-        const validation = validateImageMagicBytes(imageBuffer);
-        if (!validation.valid) {
-          log(
-            `create-docx-file: Fetched content is not a valid image (magic bytes check failed)`
-          );
-          return null;
-        }
-        imageType = validation.type;
-
-        log(
-          `create-docx-file: Fetched remote image from ${src}, type: ${imageType}, size: ${imageBuffer.length} bytes`
-        );
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        if (fetchError.name === "AbortError") {
-          log(
-            `create-docx-file: Image fetch timed out after ${IMAGE_FETCH_TIMEOUT_MS}ms: ${src}`
-          );
-        } else {
-          log(
-            `create-docx-file: Error fetching image from ${src}: ${fetchError.message}`
-          );
-        }
-        return null;
-      }
-    } else {
-      log(`create-docx-file: Unsupported image source: ${src}`);
-      return null;
-    }
-
-    const { imageSize: getImageSize } = await import("image-size");
-    let width = 400;
-    let height = 300;
-
-    try {
-      const dimensions = getImageSize(imageBuffer);
-      if (dimensions.width && dimensions.height) {
-        width = dimensions.width;
-        height = dimensions.height;
-
-        const maxWidth = 600;
-        const maxHeight = 400;
-
-        if (width > maxWidth) {
-          const scale = maxWidth / width;
-          width = maxWidth;
-          height = Math.round(height * scale);
-        }
-
-        if (height > maxHeight) {
-          const scale = maxHeight / height;
-          height = maxHeight;
-          width = Math.round(width * scale);
-        }
-      }
-    } catch (sizeError) {
-      log(
-        `create-docx-file: Could not determine image size: ${sizeError.message}, using defaults`
-      );
-    }
-
-    return { buffer: imageBuffer, type: imageType, width, height };
+    image = await loadImage(src, {
+      formats: DOCX_IMAGE_FORMATS,
+      timeoutMs: IMAGE_FETCH_TIMEOUT_MS,
+    });
   } catch (error) {
-    log(`create-docx-file: Image processing error: ${error.message}`);
+    log(
+      `create-docx-file: Skipped image ${src.slice(0, 100)}: ${error.message}`
+    );
     return null;
   }
+
+  let width = 400;
+  let height = 300;
+  try {
+    const { imageSize: getImageSize } = await import("image-size");
+    const dimensions = getImageSize(image.buffer);
+    if (dimensions.width && dimensions.height) {
+      width = dimensions.width;
+      height = dimensions.height;
+
+      const maxWidth = 600;
+      const maxHeight = 400;
+
+      if (width > maxWidth) {
+        const scale = maxWidth / width;
+        width = maxWidth;
+        height = Math.round(height * scale);
+      }
+
+      if (height > maxHeight) {
+        const scale = maxHeight / height;
+        height = maxHeight;
+        width = Math.round(width * scale);
+      }
+    }
+  } catch (sizeError) {
+    log(
+      `create-docx-file: Could not determine image size: ${sizeError.message}, using defaults`
+    );
+  }
+
+  return { ...image, width, height };
 }
 
 /**
