@@ -5,6 +5,10 @@ const { Workspace } = require("../../../models/workspace");
 const { getEmbeddingEngineSelection } = require("../../../utils/helpers");
 const { reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const { costCurrency } = require("../../../utils/middleware/costCurrency");
+const {
+  convertResponseCosts,
+} = require("../../../utils/helpers/currencyExchange");
 const { EventLogs } = require("../../../models/eventLogs");
 const {
   OpenAICompatibleChat,
@@ -75,13 +79,13 @@ function apiOpenAICompatibleEndpoints(app) {
 
   app.post(
     "/v1/openai/chat/completions",
-    [validApiKey],
+    [validApiKey, costCurrency],
     async (request, response) => {
       /*
       #swagger.tags = ['OpenAI Compatible Endpoints']
       #swagger.description = 'Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.'
       #swagger.requestBody = {
-          description: 'Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.',
+          description: 'Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.<br/><b>Currency:</b> Costs in the response <code>usage</code> are reported in the optional <code>currency</code> (ISO 4217 code, eg: EUR) or the <code>X-Currency</code> header, USD by default. The <code>currency</code> field of the usage names the unit used.',
           required: true,
           content: {
             "application/json": {
@@ -94,7 +98,8 @@ function apiOpenAICompatibleEndpoints(app) {
                 ],
                 model: "sample-workspace",
                 stream: true,
-                temperature: 0.7
+                temperature: 0.7,
+                currency: "USD"
               }
             }
           }
@@ -155,7 +160,11 @@ function apiOpenAICompatibleEndpoints(app) {
             workspaceName: workspace?.name,
             chatModel: workspace?.chatModel || "System Default",
           });
-          return response.status(200).json(chatResult);
+          return response
+            .status(200)
+            .json(
+              convertResponseCosts(chatResult, response.locals.costCurrency)
+            );
         }
 
         response.setHeader("Cache-Control", "no-cache");

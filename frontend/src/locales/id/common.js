@@ -122,6 +122,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "image-generation": "Pembuatan Gambar",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -842,6 +843,9 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Respons",
       at: "Dikirim Pada",
+      cost: null,
+      "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {
@@ -971,6 +975,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Semua orang dalam instance ini menggunakan palet standar dan tidak dapat mengubahnya.",
         "save-failed": "Gagal menyimpan palet warna: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2099,6 +2109,39 @@ const TRANSLATIONS = {
       description:
         "Ini mungkin membutuhkan waktu beberapa saat. Informasi ini akan muncul di sini segera setelah tersedia.",
       aborted: "Pembuatan gambar telah dihentikan.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

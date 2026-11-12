@@ -121,6 +121,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "image-generation": "Generiranje slika",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -849,6 +850,9 @@ const TRANSLATIONS = {
       prompt: "Upit",
       response: "Odgovor",
       at: "Poslano u",
+      cost: null,
+      "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {
@@ -977,6 +981,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Svi na ovoj instanci koriste zadanu paletu i ne mogu je promijeniti.",
         "save-failed": "Spremanje paleta boja nije uspjelo: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2097,6 +2107,39 @@ const TRANSLATIONS = {
       description:
         "To može potrajati neko vrijeme. Bit će dostupno ovdje čim bude spremno.",
       aborted: "Generiranje slike je prekinuto.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

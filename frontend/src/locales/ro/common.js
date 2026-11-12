@@ -114,6 +114,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Sarcini programate",
     "model-router": "Model de router",
     "image-generation": "Generarea de imagini",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -1438,6 +1439,9 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Răspuns",
       at: "Trimis la",
+      cost: null,
+      "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {
@@ -1569,6 +1573,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Toți utilizatorii acestei instanțe folosesc paleta implicită și nu o pot modifica.",
         "save-failed": "Salvarea paletelor de culori a eșuat: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2128,6 +2138,39 @@ const TRANSLATIONS = {
       description:
         "Acest lucru poate dura ceva timp. Va apărea aici imediat ce va fi gata.",
       aborted: "Generarea imaginii a fost anulată.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

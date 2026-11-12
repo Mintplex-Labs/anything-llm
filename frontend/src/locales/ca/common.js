@@ -121,6 +121,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Tasques programades",
     "model-router": "Rúter de model",
     "image-generation": "Generació d'imatges",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -864,6 +865,9 @@ const TRANSLATIONS = {
       prompt: "Missatge",
       response: "Resposta",
       at: "Enviat el",
+      cost: null,
+      "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {
@@ -997,6 +1001,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Tothom en aquesta instància fa servir la paleta per defecte i no la pot canviar.",
         "save-failed": "No s'han pogut desar les paletes de colors: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2130,6 +2140,39 @@ const TRANSLATIONS = {
       description:
         "Aquest procés pot prendre un temps. Apareixerà aquí tan aviat com estigui disponible.",
       aborted: "La generació d'imatges va ser interrompuda.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

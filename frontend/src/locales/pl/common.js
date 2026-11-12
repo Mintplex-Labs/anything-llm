@@ -114,6 +114,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Zaplanowane zadania",
     "model-router": "Przykładowy router",
     "image-generation": "Generowanie obrazów",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -855,6 +856,9 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Odpowiedź",
       at: "Wysłane o",
+      cost: null,
+      "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {
@@ -983,6 +987,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Wszyscy w tej instancji używają domyślnej palety i nie mogą jej zmienić.",
         "save-failed": "Nie udało się zapisać palet kolorów: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2123,6 +2133,39 @@ const TRANSLATIONS = {
       description:
         "To może zająć trochę czasu. Będzie dostępne tutaj, gdy tylko zostanie przygotowane.",
       aborted: "Generowanie obrazu zostało przerwane.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

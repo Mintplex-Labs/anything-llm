@@ -120,6 +120,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Planuojami darbai",
     "model-router": "Modelio maršrutizatorius",
     "image-generation": "Vaizdų kūrimas",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -848,6 +849,9 @@ const TRANSLATIONS = {
       prompt: "Užklausa",
       response: "Atsakymas",
       at: "Išsiųsta",
+      cost: null,
+      "cost-breakdown": null,
+      model: null,
     },
   },
   customization: {
@@ -976,6 +980,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Visi šios instancijos naudotojai naudoja numatytąją paletę ir negali jos pakeisti.",
         "save-failed": "Nepavyko išsaugoti spalvų palečių: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2107,6 +2117,39 @@ const TRANSLATIONS = {
       description:
         "Tai gali užtrukti keletą minučių. Ji pasirodys čia, kai bus pasiruošusi.",
       aborted: "Vaizdo kūrimas buvo nutrauktas.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

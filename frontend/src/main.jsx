@@ -282,6 +282,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/model-pricing",
+        lazy: async () => {
+          const { default: ModelPricing } = await import(
+            "@/pages/GeneralSettings/ModelPricing"
+          );
+          return { element: <AdminRoute Component={ModelPricing} /> };
+        },
+      },
+      {
         path: "/settings/system-prompt-variables",
         lazy: async () => {
           const { default: SystemPromptVariables } = await import(
