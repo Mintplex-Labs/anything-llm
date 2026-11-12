@@ -45,8 +45,10 @@ async function recoverAccount(username = "", recoveryCodes = []) {
   // A user without 4 hashes has not logged out and back in since recovery codes were added.
   // Unknown users and users without codes run the same 4 comparisons a wrong first code costs
   // a real user, so the response time does not reveal whether the username exists.
+  // Suspended users are treated the same so recovery cannot be used to change their password.
   const user = await User.get({ username: String(username) });
-  const allUserHashes = user ? await RecoveryCode.hashesForUser(user.id) : [];
+  const allUserHashes =
+    user && !user.suspended ? await RecoveryCode.hashesForUser(user.id) : [];
   if (allUserHashes.length < 4) {
     dummyHashCompare(uniqueRecoveryCodes[0], 4);
     return { success: false, error: "Invalid recovery codes." };
@@ -82,6 +84,11 @@ async function resetPassword(token, _newPassword = "", confirmPassword = "") {
   if (!resetToken || resetToken.expiresAt < new Date()) {
     return { success: false, message: "Invalid reset token" };
   }
+
+  // A token issued before the user was suspended must not be redeemable after.
+  const user = await User.get({ id: resetToken.user_id });
+  if (!user || user.suspended)
+    return { success: false, message: "Invalid reset token" };
 
   // JOI password rules will be enforced inside .update.
   const { error } = await User.update(resetToken.user_id, {
