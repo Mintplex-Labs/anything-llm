@@ -1,5 +1,5 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Workspace from "../../../../models/workspace";
 import showToast from "../../../../utils/toast";
@@ -7,6 +7,8 @@ import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 import useDocumentPicker from "./hooks/useDocumentPicker";
 import { useWorkspaceEmbeddingProgress } from "@/EmbeddingProgressContext";
+
+const UPLOAD_FOLDER = "custom-documents";
 
 /**
  * @param {Object} props
@@ -29,6 +31,16 @@ export default function DocumentSettings({ workspace, variant = "default" }) {
     workspaceDocs: embeddedDocs,
   } = picker;
   const hasChanges = movedItems.length > 0;
+
+  // `syncAfterUpload` pre-selects files it has not seen before, so the upload
+  // folder must already be loaded or every existing file in it reads as new.
+  // Desktop loads it on hover, which touch screens never fire.
+  const uploadFolderStatus = picker.contents[UPLOAD_FOLDER]?.status;
+  useEffect(() => {
+    if (variant !== "mobile") return;
+    if (picker.status === "ready" && !uploadFolderStatus)
+      picker.prefetchFolder(UPLOAD_FOLDER);
+  }, [variant, picker.status, uploadFolderStatus, picker.prefetchFolder]);
 
   const { embeddingProgress, startEmbedding } = useWorkspaceEmbeddingProgress(
     workspace.slug,

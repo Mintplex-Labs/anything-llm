@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CircleNotch,
@@ -16,8 +16,6 @@ import MobileActionBar, {
   MobileActionButton,
   MobileActionIconButton,
 } from "../../MobileActionBar";
-
-const UPLOAD_FOLDER = "custom-documents";
 
 /**
  * Touch layout of the "My Documents" picker. State and mutations come from `Directory`.
@@ -62,18 +60,17 @@ export default function MobileDirectory({
     clearSelection,
     syncAfterUpload,
     contents,
-    prefetchFolder,
   } = picker;
 
-  const hasFiles = selectedCount > 0;
-
-  // `syncAfterUpload` pre-selects files it has not seen before, so the upload
-  // folder must already be loaded or every existing file in it reads as new.
-  const uploadFolderStatus = contents[UPLOAD_FOLDER]?.status;
-  useEffect(() => {
-    if (status === "ready" && !uploadFolderStatus)
-      prefetchFolder(UPLOAD_FOLDER);
-  }, [status, uploadFolderStatus, prefetchFolder]);
+  // Until a selected folder is fully loaded its count comes from the server,
+  // which still includes documents already in the workspace.
+  const alreadyEmbedded = selectedFolderNames.reduce((sum, name) => {
+    const entry = contents[name];
+    const exact = entry?.status === "loaded" && !entry.hasMore;
+    return exact ? sum : sum + (embeddedCounts[name] ?? 0);
+  }, 0);
+  const movableCount = Math.max(0, selectedCount - alreadyEmbedded);
+  const hasFiles = movableCount > 0;
 
   return (
     <div className="relative flex flex-col flex-1 min-h-0">
@@ -168,7 +165,7 @@ export default function MobileDirectory({
         show={hasSelection}
         label={
           hasFiles
-            ? t("connectors.directory.selected-count", { count: selectedCount })
+            ? t("connectors.directory.selected-count", { count: movableCount })
             : selectedFolderNames.join(", ")
         }
       >
