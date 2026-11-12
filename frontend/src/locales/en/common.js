@@ -839,7 +839,8 @@ const TRANSLATIONS = {
       response: "Response",
       cost: "Cost",
       at: "Sent At",
-      "cost-breakdown": "Input: {{input}} · Output: {{output}}",
+      "cost-breakdown":
+        "Total: {{total}} · Input: {{input}} · Output: {{output}}",
     },
   },
   customization: {

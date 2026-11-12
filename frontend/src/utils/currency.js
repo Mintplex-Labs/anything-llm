@@ -50,22 +50,49 @@ export function currencyName(code, locale = undefined) {
 }
 
 /**
- * Formats a stored USD cost into the given display currency, rounded to the
- * currency's standard minor units (eg: 2 decimals for USD, 0 for JPY).
+ * Decimals kept by "full" precision. Stored USD costs carry 10 decimals.
+ */
+const FULL_PRECISION_DIGITS = 10;
+
+/**
+ * Number format options for a cost at a given precision.
+ * - standard: the currency's minor units (eg: 2 decimals for USD, 0 for JPY)
+ * - significant: like standard, but amounts under one currency unit keep 2
+ *   significant figures so small per-chat costs do not round to zero
+ * - full: every stored decimal, for tooltips
+ * @param {number} value - amount in the display currency
+ * @param {"standard"|"significant"|"full"} precision
+ * @returns {Intl.NumberFormatOptions}
+ */
+function precisionOptions(value, precision) {
+  if (precision === "full")
+    return { maximumFractionDigits: FULL_PRECISION_DIGITS };
+  if (precision === "significant" && value !== 0 && Math.abs(value) < 1)
+    return { minimumSignificantDigits: 2, maximumSignificantDigits: 2 };
+  return {};
+}
+
+/**
+ * Formats a stored USD cost into the given display currency.
  * @param {number} usd - the cost in USD
- * @param {{currency?: string, rate?: number}} [options] - display currency and its units-per-USD rate
+ * @param {{currency?: string, rate?: number, precision?: "standard"|"significant"|"full"}} [options] - display currency, its units-per-USD rate, and how many digits to show (see `precisionOptions`)
  * @returns {string}
  */
-export function formatCost(usd, { currency = "USD", rate = 1 } = {}) {
+export function formatCost(
+  usd,
+  { currency = "USD", rate = 1, precision = "standard" } = {}
+) {
   if (typeof usd !== "number" || !isFinite(usd)) return "";
   const value = usd * (rate || 1);
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
       currency,
+      ...precisionOptions(value, precision),
     }).format(value);
   } catch {
-    return `${value.toFixed(2)} ${currency}`;
+    const digits = precision === "full" ? FULL_PRECISION_DIGITS : 2;
+    return `${value.toFixed(digits)} ${currency}`;
   }
 }
 

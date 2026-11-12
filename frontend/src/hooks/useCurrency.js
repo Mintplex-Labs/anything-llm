@@ -11,7 +11,7 @@ import { preferredCurrency } from "@/utils/localeCurrency";
  * costs into it. The currency is the admin-set system setting, or the browser
  * locale's currency when unset. Falls back to USD when no exchange rate is
  * available for that currency (eg: offline before rates were ever fetched).
- * @returns {{currency: string, rate: number, formatCost: (usd: number) => string}} rate is units of `currency` per USD
+ * @returns {{currency: string, rate: number, formatCost: (usd: number, precision?: "standard"|"significant"|"full") => string}} rate is units of `currency` per USD
  */
 export default function useCurrency() {
   const [settings, setSettings] = useState(null);
@@ -39,7 +39,8 @@ export default function useCurrency() {
   const currency = rate ? preferred : "USD";
   const displayRate = rate || 1;
   const format = useCallback(
-    (usd) => formatCost(usd, { currency, rate: displayRate }),
+    (usd, precision) =>
+      formatCost(usd, { currency, rate: displayRate, precision }),
     [currency, displayRate]
   );
 

@@ -109,11 +109,12 @@ function CostCell({ metrics, formatCost }) {
     <td
       className="px-6 whitespace-nowrap"
       title={t("recorded.table.cost-breakdown", {
-        input: formatCost(metrics.inputCost),
-        output: formatCost(metrics.outputCost),
+        total: formatCost(metrics.totalCost, "full"),
+        input: formatCost(metrics.inputCost, "full"),
+        output: formatCost(metrics.outputCost, "full"),
       })}
     >
-      {formatCost(metrics.totalCost)}
+      {formatCost(metrics.totalCost, "significant")}
     </td>
   );
 }
