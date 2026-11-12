@@ -1,9 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const net = require("net");
-const dns = require("dns");
-const http = require("http");
-const https = require("https");
+const { downloadImage, mapLimit } = require("../images.js");
 
 /**
  * Pictures for a deck, from three sources: images the user attached to the
@@ -35,13 +32,12 @@ const MIN_WEB_W = 800;
 const MIN_WEB_H = 400;
 const MAX_ASPECT = 2.6;
 const MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024;
-const DOWNLOAD_TIMEOUT_MS = 10_000;
 const SCRAPE_TIMEOUT_MS = 45_000;
-const MAX_REDIRECTS = 3;
 const SCRAPE_PAGES = 3;
 const CANDIDATES_PER_PAGE = 8;
 const DOWNLOAD_CONCURRENCY = 4;
-const WEB_TYPES = /^image\/(jpeg|png|webp|avif)\b/i;
+// Formats sharp reads, in the order slides prefer them.
+const WEB_FORMATS = ["avif", "webp", "png", "jpg"];
 const STOP_WORDS = new Set(
   "about also been from have here into just more most only other over some such than that their them there these they this those very were what when where which will with your".split(
     " "
@@ -73,155 +69,6 @@ async function preparePicture(buffer) {
     height: info.height,
     format,
   };
-}
-
-// Addresses a page must not be able to reach through the server: this
-// host, private networks, link-local (cloud metadata), carrier-grade NAT,
-// benchmarking, multicast and reserved ranges. BlockList also checks
-// IPv4-mapped IPv6 addresses ("::ffff:7f00:1") against these.
-const PRIVATE_V4 = new net.BlockList();
-for (const [address, prefix] of [
-  ["0.0.0.0", 8],
-  ["10.0.0.0", 8],
-  ["100.64.0.0", 10],
-  ["127.0.0.0", 8],
-  ["169.254.0.0", 16],
-  ["172.16.0.0", 12],
-  ["192.0.0.0", 24],
-  ["192.168.0.0", 16],
-  ["198.18.0.0", 15],
-  ["224.0.0.0", 3],
-])
-  PRIVATE_V4.addSubnet(address, prefix, "ipv4");
-// Public IPv6 is global unicast (2000::/3), minus the ranges that carry an
-// IPv4 address inside them (6to4, Teredo) and documentation addresses.
-const GLOBAL_V6 = new net.BlockList();
-GLOBAL_V6.addSubnet("2000::", 3, "ipv6");
-const TUNNELED_V6 = new net.BlockList();
-TUNNELED_V6.addSubnet("2002::", 16, "ipv6");
-TUNNELED_V6.addSubnet("2001::", 32, "ipv6");
-TUNNELED_V6.addSubnet("2001:db8::", 32, "ipv6");
-
-/**
- * True only for an address on the public internet.
- * @param {string} ip
- */
-function isPublicIp(ip) {
-  if (net.isIPv4(ip)) return !PRIVATE_V4.check(ip, "ipv4");
-  if (!net.isIPv6(ip)) return false;
-  return (
-    !PRIVATE_V4.check(ip, "ipv6") &&
-    GLOBAL_V6.check(ip, "ipv6") &&
-    !TUNNELED_V6.check(ip, "ipv6")
-  );
-}
-
-/**
- * Throws unless a URL is http(s) and its host is, or resolves only to,
- * allowed addresses.
- * @param {string} url
- * @param {(ip: string) => boolean} [isAllowed]
- */
-async function assertPublicUrl(url, isAllowed = isPublicIp) {
-  const { protocol, hostname } = new URL(url);
-  if (protocol !== "http:" && protocol !== "https:")
-    throw new Error(`${protocol} URLs are not allowed`);
-  const host = hostname.replace(/^\[|\]$/g, "");
-  const addresses = net.isIP(host)
-    ? [{ address: host }]
-    : await dns.promises.lookup(host, { all: true });
-  if (!addresses.length || !addresses.every((a) => isAllowed(a.address)))
-    throw new Error(`${host} is not a public address`);
-}
-
-/**
- * A DNS lookup for http.get that refuses to connect anywhere but allowed
- * addresses. Checking at connect time, rather than before the request,
- * means a host cannot pass the check and then resolve somewhere else.
- */
-const guardedLookup = (isAllowed) => (hostname, options, callback) => {
-  dns.lookup(hostname, { ...options, all: true }, (error, addresses) => {
-    if (error) return callback(error);
-    if (!addresses.length || !addresses.every((a) => isAllowed(a.address)))
-      return callback(new Error(`${hostname} is not a public address`));
-    if (options.all) return callback(null, addresses);
-    callback(null, addresses[0].address, addresses[0].family);
-  });
-};
-
-/** One GET request, resolving with the response once headers arrive. */
-function get(url, { signal, isAllowed }) {
-  const client = new URL(url).protocol === "https:" ? https : http;
-  return new Promise((resolve, reject) => {
-    const req = client.get(
-      url,
-      {
-        signal,
-        lookup: guardedLookup(isAllowed),
-        headers: {
-          Accept: "image/avif,image/webp,image/png,image/jpeg",
-          // Some image hosts (Wikimedia among them) refuse clients that do
-          // not name themselves.
-          "User-Agent": "AnythingLLM-DeckBuilder/1.0",
-        },
-      },
-      resolve
-    );
-    req.on("error", reject);
-  });
-}
-
-/**
- * Downloads an image from the public web: the first URL and every redirect
- * may only connect to allowed addresses, and the response must be a raster
- * image under MAX_DOWNLOAD_BYTES that arrives within DOWNLOAD_TIMEOUT_MS.
- * @param {string} url
- * @param {{signal?: AbortSignal, isAllowed?: (ip: string) => boolean}} [options] - isAllowed defaults to isPublicIp
- * @returns {Promise<Buffer>}
- */
-async function downloadImage(url, { signal, isAllowed = isPublicIp } = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT_MS);
-  const stop = () => controller.abort();
-  signal?.addEventListener("abort", stop, { once: true });
-  try {
-    let current = url;
-    for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-      // Literal IPs never reach the lookup, so they are checked here.
-      await assertPublicUrl(current, isAllowed);
-      const res = await get(current, {
-        signal: controller.signal,
-        isAllowed,
-      });
-      const { statusCode: status, headers } = res;
-      if (status >= 300 && status < 400 && headers.location) {
-        res.resume();
-        current = new URL(headers.location, current).href;
-        continue;
-      }
-      try {
-        if (status < 200 || status >= 300) throw new Error(`HTTP ${status}`);
-        if (!WEB_TYPES.test(headers["content-type"] || ""))
-          throw new Error("not a raster image");
-        if (Number(headers["content-length"]) > MAX_DOWNLOAD_BYTES)
-          throw new Error("image too large");
-        const chunks = [];
-        let size = 0;
-        for await (const chunk of res) {
-          size += chunk.length;
-          if (size > MAX_DOWNLOAD_BYTES) throw new Error("image too large");
-          chunks.push(chunk);
-        }
-        return Buffer.concat(chunks);
-      } finally {
-        res.destroy();
-      }
-    }
-    throw new Error("too many redirects");
-  } finally {
-    clearTimeout(timer);
-    signal?.removeEventListener("abort", stop);
-  }
 }
 
 const unescapeMarkdown = (str) =>
@@ -323,20 +170,6 @@ function overlap(a, b) {
   return [...words(a)].filter((w) => right.has(w)).length;
 }
 
-/** Runs `fn` over `items` with at most `limit` running at once. */
-async function mapLimit(items, limit, fn) {
-  const results = new Array(items.length);
-  let next = 0;
-  const worker = async () => {
-    while (next < items.length) {
-      const i = next++;
-      results[i] = await fn(items[i], i);
-    }
-  };
-  await Promise.all(Array.from({ length: limit }, worker));
-  return results;
-}
-
 const withTimeout = (promise, ms) =>
   Promise.race([
     promise,
@@ -385,7 +218,11 @@ async function webPictures(links, { log, signal }) {
         if (signal?.aborted) return null;
         try {
           const image = await preparePicture(
-            await downloadImage(url, { signal })
+            await downloadImage(url, {
+              signal,
+              formats: WEB_FORMATS,
+              maxBytes: MAX_DOWNLOAD_BYTES,
+            })
           );
           const ratio = image.width / image.height;
           const sized =
@@ -610,9 +447,6 @@ function assignPictures({
 
 module.exports = {
   preparePicture,
-  isPublicIp,
-  assertPublicUrl,
-  downloadImage,
   imagesInMarkdown,
   downloadUrls,
   webPictures,
