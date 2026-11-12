@@ -20,11 +20,8 @@ class QDrant extends VectorDatabase {
     if (process.env.VECTOR_DB !== "qdrant")
       throw new Error("QDrant::Invalid ENV settings");
 
-    // The version check only warns, and the warning reads like a hard failure in
-    // logs even though any server >= 1.10 (Query API) works with this client.
     const client = new QdrantClient({
       url: process.env.QDRANT_ENDPOINT,
-      checkCompatibility: false,
       ...(process.env.QDRANT_API_KEY
         ? { apiKey: process.env.QDRANT_API_KEY }
         : {}),
@@ -76,8 +73,8 @@ class QDrant extends VectorDatabase {
       scores: [],
     };
 
-    const { points: responses = [] } = await client.query(namespace, {
-      query: queryVector,
+    const responses = await client.search(namespace, {
+      vector: queryVector,
       limit: topN,
       with_payload: true,
     });

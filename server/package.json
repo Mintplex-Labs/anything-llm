@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=18.12.1"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
@@ -36,7 +36,7 @@
     "@modelcontextprotocol/sdk": "^1.24.3",
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
-    "@qdrant/js-client-rest": "1.20.0",
+    "@qdrant/js-client-rest": "1.18.0",
     "@vscode/ripgrep": "1.17.1",
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "2.3.5",
