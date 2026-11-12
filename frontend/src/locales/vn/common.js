@@ -114,6 +114,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Công việc theo lịch trình",
     "model-router": "Router mẫu",
     "image-generation": "Tạo ảnh",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -804,6 +805,8 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Phản hồi",
       at: "Gửi lúc",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   api: {
@@ -1508,6 +1511,12 @@ const TRANSLATIONS = {
           "Trên phiên bản này, tất cả người dùng đều sử dụng bảng màu mặc định và không thể thay đổi nó.",
         "save-failed": "Không thể lưu bảng màu: {{error}}",
       },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+      },
     },
   },
   "main-page": {
@@ -2101,6 +2110,39 @@ const TRANSLATIONS = {
       description:
         "Quá trình này có thể mất một khoảng thời gian. Nội dung sẽ hiển thị ngay khi hoàn thành.",
       aborted: "Việc tạo hình ảnh đã bị hủy bỏ.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

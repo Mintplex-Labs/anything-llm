@@ -114,6 +114,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Tareas programadas",
     "model-router": "Router de ejemplo",
     "image-generation": "Generación de imágenes",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -865,6 +866,8 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Respuesta",
       at: "Enviado el",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   customization: {
@@ -999,6 +1002,12 @@ const TRANSLATIONS = {
           "En esta instancia, todos utilizan la paleta predeterminada y no pueden modificarla.",
         "save-failed":
           "No se pudieron guardar las paletas de colores: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2150,6 +2159,39 @@ const TRANSLATIONS = {
       description:
         "Esto puede tardar un poco. Aparecerá aquí en cuanto esté listo.",
       aborted: "La generación de imágenes se ha cancelado.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

@@ -114,6 +114,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Geplande taken",
     "model-router": "Modelrouter",
     "image-generation": "Afbeelding genereren",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -811,6 +812,8 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Response",
       at: "Verzonden Om",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   api: {
@@ -1524,6 +1527,12 @@ const TRANSLATIONS = {
           "Iedereen in deze instantie gebruikt het standaardpalet en kan het niet wijzigen.",
         "save-failed": "Kon de kleurenpaletten niet opslaan: {{error}}",
       },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+      },
     },
   },
   "main-page": {
@@ -2125,6 +2134,39 @@ const TRANSLATIONS = {
       description:
         "Dit kan even duren. Het zal hier verschijnen zodra het klaar is.",
       aborted: "Het genereren van het beeld is afgebroken.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

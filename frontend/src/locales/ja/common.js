@@ -113,6 +113,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "計画された作業",
     "model-router": "モデルルーター",
     "image-generation": "画像生成",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -791,6 +792,8 @@ const TRANSLATIONS = {
       prompt: "プロンプト",
       response: "応答",
       at: "送信日時",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   api: {
@@ -1495,6 +1498,12 @@ const TRANSLATIONS = {
           "このインスタンスでは、すべてのユーザーがデフォルトのカラーパレットを使用し、変更することはできません。",
         "save-failed": "カラーパレットの保存に失敗しました：{{error}}",
       },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+      },
     },
   },
   "main-page": {
@@ -2090,6 +2099,39 @@ const TRANSLATIONS = {
       description:
         "これには少し時間がかかる場合があります。準備が整ったら、こちらに表示されます。",
       aborted: "画像の生成は中止されました。",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

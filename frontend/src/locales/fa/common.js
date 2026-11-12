@@ -115,6 +115,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "وظایف برنامه‌ریزی شده",
     "model-router": "روتر نمونه",
     "image-generation": "تولید تصاویر",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -797,6 +798,8 @@ const TRANSLATIONS = {
       prompt: "درخواست",
       response: "پاسخ",
       at: "زمان ارسال",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   api: {
@@ -1499,6 +1502,12 @@ const TRANSLATIONS = {
           "همه در این نمونه از پالت پیش‌فرض استفاده می‌کنند و نمی‌توانند آن را تغییر دهند.",
         "save-failed": "ذخیره پالت‌های رنگ ناموفق بود: {{error}}",
       },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+      },
     },
   },
   "main-page": {
@@ -2090,6 +2099,39 @@ const TRANSLATIONS = {
       description:
         "ممکن است مدتی طول بکشد. پس از آماده شدن، این اطلاعات در اینجا نمایش داده خواهد شد.",
       aborted: "تولید تصویر متوقف شد.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

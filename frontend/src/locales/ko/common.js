@@ -112,6 +112,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "예정된 작업",
     "model-router": "모델 라우터",
     "image-generation": "이미지 생성",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -818,6 +819,8 @@ const TRANSLATIONS = {
       prompt: "프롬프트",
       response: "응답",
       at: "보낸 시각",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   customization: {
@@ -943,6 +946,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "이 인스턴스의 모든 사용자가 기본 색상 팔레트를 사용하며 변경할 수 없습니다.",
         "save-failed": "색상 팔레트 저장 실패: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2057,6 +2066,39 @@ const TRANSLATIONS = {
       description:
         "이 작업에는 시간이 걸릴 수 있습니다. 준비되면 바로 여기에서 확인하실 수 있습니다.",
       aborted: "이미지 생성 작업이 중단되었습니다.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

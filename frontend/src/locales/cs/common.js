@@ -121,6 +121,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Naplánované úlohy",
     "model-router": "Modelový router",
     "image-generation": "Generování obrázků",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -848,6 +849,8 @@ const TRANSLATIONS = {
       prompt: "Výzva",
       response: "Odpověď",
       at: "Odesláno v",
+      cost: null,
+      "cost-breakdown": null,
     },
   },
   customization: {
@@ -974,6 +977,12 @@ const TRANSLATIONS = {
         "enforce-description":
           "Všichni v této instanci používají výchozí paletu a nemohou ji změnit.",
         "save-failed": "Palety barev se nepodařilo uložit: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
       },
     },
   },
@@ -2099,6 +2108,39 @@ const TRANSLATIONS = {
       description:
         "To může trvat nějakou dobu. Jakmile bude k dispozici, zobrazí se zde.",
       aborted: "Generování obrázku bylo přerušeno.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };
