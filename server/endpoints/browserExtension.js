@@ -36,6 +36,7 @@ const {
   resolveClientReply,
 } = require("../utils/browserExtension/interactiveAgent");
 const { AgentSkillWhitelist } = require("../models/agentSkillWhitelist");
+const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 
 /** Pages per message; enough for a comparison without flooding the context window. */
 const MAX_CONTEXT_PAGES = 5;
@@ -334,6 +335,7 @@ function browserExtensionEndpoints(app) {
           thread,
           attachments: Array.isArray(attachments) ? attachments : [],
           contextDocuments: pagesToContextDocuments(context),
+          userSlashCommands: true,
           agentEventListener: listener,
           onAgentReady: (agentHandler) => {
             // Setting the agent up can take a while; a panel that already left
@@ -413,6 +415,28 @@ function browserExtensionEndpoints(app) {
       } catch (error) {
         console.error(error);
         return response.status(500).json({ error: error.message });
+      }
+    }
+  );
+
+  // The user's own slash command presets, for the panel's command menu.
+  app.get(
+    "/browser-extension/slash-command-presets",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const presets = await SlashCommandPresets.getUserPresets(user?.id);
+        return response.status(200).json({
+          presets: presets.map(({ id, command, description }) => ({
+            id,
+            command,
+            description,
+          })),
+        });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({ error: "Failed to load presets" });
       }
     }
   );

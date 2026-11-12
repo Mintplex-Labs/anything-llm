@@ -10,6 +10,7 @@ const {
   sourceIdentifier,
   recentChatHistory,
   grepAllSlashCommands,
+  grepUserSlashCommands,
 } = require("./index");
 const {
   EphemeralAgentHandler,
@@ -515,8 +516,9 @@ async function chatSync({
  *  contextDocuments: { title: string; pageContent: string }[],
  *  agentEventListener: EphemeralEventListener|null,
  *  onAgentReady: ((agentHandler: EphemeralAgentHandler) => Promise<void>|void)|null,
+ *  userSlashCommands: boolean,
  *  reset: boolean,
- * }} parameters
+ * }} parameters - userSlashCommands expands only the user's own slash command presets instead of every user's
  * @returns {Promise<VoidFunction>}
  */
 async function streamChat({
@@ -531,6 +533,7 @@ async function streamChat({
   contextDocuments = [],
   agentEventListener = null,
   onAgentReady = null,
+  userSlashCommands = false,
   reset = false,
 }) {
   const uuid = uuidv4();
@@ -563,8 +566,9 @@ async function streamChat({
 
   // Check for and process slash commands
   // Since preset commands are not supported in API calls, we can just process the message here
-  const processedMessage = await grepAllSlashCommands(message);
-  message = processedMessage;
+  message = userSlashCommands
+    ? await grepUserSlashCommands(message, user)
+    : await grepAllSlashCommands(message);
 
   // Document attachments are parsed to text up front so agent and normal chats
   // both receive their contents as context, leaving only images as attachments.
