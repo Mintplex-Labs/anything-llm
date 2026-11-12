@@ -102,11 +102,23 @@ const CACHE_FILES = {
   },
 };
 
-// Overrides live in a file so cost lookups stay synchronous (getCostBreakdown
-// runs inside sync usage accounting) while worker threads, like scheduled
-// jobs, still read the same prices the admin saved in the main process.
+// Overrides are saved to a file and indexed in memory when the process boots,
+// so cost lookups stay synchronous (getCostBreakdown runs inside sync usage
+// accounting) and touch no disk. Worker threads, like scheduled jobs, boot per
+// run and so read the prices the admin last saved in the main process.
 function overridesFile() {
   return path.resolve(cacheDir(), "overrides.json");
+}
+
+/**
+ * Lookup key for an override. Model ids match case-insensitively and a null
+ * model is the provider-wide override.
+ * @param {string} provider
+ * @param {string|null} model
+ * @returns {string}
+ */
+function overrideKey(provider, model) {
+  return JSON.stringify([provider, model?.toLowerCase() ?? null]);
 }
 
 /** @returns {CostBreakdown} */
@@ -148,7 +160,7 @@ function sanitizeOverrides(overrides) {
       typeof entry.model === "string" && entry.model.trim()
         ? entry.model.trim()
         : null;
-    byKey.set(`${provider}:${model?.toLowerCase() ?? ""}`, {
+    byKey.set(overrideKey(provider, model), {
       provider,
       model,
       input,
@@ -233,8 +245,10 @@ class ModelPricing {
   #lowercaseIndexes = {};
   /** @type {Record<string, Record<string, string>>} - lazy bedrock normalization index per provider */
   #normalizedIndexes = {};
-  /** @type {{mtimeMs: number, overrides: PricingOverride[]}|null} - overrides file contents keyed to its mtime */
-  #overridesCache = null;
+  /** @type {PricingOverride[]} - admin overrides, in saved order */
+  #overrides = [];
+  /** @type {Map<string, PricingOverride>} - the same overrides keyed by {@link overrideKey} */
+  #overrideIndex = new Map();
 
   constructor() {
     if (ModelPricing.instance) return ModelPricing.instance;
@@ -244,6 +258,7 @@ class ModelPricing {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     this.#loadFromDisk();
+    this.#loadOverrides();
     if (this.#isCacheStale() || !this.#pricing || !this.#reasoning) {
       this.bootRefresh = this.#refresh()
         .then(() => {
@@ -408,25 +423,34 @@ class ModelPricing {
     return { input, output };
   }
 
+  /** Reads the saved overrides into memory. A missing or corrupt file means none. */
+  #loadOverrides() {
+    let overrides = [];
+    try {
+      if (fs.existsSync(overridesFile()))
+        overrides = sanitizeOverrides(
+          JSON.parse(fs.readFileSync(overridesFile(), "utf8"))
+        );
+    } catch (error) {
+      log("Failed to read model pricing overrides", error?.message);
+    }
+    this.#indexOverrides(overrides);
+  }
+
+  /** @param {PricingOverride[]} overrides - already sanitized */
+  #indexOverrides(overrides) {
+    this.#overrides = overrides;
+    this.#overrideIndex = new Map(
+      overrides.map((o) => [overrideKey(o.provider, o.model), o])
+    );
+  }
+
   /**
-   * Admin pricing overrides, read from disk and memoized until the file changes.
-   * @returns {PricingOverride[]}
+   * Admin pricing overrides.
+   * @returns {PricingOverride[]} copies, safe for callers to mutate
    */
   getOverrides() {
-    try {
-      const { mtimeMs } = fs.statSync(overridesFile());
-      if (this.#overridesCache?.mtimeMs !== mtimeMs) {
-        this.#overridesCache = {
-          mtimeMs,
-          overrides: sanitizeOverrides(
-            JSON.parse(fs.readFileSync(overridesFile(), "utf8"))
-          ),
-        };
-      }
-      return this.#overridesCache.overrides.map((o) => ({ ...o }));
-    } catch {
-      return [];
-    }
+    return this.#overrides.map((o) => ({ ...o }));
   }
 
   /**
@@ -444,8 +468,8 @@ class ModelPricing {
     const tmpFile = `${overridesFile()}.${process.pid}.tmp`;
     fs.writeFileSync(tmpFile, JSON.stringify(sanitized));
     fs.renameSync(tmpFile, overridesFile());
-    this.#overridesCache = null;
-    return sanitized;
+    this.#indexOverrides(sanitized);
+    return sanitized.map((o) => ({ ...o }));
   }
 
   /**
@@ -453,13 +477,12 @@ class ModelPricing {
    * @returns {PricingOverride|null}
    */
   #findOverride(providerSlug, model) {
-    const overrides = this.getOverrides().filter(
-      (o) => o.provider === providerSlug
-    );
-    const modelId = typeof model === "string" ? model.toLowerCase() : null;
+    if (!this.#overrideIndex.size) return null;
+    const modelId = typeof model === "string" && model ? model : null;
     return (
-      overrides.find((o) => modelId && o.model?.toLowerCase() === modelId) ??
-      overrides.find((o) => o.model === null) ??
+      (modelId &&
+        this.#overrideIndex.get(overrideKey(providerSlug, modelId))) ||
+      this.#overrideIndex.get(overrideKey(providerSlug, null)) ||
       null
     );
   }

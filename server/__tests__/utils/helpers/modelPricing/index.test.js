@@ -836,7 +836,33 @@ describe("ModelPricing", () => {
         path.join(tempDir, "models", "pricing", "overrides.json"),
         "{not json"
       );
-      expect(pricing.getOverrides()).toEqual([]);
+      const booted = freshInstance();
+      expect(booted.getOverrides()).toEqual([]);
+      expect(booted.getCostBreakdown("litellm", "x", USAGE).totalCost).toBe(0);
+    });
+
+    it("prices from memory without touching the overrides file", () => {
+      pricing.setOverrides([
+        { provider: "litellm", model: "Big-Model", input: 1, output: 1 },
+      ]);
+      const statSpy = jest.spyOn(fs, "statSync");
+      const readSpy = jest.spyOn(fs, "readFileSync");
+      expect(
+        pricing.getCostBreakdown("litellm", "BIG-model", USAGE).totalCost
+      ).toBe(2);
+      expect(statSpy).not.toHaveBeenCalled();
+      expect(readSpy).not.toHaveBeenCalled();
+      statSpy.mockRestore();
+      readSpy.mockRestore();
+    });
+
+    it("does not let callers mutate the saved overrides", () => {
+      const saved = pricing.setOverrides([
+        { provider: "litellm", model: null, input: 1, output: 1 },
+      ]);
+      saved[0].input = 999;
+      pricing.getOverrides()[0].output = 999;
+      expect(pricing.getCostBreakdown("litellm", "x", USAGE).totalCost).toBe(2);
     });
   });
 
