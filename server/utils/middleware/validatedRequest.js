@@ -23,13 +23,6 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
-  if (!process.env.AUTH_TOKEN) {
-    response.status(401).json({
-      error: "You need to set an AUTH_TOKEN environment variable.",
-    });
-    return;
-  }
-
   const auth = request.header("Authorization");
   const token = auth ? auth.split(" ")[1] : null;
 
