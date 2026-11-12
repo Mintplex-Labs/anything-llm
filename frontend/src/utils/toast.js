@@ -25,7 +25,6 @@ function resolveTheme() {
 const showToast = (message, type = "default", opts = {}) => {
   const resolved = resolveTheme();
   const options = {
-    // Phones keep their primary actions along the bottom edge.
     position: isMobileOnly ? "top-center" : "bottom-center",
     autoClose: 5000,
     hideProgressBar: false,

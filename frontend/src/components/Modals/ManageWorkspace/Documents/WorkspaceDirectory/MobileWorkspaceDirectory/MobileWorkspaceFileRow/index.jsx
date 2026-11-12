@@ -6,13 +6,9 @@ import usePinDocument from "../../../hooks/usePinDocument";
 import useWatchDocument from "../../../hooks/useWatchDocument";
 
 /**
- * A document in the workspace tab of the mobile picker. Pin and watch state
- * live here so the row's status line updates after an action in the sheet.
- *
  * @param {Object} props
  * @param {boolean} props.staged - Moved in but not embedded yet
  * @param {boolean} props.selectable - False while staged changes are unsaved
- * @param {(actions: object) => void} props.onOpenActions
  */
 export default function MobileWorkspaceFileRow({
   item,

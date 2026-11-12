@@ -1,12 +1,9 @@
 import { Check, Minus } from "@phosphor-icons/react";
 
 /**
- * Touch-sized checkbox for the mobile document picker. Without `onToggle` it
- * is purely visual and the surrounding row handles the tap.
- *
  * @param {Object} props
  * @param {"none"|"some"|"all"} [props.state="none"] - Unchecked, mixed, or checked
- * @param {() => void} [props.onToggle] - Makes the box its own tap target
+ * @param {() => void} [props.onToggle] - Makes the box its own tap target; without it the row handles the tap
  * @param {string} [props.label] - Accessible label when the box is interactive
  */
 export default function MobileCheckbox({ state = "none", onToggle, label }) {

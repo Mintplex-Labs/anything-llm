@@ -186,7 +186,6 @@ export default function DocumentSettings({ workspace, variant = "default" }) {
 }
 
 /**
- * Segmented control switching between the picker and the workspace panel.
  * @param {Object} props
  * @param {"documents"|"workspace"} props.selected
  */

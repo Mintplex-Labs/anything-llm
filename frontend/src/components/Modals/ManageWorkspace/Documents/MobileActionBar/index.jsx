@@ -1,12 +1,9 @@
 /**
- * Docked action bar for the mobile document picker. Slides up from the bottom
- * of its `relative` parent while `show` is true; stays mounted so it can also
- * slide back down.
+ * Action bar docked to the bottom of its `relative` parent. Stays mounted so
+ * it can slide out as well as in.
  *
  * @param {Object} props
- * @param {boolean} props.show
  * @param {import("react").ReactNode} props.label - Status line above the actions
- * @param {import("react").ReactNode} props.children - Action buttons
  */
 export default function MobileActionBar({ show, label, children }) {
   return (
@@ -26,8 +23,6 @@ export default function MobileActionBar({ show, label, children }) {
 }
 
 /**
- * Primary full-width action inside a `MobileActionBar`.
- *
  * @param {Object} props
  * @param {"primary"|"danger"} [props.variant="primary"]
  */
@@ -53,11 +48,8 @@ export function MobileActionButton({
 }
 
 /**
- * Square secondary icon action inside a `MobileActionBar`.
- *
  * @param {Object} props
  * @param {string} props.label - Accessible label
- * @param {boolean} [props.danger]
  */
 export function MobileActionIconButton({ label, danger, children, ...props }) {
   return (

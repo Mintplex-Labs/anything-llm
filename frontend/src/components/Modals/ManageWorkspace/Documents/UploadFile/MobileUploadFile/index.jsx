@@ -4,19 +4,11 @@ import { LinkSimple, UploadSimple } from "@phosphor-icons/react";
 import FileUploadProgress from "../FileUploadProgress";
 
 /**
- * Touch layout of the uploader. Upload logic stays in `UploadFile`; this only
- * swaps the drag-and-drop zone for buttons and stacks progress in one column.
+ * Touch layout of the uploader. Upload logic stays in `UploadFile`.
  *
  * @param {Object} props
  * @param {boolean} props.ready - Document processor is online
- * @param {Array<object>} props.uploads - Upload queue entries
- * @param {Function} props.setFiles - Upload queue setter
- * @param {string} props.slug - Workspace slug
- * @param {() => void} props.openFilePicker
  * @param {object} props.inputProps - `getInputProps()` from the dropzone
- * @param {boolean} props.fetchingUrl
- * @param {(e: Event) => void} props.onSubmitLink
- * @param {() => void} props.onSettled
  */
 export default function MobileUploadFile({
   ready,

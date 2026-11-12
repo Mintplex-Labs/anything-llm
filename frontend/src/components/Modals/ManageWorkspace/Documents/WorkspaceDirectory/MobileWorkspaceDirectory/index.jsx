@@ -8,14 +8,7 @@ import MobileSheet, { MobileSheetOption } from "../../MobileSheet";
 import MobileActionBar, { MobileActionButton } from "../../MobileActionBar";
 
 /**
- * Touch layout of the workspace documents panel. Selection, removal, and
- * saving are owned by `WorkspaceDirectory`; this stays presentational.
- *
- * @param {Object} props
- * @param {Array<{item: object, folder: object}>} props.orderedFiles
- * @param {Record<string, object>|null} props.embeddingProgress
- * @param {Record<string, boolean>} props.selectedItems
- * @param {(ids: string[]) => void} props.onRemoveItems
+ * Touch layout of the workspace documents panel. State and mutations come from `WorkspaceDirectory`.
  */
 export default function MobileWorkspaceDirectory({
   workspace,
@@ -48,7 +41,6 @@ export default function MobileWorkspaceDirectory({
       </div>
     );
 
-  // Files still being embedded are listed in their own section until they finish.
   const embedding = Object.entries(embeddingProgress ?? {});
   const embeddedFiles = orderedFiles.filter(
     ({ item, folder }) => !embeddingProgress?.[`${folder.name}/${item.name}`]

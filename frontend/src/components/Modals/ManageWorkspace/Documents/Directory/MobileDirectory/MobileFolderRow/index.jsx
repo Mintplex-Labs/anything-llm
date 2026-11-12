@@ -14,14 +14,9 @@ import {
 import MobileCheckbox from "../../../MobileCheckbox";
 
 /**
- * A folder and, when open, its files in the mobile picker. Tapping the row
- * opens the folder; the checkbox selects it, matching the desktop picker.
- *
  * @param {Object} props
- * @param {{item: object, files: Array<object>, expanded: boolean, loading: boolean, hasMore: boolean, totalCount: number, displayCount: number}} props.row
- * @param {number} props.inWorkspaceCount - Documents of this folder already in workspace, which the picker hides
+ * @param {number} props.inWorkspaceCount - Documents of this folder already in workspace
  * @param {"none"|"some"|"all"} props.selectionState
- * @param {(id: string) => boolean} props.isFileSelected
  */
 export default function MobileFolderRow({
   row,
@@ -36,8 +31,6 @@ export default function MobileFolderRow({
   const { t } = useTranslation();
   const { item, files, expanded, loading, hasMore, totalCount, displayCount } =
     row;
-  // The server count includes documents already in the workspace, which are
-  // never listed here, so subtract them rather than wait for the folder to load.
   const availableCount =
     inWorkspaceCount > 0
       ? Math.max(0, totalCount - inWorkspaceCount)

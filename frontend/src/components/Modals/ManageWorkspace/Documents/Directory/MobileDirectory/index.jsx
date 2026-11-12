@@ -17,20 +17,15 @@ import MobileActionBar, {
   MobileActionIconButton,
 } from "../../MobileActionBar";
 
-/** Where uploads from the mobile picker land. */
 const UPLOAD_FOLDER = "custom-documents";
 
 /**
- * Touch layout of the "My Documents" picker. Every piece of state and every
- * mutation comes from `Directory`, so this stays presentational.
+ * Touch layout of the "My Documents" picker. State and mutations come from `Directory`.
  *
  * @param {Object} props
  * @param {ReturnType<import("../../hooks/useDocumentPicker").default>} props.picker
- * @param {Array<object>} props.rows - Folder view models built by `Directory`
  * @param {Record<string, number>} props.embeddedCounts - Per folder, documents already in workspace
  * @param {number} props.documentCount - Total documents, or matches while searching
- * @param {boolean} props.allSelected
- * @param {ReturnType<import("../../hooks/useUploadQueue").default>} props.uploadQueue
  */
 export default function MobileDirectory({
   picker,
@@ -70,12 +65,10 @@ export default function MobileDirectory({
     prefetchFolder,
   } = picker;
 
-  // An empty folder can be selected so it can be deleted, but it has nothing to move.
   const hasFiles = selectedCount > 0;
 
   // `syncAfterUpload` pre-selects files it has not seen before, so the upload
   // folder must already be loaded or every existing file in it reads as new.
-  // Desktop gets this from hover prefetching, which touch screens never fire.
   const uploadFolderStatus = contents[UPLOAD_FOLDER]?.status;
   useEffect(() => {
     if (status === "ready" && !uploadFolderStatus)
@@ -161,7 +154,6 @@ export default function MobileDirectory({
         <DirectoryContent
           status={status}
           rows={rows}
-          // Search rows already count matches only.
           embeddedCounts={searchResults ? {} : embeddedCounts}
           folderSelectionState={folderSelectionState}
           isFileSelected={isFileSelected}

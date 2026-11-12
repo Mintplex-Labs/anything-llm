@@ -1,13 +1,6 @@
 /**
  * Bottom sheet for the mobile document picker. Stays mounted so it can slide
- * out as well as in; `visibility` flips at the end of the exit transition so
- * closed sheets drop out of the tab order.
- *
- * @param {Object} props
- * @param {boolean} props.open
- * @param {() => void} props.onClose
- * @param {import("react").ReactNode} [props.title]
- * @param {import("react").ReactNode} props.children
+ * out as well as in.
  */
 export default function MobileSheet({ open, onClose, title, children }) {
   return (
@@ -43,12 +36,7 @@ export default function MobileSheet({ open, onClose, title, children }) {
 }
 
 /**
- * A tappable row inside a `MobileSheet`.
- *
  * @param {Object} props
- * @param {import("@phosphor-icons/react").Icon} props.icon
- * @param {import("react").ReactNode} props.label
- * @param {() => void} props.onClick
  * @param {boolean} [props.danger] - Red treatment for destructive actions
  */
 export function MobileSheetOption({ icon: Icon, label, onClick, danger }) {
