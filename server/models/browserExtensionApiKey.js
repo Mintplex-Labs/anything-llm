@@ -2,7 +2,6 @@ const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 
-// Only the owner fields the API key listing needs, so credential columns never leave the server.
 const PUBLIC_USER_FIELDS = { select: { id: true, username: true, role: true } };
 
 const BrowserExtensionApiKey = {
