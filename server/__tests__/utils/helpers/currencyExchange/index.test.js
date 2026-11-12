@@ -187,14 +187,40 @@ describe("CurrencyExchange", () => {
       expect(rates.EUR).toBe(0.85);
     });
 
-    it("retries the remote on the next call after a failed refresh", async () => {
+    it("backs off after a failed refresh, then retries the remote", async () => {
+      const {
+        CurrencyExchange,
+      } = require("../../../../utils/helpers/currencyExchange");
       global.fetch = jest.fn().mockRejectedValue(new Error("network down"));
       const exchange = freshInstance();
       expect(await exchange.getRates()).toBeNull();
+      expect(await exchange.getRates()).toBeNull();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
 
+      const now = Date.now();
+      const clock = jest
+        .spyOn(Date, "now")
+        .mockReturnValue(now + CurrencyExchange.retryAfterFailureMs + 1);
       mockFetchWith(okResponse(FRANKFURTER_RESPONSE));
       const rates = await exchange.getRates();
+      clock.mockRestore();
       expect(rates.EUR).toBe(0.85);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("serves stale disk rates without refetching during the backoff", async () => {
+      fs.mkdirSync(path.join(tempDir, "currency"), { recursive: true });
+      fs.writeFileSync(
+        path.join(tempDir, "currency", "exchange-rates.json"),
+        JSON.stringify({ EUR: 0.8 })
+      );
+      fs.writeFileSync(path.join(tempDir, "currency", ".cached_at"), "0");
+      global.fetch = jest.fn().mockRejectedValue(new Error("network down"));
+      const exchange = freshInstance();
+
+      for (let i = 0; i < 3; i++)
+        expect((await exchange.getRates()).EUR).toBe(0.8);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
     it("survives a corrupted disk cache file", async () => {

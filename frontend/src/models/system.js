@@ -760,21 +760,16 @@ const System = {
       });
   },
   /**
-   * Exports all chats of a type. Costs are converted into `currency`.
+   * Exports all chats of a type. Costs are converted into the display
+   * currency sent with the `X-Currency` header.
    * @param {string} [type] - export format (csv, json, jsonl, jsonAlpaca)
    * @param {"workspace"|"embed"} [chatType]
-   * @param {string|null} [currency] - ISO 4217 code, USD when omitted
    * @returns {Promise<string|null>} the export file contents, null on failure
    */
-  exportChats: async (
-    type = "csv",
-    chatType = "workspace",
-    currency = null
-  ) => {
+  exportChats: async (type = "csv", chatType = "workspace") => {
     const url = new URL(`${fullApiUrl()}/system/export-chats`);
     url.searchParams.append("type", encodeURIComponent(type));
     url.searchParams.append("chatType", encodeURIComponent(chatType));
-    if (currency) url.searchParams.append("currency", currency);
     return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),

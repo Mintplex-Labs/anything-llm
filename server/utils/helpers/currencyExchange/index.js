@@ -77,6 +77,10 @@ class CurrencyExchange {
   // paths - a hung upstream must fail fast (serving stale or null rates)
   // instead of stalling user requests.
   static fetchTimeoutMs = 10_000;
+  // After a failed refresh, keep serving the loaded (stale or null) rates for
+  // this long before trying the remote again, so an offline or firewalled
+  // instance does not pay the fetch timeout on every request.
+  static retryAfterFailureMs = 1000 * 60 * 15; // 15 minutes
 
   cacheLocation = path.resolve(
     process.env.STORAGE_DIR
@@ -90,6 +94,8 @@ class CurrencyExchange {
   #rates = null;
   /** @type {Promise<void>|null} - de-dupes concurrent refreshes */
   #inflightRefresh = null;
+  /** @type {number} - epoch ms of the last failed refresh, 0 when the last one succeeded */
+  #lastFailedAt = 0;
 
   constructor() {
     if (CurrencyExchange.instance) return CurrencyExchange.instance;
@@ -172,12 +178,14 @@ class CurrencyExchange {
         throw new Error("Remote exchange rate data contained no usable rates");
 
       this.#rates = rates;
+      this.#lastFailedAt = 0;
       await Promise.all([
         fs.promises.writeFile(this.cacheFilePath, JSON.stringify(rates)),
         fs.promises.writeFile(this.cacheFileExpiryPath, Date.now().toString()),
       ]);
       this.log("Remote exchange rates synced and cached.");
     } catch (error) {
+      this.#lastFailedAt = Date.now();
       this.log("Error syncing remote exchange rates", error?.message);
     }
   }
@@ -186,11 +194,14 @@ class CurrencyExchange {
    * Returns the units-per-USD exchange rates, refreshing from the remote
    * source when the disk cache is stale or missing. Serves stale rates when
    * the remote is unreachable, and null when no rates have ever been fetched
-   * (callers should then display USD).
+   * (callers should then display USD). A failed refresh is not retried until
+   * `retryAfterFailureMs` has passed.
    * @returns {Promise<Record<string, number>|null>}
    */
   async getRates() {
     if (this.#rates && !this.isCacheStale) return { ...this.#rates };
+    if (Date.now() - this.#lastFailedAt < CurrencyExchange.retryAfterFailureMs)
+      return this.#rates ? { ...this.#rates } : null;
 
     this.#inflightRefresh ??= this.#refresh().finally(
       () => (this.#inflightRefresh = null)

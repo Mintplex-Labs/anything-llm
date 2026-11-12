@@ -3,8 +3,8 @@ import {
   CURRENCY_CHANGE_EVENT,
   formatCost,
   getCurrencySettings,
-  localeCurrency,
 } from "@/utils/currency";
+import { preferredCurrency } from "@/utils/localeCurrency";
 
 /**
  * Provides the display currency and a formatter that converts stored USD
@@ -34,7 +34,7 @@ export default function useCurrency() {
     };
   }, []);
 
-  const preferred = settings?.currency || localeCurrency();
+  const preferred = settings?.currency || preferredCurrency();
   const rate = preferred === "USD" ? 1 : settings?.rates?.[preferred];
   const currency = rate ? preferred : "USD";
   const displayRate = rate || 1;

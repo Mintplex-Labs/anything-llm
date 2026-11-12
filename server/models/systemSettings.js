@@ -488,6 +488,8 @@ const SystemSettings = {
       MemoryEnabled: await this.memoriesEnabled(),
       MemoryAutoExtraction: await this.memoryAutoExtractionSetting(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
+      DisplayCurrency:
+        (await this.get({ label: "display_currency" }))?.value || null,
 
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs

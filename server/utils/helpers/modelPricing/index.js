@@ -439,7 +439,11 @@ class ModelPricing {
     const sanitized = sanitizeOverrides(overrides);
     if (sanitized.length > MAX_OVERRIDES)
       throw new Error(`Cannot save more than ${MAX_OVERRIDES} model prices.`);
-    fs.writeFileSync(overridesFile(), JSON.stringify(sanitized));
+    // Write then rename so a worker thread reading mid-save never sees a
+    // truncated file (which it would read as "no overrides").
+    const tmpFile = `${overridesFile()}.${process.pid}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(sanitized));
+    fs.renameSync(tmpFile, overridesFile());
     this.#overridesCache = null;
     return sanitized;
   }

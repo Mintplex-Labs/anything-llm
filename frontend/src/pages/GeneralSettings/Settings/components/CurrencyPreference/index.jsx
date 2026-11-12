@@ -9,6 +9,7 @@ import {
   invalidateCurrencySettings,
   localeCurrency,
 } from "@/utils/currency";
+import { storeDisplayCurrency } from "@/utils/localeCurrency";
 
 export default function CurrencyPreference() {
   const { t, i18n } = useTranslation();
@@ -36,6 +37,7 @@ export default function CurrencyPreference() {
       return;
     }
 
+    storeDisplayCurrency(newCurrency || null);
     invalidateCurrencySettings();
     window.dispatchEvent(new CustomEvent(CURRENCY_CHANGE_EVENT));
   }

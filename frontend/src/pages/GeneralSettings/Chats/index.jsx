@@ -59,10 +59,10 @@ export default function WorkspaceChats() {
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
   const { t } = useTranslation();
-  const { currency, formatCost } = useCurrency();
+  const { formatCost } = useCurrency();
 
   const handleDumpChats = async (exportType) => {
-    const chats = await System.exportChats(exportType, "workspace", currency);
+    const chats = await System.exportChats(exportType, "workspace");
     if (!!chats) {
       const { name, mimeType, fileExtension, filenameFunc } =
         exportOptions[exportType];

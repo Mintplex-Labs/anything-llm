@@ -1332,7 +1332,7 @@ function systemEndpoints(app) {
         const { contentType, data } = await exportChatsAsType(
           type,
           chatType,
-          resolveCurrency(currency)
+          resolveCurrency(currency, request.header("X-Currency"))
         );
         await EventLogs.logEvent(
           "exported_chats",
