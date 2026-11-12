@@ -45,10 +45,15 @@ async function recoverAccount(username = "", recoveryCodes = []) {
   // A user without 4 hashes has not logged out and back in since recovery codes were added.
   // Unknown users and users without codes run the same 4 comparisons a wrong first code costs
   // a real user, so the response time does not reveal whether the username exists.
-  // Suspended users are treated the same so recovery cannot be used to change their password.
   const user = await User.get({ username: String(username) });
-  const allUserHashes =
-    user && !user.suspended ? await RecoveryCode.hashesForUser(user.id) : [];
+
+  // Suspended users get the same response so recovery cannot be used to change their password.
+  if (user?.suspended) {
+    dummyHashCompare(uniqueRecoveryCodes[0], 4);
+    return { success: false, error: "Invalid recovery codes." };
+  }
+
+  const allUserHashes = user ? await RecoveryCode.hashesForUser(user.id) : [];
   if (allUserHashes.length < 4) {
     dummyHashCompare(uniqueRecoveryCodes[0], 4);
     return { success: false, error: "Invalid recovery codes." };
