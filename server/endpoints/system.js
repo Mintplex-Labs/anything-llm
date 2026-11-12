@@ -205,6 +205,7 @@ function systemEndpoints(app) {
   app.post("/request-token", async (request, response) => {
     try {
       const bcrypt = require("bcryptjs");
+      const { authTokenHash } = require("../utils/helpers/authTokenHash");
 
       if (await SystemSettings.isMultiUserMode()) {
         if (simpleSSOLoginDisabled()) {
@@ -319,12 +320,7 @@ function systemEndpoints(app) {
         return;
       } else {
         const { password } = reqBody(request);
-        if (
-          !bcrypt.compareSync(
-            password,
-            bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
-          )
-        ) {
+        if (!bcrypt.compareSync(password, authTokenHash())) {
           await EventLogs.logEvent("failed_login_invalid_password", {
             ip: request.ip || "Unknown IP",
             multiUserMode: false,

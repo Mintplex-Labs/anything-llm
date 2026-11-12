@@ -3,6 +3,7 @@ const { User } = require("../../models/user");
 const { EncryptionManager } = require("../EncryptionManager");
 const { decodeJWT } = require("../http");
 const { UserMetaCache } = require("../userLocale");
+const { authTokenHash } = require("../helpers/authTokenHash");
 const EncryptionMgr = new EncryptionManager();
 
 async function validatedRequest(request, response, next) {
@@ -20,13 +21,6 @@ async function validatedRequest(request, response, next) {
   ) {
     UserMetaCache.setFromRequest(request);
     next();
-    return;
-  }
-
-  if (!process.env.AUTH_TOKEN) {
-    response.status(401).json({
-      error: "You need to set an AUTH_TOKEN environment variable.",
-    });
     return;
   }
 
@@ -55,12 +49,7 @@ async function validatedRequest(request, response, next) {
   // be unsafe. As a consequence, existing JWTs with invalid `p` values that do not match the regex
   // in ln:44 will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
   // This kind of methodology only applies to single-user password mode.
-  if (
-    !bcrypt.compareSync(
-      EncryptionMgr.decrypt(p),
-      bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
-    )
-  ) {
+  if (!bcrypt.compareSync(EncryptionMgr.decrypt(p), authTokenHash())) {
     response.status(401).json({
       error: "Invalid auth credentials.",
     });
