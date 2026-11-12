@@ -1,4 +1,9 @@
 function getTTSProvider() {
+  const { Observability } = require("../observability");
+  return Observability.wrapTTS(selectTTSProvider());
+}
+
+function selectTTSProvider() {
   const provider = process.env.TTS_PROVIDER || "openai";
   switch (provider) {
     case "openai":

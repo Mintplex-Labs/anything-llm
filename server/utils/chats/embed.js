@@ -9,6 +9,7 @@ const {
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 
 async function streamChatWithForEmbed(
   response,
@@ -320,5 +321,15 @@ async function resolveLLMConnectorForEmbed({
 }
 
 module.exports = {
-  streamChatWithForEmbed,
+  streamChatWithForEmbed: Observability.traced(
+    "embed-chat",
+    streamChatWithForEmbed,
+    (_response, embed, message, sessionId, { username } = {}) => ({
+      input: message,
+      workspace: embed?.workspace,
+      userId: username ? String(username) : null,
+      sessionId,
+      metadata: { embedId: embed?.id },
+    })
+  ),
 };
