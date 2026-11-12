@@ -3,6 +3,21 @@ const dns = require("dns");
 const http = require("http");
 const https = require("https");
 
+/**  ATTN: SECURITY RESEARCHERS - WE ARE NOT ACCEPTING CVEs OR GHSAs FOR BYPASSES OF THIS GUARD.
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * The public-address check below is a best-effort guard so a model cannot casually point a generated
+ * document at this host or the local network. It is NOT a security boundary. We know there are any
+ * number of ways to bypass or dupe it (DNS tricks, tunneling, hosts editing, open redirectors, proxies,
+ * address encodings we did not think of, etc.), and we are not going to chase them.
+ *
+ * Securing an instance is the job of whoever deploys it: network isolation, firewalls and egress
+ * rules. If your deployment can reach something it should not, fix that at the network layer.
+ *
+ * Any GHSA or CVE report about bypassing this guard will be closed without review, same as the
+ * isValidIP check in collector/utils/url. Please do not submit one.
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+
 /**
  * Image loading shared by the file tools. Image sources come from model
  * output, so every remote download is limited to public addresses (for the
