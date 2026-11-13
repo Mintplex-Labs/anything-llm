@@ -393,11 +393,14 @@ function isParseableMimeType(contentType) {
  * Collect attachments from messages and optionally parse them with user approval.
  * Only attachments with parseable MIME types will be offered for parsing.
  * If two attachments have the same name, only the first one will be kept (handling fwd emails)
+ * Attachments without `contentBytes` are downloaded with `loadContent` only after
+ * approval, up to MAX_TOTAL_ATTACHMENT_SIZE in total.
  * @param {Object} context - The handler context (this) from the aibitat function
  * @param {Array} messages - Array of message objects
+ * @param {(attachment: Object) => Promise<{success: boolean, data?: string, error?: string}>} [loadContent] - Downloads an attachment's base64 content
  * @returns {Promise<{allAttachments: Array, parsedContent: string}>}
  */
-async function handleAttachments(context, messages) {
+async function handleAttachments(context, messages, loadContent = null) {
   const allAttachments = [];
   const uniqueAttachments = new Set();
   messages.forEach((msg, msgIndex) => {
@@ -437,7 +440,27 @@ async function handleAttachments(context, messages) {
       );
 
       const parsedResults = [];
+      let downloadedBytes = 0;
       for (const attachment of parseableAttachments) {
+        if (!attachment.contentBytes && loadContent) {
+          if (
+            downloadedBytes + (attachment.size || 0) >
+            MAX_TOTAL_ATTACHMENT_SIZE
+          ) {
+            context.super.introspect(
+              `${context.caller}: Skipping "${attachment.name}" - over the ${humanFileSize(MAX_TOTAL_ATTACHMENT_SIZE)} download limit`
+            );
+            continue;
+          }
+          context.super.introspect(
+            `${context.caller}: Downloading "${attachment.name}"...`
+          );
+          const download = await loadContent(attachment);
+          if (download.success) {
+            attachment.contentBytes = download.data;
+            downloadedBytes += attachment.size || 0;
+          }
+        }
         if (!attachment.contentBytes) {
           context.super.introspect(
             `${context.caller}: Skipping "${attachment.name}" - no content available`
@@ -1050,6 +1073,8 @@ class OutlookBridge {
    * ends. Each body is the message's `uniqueBody`, so quoted replies of earlier
    * messages are not repeated in every message. Forwards and messages with an
    * empty `uniqueBody` get their full body instead (see needsFullBody).
+   * Attachments carry metadata only and skip inline ones (signature images);
+   * their content is downloaded on demand with getAttachmentContent.
    *
    * Graph rejects $orderby with "InefficientFilter" unless every $orderby
    * property also appears first in $filter, hence the always-true
@@ -1058,7 +1083,7 @@ class OutlookBridge {
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
   async readThread(conversationId) {
-    let endpoint = `/me/messages?$filter=receivedDateTime ge 1900-01-01T00:00:00Z and conversationId eq '${conversationId}'&$orderby=receivedDateTime desc&$top=${THREAD_PAGE_SIZE}&$select=id,subject,from,toRecipients,ccRecipients,bccRecipients,receivedDateTime,isRead,hasAttachments,uniqueBody,webLink,attachments&$expand=attachments`;
+    let endpoint = `/me/messages?$filter=receivedDateTime ge 1900-01-01T00:00:00Z and conversationId eq '${conversationId}'&$orderby=receivedDateTime desc&$top=${THREAD_PAGE_SIZE}&$select=id,subject,from,toRecipients,ccRecipients,bccRecipients,receivedDateTime,isRead,hasAttachments,uniqueBody,webLink,attachments&$expand=attachments($select=id,name,contentType,size,isInline)`;
     const options = {
       headers: { Prefer: 'outlook.body-content-type="text"' },
     };
@@ -1085,6 +1110,7 @@ class OutlookBridge {
     // only the note typed above it (often nothing). Fetch the full body for
     // those; if that fails, keep the uniqueBody.
     for (const msg of recent) {
+      msg.attachments = (msg.attachments || []).filter((a) => !a.isInline);
       msg.body = msg.uniqueBody;
       if (!needsFullBody(msg)) continue;
       const full = await this.request(
@@ -1107,6 +1133,23 @@ class OutlookBridge {
         ),
       },
     };
+  }
+
+  /**
+   * Download one attachment's content.
+   * @param {string} messageId - The message the attachment belongs to
+   * @param {string} attachmentId - The attachment ID
+   * @returns {Promise<{success: boolean, data?: string, error?: string}>} Base64 content; only file attachments have it
+   */
+  async getAttachmentContent(messageId, attachmentId) {
+    const result = await this.request(
+      `/me/messages/${messageId}/attachments/${attachmentId}`
+    );
+    if (!result.success) return result;
+    if (!result.data?.contentBytes) {
+      return { success: false, error: "Attachment has no file content" };
+    }
+    return { success: true, data: result.data.contentBytes };
   }
 
   /**
