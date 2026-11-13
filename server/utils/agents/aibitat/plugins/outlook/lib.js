@@ -8,6 +8,23 @@ const { humanFileSize } = require("../../../../helpers");
 const { safeJsonParse } = require("../../../../http");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB limit for Outlook
+// readThread keeps only the newest messages of a thread, fetched a page at a
+// time since each message carries its body and expanded attachments.
+const MAX_THREAD_MESSAGES = 50;
+const THREAD_PAGE_SIZE = 25;
+
+/**
+ * Subject of a thread without reply/forward prefixes, so a thread read from a
+ * reply (when its older messages were left out) still shows the original subject.
+ * @param {string} subject
+ * @returns {string}
+ */
+function threadSubject(subject) {
+  const stripped = (subject || "")
+    .replace(/^\s*((re|fw|fwd)\s*:\s*)+/i, "")
+    .trim();
+  return stripped || "No Subject";
+}
 
 /**
  * Parses a comma-separated email string into Graph API recipient format.
@@ -1011,19 +1028,31 @@ class OutlookBridge {
   }
 
   /**
-   * Read a full conversation thread by conversation ID.
-   * Note: We avoid combining $filter with $orderby due to Microsoft Graph API
-   * "InefficientFilter" errors. Instead, we fetch without orderby and sort client-side.
+   * Read the most recent messages of a conversation thread, oldest first.
+   * Pages through Graph until MAX_THREAD_MESSAGES are collected or the thread
+   * ends. Each body is the message's `uniqueBody`, so quoted replies of earlier
+   * messages are not repeated in every message.
+   *
+   * Graph rejects $orderby with "InefficientFilter" unless every $orderby
+   * property also appears first in $filter, hence the always-true
+   * receivedDateTime clause ahead of the conversationId match.
    * @param {string} conversationId - The conversation ID
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
   async readThread(conversationId) {
-    const endpoint = `/me/messages?$filter=conversationId eq '${conversationId}'&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,body,webLink,attachments&$expand=attachments`;
+    let endpoint = `/me/messages?$filter=receivedDateTime ge 1900-01-01T00:00:00Z and conversationId eq '${conversationId}'&$orderby=receivedDateTime desc&$top=${THREAD_PAGE_SIZE}&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,uniqueBody,webLink,attachments&$expand=attachments`;
+    const options = {
+      headers: { Prefer: 'outlook.body-content-type="text"' },
+    };
 
-    const result = await this.request(endpoint);
-    if (!result.success) return result;
+    const messages = [];
+    while (endpoint && messages.length < MAX_THREAD_MESSAGES) {
+      const result = await this.request(endpoint, options);
+      if (!result.success) return result;
+      messages.push(...(result.data.value || []));
+      endpoint = result.data["@odata.nextLink"];
+    }
 
-    let messages = result.data.value || [];
     if (messages.length === 0) {
       return {
         success: false,
@@ -1031,21 +1060,22 @@ class OutlookBridge {
       };
     }
 
-    // Sort by receivedDateTime ascending (oldest first) client-side
-    messages.sort(
-      (a, b) => new Date(a.receivedDateTime) - new Date(b.receivedDateTime)
-    );
+    const truncated = !!endpoint || messages.length > MAX_THREAD_MESSAGES;
+    const recent = messages.slice(0, MAX_THREAD_MESSAGES).reverse();
 
     return {
       success: true,
       data: {
         conversationId,
-        subject: messages[0]?.subject || "No Subject",
-        messageCount: messages.length,
-        permalink:
-          messages[messages.length - 1]?.webLink || messages[0]?.webLink,
-        messages: messages.map((msg) =>
-          mapGraphMessage(msg, { includeBody: true, includeAttachments: true })
+        subject: threadSubject(recent[0]?.subject),
+        messageCount: recent.length,
+        truncated,
+        permalink: recent[recent.length - 1]?.webLink || recent[0]?.webLink,
+        messages: recent.map((msg) =>
+          mapGraphMessage(
+            { ...msg, body: msg.uniqueBody },
+            { includeBody: true, includeAttachments: true }
+          )
         ),
       },
     };
