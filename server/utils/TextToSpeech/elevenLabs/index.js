@@ -15,6 +15,10 @@ class ElevenLabsTTS {
     this.modelId = "eleven_multilingual_v2";
   }
 
+  get cacheKey() {
+    return `elevenlabs:${this.modelId}:${this.voiceId}`;
+  }
+
   static async voices(apiKey = null) {
     try {
       const client = new ElevenLabsClient({

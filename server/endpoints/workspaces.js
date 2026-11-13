@@ -34,7 +34,7 @@ const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const { getTTSProvider } = require("../utils/TextToSpeech");
-const { getAudioFileInfo } = require("../utils/TextToSpeech/audioFormat");
+const { TTSAudioCache } = require("../utils/TextToSpeech/audioCache");
 const { messageToSpeech } = require("../utils/TextToSpeech/messageToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 
@@ -49,7 +49,6 @@ const {
 
 function workspaceEndpoints(app) {
   if (!app) return;
-  const responseCache = new Map();
 
   app.post(
     "/workspace/new",
@@ -689,7 +688,6 @@ function workspaceEndpoints(app) {
         const { chatId } = request.params;
         const workspace = response.locals.workspace;
         const user = await userFromSession(request, response);
-        const cacheKey = `${workspace.slug}:${chatId}`;
         const wsChat = await WorkspaceChats.get({
           id: Number(chatId),
           workspaceId: workspace.id,
@@ -697,14 +695,6 @@ function workspaceEndpoints(app) {
         });
 
         if (!wsChat) return response.sendStatus(404);
-        const cachedResponse = responseCache.get(cacheKey);
-        if (cachedResponse) {
-          response.writeHead(200, {
-            "Content-Type": cachedResponse.mime || "audio/mpeg",
-          });
-          response.end(cachedResponse.buffer);
-          return;
-        }
 
         const text = messageToSpeech(
           safeJsonParse(wsChat.response, null)?.text
@@ -712,16 +702,19 @@ function workspaceEndpoints(app) {
         if (!text) return response.sendStatus(204).end();
 
         const TTSProvider = getTTSProvider();
-        const buffer = await TTSProvider.ttsBuffer(text);
-        if (buffer === null) return response.sendStatus(204).end();
+        const cacheKey = TTSAudioCache.key(TTSProvider, text);
+        let audio = await TTSAudioCache.get(wsChat.id, cacheKey);
+        if (!audio) {
+          const buffer = await TTSProvider.ttsBuffer(text);
+          if (buffer === null) return response.sendStatus(204).end();
+          audio = await TTSAudioCache.set(wsChat.id, cacheKey, buffer);
+        }
 
-        const { mime } = getAudioFileInfo(buffer);
-        responseCache.set(cacheKey, { buffer, mime });
-        response.writeHead(200, {
-          "Content-Type": mime,
+        // Storage can sit under a dot folder, which sendFile rejects by default.
+        return response.sendFile(audio.filepath, {
+          dotfiles: "allow",
+          headers: { "Content-Type": audio.mime },
         });
-        response.end(buffer);
-        return;
       } catch (error) {
         console.error("Error processing the TTS request:", error);
         response.status(500).json({ message: "TTS could not be completed" });

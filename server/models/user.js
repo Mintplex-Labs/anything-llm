@@ -310,6 +310,8 @@ const User = {
    */
   delete: async function (clause = {}) {
     try {
+      const { WorkspaceChats } = require("./workspaceChats");
+      await WorkspaceChats.purgeAudio({ users: clause });
       await prisma.$transaction([
         prisma.workspace_chats.updateMany({
           where: { users: clause },

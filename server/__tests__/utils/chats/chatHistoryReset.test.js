@@ -22,6 +22,9 @@
  *   - UI /reset     workspace default thread and workspace threads
  */
 
+// Resets purge cached TTS audio, which resolves its folder from STORAGE_DIR.
+process.env.STORAGE_DIR = __dirname;
+
 jest.mock("../../../utils/prisma", () => {
   let rows = [];
   let autoId = 1;

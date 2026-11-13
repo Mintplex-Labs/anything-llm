@@ -740,6 +740,7 @@ const KEY_MAPPING = {
   TextToSpeechProvider: {
     envKey: "TTS_PROVIDER",
     checks: [supportedTTSProvider],
+    postUpdate: [handleTTSAudioCacheReset],
   },
 
   // TTS OpenAI
@@ -750,6 +751,7 @@ const KEY_MAPPING = {
   TTSOpenAIVoiceModel: {
     envKey: "TTS_OPEN_AI_VOICE_MODEL",
     checks: [],
+    postUpdate: [handleTTSAudioCacheReset],
   },
 
   // TTS ElevenLabs
@@ -760,6 +762,7 @@ const KEY_MAPPING = {
   TTSElevenLabsVoiceModel: {
     envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
     checks: [],
+    postUpdate: [handleTTSAudioCacheReset],
   },
 
   // PiperTTS Local
@@ -776,20 +779,24 @@ const KEY_MAPPING = {
   TTSOpenAICompatibleModel: {
     envKey: "TTS_OPEN_AI_COMPATIBLE_MODEL",
     checks: [],
+    postUpdate: [handleTTSAudioCacheReset],
   },
   TTSOpenAICompatibleVoiceModel: {
     envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
     checks: [isNotEmpty],
+    postUpdate: [handleTTSAudioCacheReset],
   },
   TTSOpenAICompatibleEndpoint: {
     envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
     checks: [isValidURL],
+    postUpdate: [handleTTSAudioCacheReset],
   },
 
   // Kokoro TTS (self-hosted kokoro-fastapi)
   TTSKokoroEndpoint: {
     envKey: "TTS_KOKORO_ENDPOINT",
     checks: [isValidURL],
+    postUpdate: [handleTTSAudioCacheReset],
   },
   TTSKokoroKey: {
     envKey: "TTS_KOKORO_KEY",
@@ -798,6 +805,7 @@ const KEY_MAPPING = {
   TTSKokoroVoiceModel: {
     envKey: "TTS_KOKORO_VOICE_MODEL",
     checks: [isNotEmpty],
+    postUpdate: [handleTTSAudioCacheReset],
   },
 
   // STT Selection
@@ -1419,6 +1427,12 @@ function noRestrictedChars(input = "") {
   return !regExp.test(input)
     ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
+}
+
+async function handleTTSAudioCacheReset(_key, prevValue, nextValue) {
+  if (prevValue === nextValue) return;
+  const { TTSAudioCache } = require("../TextToSpeech/audioCache");
+  await TTSAudioCache.clear();
 }
 
 async function handleVectorStoreReset(key, prevValue, nextValue) {
