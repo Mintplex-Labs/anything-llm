@@ -29,17 +29,33 @@ export default function VoyageAiOptions({ settings }) {
           >
             <optgroup label="Available embedding models">
               {[
-                "voyage-large-2-instruct",
+                "voyage-4-large",
+                "voyage-4",
+                "voyage-4-lite",
+                "voyage-code-4",
                 "voyage-finance-2",
-                "voyage-multilingual-2",
                 "voyage-law-2",
-                "voyage-code-2",
-                "voyage-large-2",
-                "voyage-2",
+              ].map((model) => {
+                return (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                );
+              })}
+            </optgroup>
+            <optgroup label="Legacy embedding models">
+              {[
+                "voyage-3-large",
+                "voyage-3.5",
+                "voyage-3.5-lite",
                 "voyage-3",
                 "voyage-3-lite",
-                "voyage-3-large",
                 "voyage-code-3",
+                "voyage-multilingual-2",
+                "voyage-large-2-instruct",
+                "voyage-large-2",
+                "voyage-code-2",
+                "voyage-2",
               ].map((model) => {
                 return (
                   <option key={model} value={model}>

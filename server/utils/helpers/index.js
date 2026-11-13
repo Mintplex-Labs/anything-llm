@@ -396,6 +396,9 @@ function getImageGeneratorProvider() {
     case "gemini":
       const { GeminiImageGenerator } = require("../ImageGenerators/gemini");
       return new GeminiImageGenerator();
+    case "minimax":
+      const { MinimaxImageGenerator } = require("../ImageGenerators/minimax");
+      return new MinimaxImageGenerator();
     default:
       throw new Error(
         `No valid image generation provider was set. Got: ${provider}`

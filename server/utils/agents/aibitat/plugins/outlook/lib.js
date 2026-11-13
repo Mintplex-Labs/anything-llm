@@ -8,6 +8,35 @@ const { humanFileSize } = require("../../../../helpers");
 const { safeJsonParse } = require("../../../../http");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB limit for Outlook
+// readThread keeps only the newest messages of a thread, fetched a page at a
+// time since each message carries its body and expanded attachments.
+const MAX_THREAD_MESSAGES = 50;
+const THREAD_PAGE_SIZE = 25;
+
+/**
+ * Subject of a thread without reply/forward prefixes, so a thread read from a
+ * reply (when its older messages were left out) still shows the original subject.
+ * @param {string} subject
+ * @returns {string}
+ */
+function threadSubject(subject) {
+  const stripped = (subject || "")
+    .replace(/^\s*((re|fw|fwd)\s*:\s*)+/i, "")
+    .trim();
+  return stripped || "No Subject";
+}
+
+/**
+ * Whether a thread message needs its full body rather than its `uniqueBody`:
+ * forwards (whose forwarded content Graph treats as quoted) and messages whose
+ * `uniqueBody` is empty.
+ * @param {object} msg - Graph message with `subject` and `uniqueBody`
+ * @returns {boolean}
+ */
+function needsFullBody(msg) {
+  if (!msg.uniqueBody?.content?.trim()) return true;
+  return /^\s*(fw|fwd)\s*:/i.test(msg.subject || "");
+}
 
 /**
  * Parses a comma-separated email string into Graph API recipient format.
@@ -57,6 +86,11 @@ function mapGraphMessage(msg, options = {}) {
     isRead: msg.isRead,
     hasAttachments: msg.hasAttachments,
   };
+
+  // Graph only returns BCC on mail the user sent, and only when selected.
+  if (msg.bccRecipients) {
+    base.bcc = msg.bccRecipients.map((r) => r.emailAddress?.address).join(", ");
+  }
 
   if (msg.receivedDateTime) {
     base.receivedDateTime = msg.receivedDateTime;
@@ -359,11 +393,14 @@ function isParseableMimeType(contentType) {
  * Collect attachments from messages and optionally parse them with user approval.
  * Only attachments with parseable MIME types will be offered for parsing.
  * If two attachments have the same name, only the first one will be kept (handling fwd emails)
+ * Attachments without `contentBytes` are downloaded with `loadContent` only after
+ * approval, up to MAX_TOTAL_ATTACHMENT_SIZE in total.
  * @param {Object} context - The handler context (this) from the aibitat function
  * @param {Array} messages - Array of message objects
+ * @param {(attachment: Object) => Promise<{success: boolean, data?: string, error?: string}>} [loadContent] - Downloads an attachment's base64 content
  * @returns {Promise<{allAttachments: Array, parsedContent: string}>}
  */
-async function handleAttachments(context, messages) {
+async function handleAttachments(context, messages, loadContent = null) {
   const allAttachments = [];
   const uniqueAttachments = new Set();
   messages.forEach((msg, msgIndex) => {
@@ -403,7 +440,27 @@ async function handleAttachments(context, messages) {
       );
 
       const parsedResults = [];
+      let downloadedBytes = 0;
       for (const attachment of parseableAttachments) {
+        if (!attachment.contentBytes && loadContent) {
+          if (
+            downloadedBytes + (attachment.size || 0) >
+            MAX_TOTAL_ATTACHMENT_SIZE
+          ) {
+            context.super.introspect(
+              `${context.caller}: Skipping "${attachment.name}" - over the ${humanFileSize(MAX_TOTAL_ATTACHMENT_SIZE)} download limit`
+            );
+            continue;
+          }
+          context.super.introspect(
+            `${context.caller}: Downloading "${attachment.name}"...`
+          );
+          const download = await loadContent(attachment);
+          if (download.success) {
+            attachment.contentBytes = download.data;
+            downloadedBytes += attachment.size || 0;
+          }
+        }
         if (!attachment.contentBytes) {
           context.super.introspect(
             `${context.caller}: Skipping "${attachment.name}" - no content available`
@@ -1011,19 +1068,34 @@ class OutlookBridge {
   }
 
   /**
-   * Read a full conversation thread by conversation ID.
-   * Note: We avoid combining $filter with $orderby due to Microsoft Graph API
-   * "InefficientFilter" errors. Instead, we fetch without orderby and sort client-side.
+   * Read the most recent messages of a conversation thread, oldest first.
+   * Pages through Graph until MAX_THREAD_MESSAGES are collected or the thread
+   * ends. Each body is the message's `uniqueBody`, so quoted replies of earlier
+   * messages are not repeated in every message. Forwards and messages with an
+   * empty `uniqueBody` get their full body instead (see needsFullBody).
+   * Attachments carry metadata only and skip inline ones (signature images);
+   * their content is downloaded on demand with getAttachmentContent.
+   *
+   * Graph rejects $orderby with "InefficientFilter" unless every $orderby
+   * property also appears first in $filter, hence the always-true
+   * receivedDateTime clause ahead of the conversationId match.
    * @param {string} conversationId - The conversation ID
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
   async readThread(conversationId) {
-    const endpoint = `/me/messages?$filter=conversationId eq '${conversationId}'&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,body,webLink,attachments&$expand=attachments`;
+    let endpoint = `/me/messages?$filter=receivedDateTime ge 1900-01-01T00:00:00Z and conversationId eq '${conversationId}'&$orderby=receivedDateTime desc&$top=${THREAD_PAGE_SIZE}&$select=id,subject,from,toRecipients,ccRecipients,bccRecipients,receivedDateTime,isRead,hasAttachments,uniqueBody,webLink,attachments&$expand=attachments($select=id,name,contentType,size,isInline)`;
+    const options = {
+      headers: { Prefer: 'outlook.body-content-type="text"' },
+    };
 
-    const result = await this.request(endpoint);
-    if (!result.success) return result;
+    const messages = [];
+    while (endpoint && messages.length < MAX_THREAD_MESSAGES) {
+      const result = await this.request(endpoint, options);
+      if (!result.success) return result;
+      messages.push(...(result.data.value || []));
+      endpoint = result.data["@odata.nextLink"];
+    }
 
-    let messages = result.data.value || [];
     if (messages.length === 0) {
       return {
         success: false,
@@ -1031,24 +1103,53 @@ class OutlookBridge {
       };
     }
 
-    // Sort by receivedDateTime ascending (oldest first) client-side
-    messages.sort(
-      (a, b) => new Date(a.receivedDateTime) - new Date(b.receivedDateTime)
-    );
+    const truncated = !!endpoint || messages.length > MAX_THREAD_MESSAGES;
+    const recent = messages.slice(0, MAX_THREAD_MESSAGES).reverse();
+
+    // Graph counts forwarded content as quoted, so a forward's uniqueBody holds
+    // only the note typed above it (often nothing). Fetch the full body for
+    // those; if that fails, keep the uniqueBody.
+    for (const msg of recent) {
+      msg.attachments = (msg.attachments || []).filter((a) => !a.isInline);
+      msg.body = msg.uniqueBody;
+      if (!needsFullBody(msg)) continue;
+      const full = await this.request(
+        `/me/messages/${msg.id}?$select=body`,
+        options
+      );
+      if (full.success) msg.body = full.data.body;
+    }
 
     return {
       success: true,
       data: {
         conversationId,
-        subject: messages[0]?.subject || "No Subject",
-        messageCount: messages.length,
-        permalink:
-          messages[messages.length - 1]?.webLink || messages[0]?.webLink,
-        messages: messages.map((msg) =>
+        subject: threadSubject(recent[0]?.subject),
+        messageCount: recent.length,
+        truncated,
+        permalink: recent[recent.length - 1]?.webLink || recent[0]?.webLink,
+        messages: recent.map((msg) =>
           mapGraphMessage(msg, { includeBody: true, includeAttachments: true })
         ),
       },
     };
+  }
+
+  /**
+   * Download one attachment's content.
+   * @param {string} messageId - The message the attachment belongs to
+   * @param {string} attachmentId - The attachment ID
+   * @returns {Promise<{success: boolean, data?: string, error?: string}>} Base64 content; only file attachments have it
+   */
+  async getAttachmentContent(messageId, attachmentId) {
+    const result = await this.request(
+      `/me/messages/${messageId}/attachments/${attachmentId}`
+    );
+    if (!result.success) return result;
+    if (!result.data?.contentBytes) {
+      return { success: false, error: "Attachment has no file content" };
+    }
+    return { success: true, data: result.data.contentBytes };
   }
 
   /**
