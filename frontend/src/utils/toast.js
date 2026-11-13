@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+import { isMobileOnly } from "react-device-detect";
 
 /**
  * Resolves the effective theme (light or dark) using the same logic as useTheme,
@@ -24,7 +25,7 @@ function resolveTheme() {
 const showToast = (message, type = "default", opts = {}) => {
   const resolved = resolveTheme();
   const options = {
-    position: "bottom-center",
+    position: isMobileOnly ? "top-center" : "bottom-center",
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,

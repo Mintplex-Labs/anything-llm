@@ -1255,10 +1255,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Documentos",
       "data-connectors": "Conectores de Dados",
-      "desktop-only":
-        "Editar estas configurações só está disponível em dispositivos desktop. Acesse esta página em seu desktop para continuar.",
-      dismiss: "Ignorar",
-      editing: "Editando",
     },
     directory: {
       "my-documents": "Meus Documentos",
@@ -1280,6 +1276,24 @@ const TRANSLATIONS = {
       "total-documents_other": "{{count}} documentos",
       "search-results_one": "{{count}} resultado",
       "search-results_other": "{{count}} resultados",
+      "in-workspace": "No ambiente de trabalho",
+      "upload-files": "Enviar arquivos",
+      "add-link": "Adicionar link",
+      "selected-count_one": "{{count}} selecionado",
+      "selected-count_other": "{{count}} selecionado",
+      "move-to-folder": "Mover para a pasta",
+      "ready-to-embed_one": "Arquivo {{count}} pronto para ser incorporado",
+      "ready-to-embed_other":
+        "{{count}} arquivos prontos para serem incorporados",
+      "add-to-queue": "Adicionar à fila",
+      staged: "Pronto para incorporar",
+      pinned: "Destacado",
+      watching: "Assistir",
+      pin: "Salvar no espaço de trabalho",
+      unpin: "Remover da área de trabalho",
+      watch: "Esteja atento a quaisquer alterações.",
+      unwatch: "Pare de procurar por alterações.",
+      "remove-from-workspace": "Remover da área de trabalho",
     },
     upload: {
       "processor-offline": "Processador de documentos Indisponível",
