@@ -531,7 +531,7 @@ const SystemSettings = {
       ImageGenerationMinimaxResolution:
         process.env.IMAGE_GEN_MINIMAX_RESOLUTION || "1K",
       ImageGenerationMinimaxPromptEnhancement:
-        process.env.IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT || "true",
+        process.env.IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT || "false",
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

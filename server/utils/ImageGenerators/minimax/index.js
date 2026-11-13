@@ -30,9 +30,14 @@ class MinimaxImageGenerator extends BaseImageGenerator {
    * @returns {Promise<import("../base").GeneratedImage>}
    */
   async requestImage(prompt, size, signal) {
-    this.log(`Generating ${size} image with ${this.model}.`);
+    // MiniMax rejects the "auto" aspect ratio without prompt enhancement.
     const enhance =
-      process.env.IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT !== "false";
+      process.env.IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT === "true" ||
+      size === "auto";
+    const sizeParams = this.#sizeParams(size);
+    this.log(
+      `Generating image with ${this.model} (${this.#describe(sizeParams, enhance)}).`
+    );
     const result = await this.client.images.generate(
       {
         model: this.model,
@@ -40,8 +45,7 @@ class MinimaxImageGenerator extends BaseImageGenerator {
         n: 1,
         // MiniMax defaults to JPEG.
         output_format: "png",
-        // MiniMax rejects the "auto" aspect ratio without prompt enhancement.
-        ...this.#sizeParams(!enhance && size === "auto" ? "1:1" : size),
+        ...sizeParams,
         ...(!enhance && { disable_prompt_enhanced: true }),
       },
       { signal: signal ?? undefined }
@@ -56,8 +60,11 @@ class MinimaxImageGenerator extends BaseImageGenerator {
    * @returns {Promise<import("../base").GeneratedImage>}
    */
   async editImage({ prompt, images, size, signal }) {
+    const sizeParams = this.#sizeParams(
+      size || process.env.IMAGE_GEN_SIZE_PREF || "auto"
+    );
     this.log(
-      `Editing image with ${this.model} (${images.length} reference(s)).`
+      `Editing image with ${this.model} (${images.length} reference(s), ${this.#describe(sizeParams, true)}).`
     );
     const { toFile } = require("openai");
     const result = await this.client.images.edit(
@@ -66,7 +73,7 @@ class MinimaxImageGenerator extends BaseImageGenerator {
         prompt,
         n: 1,
         output_format: "png",
-        ...this.#sizeParams(size || process.env.IMAGE_GEN_SIZE_PREF || "auto"),
+        ...sizeParams,
         image: await Promise.all(
           images.map((buffer, i) =>
             toFile(buffer, `reference-${i}.png`, { type: "image/png" })
@@ -93,6 +100,18 @@ class MinimaxImageGenerator extends BaseImageGenerator {
       aspect_ratio: size,
       area: process.env.IMAGE_GEN_MINIMAX_RESOLUTION || "1K",
     };
+  }
+
+  /**
+   * @param {{size: string}|{aspect_ratio: string, area: string}} sizeParams
+   * @param {boolean} enhance
+   * @returns {string}
+   */
+  #describe(sizeParams, enhance) {
+    const sizing = sizeParams.size
+      ? `size: ${sizeParams.size}`
+      : `aspect: ${sizeParams.aspect_ratio}, resolution: ${sizeParams.area}`;
+    return `${sizing}, prompt enhancement: ${enhance ? "on" : "off"}`;
   }
 
   /**
