@@ -209,7 +209,9 @@ module.exports.OutlookReadThread = {
               const thread = result.data;
 
               const { allAttachments, parsedContent: parsedAttachmentContent } =
-                await handleAttachments(this, thread.messages);
+                await handleAttachments(this, thread.messages, (att) =>
+                  outlookLib.getAttachmentContent(att.messageId, att.id)
+                );
 
               const { header, formatted } = formatThread(thread.messages);
               const messagesFormatted = `${header}\n\n${formatted.join("\n\n")}`;
