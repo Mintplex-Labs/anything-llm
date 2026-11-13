@@ -2,7 +2,9 @@ import { useState } from "react";
 import { CaretDown, CaretUp, Info } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import ImageModelSelection from "../ImageModelSelection";
-import ImageDimensionSelection from "../ImageDimensionSelection";
+import ImageDimensionSelection, {
+  initialDimension,
+} from "../ImageDimensionSelection";
 
 const RESOLUTIONS = ["1K", "2K", "4K"];
 
@@ -11,6 +13,13 @@ const INPUT_CLASSES =
 
 export default function MinimaxImageOptions({ settings }) {
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState(
+    initialDimension("minimax-imggen", settings)
+  );
+  // MiniMax rejects the Auto aspect ratio without prompt enhancement, so the
+  // server always enables it there. The locked select has no name, so the
+  // saved preference is left untouched for when a fixed ratio is picked.
+  const enhancementRequired = aspectRatio === "auto";
 
   return (
     <div className="w-full flex flex-col">
@@ -36,6 +45,7 @@ export default function MinimaxImageOptions({ settings }) {
         <ImageDimensionSelection
           provider="minimax-imggen"
           settings={settings}
+          onChange={setAspectRatio}
         />
       </div>
       <div className="flex justify-start mt-4">
@@ -106,14 +116,24 @@ export default function MinimaxImageOptions({ settings }) {
                 image edits, so it is always on for those.
               </Tooltip>
             </div>
-            <select
-              name="ImageGenerationMinimaxPromptEnhancement"
-              className={INPUT_CLASSES}
-              defaultValue={settings?.ImageGenerationMinimaxPromptEnhancement}
-            >
-              <option value="false">Disabled</option>
-              <option value="true">Enabled</option>
-            </select>
+            {enhancementRequired ? (
+              <select
+                className={`${INPUT_CLASSES} opacity-60 cursor-not-allowed`}
+                value="true"
+                disabled={true}
+              >
+                <option value="true">Enabled (required for Auto)</option>
+              </select>
+            ) : (
+              <select
+                name="ImageGenerationMinimaxPromptEnhancement"
+                className={INPUT_CLASSES}
+                defaultValue={settings?.ImageGenerationMinimaxPromptEnhancement}
+              >
+                <option value="false">Disabled</option>
+                <option value="true">Enabled</option>
+              </select>
+            )}
           </div>
         </div>
       </div>
