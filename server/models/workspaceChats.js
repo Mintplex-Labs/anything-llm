@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { safeJSONStringify } = require("../utils/helpers/chat/responses");
+const { TTSAudioCache } = require("../utils/TextToSpeech/audioCache");
 
 const WorkspaceChats = {
   new: async function ({
@@ -112,13 +113,15 @@ const WorkspaceChats = {
   markHistoryInvalid: async function (workspaceId = null, user = null) {
     if (!workspaceId) return;
     try {
+      const where = {
+        workspaceId,
+        user_id: user?.id,
+        thread_id: null, // this function is now only used for the default thread on workspaces
+        api_session_id: null, // API session chats also live on the default thread - a UI reset must not clear them
+      };
+      await this.purgeAudio(where);
       await prisma.workspace_chats.updateMany({
-        where: {
-          workspaceId,
-          user_id: user?.id,
-          thread_id: null, // this function is now only used for the default thread on workspaces
-          api_session_id: null, // API session chats also live on the default thread - a UI reset must not clear them
-        },
+        where,
         data: {
           include: false,
         },
@@ -139,12 +142,14 @@ const WorkspaceChats = {
   ) {
     if (!workspaceId || !threadId) return;
     try {
+      const where = {
+        workspaceId,
+        thread_id: threadId,
+        user_id: user?.id,
+      };
+      await this.purgeAudio(where);
       await prisma.workspace_chats.updateMany({
-        where: {
-          workspaceId,
-          thread_id: threadId,
-          user_id: user?.id,
-        },
+        where,
         data: {
           include: false,
         },
@@ -165,6 +170,7 @@ const WorkspaceChats = {
   markThreadHistoryInvalidV2: async function (whereClause = {}) {
     if (!whereClause) return;
     try {
+      await this.purgeAudio(whereClause);
       await prisma.workspace_chats.updateMany({
         where: whereClause,
         data: {
@@ -191,8 +197,28 @@ const WorkspaceChats = {
     }
   },
 
+  /**
+   * Removes cached text-to-speech audio of every chat matching the clause.
+   * Call before the chats are deleted or hidden, while they still match.
+   * Never throws, so failed cleanup cannot block the chat change itself.
+   * @param {Object} clause - Prisma where clause for workspace chats.
+   * @returns {Promise<void>}
+   */
+  purgeAudio: async function (clause = {}) {
+    try {
+      const chats = await prisma.workspace_chats.findMany({
+        where: clause,
+        select: { id: true },
+      });
+      await TTSAudioCache.purge(chats.map((chat) => chat.id));
+    } catch (error) {
+      console.error(error.message);
+    }
+  },
+
   delete: async function (clause = {}) {
     try {
+      await this.purgeAudio(clause);
       await prisma.workspace_chats.deleteMany({
         where: clause,
       });
@@ -297,6 +323,7 @@ const WorkspaceChats = {
           lastUpdatedAt: new Date(),
         },
       });
+      await this.purgeAudio({ id });
       return true;
     } catch (error) {
       console.error(error.message);

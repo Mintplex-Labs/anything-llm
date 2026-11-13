@@ -6,13 +6,23 @@ class OpenAiTTS {
     this.openai = new OpenAIApi({
       apiKey: process.env.TTS_OPEN_AI_KEY,
     });
+    this.model = "tts-1";
     this.voice = process.env.TTS_OPEN_AI_VOICE_MODEL ?? "alloy";
+  }
+
+  /**
+   * Provider, model and voice that shape the generated audio. Cached audio is
+   * only reused while this matches.
+   * @returns {string}
+   */
+  get cacheKey() {
+    return `openai:${this.model}:${this.voice}`;
   }
 
   async ttsBuffer(textInput) {
     try {
       const result = await this.openai.audio.speech.create({
-        model: "tts-1",
+        model: this.model,
         voice: this.voice,
         input: textInput,
       });

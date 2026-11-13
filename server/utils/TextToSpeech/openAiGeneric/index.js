@@ -29,6 +29,15 @@ class GenericOpenAiTTS {
     );
   }
 
+  /**
+   * Provider, model and voice that shape the generated audio. Cached audio is
+   * only reused while this matches.
+   * @returns {string}
+   */
+  get cacheKey() {
+    return `generic-openai:${this.model}:${this.voice}`;
+  }
+
   #log(text, ...args) {
     console.log(`\x1b[32m[OpenAiGenericTTS]\x1b[0m ${text}`, ...args);
   }

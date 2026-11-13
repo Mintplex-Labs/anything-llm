@@ -47,4 +47,16 @@ function getAudioFileInfo(buffer) {
   return AUDIO_FORMATS.mp3;
 }
 
-module.exports = { getAudioFileInfo };
+/**
+ * Mime type for an audio file extension. Defaults to MP3 like `getAudioFileInfo`.
+ * @param {string} extension - Extension with leading dot, e.g. ".wav".
+ * @returns {string}
+ */
+function mimeFromExtension(extension) {
+  const format = Object.values(AUDIO_FORMATS).find(
+    (format) => format.extension === extension
+  );
+  return (format ?? AUDIO_FORMATS.mp3).mime;
+}
+
+module.exports = { getAudioFileInfo, mimeFromExtension };
