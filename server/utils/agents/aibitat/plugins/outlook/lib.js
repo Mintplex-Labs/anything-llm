@@ -1018,12 +1018,18 @@ class OutlookBridge {
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
   async readThread(conversationId) {
-    const endpoint = `/me/messages?$filter=conversationId eq '${conversationId}'&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,body,webLink,attachments&$expand=attachments`;
+    let endpoint = `/me/messages?$filter=conversationId eq '${conversationId}'&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,body,webLink,attachments&$expand=attachments`;
 
-    const result = await this.request(endpoint);
-    if (!result.success) return result;
+    // Graph returns 10 messages per page by default, so follow @odata.nextLink
+    // to read threads longer than that in full.
+    const messages = [];
+    while (endpoint) {
+      const result = await this.request(endpoint);
+      if (!result.success) return result;
+      messages.push(...(result.data.value || []));
+      endpoint = result.data["@odata.nextLink"];
+    }
 
-    let messages = result.data.value || [];
     if (messages.length === 0) {
       return {
         success: false,
