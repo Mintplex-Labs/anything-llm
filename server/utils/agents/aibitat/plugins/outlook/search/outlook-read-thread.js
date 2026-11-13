@@ -8,7 +8,70 @@ const { TokenManager } = require("../../../../../helpers/tiktoken");
 // messages are summarized, leaving the rest for the conversation and the reply.
 const THREAD_CONTEXT_RATIO = 0.75;
 
-function formatMessage(msg, i) {
+const RECIPIENT_FIELDS = [
+  ["to", "To"],
+  ["cc", "CC"],
+  ["bcc", "BCC"],
+];
+
+/**
+ * Everyone on a message (sender and To/CC/BCC), keyed by lowercased address.
+ * @param {object} msg - A message from readThread
+ * @returns {Map<string, {address: string, role: string}>}
+ */
+function participants(msg) {
+  const people = new Map();
+  const add = (list, role) => {
+    for (const address of (list || "").split(",")) {
+      const trimmed = address.trim();
+      const key = trimmed.toLowerCase();
+      if (trimmed && !people.has(key))
+        people.set(key, { address: trimmed, role });
+    }
+  };
+  add(msg.from, "From");
+  for (const [field, role] of RECIPIENT_FIELDS) add(msg[field], role);
+  return people;
+}
+
+/**
+ * Formats a thread with its recipients rolled up: the first message's To/CC/BCC
+ * are listed once in `header`, and each later message lists only the people
+ * added to or dropped from the conversation since the previous message.
+ * Comparing everyone on the message (sender included) means an ordinary
+ * reply-all, which moves the sender into To, shows no change.
+ * @param {object[]} messages - Thread messages, oldest first
+ * @returns {{header: string, formatted: string[]}}
+ */
+function formatThread(messages) {
+  const first = messages[0] || {};
+  const header =
+    `Recipients (message 1):\n` +
+    RECIPIENT_FIELDS.filter(([field]) => first[field])
+      .map(([field, role]) => `${role}: ${first[field]}`)
+      .join("\n");
+
+  let previous = participants(first);
+  const formatted = messages.map((msg, i) => {
+    const current = participants(msg);
+    let changes = "";
+    if (i > 0) {
+      const added = [...current]
+        .filter(([key]) => !previous.has(key))
+        .map(([, p]) => `${p.address} (${p.role})`);
+      const removed = [...previous]
+        .filter(([key]) => !current.has(key))
+        .map(([, p]) => p.address);
+      if (added.length) changes += `Added: ${added.join(", ")}\n`;
+      if (removed.length) changes += `Removed: ${removed.join(", ")}\n`;
+    }
+    previous = current;
+    return formatMessage(msg, i, changes);
+  });
+  return { header, formatted };
+}
+
+function formatMessage(msg, i, recipientChanges = "") {
   let attachmentInfo = "";
   if (msg.attachments?.length > 0) {
     attachmentInfo = `\n   Attachments: ${msg.attachments.map((a) => `${a.name} (${a.contentType}, ${(a.size / 1024).toFixed(1)}KB)`).join(", ")}`;
@@ -25,8 +88,7 @@ function formatMessage(msg, i) {
   return (
     `--- Message ${i + 1} ---\n` +
     `From: ${msg.fromName} <${msg.from}>\n` +
-    `To: ${msg.to}\n` +
-    (msg.cc ? `CC: ${msg.cc}\n` : "") +
+    recipientChanges +
     `Date: ${new Date(msg.date).toLocaleString()}\n` +
     `Subject: ${msg.subject}\n` +
     `Status: ${msg.isRead ? "READ" : "UNREAD"}\n` +
@@ -37,20 +99,20 @@ function formatMessage(msg, i) {
 
 /**
  * Returns the thread text sized for the model's context window. When the
- * messages (plus any parsed attachment text) exceed the budget, every message
- * but the latest is summarized; the latest stays verbatim and an index of all
- * messages keeps who wrote when.
+ * messages (plus the other text sent with them) exceed the budget, every
+ * message but the latest is summarized; the latest stays verbatim and an index
+ * of all messages keeps who wrote when.
  * @param {object} context - The tool handler's `this`
  * @param {object[]} messages - Thread messages, oldest first
- * @param {string[]} formatted - `messages` formatted by formatMessage
- * @param {string} attachmentContent - Parsed attachment text sent alongside
+ * @param {string[]} formatted - `messages` formatted by formatThread
+ * @param {string} extraContent - Other text sent alongside (recipients, parsed attachments)
  * @returns {Promise<{text: string, summarized: boolean}>}
  */
 async function fitThreadToContext(
   context,
   messages,
   formatted,
-  attachmentContent = ""
+  extraContent = ""
 ) {
   const full = formatted.join("\n\n");
   if (messages.length < 2) return { text: full, summarized: false };
@@ -59,9 +121,7 @@ async function fitThreadToContext(
   const budget = Math.floor(
     Provider.contextLimit(provider, model) * THREAD_CONTEXT_RATIO
   );
-  const tokens = new TokenManager(model).countFromString(
-    full + attachmentContent
-  );
+  const tokens = new TokenManager(model).countFromString(full + extraContent);
   if (tokens <= budget) return { text: full, summarized: false };
 
   context.super.introspect(
@@ -151,8 +211,8 @@ module.exports.OutlookReadThread = {
               const { allAttachments, parsedContent: parsedAttachmentContent } =
                 await handleAttachments(this, thread.messages);
 
-              const formatted = thread.messages.map(formatMessage);
-              const messagesFormatted = formatted.join("\n\n");
+              const { header, formatted } = formatThread(thread.messages);
+              const messagesFormatted = `${header}\n\n${formatted.join("\n\n")}`;
 
               this.super.introspect(
                 `${this.caller}: Successfully read thread with ${thread.messageCount} messages`
@@ -171,7 +231,7 @@ module.exports.OutlookReadThread = {
                 this,
                 thread.messages,
                 formatted,
-                parsedAttachmentContent
+                header + parsedAttachmentContent
               );
 
               const count = thread.messageCount;
@@ -187,6 +247,7 @@ module.exports.OutlookReadThread = {
                   ? `Messages 1-${count - 1} are summarized to fit the context window; message ${count} is shown in full.\n`
                   : "") +
                 `Total Attachments: ${allAttachments.length}\n\n` +
+                `${header}\n\n` +
                 text +
                 parsedAttachmentContent
               );

@@ -87,6 +87,11 @@ function mapGraphMessage(msg, options = {}) {
     hasAttachments: msg.hasAttachments,
   };
 
+  // Graph only returns BCC on mail the user sent, and only when selected.
+  if (msg.bccRecipients) {
+    base.bcc = msg.bccRecipients.map((r) => r.emailAddress?.address).join(", ");
+  }
+
   if (msg.receivedDateTime) {
     base.receivedDateTime = msg.receivedDateTime;
   }
@@ -1053,7 +1058,7 @@ class OutlookBridge {
    * @returns {Promise<{success: boolean, data?: object, error?: string}>}
    */
   async readThread(conversationId) {
-    let endpoint = `/me/messages?$filter=receivedDateTime ge 1900-01-01T00:00:00Z and conversationId eq '${conversationId}'&$orderby=receivedDateTime desc&$top=${THREAD_PAGE_SIZE}&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,isRead,hasAttachments,uniqueBody,webLink,attachments&$expand=attachments`;
+    let endpoint = `/me/messages?$filter=receivedDateTime ge 1900-01-01T00:00:00Z and conversationId eq '${conversationId}'&$orderby=receivedDateTime desc&$top=${THREAD_PAGE_SIZE}&$select=id,subject,from,toRecipients,ccRecipients,bccRecipients,receivedDateTime,isRead,hasAttachments,uniqueBody,webLink,attachments&$expand=attachments`;
     const options = {
       headers: { Prefer: 'outlook.body-content-type="text"' },
     };
