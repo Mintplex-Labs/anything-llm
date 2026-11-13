@@ -386,7 +386,7 @@ const TRANSLATIONS = {
       sql: {
         title: "SQL Connector",
         description:
-          "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+          "Enable your agent to be able to leverage SQL to answer your questions by connecting to various SQL database providers.",
       },
       scheduledJob: {
         title: "Create scheduled jobs",
