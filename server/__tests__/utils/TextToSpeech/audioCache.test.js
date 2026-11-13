@@ -152,4 +152,24 @@ describe("TTSAudioCache", () => {
       await expect(TTSAudioCache.purge([1])).resolves.toBeUndefined();
     });
   });
+
+  describe("clear", () => {
+    test("removes audio of every chat", async () => {
+      await TTSAudioCache.set(1, "key", mp3);
+      await TTSAudioCache.set(2, "key", wav);
+      await TTSAudioCache.clear();
+      expect(fs.existsSync(cachePath)).toBe(false);
+      expect(await TTSAudioCache.get(1, "key")).toBeNull();
+    });
+
+    test("allows audio to be cached again afterwards", async () => {
+      await TTSAudioCache.clear();
+      await TTSAudioCache.set(1, "key", mp3);
+      expect(await TTSAudioCache.get(1, "key")).not.toBeNull();
+    });
+
+    test("does not fail before any audio has been cached", async () => {
+      await expect(TTSAudioCache.clear()).resolves.toBeUndefined();
+    });
+  });
 });

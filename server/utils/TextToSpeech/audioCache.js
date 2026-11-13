@@ -5,7 +5,8 @@
  * Each chat keeps at most one audio file at `tts-cache/<chatId>/<key><ext>`.
  * The key hashes the provider, model, voice and spoken text, so audio made
  * with other TTS settings or from an older version of the message is a miss
- * and gets replaced the next time the message is played.
+ * and gets replaced the next time the message is played. Changing those
+ * settings in the app clears the whole cache.
  */
 const fs = require("fs");
 const path = require("path");
@@ -114,6 +115,14 @@ const TTSAudioCache = {
           fs.promises.rm(chatFolder(name), { recursive: true, force: true })
         )
     );
+  },
+
+  /**
+   * Removes all cached audio.
+   * @returns {Promise<void>}
+   */
+  clear: async function () {
+    await fs.promises.rm(cachePath(), { recursive: true, force: true });
   },
 };
 
