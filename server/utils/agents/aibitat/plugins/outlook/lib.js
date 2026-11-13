@@ -27,6 +27,18 @@ function threadSubject(subject) {
 }
 
 /**
+ * Whether a thread message needs its full body rather than its `uniqueBody`:
+ * forwards (whose forwarded content Graph treats as quoted) and messages whose
+ * `uniqueBody` is empty.
+ * @param {object} msg - Graph message with `subject` and `uniqueBody`
+ * @returns {boolean}
+ */
+function needsFullBody(msg) {
+  if (!msg.uniqueBody?.content?.trim()) return true;
+  return /^\s*(fw|fwd)\s*:/i.test(msg.subject || "");
+}
+
+/**
  * Parses a comma-separated email string into Graph API recipient format.
  * @param {string} emailString - Comma-separated email addresses
  * @returns {Array<{emailAddress: {address: string}}>}
@@ -1031,7 +1043,8 @@ class OutlookBridge {
    * Read the most recent messages of a conversation thread, oldest first.
    * Pages through Graph until MAX_THREAD_MESSAGES are collected or the thread
    * ends. Each body is the message's `uniqueBody`, so quoted replies of earlier
-   * messages are not repeated in every message.
+   * messages are not repeated in every message. Forwards and messages with an
+   * empty `uniqueBody` get their full body instead (see needsFullBody).
    *
    * Graph rejects $orderby with "InefficientFilter" unless every $orderby
    * property also appears first in $filter, hence the always-true
@@ -1063,6 +1076,19 @@ class OutlookBridge {
     const truncated = !!endpoint || messages.length > MAX_THREAD_MESSAGES;
     const recent = messages.slice(0, MAX_THREAD_MESSAGES).reverse();
 
+    // Graph counts forwarded content as quoted, so a forward's uniqueBody holds
+    // only the note typed above it (often nothing). Fetch the full body for
+    // those; if that fails, keep the uniqueBody.
+    for (const msg of recent) {
+      msg.body = msg.uniqueBody;
+      if (!needsFullBody(msg)) continue;
+      const full = await this.request(
+        `/me/messages/${msg.id}?$select=body`,
+        options
+      );
+      if (full.success) msg.body = full.data.body;
+    }
+
     return {
       success: true,
       data: {
@@ -1072,10 +1098,7 @@ class OutlookBridge {
         truncated,
         permalink: recent[recent.length - 1]?.webLink || recent[0]?.webLink,
         messages: recent.map((msg) =>
-          mapGraphMessage(
-            { ...msg, body: msg.uniqueBody },
-            { includeBody: true, includeAttachments: true }
-          )
+          mapGraphMessage(msg, { includeBody: true, includeAttachments: true })
         ),
       },
     };

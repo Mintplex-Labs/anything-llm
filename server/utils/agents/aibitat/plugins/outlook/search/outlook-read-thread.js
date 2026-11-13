@@ -100,7 +100,7 @@ module.exports.OutlookReadThread = {
           name: this.name,
           description:
             "Read a full email conversation thread by its conversation ID. " +
-            "Returns up to the 50 most recent messages with sender, recipients, subject, date, attachment information, and each message's own text (quoted replies removed). " +
+            "Returns up to the 50 most recent messages with sender, recipients, subject, date, attachment information, and each message's own text (quoted replies removed; forwards include the forwarded content). " +
             "If the thread is too long for the context window, all but the latest message are summarized. " +
             "Use this after searching to read the full conversation.",
           examples: [
