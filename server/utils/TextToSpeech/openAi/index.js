@@ -10,11 +10,6 @@ class OpenAiTTS {
     this.voice = process.env.TTS_OPEN_AI_VOICE_MODEL ?? "alloy";
   }
 
-  /**
-   * Provider, model and voice that shape the generated audio. Cached audio is
-   * only reused while this matches.
-   * @returns {string}
-   */
   get cacheKey() {
     return `openai:${this.model}:${this.voice}`;
   }

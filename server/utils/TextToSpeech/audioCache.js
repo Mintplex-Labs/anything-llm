@@ -1,12 +1,7 @@
 /**
- * Disk cache for text-to-speech audio generated from workspace chats, so a
- * replayed message is served from storage instead of being synthesized again.
- *
- * Each chat keeps at most one audio file at `tts-cache/<chatId>/<key><ext>`.
- * The key hashes the provider, model, voice and spoken text, so audio made
- * with other TTS settings or from an older version of the message is a miss
- * and gets replaced the next time the message is played. Changing those
- * settings in the app clears the whole cache.
+ * Disk cache for chat text-to-speech audio. Each chat keeps one file at
+ * `tts-cache/<chatId>/<key><ext>`, where the key hashes the provider, model,
+ * voice and spoken text.
  */
 const fs = require("fs");
 const path = require("path");
@@ -17,39 +12,28 @@ const TEMP_EXTENSION = ".tmp";
 
 /**
  * @typedef {Object} CachedAudio
- * @property {string} filepath - Absolute path of audio file on disk.
+ * @property {string} filepath
  * @property {string} mime
  */
 
-/**
- * @returns {string}
- */
 function cachePath() {
   return process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/tts-cache`)
     : path.resolve(process.env.STORAGE_DIR, `tts-cache`);
 }
 
-/**
- * @param {number|string} chatId
- * @returns {string}
- */
 function chatFolder(chatId) {
   return path.resolve(cachePath(), String(Number(chatId)));
 }
 
-/**
- * @param {string} filepath
- * @returns {CachedAudio}
- */
 function cachedAudio(filepath) {
   return { filepath, mime: mimeFromExtension(path.extname(filepath)) };
 }
 
 const TTSAudioCache = {
   /**
-   * @param {{cacheKey: string}} provider - TTS provider that generates the audio.
-   * @param {string} text - Text that is spoken.
+   * @param {{cacheKey: string}} provider
+   * @param {string} text
    * @returns {string}
    */
   key: function (provider, text) {
@@ -62,7 +46,7 @@ const TTSAudioCache = {
   /**
    * @param {number|string} chatId
    * @param {string} key
-   * @returns {Promise<CachedAudio|null>} Null when no audio is cached for the key.
+   * @returns {Promise<CachedAudio|null>}
    */
   get: async function (chatId, key) {
     const folder = chatFolder(chatId);
@@ -72,7 +56,7 @@ const TTSAudioCache = {
   },
 
   /**
-   * Stores audio for a chat and drops any audio it had under another key.
+   * Replaces any audio the chat had under another key.
    * @param {number|string} chatId
    * @param {string} key
    * @param {Buffer} buffer
@@ -84,8 +68,7 @@ const TTSAudioCache = {
     const filepath = path.resolve(folder, filename);
     await fs.promises.mkdir(folder, { recursive: true });
 
-    // Written under a temporary name and renamed into place, so a crash or a
-    // concurrent read never finds a partially written audio file.
+    // Renamed into place so a crash or concurrent read never sees a partial file.
     const tempFilepath = `${filepath}.${crypto.randomUUID()}${TEMP_EXTENSION}`;
     await fs.promises.writeFile(tempFilepath, buffer);
     await fs.promises.rename(tempFilepath, filepath);
@@ -100,7 +83,6 @@ const TTSAudioCache = {
   },
 
   /**
-   * Removes cached audio of the given chats.
    * @param {number[]} chatIds
    * @returns {Promise<void>}
    */
@@ -118,7 +100,6 @@ const TTSAudioCache = {
   },
 
   /**
-   * Removes all cached audio.
    * @returns {Promise<void>}
    */
   clear: async function () {

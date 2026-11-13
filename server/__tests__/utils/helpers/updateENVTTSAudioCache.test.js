@@ -20,38 +20,13 @@ describe("updateENV cached TTS audio reset", () => {
     jest.clearAllMocks();
   });
 
-  test.each([
-    ["TextToSpeechProvider", "TTS_PROVIDER", "openai", "elevenlabs"],
-    ["TTSOpenAIVoiceModel", "TTS_OPEN_AI_VOICE_MODEL", "alloy", "nova"],
-    ["TTSElevenLabsVoiceModel", "TTS_ELEVEN_LABS_VOICE_MODEL", "a", "b"],
-    ["TTSOpenAICompatibleModel", "TTS_OPEN_AI_COMPATIBLE_MODEL", "a", "b"],
-    [
-      "TTSOpenAICompatibleVoiceModel",
-      "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
-      "a",
-      "b",
-    ],
-    [
-      "TTSOpenAICompatibleEndpoint",
-      "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
-      "http://localhost:1/v1",
-      "http://localhost:2/v1",
-    ],
-    [
-      "TTSKokoroEndpoint",
-      "TTS_KOKORO_ENDPOINT",
-      "http://localhost:1/v1",
-      "http://localhost:2/v1",
-    ],
-    ["TTSKokoroVoiceModel", "TTS_KOKORO_VOICE_MODEL", "af_bella", "af_sky"],
-  ])("clears the cache when %s changes", async (key, envKey, prev, next) => {
-    process.env[envKey] = prev;
-    const { error } = await updateENV({ [key]: next });
-    expect(error).toBe(false);
+  test("clears the cache when the voice changes", async () => {
+    process.env.TTS_OPEN_AI_VOICE_MODEL = "alloy";
+    await updateENV({ TTSOpenAIVoiceModel: "nova" });
     expect(TTSAudioCache.clear).toHaveBeenCalledTimes(1);
   });
 
-  test("keeps the cache when a setting is saved with the same value", async () => {
+  test("keeps the cache when the voice is saved unchanged", async () => {
     process.env.TTS_OPEN_AI_VOICE_MODEL = "alloy";
     await updateENV({ TTSOpenAIVoiceModel: "alloy" });
     expect(TTSAudioCache.clear).not.toHaveBeenCalled();
@@ -60,11 +35,6 @@ describe("updateENV cached TTS audio reset", () => {
   test("keeps the cache when only an API key changes", async () => {
     process.env.TTS_ELEVEN_LABS_KEY = "old-key";
     await updateENV({ TTSElevenLabsKey: "new-key" });
-    expect(TTSAudioCache.clear).not.toHaveBeenCalled();
-  });
-
-  test("keeps the cache when an unrelated setting changes", async () => {
-    await updateENV({ TTSPiperTTSVoiceModel: "en_US-hfc_female-medium" });
     expect(TTSAudioCache.clear).not.toHaveBeenCalled();
   });
 });

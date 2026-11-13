@@ -36,10 +36,12 @@ describe("WorkspaceChats cached TTS audio cleanup", () => {
     jest.clearAllMocks();
   });
 
-  test("deleting chats purges audio of the matching chats only", async () => {
+  test("deleting chats first purges audio of the matching chats only", async () => {
     await WorkspaceChats.delete({ workspaceId: 1 });
     expect(TTSAudioCache.purge).toHaveBeenCalledWith([1, 2]);
-    expect(prisma.workspace_chats.deleteMany).toHaveBeenCalledTimes(1);
+    expect(TTSAudioCache.purge.mock.invocationCallOrder[0]).toBeLessThan(
+      prisma.workspace_chats.deleteMany.mock.invocationCallOrder[0]
+    );
   });
 
   test("resetting the default thread purges its audio but not thread audio", async () => {
@@ -60,13 +62,6 @@ describe("WorkspaceChats cached TTS audio cleanup", () => {
   test("updating a chat purges its audio", async () => {
     await WorkspaceChats._update(3, { include: false });
     expect(TTSAudioCache.purge).toHaveBeenCalledWith([3]);
-  });
-
-  test("audio is purged before the chats stop matching the clause", async () => {
-    await WorkspaceChats.delete({ workspaceId: 2 });
-    expect(TTSAudioCache.purge.mock.invocationCallOrder[0]).toBeLessThan(
-      prisma.workspace_chats.deleteMany.mock.invocationCallOrder[0]
-    );
   });
 
   test("failed audio cleanup does not block deleting the chats", async () => {

@@ -198,10 +198,8 @@ const WorkspaceChats = {
   },
 
   /**
-   * Removes cached text-to-speech audio of every chat matching the clause.
-   * Call before the chats are deleted or hidden, while they still match.
-   * Never throws, so failed cleanup cannot block the chat change itself.
-   * @param {Object} clause - Prisma where clause for workspace chats.
+   * Removes cached TTS audio of chats matching the clause. Never throws.
+   * @param {Object} clause
    * @returns {Promise<void>}
    */
   purgeAudio: async function (clause = {}) {

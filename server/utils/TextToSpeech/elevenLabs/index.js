@@ -15,11 +15,6 @@ class ElevenLabsTTS {
     this.modelId = "eleven_multilingual_v2";
   }
 
-  /**
-   * Provider, model and voice that shape the generated audio. Cached audio is
-   * only reused while this matches.
-   * @returns {string}
-   */
   get cacheKey() {
     return `elevenlabs:${this.modelId}:${this.voiceId}`;
   }

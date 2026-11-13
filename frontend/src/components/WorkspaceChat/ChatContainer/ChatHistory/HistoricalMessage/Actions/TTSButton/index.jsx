@@ -18,7 +18,7 @@ export default function TTSMessage({ slug, chatId, message }) {
     case "kokoro":
       return (
         <WrapTTS>
-          {/* Keyed by message so an edit drops the audio already loaded for the old text. */}
+          {/* Keyed by message so an edit reloads the audio. */}
           <AsyncTTSMessage key={message} chatId={chatId} slug={slug} />
         </WrapTTS>
       );
