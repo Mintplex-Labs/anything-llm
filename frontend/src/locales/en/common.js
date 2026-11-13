@@ -1556,10 +1556,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",
-      "desktop-only":
-        "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
-      dismiss: "Dismiss",
-      editing: "Editing",
     },
     directory: {
       "my-documents": "My Documents",
