@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import truncate from "truncate";
 import { CheckCircle, XCircle } from "@phosphor-icons/react";
 import Workspace from "../../../../../../models/workspace";
@@ -21,12 +21,14 @@ function FileUploadProgressComponent({
   const [error, setError] = useState("");
   const [isFadingOut, setIsFadingOut] = useState(false);
 
-  // Every timer this row starts, so nothing fires after unmount.
-  const timers = useRef([]);
-  const track = (id) => (timers.current.push(id), id);
-  useEffect(() => () => timers.current.forEach((id) => clearTimeout(id)), []);
-
   useEffect(() => {
+    if (!file || rejected) return;
+
+    let unmounted = false;
+    let timer;
+    let fadeTimer;
+    let removeTimer;
+
     async function uploadFile() {
       const start = Number(new Date());
       const formData = new FormData();
@@ -48,35 +50,44 @@ function FileUploadProgressComponent({
         formData.append("file", file, file.name);
       }
 
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         setTimerMs(Number(new Date()) - start);
       }, 100);
 
-      // Chunk streaming not working in production so we just sit and wait
-      const { response, data } = await Workspace.uploadFile(slug, formData);
-      clearInterval(timer);
-      if (!response.ok) {
-        setStatus("failed");
-        setError(data.error);
-      } else {
-        setStatus("complete");
+      const fallbackError = "This file failed to upload.";
+      let uploadError = null;
+      try {
+        const { response, data } = await Workspace.uploadFile(slug, formData);
+        if (!response.ok) uploadError = data?.error || fallbackError;
+      } catch {
+        uploadError = fallbackError;
+      } finally {
+        clearInterval(timer);
+      }
+
+      if (!unmounted) {
+        setStatus(uploadError ? "failed" : "complete");
+        if (uploadError) setError(uploadError);
+
+        // Let the result sit for a beat, fade it, then drop it from the queue.
+        fadeTimer = setTimeout(() => {
+          setIsFadingOut(true);
+          removeTimer = setTimeout(
+            () => setFiles((prev) => prev.filter((i) => i.uid !== uuid)),
+            300
+          );
+        }, 5000);
       }
       onSettled?.();
-
-      // Let the result sit for a beat, fade it, then drop it from the queue.
-      track(
-        setTimeout(() => {
-          setIsFadingOut(true);
-          track(
-            setTimeout(
-              () => setFiles((prev) => prev.filter((i) => i.uid !== uuid)),
-              300
-            )
-          );
-        }, 5000)
-      );
     }
-    !!file && !rejected && uploadFile();
+
+    uploadFile();
+    return () => {
+      unmounted = true;
+      clearInterval(timer);
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
   }, []);
 
   if (rejected) {
