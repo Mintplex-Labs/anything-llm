@@ -488,6 +488,10 @@ class OllamaAILLM {
         response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);
         resolve(fullText);
+      } finally {
+        // Leaving the SDK iterator does not cancel its underlying HTTP body.
+        // Release the request even if Ollama has not closed the response yet.
+        stream.abort?.();
       }
     });
   }
