@@ -231,7 +231,6 @@ const NUMBER_KEYS = [
   "max_chats_per_day",
   "max_chats_per_session",
   "workspace_id",
-  "message_limit",
 ];
 
 // Helper to validate a data object strictly into the proper format
@@ -265,6 +264,16 @@ function validatedCreationData(value, field) {
     } catch {
       return null;
     }
+  }
+
+  // Unlike the other number keys, a message history limit of 0 is a real
+  // value (send no prior messages). Empty or invalid values return null so
+  // the chat falls back to the default limit.
+  if (field === "message_limit") {
+    if (value === null || value === undefined || String(value).trim() === "")
+      return null;
+    const limit = Number(value);
+    return isNaN(limit) || limit < 0 ? null : limit;
   }
 
   if (BOOLEAN_KEYS.includes(field)) {
