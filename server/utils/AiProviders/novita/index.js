@@ -42,6 +42,13 @@ class NovitaLLM {
       modelPreference ||
       process.env.NOVITA_LLM_MODEL_PREF ||
       "deepseek/deepseek-r1";
+
+    // Set before the limits below, which read the cached model list.
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -50,11 +57,6 @@ class NovitaLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.timeout = this.#parseTimeout();
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
 
     this.log(`Loaded with model: ${this.model}`);
   }
