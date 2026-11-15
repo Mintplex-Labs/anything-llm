@@ -383,7 +383,9 @@ const KEY_MAPPING = {
   VectorDB: {
     envKey: "VECTOR_DB",
     checks: [isNotEmpty, supportedVectorDB],
-    postUpdate: [handleVectorStoreReset],
+    // Reset before VECTOR_DB changes: the previous provider only connects
+    // while VECTOR_DB still names it.
+    preUpdate: [handleVectorStoreReset],
   },
 
   // Chroma Options
