@@ -118,9 +118,12 @@ const ScheduledJob = {
         }
       }
 
-      // Recompute nextRunAt if schedule changed
-      if (updates.schedule) {
-        updates.nextRunAt = this.computeNextRunAt(updates.schedule);
+      // Recompute nextRunAt if the schedule changed, or when the job is turned
+      // back on, since the stored value is from before it was disabled.
+      if (updates.schedule || updates.enabled === true) {
+        const schedule =
+          updates.schedule || (await this.get({ id: Number(id) }))?.schedule;
+        if (schedule) updates.nextRunAt = this.computeNextRunAt(schedule);
       }
 
       updates.updatedAt = new Date();
