@@ -106,4 +106,3 @@ class YoutubeLoader {
 }
 
 module.exports.YoutubeLoader = YoutubeLoader;
-module.exports.transcriptSegmentsToText = transcriptSegmentsToText;
