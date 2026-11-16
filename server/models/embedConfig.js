@@ -266,8 +266,7 @@ function validatedCreationData(value, field) {
     }
   }
 
-  // A message history limit of 0 is valid (send no prior messages). Empty or
-  // invalid values return null so the chat falls back to the default limit.
+  // 0 is valid (no history); invalid values fall back to the default.
   if (field === "message_limit") {
     const limit = parseInt(value);
     return limit >= 0 ? limit : null;
