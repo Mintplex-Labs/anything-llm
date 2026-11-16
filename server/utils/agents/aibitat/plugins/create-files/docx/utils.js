@@ -415,7 +415,9 @@ async function processList(
             ...(await processInlineElements(wrapper, docx, {}, log))
           );
         }
-      } else if (child.nodeType === 3 && child.textContent.trim()) {
+      } else if (child.nodeType === 3 && child.textContent) {
+        // A space between two inline elements (eg: **Command:** `npm i`) is
+        // kept as a space run, the same as in a paragraph.
         const wrapper = li.ownerDocument.createElement("span");
         wrapper.textContent = child.textContent;
         inlineChildren.push(
