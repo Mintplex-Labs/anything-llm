@@ -287,7 +287,8 @@ function normalizeChart(raw, proof) {
       (p) =>
         typeof p.value === "number" &&
         Number.isFinite(p.value) &&
-        (!proof || proof.numbers.has(p.value))
+        // The sources hold unsigned numbers, so -5 is backed by "-5%".
+        (!proof || proof.numbers.has(Math.abs(p.value)))
     )
     .slice(0, LIMITS.chartValues);
   const values = points.map((p) => p.value);

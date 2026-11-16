@@ -238,6 +238,14 @@ describe("normalizeSlides with sources", () => {
     ).toBeNull();
   });
 
+  test("keeps negative chart values the sources state", () => {
+    const [slide] = normalizeSlides(
+      [{ title: "Growth", points: ["x"], chart: { values: [-5, 3, 8, -2] } }],
+      { sources: "Q1 -5%, Q2 3%, Q3 8%, Q4 -2%" }
+    );
+    expect(slide.chart.values).toEqual([-5, 3, 8, -2]);
+  });
+
   test("keeps only quotes that appear word for word in the sources", () => {
     const quoted = "We replaced three tools with one assistant.";
     const [real, invented] = normalizeSlides(
