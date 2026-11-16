@@ -172,6 +172,7 @@ function markdownToTelegram(
   result = result.replace(/^&gt;\s*(.+)$/gm, "<i>$1</i>");
   result = result.replace(/^[-*_]{3,}$/gm, "————————————");
   result = result.replace(/^#{1,6}\s+(.+)$/gm, "<b>$1</b>");
+  result = nestCrossedTags(result);
 
   // Restore preserved blocks
   thinkBlocks.forEach((block, i) => {
@@ -184,7 +185,7 @@ function markdownToTelegram(
     result = result.replace(`\x00INLINECODE${i}\x00`, () => code);
   });
   links.forEach((url, i) => {
-    result = result.replace(`\x00LINK${i}\x00`, () => url);
+    result = result.replaceAll(`\x00LINK${i}\x00`, () => url);
   });
 
   // Close any unclosed HTML tags to prevent Telegram API errors during streaming
@@ -253,6 +254,40 @@ function toolApprovalMessage({ skillName, description, payload }) {
     `The agent wants to execute: <b>${escapeHTML(String(skillName))}</b>${descText}${payloadText}\n\n` +
     `Do you want to allow this action?`
   );
+}
+
+/**
+ * Rewrite overlapping inline tags so they nest, since Telegram rejects HTML
+ * like <b>a <i>b</b> c</i>. Each regex pass in markdownToTelegram converts one
+ * marker type on its own, so mixed markers (eg: ***a** b*) can produce
+ * overlapping tags. When a closing tag does not match the innermost open tag,
+ * the tags opened after it are closed first and reopened after it:
+ * <b>a <i>b</b> c</i> → <b>a <i>b</i></b><i> c</i>
+ * Empty pairs left behind by the reopen are removed.
+ * @param {string} html
+ * @returns {string}
+ */
+function nestCrossedTags(html) {
+  const open = [];
+  const nested = html.replace(
+    /<(\/?)(a|b|i|s)(\s[^>]*)?>/g,
+    (tag, closing, name) => {
+      if (!closing) {
+        open.push({ name, tag });
+        return tag;
+      }
+      const idx = open.map((t) => t.name).lastIndexOf(name);
+      if (idx === -1) return tag;
+      const inner = open.splice(idx).slice(1);
+      open.push(...inner);
+      const closeInner = [...inner]
+        .reverse()
+        .map((t) => `</${t.name}>`)
+        .join("");
+      return closeInner + tag + inner.map((t) => t.tag).join("");
+    }
+  );
+  return nested.replace(/<(b|i|s)><\/\1>/g, "");
 }
 
 /**

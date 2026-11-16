@@ -320,6 +320,83 @@ describe("markdownToTelegram", () => {
     });
   });
 
+  describe("overlapping emphasis", () => {
+    // Telegram rejects any message whose tags overlap instead of nesting.
+    function isWellNested(html) {
+      const open = [];
+      for (const [, closing, name] of html.matchAll(/<(\/?)([a-z]+)[^>]*>/g)) {
+        if (!closing) open.push(name);
+        else if (open.pop() !== name) return false;
+      }
+      return open.length === 0;
+    }
+
+    test("splits bold that closes inside italic", () => {
+      expect(markdownToTelegram("***bold** italic*")).toBe(
+        "<b><i>bold</i></b><i> italic</i>"
+      );
+    });
+
+    test("nests italic that closes together with bold", () => {
+      expect(markdownToTelegram("**bold *italic***")).toBe(
+        "<b>bold <i>italic</i></b>"
+      );
+    });
+
+    test("splits overlapping strikethrough and bold", () => {
+      expect(markdownToTelegram("~~a **b~~ c**")).toBe(
+        "<s>a <b>b</b></s><b> c</b>"
+      );
+    });
+
+    test("reopens a link with its URL when bold closes inside it", () => {
+      expect(markdownToTelegram("**a [b** c](https://example.com)")).toBe(
+        '<b>a <a href="https://example.com">b</a></b><a href="https://example.com"> c</a>'
+      );
+    });
+
+    test("leaves already nested tags unchanged", () => {
+      expect(markdownToTelegram("**a *b* c**")).toBe("<b>a <i>b</i> c</b>");
+      expect(
+        markdownToTelegram("<b>a <i>b</i></b>", { escapeHtml: false })
+      ).toBe("<b>a <i>b</i></b>");
+    });
+
+    test("repairs overlapping raw HTML when escaping is off", () => {
+      expect(
+        markdownToTelegram("<b>a <i>b</b> c</i>", { escapeHtml: false })
+      ).toBe("<b>a <i>b</i></b><i> c</i>");
+    });
+
+    test("every combination of up to 4 markdown tokens is well nested", () => {
+      const tokens = [
+        "*",
+        "**",
+        "***",
+        "_",
+        "__",
+        "~~",
+        "`",
+        "[",
+        "](u)",
+        "a",
+        "\n",
+        "# ",
+      ];
+      const failures = [];
+      (function build(text, depth) {
+        if (depth > 0) {
+          const html = markdownToTelegram(text);
+          if (!isWellNested(html) || html.includes("\x00"))
+            failures.push([text, html]);
+        }
+        if (depth === 4) return;
+        for (const token of tokens) build(text + token, depth + 1);
+      })("", 0);
+      expect(failures).toEqual([]);
+    });
+  });
+
   describe("unclosed tag handling for streaming", () => {
     test("closes unclosed HTML tags by default", () => {
       expect(markdownToTelegram("<b>hello", { escapeHtml: false })).toBe(
