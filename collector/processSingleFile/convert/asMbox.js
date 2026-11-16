@@ -18,9 +18,8 @@ async function asMbox({
 }) {
   console.log(`-- Working ${filename} --`);
 
-  // mbox-parser decodes each chunk on its own, so a raw byte stream turns a
-  // character split across two chunks into two U+FFFD. A utf8 stream only
-  // emits whole characters.
+  // Read as utf8 so each chunk ends on a whole character. mbox-parser decodes
+  // chunks one at a time, so a character split between chunks would be garbled.
   const mails = await mboxParser(
     fs.createReadStream(fullFilePath, { encoding: "utf8" })
   )
