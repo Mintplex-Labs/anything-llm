@@ -266,14 +266,11 @@ function validatedCreationData(value, field) {
     }
   }
 
-  // Unlike the other number keys, a message history limit of 0 is a real
-  // value (send no prior messages). Empty or invalid values return null so
-  // the chat falls back to the default limit.
+  // A message history limit of 0 is valid (send no prior messages). Empty or
+  // invalid values return null so the chat falls back to the default limit.
   if (field === "message_limit") {
-    if (value === null || value === undefined || String(value).trim() === "")
-      return null;
-    const limit = Number(value);
-    return isNaN(limit) || limit < 0 ? null : limit;
+    const limit = parseInt(value);
+    return limit >= 0 ? limit : null;
   }
 
   if (BOOLEAN_KEYS.includes(field)) {
