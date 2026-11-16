@@ -285,14 +285,6 @@ const LLMS = [
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
   },
-  // {
-  //   name: "Native",
-  //   value: "native",
-  //   logo: AnythingLLMIcon,
-  //   options: (settings) => <NativeLLMOptions settings={settings} />,
-  //   description:
-  //     "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-  // },
   {
     name: "AWS Bedrock",
     value: "bedrock",
@@ -384,6 +376,7 @@ export default function LLMPreference({
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
+  const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
 
   const TITLE = t("onboarding.llm.title");
@@ -413,6 +406,7 @@ export default function LLMPreference({
       }
     }
   }
+
   function handleBack() {
     navigate(paths.onboarding.home());
   }
@@ -476,6 +470,7 @@ export default function LLMPreference({
           </div>
           <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
             {filteredLLMs.map((llm) => {
+              if (llm.value === "native" && isHosted) return null;
               return (
                 <LLMItem
                   key={llm.name}
