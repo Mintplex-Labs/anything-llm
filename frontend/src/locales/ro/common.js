@@ -485,10 +485,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Documente",
       "data-connectors": "Conectori de date",
-      "desktop-only":
-        "Editarea acestor setări este disponibilă doar pe un dispozitiv desktop. Te rugăm să accesezi această pagină de pe desktop pentru a continua.",
-      dismiss: "Ignoră",
-      editing: "Se editează",
     },
     directory: {
       "my-documents": "Documentele mele",
@@ -510,6 +506,25 @@ const TRANSLATIONS = {
       "total-documents_other": "{{count}} documente",
       "search-results_one": "{{count}} rezultat",
       "search-results_other": "Rezultatele {{count}}",
+      "in-workspace": "În spațiul de lucru",
+      "upload-files": "Încărcați fișiere",
+      "add-link": "Adaugă link",
+      "selected-count_one": "{{count}} a fost selectat",
+      "selected-count_other": "{{count}} a fost selectat",
+      "move-to-folder": "Mută în folder",
+      "ready-to-embed_one":
+        "Fișierul {{count}} este pregătit pentru a fi inclus.",
+      "ready-to-embed_other":
+        "Fișierele {{count}} sunt pregătite pentru a fi incorporate.",
+      "add-to-queue": "Adaugă în coadă",
+      staged: "Gata pentru a fi integrat",
+      pinned: "Marcat",
+      watching: "Observarea",
+      pin: "Salvați în spațiul de lucru",
+      unpin: "Elimină din spațiul de lucru",
+      watch: "Fiți atenți la eventuale modificări.",
+      unwatch: "Încetați să observați schimbările.",
+      "remove-from-workspace": "Îndepărtează de la locul de lucru",
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",

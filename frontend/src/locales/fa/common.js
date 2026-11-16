@@ -1072,10 +1072,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "اسناد",
       "data-connectors": "اتصال‌دهنده‌ها",
-      "desktop-only":
-        "تغییر این تنظیمات تنها در دستگاه‌های دسکتاپ در دسترس است. لطفاً برای ادامه، این صفحه را در دستگاه دسکتاپ خود باز کنید.",
-      dismiss: "<",
-      editing: "ویرایش",
     },
     directory: {
       "my-documents": "اسناد من",
@@ -1097,6 +1093,23 @@ const TRANSLATIONS = {
       "total-documents_other": "{{count}} اسناد",
       "search-results_one": "{{count}} نتیجه",
       "search-results_other": "نتایج {{count}}",
+      "in-workspace": "در محیط کار",
+      "upload-files": "بارگذاری فایل‌ها",
+      "add-link": "اضافه کردن لینک",
+      "selected-count_one": "{{count}} انتخاب شد",
+      "selected-count_other": "{{count}} انتخاب شد",
+      "move-to-folder": "انتقال به پوشه",
+      "ready-to-embed_one": "فایل {{count}} آماده برای قرار دادن",
+      "ready-to-embed_other": "فایل‌های {{count}} آماده برای درج",
+      "add-to-queue": "اضافه به صف",
+      staged: "آماده برای ادغام/قرار دادن",
+      pinned: "فیکس شده / برجسته شده",
+      watching: "تماشای",
+      pin: "اضافه کردن به فضای کاری",
+      unpin: "حذف از فضای کاری",
+      watch: "به تغییرات توجه کنید.",
+      unwatch: "متوقف شوید و منتظر تغییرات نباشید.",
+      "remove-from-workspace": "حذف از فضای کاری",
     },
     upload: {
       "processor-offline":

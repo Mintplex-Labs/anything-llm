@@ -318,7 +318,7 @@ ${metadataString}`;
 
 ## Activity
 
-${issue.discussions.join("\n\n")}
+${issue.discussions.flat().join("\n\n")}
 `;
   }
 

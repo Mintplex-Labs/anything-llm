@@ -87,10 +87,10 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
 
-          // Some providers, like Cerebras, return the completion time in the usage metrics.
-          // This is used to report the real-time duration of the completion.
-          if (chunk.usage.hasOwnProperty("time_info")) {
-            usage.duration = chunk.usage.time_info.completion_time;
+          // Cerebras sends time_info next to usage on the final chunk.
+          // Its completion_time is used as the real duration of the completion.
+          if (chunk.time_info?.completion_time) {
+            usage.duration = chunk.time_info.completion_time;
           }
         }
 

@@ -527,6 +527,11 @@ const SystemSettings = {
       ImageGenerationLlmmanBasePath: process.env.IMAGE_GEN_LLMMAN_BASE_PATH,
       ImageGenerationLlmmanAuthToken: !!process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN,
       ImageGenerationGeminiApiKey: !!process.env.IMAGE_GEN_GEMINI_API_KEY,
+      ImageGenerationMinimaxApiKey: !!process.env.IMAGE_GEN_MINIMAX_API_KEY,
+      ImageGenerationMinimaxResolution:
+        process.env.IMAGE_GEN_MINIMAX_RESOLUTION || "1K",
+      ImageGenerationMinimaxPromptEnhancement:
+        process.env.IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT || "false",
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
