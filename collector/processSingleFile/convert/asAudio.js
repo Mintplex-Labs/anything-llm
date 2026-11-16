@@ -35,7 +35,18 @@ async function asAudio({
     : WHISPER_PROVIDERS.local;
 
   console.log(`-- Working ${filename} --`);
-  const whisper = new WhisperProvider({ options });
+  let whisper;
+  try {
+    whisper = new WhisperProvider({ options });
+  } catch (error) {
+    // Provider setup failures (for example a missing API key) are expected
+    // configuration errors. Return them to the UI instead of leaking a 500.
+    return {
+      success: false,
+      reason: error.message || "Unable to initialize speech-to-text provider.",
+      documents: [],
+    };
+  }
   const { content, error } = await whisper.processFile(fullFilePath, filename);
 
   if (!!error) {

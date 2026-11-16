@@ -16,6 +16,23 @@ function describeValidation(key, fn) {
   describe(`Workspace.validations.${key}`, fn);
 }
 
+describe("Workspace.isAgentCommandAvailable", () => {
+  const originalProvider = process.env.LLM_PROVIDER;
+
+  afterEach(() => {
+    if (originalProvider === undefined) delete process.env.LLM_PROVIDER;
+    else process.env.LLM_PROVIDER = originalProvider;
+  });
+
+  it("returns false instead of throwing when no LLM provider is configured", async () => {
+    delete process.env.LLM_PROVIDER;
+
+    await expect(
+      Workspace.isAgentCommandAvailable({ chatMode: "automatic" })
+    ).resolves.toBe(false);
+  });
+});
+
 describeValidation("name", () => {
   it("passes a valid string through truncated to 255 chars", () => {
     expect(Workspace.validations.name("My Workspace")).toBe("My Workspace");

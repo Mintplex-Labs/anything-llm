@@ -1,4 +1,7 @@
 const { Document } = require("../../../../models/documents");
+const {
+  WorkspaceParsedFiles,
+} = require("../../../../models/workspaceParsedFiles");
 const { safeJsonParse } = require("../../../http");
 const { summarizeContent } = require("../utils/summarize");
 const Provider = require("../providers/ai-provider");
@@ -72,14 +75,16 @@ const docSummarizer = {
               this.super.introspect(
                 `${this.caller}: Looking at the available documents.`
               );
-              const documents = await Document.where({
-                workspaceId: this.super.handlerProps.invocation.workspace_id,
-              });
-              if (documents.length === 0)
+              const invocation = this.super.handlerProps.invocation;
+              const [documents, parsedDocuments] = await Promise.all([
+                Document.where({ workspaceId: invocation.workspace_id }),
+                this.getParsedDocuments(),
+              ]);
+              if (documents.length === 0 && parsedDocuments.length === 0)
                 return "No documents found - nothing can be done. Stop.";
 
               this.super.introspect(
-                `${this.caller}: Found ${documents.length} documents`
+                `${this.caller}: Found ${documents.length + parsedDocuments.length} documents`
               );
               const foundDocuments = documents.map((doc) => {
                 const metadata = safeJsonParse(doc.metadata, {});
@@ -89,6 +94,14 @@ const docSummarizer = {
                   description: metadata?.description ?? "no description",
                 };
               });
+              for (const doc of parsedDocuments) {
+                foundDocuments.push({
+                  document_id: null,
+                  filename: doc.title || "Uploaded Document",
+                  description: doc.description || "chat attachment",
+                  parsed_file: true,
+                });
+              }
 
               return JSON.stringify(foundDocuments);
             } catch (error) {
@@ -97,6 +110,15 @@ const docSummarizer = {
               );
               return `Let the user know this action was not successful. An error was raised while listing available files. ${error.message}`;
             }
+          },
+
+          getParsedDocuments: async function () {
+            const invocation = this.super.handlerProps.invocation;
+            return await WorkspaceParsedFiles.getContextFiles(
+              invocation.workspace,
+              invocation.thread_id ? { id: invocation.thread_id } : null,
+              invocation.user_id ? { id: invocation.user_id } : null
+            );
           },
 
           summarizeDoc: async function (filename) {
@@ -122,7 +144,17 @@ const docSummarizer = {
                 return `No available document by the name "${filename}".`;
               }
 
-              const document = await Document.content(docInfo.document_id);
+              const parsedDocument = docInfo.parsed_file
+                ? (await this.getParsedDocuments()).find(
+                    (doc) => (doc.title || "Uploaded Document") === filename
+                  )
+                : null;
+              const document = parsedDocument
+                ? {
+                    title: parsedDocument.title || filename,
+                    content: parsedDocument.pageContent,
+                  }
+                : await Document.content(docInfo.document_id);
               this.super.introspect(
                 `${this.caller}: Grabbing all content for ${
                   filename ?? "a discovered file."

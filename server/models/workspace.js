@@ -718,6 +718,15 @@ const Workspace = {
    */
   isAgentCommandAvailable: async function (workspace) {
     if (workspace.chatMode !== "automatic") return true;
+    // A workspace without a chat or agent provider cannot run the agent
+    // command. Avoid constructing AIbitat with an undefined provider, which
+    // otherwise turns this capability check into a 500 response.
+    if (
+      !workspace?.agentProvider &&
+      !workspace?.chatProvider &&
+      !process.env.LLM_PROVIDER
+    )
+      return false;
     const nativeToolCalling = await this.supportsNativeToolCalling(workspace);
     return nativeToolCalling === false;
   },

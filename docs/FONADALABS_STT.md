@@ -31,17 +31,19 @@ WHISPER_FONADALABS_MAX_CONCURRENCY="2"
 
 The provider sends `POST https://api.fonada.ai/v3/asr/transcribe` with Bearer authentication, the recording as `file`, and the selected `language_id`.
 
-FonadaLabs has a 25 MB public request limit. Recordings at or below this limit are sent as one request. Larger audio or video files are extracted/re-encoded and split into ordered 23 MB MP3 chunks. Results are joined in source order, even when chunks finish out of order.
+FonadaLabs has a 25 MB public request limit. Every recording is normalized to mono 16 kHz audio and split into ordered 60-second MP3 chunks. Duration-based chunks proved more reliable than sending long, highly compressed recordings as a single request. Results are joined in source order, even when chunks finish out of order.
 
-`WHISPER_FONADALABS_MAX_CONCURRENCY` controls the number of simultaneous chunks. It accepts `1` through `4`; the default is `2`. Raising it improves throughput but can cause Fonada rate limits or consume credits faster. Use `4` only if the Fonada account supports that request rate.
+`WHISPER_FONADALABS_MAX_CONCURRENCY` controls the number of simultaneous chunks. It accepts `1` through `4`; the default is `2`. The local test deployment uses `2` because near-limit parallel jobs received upstream 502 responses. Raising it improves throughput but can cause rate limits or consume credits faster.
 
-The provider does not automatically retry a failed transcription request. A missing response may still represent a billable request, so retrying is deliberately left to the user.
+The provider retries an HTTP 429 response once after at least 60 seconds (or a longer `Retry-After` delay, up to one hour). It independently retries Fonada gateway HTTP 502 responses up to four times, with 60- to 120-second backoff. A preceding rate limit therefore cannot consume the 502 recovery budget. It does not retry timeouts, connection failures, or other uncertain billed requests.
+
+Successful chunks are checkpointed in AnythingLLM storage. If a later chunk fails, uploading the same recording again reuses completed chunks and resumes the remaining work instead of retranscribing the whole file. Checkpoints are isolated by API credential, language, model, and normalized audio content.
 
 ## Verification performed locally
 
 - The FonadaLabs entry, settings fields, and icon are present in the Transcription provider selector.
 - The provider sends the required multipart file, Bearer authorization, and `language_id` fields.
-- A generated recording larger than 25 MB was split into two chunks; two mocked requests ran concurrently and the returned text remained correctly ordered.
-- The normal `asAudio` converter maps successful transcript text into an AnythingLLM document, which is the existing path for workspace embedding and search.
-
-The final end-to-end check requires a customer-owned key: upload a real recording, confirm it reaches **Ready** status, add it to the workspace, and ask a question whose answer exists only in the recording.
+- A 48-minute recording was normalized into 48 ordered chunks. Processing recovered from rate limits and temporary upstream failures while retaining completed checkpoints.
+- The completed FonadaLabs transcript passed through the normal `asAudio` document converter and was stored as a thread attachment.
+- The agent document summarizer listed the attached recording and read its 42,653-character transcript successfully.
+- The production frontend build and focused server regression tests pass.

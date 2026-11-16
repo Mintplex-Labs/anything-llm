@@ -288,7 +288,7 @@ function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
+    e?.preventDefault();
     const currentMessage =
       document.getElementById(PROMPT_INPUT_ID)?.value?.trim() || "";
     await submitMessage(currentMessage, parseAttachments());
