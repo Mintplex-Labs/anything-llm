@@ -415,7 +415,7 @@ async function processList(
             ...(await processInlineElements(wrapper, docx, {}, log))
           );
         }
-      } else if (child.nodeType === 3 && child.textContent.trim()) {
+      } else if (child.nodeType === 3 && child.textContent) {
         const wrapper = li.ownerDocument.createElement("span");
         wrapper.textContent = child.textContent;
         inlineChildren.push(
