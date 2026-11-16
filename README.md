@@ -60,6 +60,20 @@ AnythingLLM is the all-in-one AI application that lets you build a private, full
 
 AnythingLLM supports multiple users as well where you can control the access and experience per user without compromising the security or privacy of the instance or your intellectual property.
 
+### Verify the Linux Desktop AppImage
+
+Download the AppImage for your architecture from the [GitHub release](https://github.com/Mintplex-Labs/anything-llm/releases) for the version you want. Under **Assets**, find the `sha256:` digest listed for that exact file. The x86-64 and ARM64 downloads have different digests.
+
+From the download directory, run:
+
+```sh
+sha256sum AnythingLLMDesktop.AppImage
+```
+
+For ARM64, use `AnythingLLMDesktop-Arm64.AppImage` as the filename. Compare the hash printed by `sha256sum` with the value after `sha256:` in the release. If they differ, discard the file and download it again before running it.
+
+This checks the file against the digest published on GitHub. It does not verify a separate publisher signature.
+
 ## Cool Features of AnythingLLM
 
 - [Built-in local LLM engine](/docker/HOW_TO_USE_DOCKER.md#built-in-llm-engine-optional) - Run local models on your CPU or GPU (NVIDIA via CUDA, AMD and Intel via Vulkan) with no extra setup, powered by [Lemonade](https://lemonade-server.ai) and [llama.cpp](https://github.com/ggml-org/llama.cpp).
