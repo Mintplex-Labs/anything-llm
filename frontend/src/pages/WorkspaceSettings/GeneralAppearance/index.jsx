@@ -36,7 +36,10 @@ export default function GeneralInfo({ slug, deletionProtected = false }) {
   if (!workspace || loading) return null;
   return (
     <div className="w-full relative flex flex-col gap-y-[32px]">
-      <AutosaveForm onSave={handleUpdate} className="w-1/2 flex flex-col">
+      <AutosaveForm
+        onSave={handleUpdate}
+        className="w-full xl:w-1/2 flex flex-col"
+      >
         <WorkspaceName key={workspace.slug} workspace={workspace} />
       </AutosaveForm>
       <SuggestedChatMessages slug={workspace.slug} />

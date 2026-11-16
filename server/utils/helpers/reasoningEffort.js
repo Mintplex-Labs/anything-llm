@@ -184,6 +184,10 @@ function reasoningParams(provider, effort = null, model = null) {
     case "mistral":
       // Reasoning models only accept "none" or "high" - other levels are rejected.
       return { reasoning_effort: effort === "on" ? "high" : "none" };
+    case "generic-openai":
+      // OpenAI's Chat Completions field - "none" turns reasoning off.
+      // https://developers.openai.com/api/docs/guides/reasoning
+      return { reasoning_effort: effort === "off" ? "none" : effort };
     case "deepseek":
       // https://api-docs.deepseek.com/guides/thinking_mode
       if (toggle)

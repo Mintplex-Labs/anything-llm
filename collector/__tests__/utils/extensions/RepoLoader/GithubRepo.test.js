@@ -428,6 +428,35 @@ describe("GitHubRepoLoader request urls", () => {
     }
   );
 
+  test.each([
+    ["docs/a#b.md", "docs/a%23b.md"],
+    ["docs/a?b.md", "docs/a%3Fb.md"],
+    ["docs/literal%23.md", "docs/literal%2523.md"],
+    ["docs#v1/a?b.md", "docs%23v1/a%3Fb.md"],
+    ["docs/read me.md", "docs/read%20me.md"],
+  ])(
+    "file requests preserve the path %s",
+    async (filePath, encodedFilePath) => {
+      const branch = "feature/#42-login";
+      const fetchMock = mockGithubApi({
+        branches: [{ name: branch }],
+        files: { [filePath]: "# requested file" },
+      });
+      const loader = new GitHubRepoLoader({
+        repo: "https://github.com/org/repo",
+        branch,
+      });
+      await loader.init();
+
+      await expect(loader.fetchSingleFile(filePath)).resolves.toBe(
+        "# requested file"
+      );
+      expect(requestedUrls(fetchMock)).toContain(
+        `https://api.github.com/repos/org/repo/contents/${encodedFilePath}?ref=feature%2F%2342-login`
+      );
+    }
+  );
+
   test("an Enterprise Server host uses the same endpoint paths under /api/v3", async () => {
     const fetchMock = mockGithubApi({ files: { "README.md": "# hello" } });
     const loader = new GitHubRepoLoader({
@@ -540,6 +569,22 @@ describe("GitHubRepoLoader recursive loader options", () => {
     expect(options.baseUrl).toBe("https://octocorp.ghe.com");
     expect(options.apiUrl).toBe("https://api.octocorp.ghe.com");
   });
+
+  test.each(["?tab=readme-ov-file", "#readme"])(
+    "a url copied with %s gives the upstream loader the bare repo url",
+    async (suffix) => {
+      mockGithubApi();
+      const loader = new GitHubRepoLoader({
+        repo: `https://github.com/org/repo${suffix}`,
+        branch: "main",
+      });
+      await loader.init();
+      await loader.recursiveLoader();
+
+      const [repoUrl] = LCGithubLoader.mock.calls[0];
+      expect(repoUrl).toBe("https://github.com/org/repo");
+    }
+  );
 
   test("recursiveLoader refuses to run before init", async () => {
     const loader = new GitHubRepoLoader({

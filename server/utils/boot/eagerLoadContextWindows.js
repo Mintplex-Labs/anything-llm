@@ -39,6 +39,16 @@ async function eagerLoadContextWindows() {
       await OMLXLLM.cacheContextWindows(true);
       log("OMLX");
       break;
+    case "localai":
+      const { LocalAiLLM } = require("../AiProviders/localAi");
+      await LocalAiLLM.cacheContextWindows(true);
+      log("LocalAI");
+      break;
+    case "llmman":
+      const { LlmmanLLM } = require("../AiProviders/llmman");
+      await LlmmanLLM.cacheContextWindows(true);
+      log("llmman");
+      break;
   }
 }
 

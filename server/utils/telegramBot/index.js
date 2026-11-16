@@ -18,8 +18,13 @@ const {
   denyUser,
   revokeUser,
 } = require("./utils/verification");
-const { BOT_COMMANDS, commandPattern } = require("./utils/commands");
+const {
+  BOT_COMMANDS,
+  commandPattern,
+  isBotCommand,
+} = require("./utils/commands");
 const { handleKeyboardQueryCallback } = require("./utils/navigation");
+const { toolApprovalMessage } = require("./utils/format");
 const {
   downloadTelegramFile,
   transcribeAudio,
@@ -145,21 +150,16 @@ class TelegramBotService {
   #processPendingMessage(ctx, msg) {
     const text = msg.text || "";
 
-    // Handle commands
-    if (text.startsWith("/")) {
-      const commandMatch = text.match(/^\/(\w+)/);
-      if (!commandMatch) return;
-
-      const commandName = commandMatch[1];
-      const command = BOT_COMMANDS.find((c) => c.command === commandName);
-      if (command) {
-        const handler = command.initHandler();
-        handler(ctx, msg.chat.id, text);
-        return;
-      }
+    const command = BOT_COMMANDS.find((c) =>
+      commandPattern(c.command).test(text)
+    );
+    if (command) {
+      const handler = command.initHandler();
+      handler(ctx, msg.chat.id, text);
+      return;
     }
 
-    // Handle regular messages
+    // Everything else, including slash command presets, goes to the chat.
     this.#handleMessage(ctx, msg);
   }
 
@@ -478,7 +478,8 @@ class TelegramBotService {
     );
 
     this.#bot.on("message", (msg) => {
-      if (msg.text?.startsWith("/")) return;
+      // Bot commands are answered by their onText handlers above.
+      if (isBotCommand(msg.text)) return;
       guard(msg, () => this.#handleMessage(ctx, msg));
     });
 
@@ -608,17 +609,11 @@ class TelegramBotService {
     );
 
     try {
-      const payloadText =
-        payload && Object.keys(payload).length > 0
-          ? `\n\n<b>Parameters:</b>\n<code>${JSON.stringify(payload, null, 2)}</code>`
-          : "";
-
-      const descText = description ? `\n${description}` : "";
-
-      const messageText =
-        `🔧 <b>Tool Approval Required</b>\n\n` +
-        `The agent wants to execute: <b>${skillName}</b>${descText}${payloadText}\n\n` +
-        `Do you want to allow this action?`;
+      const messageText = toolApprovalMessage({
+        skillName,
+        description,
+        payload,
+      });
 
       const keyboard = {
         inline_keyboard: [

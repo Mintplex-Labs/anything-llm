@@ -51,11 +51,17 @@ const chatHistory = {
               workspaceId: Number(aibitat.handlerProps.invocation.workspace_id),
               user: { id: aibitat.handlerProps.invocation.user_id || null },
               threadId: aibitat.handlerProps.invocation.thread_id || null,
-              include: false,
+              include: true,
               prompt: userMessage,
-              response: {},
+              response: { text: "" },
             });
-            if (chat) aibitat.registerChatId(chat.id);
+            if (chat) {
+              aibitat.registerChatId(chat.id);
+              aibitat.socket?.send?.("reportStreamEvent", {
+                type: "promptChatId",
+                chatId: chat.id,
+              });
+            }
           }
         });
 

@@ -319,3 +319,76 @@ describe("required parameters of bundled plugins", () => {
     ]);
   });
 });
+
+describe("tooledComplete tool call arguments", () => {
+  function fakeClient(args) {
+    const create = jest.fn(async () => ({
+      choices: [
+        {
+          message: {
+            role: "assistant",
+            content: null,
+            tool_calls: [
+              {
+                id: "call_1",
+                type: "function",
+                function: { name: "get-time", arguments: args },
+              },
+            ],
+          },
+        },
+      ],
+      usage: null,
+    }));
+    return { chat: { completions: { create } } };
+  }
+
+  it.each([
+    ["empty", ""],
+    ["whitespace", " \n"],
+    ["null", null],
+    ["missing", undefined],
+  ])("treats %s arguments of a zero-arg tool as {}", async (_label, args) => {
+    const result = await tooledComplete(
+      fakeClient(args),
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      () => 0,
+      { provider: {} }
+    );
+    expect(result.retryWithError).toBeUndefined();
+    expect(result.functionCall).toEqual({
+      id: "call_1",
+      name: "get-time",
+      arguments: {},
+    });
+  });
+
+  it("parses JSON arguments", async () => {
+    const result = await tooledComplete(
+      fakeClient('{"tz":"UTC"}'),
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      () => 0,
+      { provider: {} }
+    );
+    expect(result.functionCall.arguments).toEqual({ tz: "UTC" });
+  });
+
+  it("still asks the model to retry on unparseable arguments", async () => {
+    const result = await tooledComplete(
+      fakeClient("not json"),
+      "m",
+      [{ role: "user", content: "what time is it" }],
+      [],
+      () => 0,
+      { provider: {} }
+    );
+    expect(result.functionCall).toBeUndefined();
+    expect(result.retryWithError.content).toBe(
+      "Failed to parse tool call arguments as JSON. Raw arguments: not json"
+    );
+  });
+});

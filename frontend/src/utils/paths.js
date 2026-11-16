@@ -57,8 +57,8 @@ export default {
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
   },
-  discord: () => {
-    return "https://discord.com/invite/6UyHPeGZAC";
+  discussions: () => {
+    return "https://github.com/Mintplex-Labs/anything-llm/discussions";
   },
   docs: (path = "") => {
     return `https://docs.anythingllm.com${path}`;

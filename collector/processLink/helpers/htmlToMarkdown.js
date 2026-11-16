@@ -344,6 +344,55 @@ function htmlToMarkdown(html, baseUrl) {
       },
     });
 
+    // Turndown only reads <pre><code> as code and escapes the text of any other
+    // <pre> as Markdown. A bare <pre> is what a browser shows for a text/plain
+    // URL and what Sphinx emits for code samples, so write its text verbatim in
+    // a fence. <br> is the one element that carries a line break inside a <pre>.
+    const preText = (node) =>
+      Array.from(node.childNodes)
+        .map((child) => {
+          if (child.nodeName === "BR") return "\n";
+          if (child.nodeType === 3) return child.nodeValue;
+          return preText(child);
+        })
+        .join("");
+
+    const inTableCell = (node) => {
+      for (let parent = node.parentNode; parent; parent = parent.parentNode)
+        if (parent.nodeName === "TD" || parent.nodeName === "TH") return true;
+      return false;
+    };
+
+    // A table cell is one line, so a fence cannot live there. Any <pre> in a
+    // cell, with or without <code>, becomes an inline code span instead, its
+    // line breaks joined by a space and its delimiter longer than any backtick
+    // run inside it.
+    const codeSpan = (text) => {
+      const code = text.replace(/\s*\n\s*/g, " ").trim();
+      if (!code) return "";
+      const runs = code.match(/`+/g) || [];
+      const delimiter = "`".repeat(
+        Math.max(0, ...runs.map((r) => r.length)) + 1
+      );
+      const pad = code.startsWith("`") || code.endsWith("`") ? " " : "";
+      return `${delimiter}${pad}${code}${pad}${delimiter}`;
+    };
+
+    turndown.addRule("preformatted", {
+      filter: (node) =>
+        node.nodeName === "PRE" &&
+        (node.firstChild?.nodeName !== "CODE" || inTableCell(node)),
+      replacement: (_content, node) => {
+        if (inTableCell(node)) return codeSpan(preText(node));
+        const text = preText(node).replace(/\n$/, "");
+        const fences = text.match(/^`{3,}/gm) || [];
+        const fence = "`".repeat(
+          Math.max(2, ...fences.map((f) => f.length)) + 1
+        );
+        return `\n\n${fence}\n${text}\n${fence}\n\n`;
+      },
+    });
+
     let markdown = turndown.turndown(cleanedHtml);
 
     // Strip links and images with excessively long URLs (200+ chars)

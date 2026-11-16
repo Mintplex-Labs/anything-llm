@@ -1,6 +1,7 @@
 const gmailLib = require("../lib.js");
 const { prepareAttachment, MAX_TOTAL_ATTACHMENT_SIZE } = require("../lib.js");
 const { humanFileSize } = require("../../../../../helpers");
+const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.GmailUpdateDraft = {
   name: "gmail-update-draft",
@@ -147,6 +148,10 @@ module.exports.GmailUpdateDraft = {
                     draftId,
                     to,
                     subject,
+                    body,
+                    ...(cc ? { cc } : {}),
+                    ...(bcc ? { bcc } : {}),
+                    ...(htmlBody ? { htmlBody } : {}),
                     attachmentCount: preparedAttachments.length,
                   },
                   description: `Update Gmail draft "${draftId}"${attachmentNote}`,
@@ -156,6 +161,14 @@ module.exports.GmailUpdateDraft = {
                     `${this.caller}: User rejected the ${this.name} request.`
                   );
                   return approval.message;
+                }
+
+                ({ to, subject, body, cc, bcc, htmlBody } = applyEmailEdits(
+                  { to, subject, body, cc, bcc, htmlBody },
+                  approval.payload
+                ));
+                if (!to || !subject) {
+                  return "Error: 'draftId', 'to', and 'subject' are required.";
                 }
               }
 

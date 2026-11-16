@@ -31,6 +31,12 @@ class FireworksAiLLM {
       apiKey: process.env.FIREWORKS_AI_LLM_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.FIREWORKS_AI_LLM_MODEL_PREF;
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -38,11 +44,6 @@ class FireworksAiLLM {
     };
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
   }
 
   log(text, ...args) {

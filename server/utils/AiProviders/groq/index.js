@@ -53,11 +53,14 @@ class GroqLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.get("groq", modelName) ?? 8192;
+    const model = String(modelName ?? "")
+      .split("/")
+      .pop();
+    return MODEL_MAP.get("groq", model) ?? 8192;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.get("groq", this.model) ?? 8192;
+    return GroqLLM.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(modelName = "") {

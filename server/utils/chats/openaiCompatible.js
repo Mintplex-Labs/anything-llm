@@ -309,7 +309,7 @@ async function streamChat({
   const responseInterceptor = new PassThrough({});
   responseInterceptor.on("data", (chunk) => {
     try {
-      const originalData = JSON.parse(chunk.toString().split("data: ")[1]);
+      const originalData = JSON.parse(chunk.toString().replace(/^data: /, ""));
       const modified = formatJSON(originalData, {
         chunked: true,
         model: workspace.slug,

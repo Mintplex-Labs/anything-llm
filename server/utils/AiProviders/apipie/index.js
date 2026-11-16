@@ -37,6 +37,12 @@ class ApiPieLLM {
       modelPreference ||
       process.env.APIPIE_LLM_MODEL_PREF ||
       "openrouter/mistral-7b-instruct";
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -44,11 +50,6 @@ class ApiPieLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
   }
 
   log(text, ...args) {

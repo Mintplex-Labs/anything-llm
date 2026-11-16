@@ -3,11 +3,18 @@ const { writeToServerDocuments } = require("../utils/files");
 const { tokenizeString } = require("../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
+// slugify's default `remove` pattern keeps only ASCII word characters, so a title
+// in a script it cannot transliterate (eg: Chinese, Hebrew) would slug to "".
+const TITLE_SLUG_REMOVE = /[^\p{L}\p{M}\p{N}\s$*_+~.()'"!\-:@]+/gu;
+
 // Will remove the last .extension from the input
 // and stringify the input + move to lowercase.
-function stripAndSlug(input) {
-  if (!input.includes(".")) return slugify(input, { lower: true });
-  return slugify(input.split(".").slice(0, -1).join("-"), { lower: true });
+function stripAndSlug(input, options = {}) {
+  if (!input.includes(".")) return slugify(input, { lower: true, ...options });
+  return slugify(input.split(".").slice(0, -1).join("-"), {
+    lower: true,
+    ...options,
+  });
 }
 
 const METADATA_KEYS = {
@@ -22,7 +29,8 @@ const METADATA_KEYS = {
       if (validUrl) return `web://${url.toLowerCase()}.website`;
       return `file://${stripAndSlug(title)}.txt`;
     },
-    title: ({ title }) => `${stripAndSlug(title)}.txt`,
+    title: ({ title }) =>
+      `${stripAndSlug(title, { remove: TITLE_SLUG_REMOVE })}.txt`,
     docAuthor: ({ docAuthor }) => {
       return typeof docAuthor === "string" ? docAuthor : "no author specified";
     },

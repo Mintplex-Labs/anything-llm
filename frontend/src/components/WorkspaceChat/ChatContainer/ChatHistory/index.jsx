@@ -3,10 +3,15 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
 import ToolApprovalRequest from "./ToolApprovalRequest";
+import EmailApprovalRequest, {
+  isEmailApprovalRequest,
+} from "./EmailApprovalRequest";
 import ClarifyingQuestionCard from "./ClarifyingQuestion";
 import FileDownloadCard from "./FileDownloadCard";
 import ImageGenerationPending from "./ImageGenerationPending";
+import SlidePreviewCard from "./SlidePreview";
 import ScheduledJobCreatedCard from "./ScheduledJobCreatedCard";
+import AgentSessionExited from "./AgentSessionExited";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -266,8 +271,11 @@ function buildMessages({
     }
 
     if (props.type === "toolApprovalRequest") {
+      const ApprovalCard = isEmailApprovalRequest(props)
+        ? EmailApprovalRequest
+        : ToolApprovalRequest;
       acc.push(
-        <ToolApprovalRequest
+        <ApprovalCard
           key={`tool-approval-${props.requestId}`}
           requestId={props.requestId}
           skillName={props.skillName}
@@ -298,8 +306,12 @@ function buildMessages({
       acc.push(<Chartable key={props.uuid} props={props} />);
     } else if (props.type === "fileDownloadCard" && !!props.content) {
       acc.push(<FileDownloadCard key={props.uuid} props={props} />);
+    } else if (props.type === "pptxSlidePreview" && !!props.content) {
+      acc.push(<SlidePreviewCard key={props.uuid} props={props} />);
     } else if (props.type === "scheduledJobCreated" && !!props.content) {
       acc.push(<ScheduledJobCreatedCard key={props.uuid} props={props} />);
+    } else if (props.type === "agentSessionExited") {
+      acc.push(<AgentSessionExited key={props.uuid} />);
     } else if (props.type === "imageGenerationPending") {
       acc.push(
         <ImageGenerationPending
@@ -321,7 +333,10 @@ function buildMessages({
             content: thought,
           });
         }
-        if (!hasVisible) return acc;
+        // A saved reply with no text and no thought is an unanswered prompt,
+        // which HistoricalMessage renders as a placeholder.
+        const isUnanswered = !!props.chatId && !thought;
+        if (!hasVisible && !isUnanswered) return acc;
       }
 
       if (isLastBotReply && props.animate) {

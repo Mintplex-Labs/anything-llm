@@ -4,6 +4,7 @@ const {
   resolveWorkspaceProvider,
   sendFormattedMessage,
 } = require("../../../utils");
+const { escapeHTML } = require("../../format");
 
 /**
  * /status - Show current workspace, thread, and model info.
@@ -27,10 +28,10 @@ async function handleStatus(ctx, chatId) {
   const markdown = [];
 
   markdown.push(`# Workspace:
-${workspace.name}
+${escapeHTML(workspace.name)}
 
 # Thread:
-_${threadName}_
+_${escapeHTML(threadName)}_
 --------------------------------`);
 
   const AIbitat = require("../../../../agents/aibitat");

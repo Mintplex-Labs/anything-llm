@@ -148,9 +148,10 @@ function mobileEndpoints(app) {
     [validDeviceToken],
     async (request, response) => {
       try {
-        return handleMobileCommand(request, response);
+        return await handleMobileCommand(request, response);
       } catch (e) {
         console.error(e);
+        if (response.headersSent) return response.end();
         response.sendStatus(500).end();
       }
     }

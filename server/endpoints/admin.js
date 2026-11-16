@@ -94,6 +94,12 @@ function adminEndpoints(app) {
         const { id } = request.params;
         const updates = reqBody(request);
         const user = await User.get({ id: Number(id) });
+        if (!user) {
+          response
+            .status(200)
+            .json({ success: false, error: "User not found." });
+          return;
+        }
 
         const canModify = validCanModify(currUser, user);
         if (!canModify.valid) {
@@ -117,7 +123,7 @@ function adminEndpoints(app) {
           return;
         }
 
-        const { success, error } = await User.update(id, updates);
+        const { success, error } = await User.update(user.id, updates);
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Plus, MagnifyingGlass } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -20,21 +20,25 @@ export default function SearchBox({ user, showNewWsModal }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState(DEFAULT_SEARCH_RESULTS);
-  const handleSearch = debounce(handleSearchDebounced, 500);
+  const searchSeq = useRef(0);
+  const handleSearch = useMemo(() => debounce(handleSearchDebounced, 500), []);
+  useEffect(() => () => handleSearch.cancel(), [handleSearch]);
 
   async function handleSearchDebounced(e) {
+    const seq = ++searchSeq.current;
     try {
       const searchValue = e.target.value;
       setSearchTerm(searchValue);
       setLoading(true);
       const searchResults =
         await Workspace.searchWorkspaceOrThread(searchValue);
+      if (seq !== searchSeq.current) return;
       setSearchResults(searchResults);
     } catch (error) {
       console.error(error);
       setSearchResults(DEFAULT_SEARCH_RESULTS);
     } finally {
-      setLoading(false);
+      if (seq === searchSeq.current) setLoading(false);
     }
   }
 
@@ -175,7 +179,7 @@ function SearchResultItem({ to, name, hint }) {
       onClick={() => window.dispatchEvent(new Event(SEARCH_RESULT_SELECTED))}
       className="hover:bg-[#FFF]/10 light:hover:bg-[#000]/10 transition-all duration-300 rounded-sm px-[8px] py-[2px]"
     >
-      <p className="text-theme-text-primary text-sm truncate w-[80%]">
+      <p className="text-theme-text-primary text-sm truncate w-full">
         {name}
         {hint && (
           <span className="text-theme-text-secondary text-xs ml-[4px]">
