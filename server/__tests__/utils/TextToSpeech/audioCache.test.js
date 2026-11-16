@@ -5,7 +5,10 @@ const path = require("path");
 
 const storageDir = fs.mkdtempSync(path.join(os.tmpdir(), "tts-cache-test-"));
 process.env.STORAGE_DIR = storageDir;
-const { TTSAudioCache } = require("../../../utils/TextToSpeech/audioCache");
+const {
+  TTSAudioCache,
+  TTS_AUDIO_FILENAME_PATTERN,
+} = require("../../../utils/TextToSpeech/audioCache");
 
 const cachePath = path.join(storageDir, "tts-cache");
 const mp3 = Buffer.from("ID3 mp3 audio");
@@ -40,70 +43,45 @@ describe("TTSAudioCache", () => {
     });
   });
 
+  describe("set", () => {
+    test("writes a flat file named by the strict pattern", async () => {
+      const ttsAudio = await TTSAudioCache.set("key", wav);
+      expect(ttsAudio.key).toBe("key");
+      expect(ttsAudio.filename).toMatch(TTS_AUDIO_FILENAME_PATTERN);
+      expect(ttsAudio.filename.endsWith(".wav")).toBe(true);
+      expect(fs.readdirSync(cachePath)).toEqual([ttsAudio.filename]);
+    });
+  });
+
   describe("get", () => {
-    test("misses when nothing is cached for the chat", async () => {
-      expect(await TTSAudioCache.get(1, "key")).toBeNull();
+    test("misses when the chat has no audio reference", () => {
+      expect(TTSAudioCache.get(undefined, "key")).toBeNull();
     });
 
     test("hits with the stored audio and its mime type", async () => {
-      await TTSAudioCache.set(1, "key", wav);
-      const audio = await TTSAudioCache.get(1, "key");
+      const ttsAudio = await TTSAudioCache.set("key", wav);
+      const audio = TTSAudioCache.get(ttsAudio, "key");
       expect(audio.mime).toBe("audio/wav");
       expect(fs.readFileSync(audio.filepath)).toEqual(wav);
     });
 
-    test("misses when the chat has audio under another key", async () => {
-      await TTSAudioCache.set(1, "old-key", mp3);
-      expect(await TTSAudioCache.get(1, "new-key")).toBeNull();
+    test("misses when the audio was generated under another key", async () => {
+      const ttsAudio = await TTSAudioCache.set("old-key", mp3);
+      expect(TTSAudioCache.get(ttsAudio, "new-key")).toBeNull();
     });
 
-    test("misses for a file left partially written by a crash", async () => {
-      const folder = path.join(cachePath, "1");
-      fs.mkdirSync(folder, { recursive: true });
-      fs.writeFileSync(path.join(folder, "key.mp3.1234.tmp"), "partial");
-      expect(await TTSAudioCache.get(1, "key")).toBeNull();
-    });
-  });
-
-  describe("set", () => {
-    test("replaces audio the chat had under another key", async () => {
-      await TTSAudioCache.set(1, "old-key", mp3);
-      await TTSAudioCache.set(1, "new-key", wav);
-      expect(fs.readdirSync(path.join(cachePath, "1"))).toEqual([
-        "new-key.wav",
-      ]);
+    test("misses when the file is gone", async () => {
+      const ttsAudio = await TTSAudioCache.set("key", mp3);
+      fs.rmSync(path.join(cachePath, ttsAudio.filename));
+      expect(TTSAudioCache.get(ttsAudio, "key")).toBeNull();
     });
 
-    test("keeps chat ids from escaping the cache folder", async () => {
-      const audio = await TTSAudioCache.set("../../escape", "key", mp3);
-      expect(audio.filepath).toBe(path.join(cachePath, "NaN", "key.mp3"));
-    });
-  });
-
-  describe("purge", () => {
-    test("removes audio of the given chats only", async () => {
-      await TTSAudioCache.set(1, "key", mp3);
-      await TTSAudioCache.set(2, "key", mp3);
-      await TTSAudioCache.set(3, "key", mp3);
-      await TTSAudioCache.purge([1, "3"]);
-      expect(fs.readdirSync(cachePath)).toEqual(["2"]);
-    });
-
-    test("does not fail before any audio has been cached", async () => {
-      await expect(TTSAudioCache.purge([1])).resolves.toBeUndefined();
-    });
-  });
-
-  describe("clear", () => {
-    test("removes audio of every chat", async () => {
-      await TTSAudioCache.set(1, "key", mp3);
-      await TTSAudioCache.set(2, "key", wav);
-      await TTSAudioCache.clear();
-      expect(fs.existsSync(cachePath)).toBe(false);
-    });
-
-    test("does not fail before any audio has been cached", async () => {
-      await expect(TTSAudioCache.clear()).resolves.toBeUndefined();
+    test("rejects filenames outside the strict pattern", () => {
+      fs.mkdirSync(cachePath, { recursive: true });
+      fs.writeFileSync(path.join(storageDir, "secret.mp3"), mp3);
+      expect(
+        TTSAudioCache.get({ key: "key", filename: "../secret.mp3" }, "key")
+      ).toBeNull();
     });
   });
 });

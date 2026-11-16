@@ -42,6 +42,11 @@ class BackgroundService {
       timeout: "6m",
       interval: "9hr",
     },
+    {
+      name: "cleanup-tts-audio",
+      timeout: "7m",
+      interval: "12hr",
+    },
   ];
 
   #memoryJobs = [

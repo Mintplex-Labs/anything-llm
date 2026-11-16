@@ -1,34 +1,28 @@
 /**
- * Disk cache for chat text-to-speech audio. Each chat keeps one file at
- * `tts-cache/<chatId>/<key><ext>`, where the key hashes the provider, model,
- * voice and spoken text.
+ * Disk cache for chat text-to-speech audio. Files are written flat as
+ * `tts-cache/tts-<uuid><ext>` and referenced from the chat's response as
+ * `ttsAudio: { key, filename }`, where the key hashes the provider, model,
+ * voice and spoken text. Files no active chat references are removed by the
+ * `cleanup-tts-audio` job.
  */
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { getAudioFileInfo, mimeFromExtension } = require("./audioFormat");
 
-const TEMP_EXTENSION = ".tmp";
+const TTS_AUDIO_FILENAME_PATTERN =
+  /^tts-[a-f0-9-]{36}\.(flac|m4a|mp3|ogg|wav|webm)$/;
 
-/**
- * @typedef {Object} CachedAudio
- * @property {string} filepath
- * @property {string} mime
- */
-
-function cachePath() {
-  return process.env.NODE_ENV === "development"
+const ttsCachePath =
+  process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/tts-cache`)
     : path.resolve(process.env.STORAGE_DIR, `tts-cache`);
-}
 
-function chatFolder(chatId) {
-  return path.resolve(cachePath(), String(Number(chatId)));
-}
-
-function cachedAudio(filepath) {
-  return { filepath, mime: mimeFromExtension(path.extname(filepath)) };
-}
+/**
+ * @typedef {Object} TTSAudioReference
+ * @property {string} key
+ * @property {string} filename
+ */
 
 const TTSAudioCache = {
   /**
@@ -44,67 +38,31 @@ const TTSAudioCache = {
   },
 
   /**
-   * @param {number|string} chatId
-   * @param {string} key
-   * @returns {Promise<CachedAudio|null>}
+   * @param {TTSAudioReference|undefined} ttsAudio - Reference stored on the chat response.
+   * @param {string} key - Key the audio must have been generated with.
+   * @returns {{filepath: string, mime: string}|null}
    */
-  get: async function (chatId, key) {
-    const folder = chatFolder(chatId);
-    const files = await fs.promises.readdir(folder).catch(() => []);
-    const file = files.find((name) => path.parse(name).name === key);
-    return file ? cachedAudio(path.resolve(folder, file)) : null;
+  get: function (ttsAudio, key) {
+    if (ttsAudio?.key !== key) return null;
+    if (!TTS_AUDIO_FILENAME_PATTERN.test(ttsAudio.filename)) return null;
+
+    const filepath = path.resolve(ttsCachePath, ttsAudio.filename);
+    if (!fs.existsSync(filepath)) return null;
+    return { filepath, mime: mimeFromExtension(path.extname(filepath)) };
   },
 
   /**
-   * Replaces any audio the chat had under another key.
-   * @param {number|string} chatId
    * @param {string} key
    * @param {Buffer} buffer
-   * @returns {Promise<CachedAudio>}
+   * @returns {Promise<TTSAudioReference>}
    */
-  set: async function (chatId, key, buffer) {
-    const folder = chatFolder(chatId);
-    const filename = `${key}${getAudioFileInfo(buffer).extension}`;
-    const filepath = path.resolve(folder, filename);
-    await fs.promises.mkdir(folder, { recursive: true });
-
-    // Renamed into place so a crash or concurrent read never sees a partial file.
-    const tempFilepath = `${filepath}.${crypto.randomUUID()}${TEMP_EXTENSION}`;
-    await fs.promises.writeFile(tempFilepath, buffer);
-    await fs.promises.rename(tempFilepath, filepath);
-
-    const files = await fs.promises.readdir(folder);
-    await Promise.all(
-      files
-        .filter((name) => name !== filename && !name.endsWith(TEMP_EXTENSION))
-        .map((name) => fs.promises.rm(path.resolve(folder, name)))
-    );
-    return cachedAudio(filepath);
-  },
-
-  /**
-   * @param {number[]} chatIds
-   * @returns {Promise<void>}
-   */
-  purge: async function (chatIds = []) {
-    if (!Array.isArray(chatIds) || chatIds.length === 0) return;
-    const ids = new Set(chatIds.map((id) => String(Number(id))));
-    const cached = await fs.promises.readdir(cachePath()).catch(() => []);
-    await Promise.all(
-      cached
-        .filter((name) => ids.has(name))
-        .map((name) =>
-          fs.promises.rm(chatFolder(name), { recursive: true, force: true })
-        )
-    );
-  },
-
-  /**
-   * @returns {Promise<void>}
-   */
-  clear: async function () {
-    await fs.promises.rm(cachePath(), { recursive: true, force: true });
+  set: async function (key, buffer) {
+    const { extension } = getAudioFileInfo(buffer);
+    const filename = `tts-${crypto.randomUUID()}${extension}`;
+    await fs.promises.mkdir(ttsCachePath, { recursive: true });
+    await fs.promises.writeFile(path.resolve(ttsCachePath, filename), buffer);
+    return { key, filename };
   },
 };
 
-module.exports = { TTSAudioCache };
+module.exports = { TTSAudioCache, ttsCachePath, TTS_AUDIO_FILENAME_PATTERN };

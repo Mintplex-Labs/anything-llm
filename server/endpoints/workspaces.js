@@ -702,18 +702,19 @@ function workspaceEndpoints(app) {
 
         if (!wsChat) return response.sendStatus(404);
 
-        const text = messageToSpeech(
-          safeJsonParse(wsChat.response, null)?.text
-        );
+        const chatResponse = safeJsonParse(wsChat.response, null);
+        const text = messageToSpeech(chatResponse?.text);
         if (!text) return response.sendStatus(204).end();
 
         const TTSProvider = getTTSProvider();
         const cacheKey = TTSAudioCache.key(TTSProvider, text);
-        let audio = await TTSAudioCache.get(wsChat.id, cacheKey);
+        let audio = TTSAudioCache.get(chatResponse.ttsAudio, cacheKey);
         if (!audio) {
           const buffer = await TTSProvider.ttsBuffer(text);
           if (buffer === null) return response.sendStatus(204).end();
-          audio = await TTSAudioCache.set(wsChat.id, cacheKey, buffer);
+          const ttsAudio = await TTSAudioCache.set(cacheKey, buffer);
+          await WorkspaceChats.setTTSAudio(wsChat.id, ttsAudio);
+          audio = TTSAudioCache.get(ttsAudio, cacheKey);
         }
 
         // Storage can sit under a dot folder, which sendFile rejects by default.
