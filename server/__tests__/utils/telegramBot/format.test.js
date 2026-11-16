@@ -35,6 +35,28 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("converts ***bold italic*** and ___bold italic___ to nested tags", () => {
+      expect(markdownToTelegram("***Hello***")).toBe("<b><i>Hello</i></b>");
+      expect(markdownToTelegram("___Hello___")).toBe("<b><i>Hello</i></b>");
+    });
+
+    test("converts triple emphasis inside text", () => {
+      expect(markdownToTelegram("a ***b*** c")).toBe("a <b><i>b</i></b> c");
+      expect(markdownToTelegram("a ___b___ c")).toBe("a <b><i>b</i></b> c");
+    });
+
+    test("keeps triple emphasis literal inside inline code", () => {
+      expect(markdownToTelegram("`***Hello***` and `___Hello___`")).toBe(
+        "<code>***Hello***</code> and <code>___Hello___</code>"
+      );
+    });
+
+    test("keeps triple emphasis literal inside code blocks", () => {
+      expect(markdownToTelegram("```\n***Hello*** ___Hello___\n```")).toBe(
+        "<pre>***Hello*** ___Hello___</pre>"
+      );
+    });
+
     test("converts ~~strikethrough~~ to <s>", () => {
       expect(markdownToTelegram("this is ~~gone~~ text")).toBe(
         "this is <s>gone</s> text"
@@ -193,7 +215,9 @@ describe("markdownToTelegram", () => {
 
     test("keeps a ``` example inside a longer fence", () => {
       expect(
-        markdownToTelegram("````markdown\n```python\nx = 1\n```\n````\nAfter **bold**")
+        markdownToTelegram(
+          "````markdown\n```python\nx = 1\n```\n````\nAfter **bold**"
+        )
       ).toBe("<pre>```python\nx = 1\n```</pre>\nAfter <b>bold</b>");
     });
 
