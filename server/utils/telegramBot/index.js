@@ -18,7 +18,11 @@ const {
   denyUser,
   revokeUser,
 } = require("./utils/verification");
-const { BOT_COMMANDS, commandPattern } = require("./utils/commands");
+const {
+  BOT_COMMANDS,
+  commandPattern,
+  isBotCommand,
+} = require("./utils/commands");
 const { handleKeyboardQueryCallback } = require("./utils/navigation");
 const { toolApprovalMessage } = require("./utils/format");
 const {
@@ -480,7 +484,8 @@ class TelegramBotService {
     );
 
     this.#bot.on("message", (msg) => {
-      if (msg.text?.startsWith("/")) return;
+      // Bot commands are answered by their onText handlers above.
+      if (isBotCommand(msg.text)) return;
       guard(msg, () => this.#handleMessage(ctx, msg));
     });
 
