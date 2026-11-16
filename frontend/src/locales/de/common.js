@@ -1979,6 +1979,8 @@ const TRANSLATIONS = {
     "new-router-button": "Neuer Router",
     "delete-confirm":
       'Sind Sie sicher, dass Sie den Router "{{name}}" löschen möchten?\nDadurch werden alle seine Einstellungen und alle Arbeitsbereiche, die er verwendet, getrennt.\n\nDiese Aktion ist nicht rückgängig machbar.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router gelöscht",
     "toast-delete-failed": "Fehler beim Löschen des Routers: {{error}}",
     "new-router": {

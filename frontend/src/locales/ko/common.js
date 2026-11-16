@@ -1895,6 +1895,8 @@ const TRANSLATIONS = {
     "new-router-button": "새로운 라우터",
     "delete-confirm":
       '라우터 "{{name}}"을 삭제하시겠습니까?\n이 작업은 모든 규칙을 삭제하고 해당 라우터를 사용하는 모든 워크스페이스를 분리합니다.\n\n이 작업은 되돌릴 수 없습니다.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "라우터 삭제",
     "toast-delete-failed": "라우터 삭제에 실패했습니다: {{error}}",
     "new-router": {

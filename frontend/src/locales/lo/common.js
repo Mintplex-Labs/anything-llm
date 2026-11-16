@@ -1006,6 +1006,8 @@ const TRANSLATIONS = {
     "new-router-button": "ສ້າງ Router ໃໝ່",
     "delete-confirm":
       'ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບ router "{{name}}"?\nສິ່ງນີ້ຈະເອົາກົດເກນທັງໝົດອອກ ແລະ ຍົກເລີກການເຊື່ອມຕໍ່ກັບພື້ນທີ່ເຮັດວຽກທີ່ໃຊ້ມັນຢູ່.\n\nການດຳເນີນການນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "ລຶບ Router ແລ້ວ",
     "toast-delete-failed": "ລຶບ Router ບໍ່ສຳເລັດ: {{error}}",
     "new-router": {

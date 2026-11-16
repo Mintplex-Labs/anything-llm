@@ -1824,6 +1824,8 @@ const TRANSLATIONS = {
     "new-router-button": "新的路由器",
     "delete-confirm":
       '您确定要删除路由器 "{{name}}" 吗？\n这将删除所有其规则，并断开使用该路由器的所有工作空间。\n\n此操作是不可逆的。',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "路由器已删除",
     "toast-delete-failed": "未能删除路由器：{{error}}",
     "new-router": {

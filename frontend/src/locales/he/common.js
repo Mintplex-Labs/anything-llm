@@ -1874,6 +1874,8 @@ const TRANSLATIONS = {
     "new-router-button": "ראוטר חדש",
     "delete-confirm":
       'האם אתה בטוח שאתה רוצה למחוק את הראוטר "{{name}}"?\nפעולה זו תסיר את כל הכללים שלה ותנתק כל סביבת עבודה המשתמשת בה.\n\nפעולה זו אינה ניתנת לבטל.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "נת המס שלך הוסרו",
     "toast-delete-failed": "לא הצלחתי למחוק את הראוטר: {{error}}",
     "new-router": {

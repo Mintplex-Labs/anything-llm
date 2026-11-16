@@ -1044,6 +1044,8 @@ const TRANSLATIONS = {
     "new-router-button": "नया राउटर",
     "delete-confirm":
       'क्या आप वाकई राउटर "{{name}}" हटाना चाहते हैं?\nइससे उसके सभी नियम हट जाएँगे और उसका उपयोग करने वाले वर्कस्पेस उससे अलग हो जाएँगे।\n\nयह कार्रवाई वापस नहीं की जा सकती।',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "राउटर हटाया गया",
     "toast-delete-failed": "राउटर हटाने में त्रुटि: {{error}}",
     "new-router": {

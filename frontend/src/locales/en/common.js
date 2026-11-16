@@ -1045,7 +1045,9 @@ const TRANSLATIONS = {
       "No model routers configured yet. Create one to get started.",
     "new-router-button": "New Router",
     "delete-confirm":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules and unlink any workspaces using it.\n\nThis action is irreversible.',
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules.\n\nThis action is irreversible.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router deleted",
     "toast-delete-failed": "Failed to delete router: {{error}}",
     "new-router": {

@@ -1941,6 +1941,8 @@ const TRANSLATIONS = {
     "new-router-button": "Naujas maršrutizatorius",
     "delete-confirm":
       'Ar esate tikri, kad norite ištrinti routerį "{{name}}"?\nTai pašalins visus jo nustatymus ir atjunkia bet kuriuos darbalapius, kurie jį naudoja.\n\nŠis veikimas yra neatsistatomas.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Rutineris ištrintas",
     "toast-delete-failed": "Nepavyko pašalinti maršrutizatorių: {{error}}",
     "new-router": {

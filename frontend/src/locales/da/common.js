@@ -1938,6 +1938,8 @@ const TRANSLATIONS = {
     "new-router-button": "Ny router",
     "delete-confirm":
       'Er du sikker på, at du vil slette routeren "{{name}}"?\nDette vil fjerne alle dens regler og afbryde alle arbejdsområder, der bruger den.\n\nDenne handling er irreversibel.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router slettet",
     "toast-delete-failed": "Kunne ikke slette routeren: {{error}}",
     "new-router": {

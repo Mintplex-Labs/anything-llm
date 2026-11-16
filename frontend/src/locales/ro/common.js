@@ -1963,6 +1963,8 @@ const TRANSLATIONS = {
     "new-router-button": "Router nou",
     "delete-confirm":
       'Sunteți sigur că doriți să ștergeți routerul "{{name}}"?\nAceasta va elimina toate regulile sale și va deconecta orice spațiu de lucru care îl utilizează.\n\nAceastă acțiune este ireversibilă.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router-ul a fost șters",
     "toast-delete-failed": "Nu a reușit să ștergă routerul: {{error}}",
     "new-router": {

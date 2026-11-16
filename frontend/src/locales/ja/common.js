@@ -1925,6 +1925,8 @@ const TRANSLATIONS = {
     "new-router-button": "新しいルーター",
     "delete-confirm":
       "ルーター「{{name}}」を削除してもよろしいですか？\nこれにより、すべての設定と、それを使用しているすべてのワークスペースとの関連を解除します。\n\nこの操作は取り消すことができません。",
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "ルーターが削除されました",
     "toast-delete-failed": "ルーターの削除に失敗しました: {{error}}",
     "new-router": {

@@ -1947,6 +1947,8 @@ const TRANSLATIONS = {
     "new-router-button": "Yeni Router",
     "delete-confirm":
       "Emin misiniz, \"{{name}}\" adlı router'ı silmek istiyorsunuz?\n\nBu işlem, tüm kurallarını kaldıracak ve bu router'ı kullanan tüm çalışma alanlarını bağlantısını kesecektir.\n\nBu işlem geri alınamaz.",
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router silindi",
     "toast-delete-failed": "Router'ın silinmesi başarısız oldu: {{error}}",
     "new-router": {

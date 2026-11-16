@@ -1047,6 +1047,8 @@ const TRANSLATIONS = {
     "new-router-button": "Ny router",
     "delete-confirm":
       'Är du säker på att du vill ta bort routern "{{name}}"?\nDetta tar bort alla dess regler och kopplar loss alla arbetsytor som använder den.\n\nÅtgärden går inte att ångra.',
+    "delete-confirm-in-use":
+      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router borttagen",
     "toast-delete-failed": "Det gick inte att ta bort routern: {{error}}",
     "new-router": {

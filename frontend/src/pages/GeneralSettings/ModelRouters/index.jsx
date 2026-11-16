@@ -181,8 +181,15 @@ function RouterRow({ router, removeRouter, onEdit, showDivider }) {
 
   const handleDelete = async (e) => {
     e.stopPropagation();
+    const workspaceCount = router.workspaceCount || 0;
+    const confirmKey =
+      workspaceCount > 0
+        ? "model-router.delete-confirm-in-use"
+        : "model-router.delete-confirm";
     if (
-      !window.confirm(t("model-router.delete-confirm", { name: router.name }))
+      !window.confirm(
+        t(confirmKey, { name: router.name, count: workspaceCount })
+      )
     )
       return;
 
