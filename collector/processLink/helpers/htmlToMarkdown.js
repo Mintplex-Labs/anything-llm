@@ -357,10 +357,33 @@ function htmlToMarkdown(html, baseUrl) {
         })
         .join("");
 
+    const inTableCell = (node) => {
+      for (let parent = node.parentNode; parent; parent = parent.parentNode)
+        if (parent.nodeName === "TD" || parent.nodeName === "TH") return true;
+      return false;
+    };
+
+    // A table cell is one line, so a fence cannot live there. Any <pre> in a
+    // cell, with or without <code>, becomes an inline code span instead, its
+    // line breaks joined by a space and its delimiter longer than any backtick
+    // run inside it.
+    const codeSpan = (text) => {
+      const code = text.replace(/\s*\n\s*/g, " ").trim();
+      if (!code) return "";
+      const runs = code.match(/`+/g) || [];
+      const delimiter = "`".repeat(
+        Math.max(0, ...runs.map((r) => r.length)) + 1
+      );
+      const pad = code.startsWith("`") || code.endsWith("`") ? " " : "";
+      return `${delimiter}${pad}${code}${pad}${delimiter}`;
+    };
+
     turndown.addRule("preformatted", {
       filter: (node) =>
-        node.nodeName === "PRE" && node.firstChild?.nodeName !== "CODE",
+        node.nodeName === "PRE" &&
+        (node.firstChild?.nodeName !== "CODE" || inTableCell(node)),
       replacement: (_content, node) => {
+        if (inTableCell(node)) return codeSpan(preText(node));
         const text = preText(node).replace(/\n$/, "");
         const fences = text.match(/^`{3,}/gm) || [];
         const fence = "`".repeat(

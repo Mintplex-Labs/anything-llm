@@ -159,6 +159,24 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("```\ndef __init__(self):\n    items[1:]\n```");
     });
 
+    it("writes a <pre> in a table cell as one inline code span", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Call</th><th>Body</th></tr>" +
+          "<tr><td>a</td><td><pre>def f():\n    return x_1</pre></td></tr>" +
+          "<tr><td>b</td><td><pre><code>use `x`\nok</code></pre></td></tr>" +
+          "<tr><td>c</td><td><pre>`tick`</pre></td></tr></table>"
+      );
+      expect(markdown).toBe(
+        [
+          "| Call | Body |",
+          "| --- | --- |",
+          "| a | `def f(): return x_1` |",
+          "| b | ``use `x` ok`` |",
+          "| c | `` `tick` `` |",
+        ].join("\n")
+      );
+    });
+
     it("fences it past any fence inside the text", async () => {
       const markdown = await htmlToMarkdown("<pre>```\na_b\n```</pre>");
       expect(markdown).toBe("````\n```\na_b\n```\n````");
