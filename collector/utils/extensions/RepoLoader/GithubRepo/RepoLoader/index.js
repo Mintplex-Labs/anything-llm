@@ -32,6 +32,7 @@ class GitHubRepoLoader {
 
   /**
    * Processes a repository URL to ensure it is in the correct format
+   * - keep only the origin and path, dropping any query or hash
    * - remove the .git suffix if present
    * - ensure the url is valid
    * @param {string} repoUrl - The repository URL to process.
@@ -41,9 +42,7 @@ class GitHubRepoLoader {
     if (!repoUrl) return repoUrl;
     try {
       const url = new URL(repoUrl);
-      if (url.pathname.endsWith(".git"))
-        url.pathname = url.pathname.slice(0, -4);
-      return url.toString();
+      return `${url.origin}${url.pathname.replace(/\.git$/, "")}`;
     } catch (e) {
       console.error(
         `[GitHub Loader]: Error processing repository URL ${this.repo}: ${e.message}`
