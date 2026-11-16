@@ -530,15 +530,11 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
           );
         }
       } else if (tagName === "ul" || tagName === "ol") {
-        const continues =
-          tagName === "ol" &&
-          lastOrdered?.next === Number(child.getAttribute("start"));
+        const start = Number(child.getAttribute("start")) || 1;
+        const continues = tagName === "ol" && lastOrdered?.next === start;
         const instance = continues ? lastOrdered.instance : ++listInstance;
         if (tagName === "ol")
-          lastOrdered = {
-            instance,
-            next: (continues ? lastOrdered.next : 1) + child.children.length,
-          };
+          lastOrdered = { instance, next: start + child.children.length };
         elements.push(
           ...(await processList(
             child,
