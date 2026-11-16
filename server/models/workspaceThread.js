@@ -37,6 +37,9 @@ const WorkspaceThread = {
       const thread = await prisma.workspace_threads.create({
         data: {
           name: data.name ? String(data.name) : this.defaultName,
+          // Custom slugs keep the caller's casing on purpose. Thread lookups are
+          // exact, case-sensitive matches, so API clients that address a thread
+          // by the slug they supplied would fail to find it if we lowercased it.
           slug: data.slug ? this.slugify(data.slug) : uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
