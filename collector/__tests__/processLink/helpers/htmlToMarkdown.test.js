@@ -152,6 +152,13 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("```\n# Setup\n\nRun `python __main__.py`.\n```");
     });
 
+    it("keeps highlighted spans and <br> line breaks", async () => {
+      const markdown = await htmlToMarkdown(
+        '<div class="highlight"><pre><span class="k">def</span> __init__(self):<br>    items[1:]</pre></div>'
+      );
+      expect(markdown).toBe("```\ndef __init__(self):\n    items[1:]\n```");
+    });
+
     it("fences it past any fence inside the text", async () => {
       const markdown = await htmlToMarkdown("<pre>```\na_b\n```</pre>");
       expect(markdown).toBe("````\n```\na_b\n```\n````");

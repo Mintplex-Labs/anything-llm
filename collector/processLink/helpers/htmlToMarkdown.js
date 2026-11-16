@@ -344,14 +344,24 @@ function htmlToMarkdown(html, baseUrl) {
       },
     });
 
-    // Turndown only reads <pre><code> as code. The text of any other <pre>
-    // (the page a browser shows for a text/plain URL, Sphinx code samples)
-    // was escaped as Markdown, so `__init__` came out as `\_\_init\_\_`.
+    // Turndown only reads <pre><code> as code and escapes the text of any other
+    // <pre> as Markdown. A bare <pre> is what a browser shows for a text/plain
+    // URL and what Sphinx emits for code samples, so write its text verbatim in
+    // a fence. <br> is the one element that carries a line break inside a <pre>.
+    const preText = (node) =>
+      Array.from(node.childNodes)
+        .map((child) => {
+          if (child.nodeName === "BR") return "\n";
+          if (child.nodeType === 3) return child.nodeValue;
+          return preText(child);
+        })
+        .join("");
+
     turndown.addRule("preformatted", {
       filter: (node) =>
         node.nodeName === "PRE" && node.firstChild?.nodeName !== "CODE",
       replacement: (_content, node) => {
-        const text = node.textContent.replace(/\n$/, "");
+        const text = preText(node).replace(/\n$/, "");
         const fences = text.match(/^`{3,}/gm) || [];
         const fence = "`".repeat(
           Math.max(2, ...fences.map((f) => f.length)) + 1
