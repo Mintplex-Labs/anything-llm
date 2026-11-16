@@ -6,9 +6,11 @@ import showToast from "@/utils/toast";
 import PreLoader from "@/components/Preloader";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
+import FonadaLabsLogo from "@/media/llmprovider/fonadalabs.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOptions";
 import GenericOpenAiWhisperOptions from "@/components/TranscriptionSelection/GenericOpenAiOptions";
+import FonadaLabsOptions from "@/components/TranscriptionSelection/FonadaLabsOptions";
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import CTAButton from "@/components/lib/CTAButton";
@@ -30,6 +32,13 @@ const PROVIDERS = [
     options: (settings) => <GenericOpenAiWhisperOptions settings={settings} />,
     description:
       "Transcribe audio using any OpenAI-compatible API via custom configuration.",
+  },
+  {
+    name: "FonadaLabs",
+    value: "fonadalabs",
+    logo: FonadaLabsLogo,
+    options: (settings) => <FonadaLabsOptions settings={settings} />,
+    description: "Transcribe recordings with FonadaLabs Kapture V3.",
   },
   {
     name: "AnythingLLM Built-In",

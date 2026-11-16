@@ -11,10 +11,14 @@ const { OpenAiWhisper } = require("../../utils/WhisperProviders/OpenAiWhisper");
 const {
   GenericOpenAiWhisper,
 } = require("../../utils/WhisperProviders/GenericOpenAiWhisper");
+const {
+  FonadaLabsWhisper,
+} = require("../../utils/WhisperProviders/FonadaLabsWhisper");
 
 const WHISPER_PROVIDERS = {
   openai: OpenAiWhisper,
   "generic-openai": GenericOpenAiWhisper,
+  fonadalabs: FonadaLabsWhisper,
   local: LocalWhisper,
 };
 

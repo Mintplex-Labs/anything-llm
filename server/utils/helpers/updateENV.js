@@ -618,6 +618,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
     postUpdate: [],
   },
+  WhisperFonadaLabsApiKey: {
+    envKey: "WHISPER_FONADALABS_API_KEY",
+    checks: [],
+    postUpdate: [],
+  },
+  WhisperFonadaLabsLanguageId: {
+    envKey: "WHISPER_FONADALABS_LANGUAGE_ID",
+    checks: [isNotEmpty],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -1280,7 +1290,7 @@ function supportedLLM(input = "") {
 }
 
 function supportedTranscriptionProvider(input = "") {
-  const validSelection = ["openai", "generic-openai", "local"].includes(input);
+  const validSelection = ["openai", "generic-openai", "fonadalabs", "local"].includes(input);
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;

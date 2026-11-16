@@ -553,6 +553,9 @@ const SystemSettings = {
       WhisperGenericOpenAiBaseUrl: process.env.WHISPER_GENERIC_OPEN_AI_BASE_URL,
       WhisperGenericOpenAiApiKey: !!process.env.WHISPER_GENERIC_OPEN_AI_API_KEY,
       WhisperGenericOpenAiModel: process.env.WHISPER_GENERIC_OPEN_AI_MODEL,
+      WhisperFonadaLabsApiKey: !!process.env.WHISPER_FONADALABS_API_KEY,
+      WhisperFonadaLabsLanguageId:
+        process.env.WHISPER_FONADALABS_LANGUAGE_ID || "en",
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs

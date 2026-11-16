@@ -9,6 +9,9 @@ const { Agent } = require("undici");
  * @property {string} WhisperGenericOpenAiBaseUrl - The base URL of the OpenAI compatible endpoint used by the generic Whisper provider.
  * @property {string} WhisperGenericOpenAiApiKey - The API key used by the generic (OpenAI compatible) Whisper provider.
  * @property {string} WhisperGenericOpenAiModel - The transcription model used by the generic (OpenAI compatible) Whisper provider.
+ * @property {string} WhisperFonadaLabsApiKey - The API key used by the FonadaLabs transcription provider.
+ * @property {string} WhisperFonadaLabsLanguageId - The FonadaLabs language_id for transcription.
+ * @property {string} WhisperFonadaLabsMaxConcurrency - Maximum simultaneous FonadaLabs chunks.
  * @property {Object} ocr - The OCR options
  * @property {{allowAnyIp: "true"|null|undefined}} runtimeSettings - The runtime settings that are passed to the collector. Persisted across requests.
  */
@@ -73,6 +76,11 @@ class CollectorApi {
         process.env.WHISPER_GENERIC_OPEN_AI_API_KEY || null,
       WhisperGenericOpenAiModel:
         process.env.WHISPER_GENERIC_OPEN_AI_MODEL || null,
+      WhisperFonadaLabsApiKey: process.env.WHISPER_FONADALABS_API_KEY || null,
+      WhisperFonadaLabsLanguageId:
+        process.env.WHISPER_FONADALABS_LANGUAGE_ID || "en",
+      WhisperFonadaLabsMaxConcurrency:
+        process.env.WHISPER_FONADALABS_MAX_CONCURRENCY || "2",
       ocr: {
         langList: process.env.TARGET_OCR_LANG || "eng",
       },
