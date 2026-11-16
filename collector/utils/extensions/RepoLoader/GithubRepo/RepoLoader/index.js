@@ -43,6 +43,10 @@ class GitHubRepoLoader {
       const url = new URL(repoUrl);
       if (url.pathname.endsWith(".git"))
         url.pathname = url.pathname.slice(0, -4);
+      // A URL copied from the browser can carry ?tab=readme-ov-file or #readme,
+      // which the upstream loader would read as part of the repository name.
+      url.search = "";
+      url.hash = "";
       return url.toString();
     } catch (e) {
       console.error(
