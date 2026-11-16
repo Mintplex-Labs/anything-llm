@@ -38,7 +38,6 @@ class ApiPieLLM {
       process.env.APIPIE_LLM_MODEL_PREF ||
       "openrouter/mistral-7b-instruct";
 
-    // Set before the limits below, which read the cached model list.
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");

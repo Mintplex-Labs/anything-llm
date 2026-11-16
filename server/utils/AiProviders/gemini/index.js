@@ -59,7 +59,6 @@ class GeminiLLM {
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
     });
 
-    // Set before the limits below, which read the cached model list.
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");

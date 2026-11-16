@@ -32,7 +32,6 @@ class FireworksAiLLM {
     });
     this.model = modelPreference || process.env.FIREWORKS_AI_LLM_MODEL_PREF;
 
-    // Set before the limits below, which read the cached model list.
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
