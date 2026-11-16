@@ -37,9 +37,7 @@ const WorkspaceThread = {
       const thread = await prisma.workspace_threads.create({
         data: {
           name: data.name ? String(data.name) : this.defaultName,
-          slug: data.slug
-            ? this.slugify(data.slug, { lowercase: true })
-            : uuidv4(),
+          slug: data.slug ? this.slugify(data.slug, { lower: true }) : uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
         },
