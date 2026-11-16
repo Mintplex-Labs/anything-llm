@@ -153,7 +153,9 @@ function markdownToTelegram(
   // opening italic *: - item or * item → • item
   result = result.replace(/^[-*]\s+/gm, "• ");
 
-  // Convert markdown to HTML (order matters - do bold before italic)
+  // Convert markdown to HTML (order matters - do triple emphasis before bold/italic)
+  result = result.replace(/\*\*\*(.+?)\*\*\*/g, "<b><i>$1</i></b>");
+  result = result.replace(/___(.+?)___/g, "<b><i>$1</i></b>");
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   result = result.replace(/__(.+?)__/g, "<b>$1</b>");
   // As in CommonMark, * only opens italic when not followed by a space and
