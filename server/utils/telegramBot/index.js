@@ -150,21 +150,16 @@ class TelegramBotService {
   #processPendingMessage(ctx, msg) {
     const text = msg.text || "";
 
-    // Handle commands
-    if (text.startsWith("/")) {
-      const commandMatch = text.match(/^\/(\w+)/);
-      if (!commandMatch) return;
-
-      const commandName = commandMatch[1];
-      const command = BOT_COMMANDS.find((c) => c.command === commandName);
-      if (command) {
-        const handler = command.initHandler();
-        handler(ctx, msg.chat.id, text);
-        return;
-      }
+    const command = BOT_COMMANDS.find((c) =>
+      commandPattern(c.command).test(text)
+    );
+    if (command) {
+      const handler = command.initHandler();
+      handler(ctx, msg.chat.id, text);
+      return;
     }
 
-    // Handle regular messages
+    // Everything else, including slash command presets, goes to the chat.
     this.#handleMessage(ctx, msg);
   }
 
