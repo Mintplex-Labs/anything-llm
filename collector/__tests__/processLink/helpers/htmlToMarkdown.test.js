@@ -143,6 +143,21 @@ describe("htmlToMarkdown", () => {
     });
   });
 
+  describe("preformatted text", () => {
+    it("keeps the text of a <pre> without <code> as it is", async () => {
+      // How a browser shows a text/plain URL, eg: a raw README.md.
+      const markdown = await htmlToMarkdown(
+        "<body><pre># Setup\n\nRun `python __main__.py`.\n</pre></body>"
+      );
+      expect(markdown).toBe("```\n# Setup\n\nRun `python __main__.py`.\n```");
+    });
+
+    it("fences it past any fence inside the text", async () => {
+      const markdown = await htmlToMarkdown("<pre>```\na_b\n```</pre>");
+      expect(markdown).toBe("````\n```\na_b\n```\n````");
+    });
+  });
+
   describe("long URL stripping", () => {
     const longUrl = `https://ex.com/${"a".repeat(300)}`;
 

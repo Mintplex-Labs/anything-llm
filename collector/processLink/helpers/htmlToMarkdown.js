@@ -344,6 +344,22 @@ function htmlToMarkdown(html, baseUrl) {
       },
     });
 
+    // Turndown only reads <pre><code> as code. The text of any other <pre>
+    // (the page a browser shows for a text/plain URL, Sphinx code samples)
+    // was escaped as Markdown, so `__init__` came out as `\_\_init\_\_`.
+    turndown.addRule("preformatted", {
+      filter: (node) =>
+        node.nodeName === "PRE" && node.firstChild?.nodeName !== "CODE",
+      replacement: (_content, node) => {
+        const text = node.textContent.replace(/\n$/, "");
+        const fences = text.match(/^`{3,}/gm) || [];
+        const fence = "`".repeat(
+          Math.max(2, ...fences.map((f) => f.length)) + 1
+        );
+        return `\n\n${fence}\n${text}\n${fence}\n\n`;
+      },
+    });
+
     let markdown = turndown.turndown(cleanedHtml);
 
     // Strip links and images with excessively long URLs (200+ chars)
