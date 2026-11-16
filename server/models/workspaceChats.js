@@ -256,7 +256,7 @@ const WorkspaceChats = {
         const user = res.user_id ? await User.get({ id: res.user_id }) : null;
         res.user = user
           ? { username: user.username }
-          : { username: res.api_session_id !== null ? "API" : "unknown user" };
+          : { username: res.api_session_id !== null ? "API" : null };
       }
 
       return results;
@@ -369,7 +369,7 @@ const WorkspaceChats = {
         include: data.include,
       };
 
-      const { chat } = await prisma.workspace_chats.upsert({
+      const chat = await prisma.workspace_chats.upsert({
         where: {
           id: Number(chatId),
           user_id: data.user?.id || null,

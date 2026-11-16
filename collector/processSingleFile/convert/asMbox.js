@@ -18,7 +18,11 @@ async function asMbox({
 }) {
   console.log(`-- Working ${filename} --`);
 
-  const mails = await mboxParser(fs.createReadStream(fullFilePath))
+  // Read as utf8 so each chunk ends on a whole character. mbox-parser decodes
+  // chunks one at a time, so a character split between chunks would be garbled.
+  const mails = await mboxParser(
+    fs.createReadStream(fullFilePath, { encoding: "utf8" })
+  )
     .then((mails) => mails)
     .catch((error) => {
       console.log(`Could not parse mail items`, error);
@@ -44,8 +48,9 @@ async function asMbox({
       `-- Working on message "${mail.subject || "Unknown subject"}" --`
     );
 
-    const messageTitle = mail?.subject
-      ? slugify(mail?.subject?.replace(".", "")) + ".mbox"
+    const subject = mail?.subject?.trim();
+    const messageTitle = subject
+      ? `${subject}.mbox`
       : `msg_${item}-${filename}`;
     const data = {
       id: v4(),

@@ -30,6 +30,30 @@ function skillIsAutoApproved({ skillName }) {
   return true;
 }
 
+const EDITABLE_EMAIL_FIELDS = ["to", "cc", "bcc", "subject", "body"];
+
+/**
+ * Merges the recipient/subject/body edits a user made on the email approval card
+ * into the fields the send tool was called with. Only known string fields are
+ * accepted so the client cannot inject arbitrary send options. A rewritten body
+ * drops the agent's HTML body so the plain-text edit is what actually gets sent.
+ * @param {Object} fields - Email fields the tool was invoked with
+ * @param {Object|null} edits - `payload` from the approval response, if any
+ * @returns {Object} The fields with edits applied
+ */
+function applyEmailEdits(fields, edits = null) {
+  if (!edits || typeof edits !== "object" || Array.isArray(edits))
+    return fields;
+  const merged = { ...fields };
+  for (const key of EDITABLE_EMAIL_FIELDS) {
+    if (typeof edits[key] !== "string") continue;
+    merged[key] = edits[key].trim();
+  }
+  if (typeof edits.body === "string") merged.htmlBody = undefined;
+  return merged;
+}
+
 module.exports = {
   skillIsAutoApproved,
+  applyEmailEdits,
 };

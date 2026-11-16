@@ -82,7 +82,10 @@ describe("resyncPaperlessNgx", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
       "https://paperless.example.com/api/documents/123/download/",
-      { headers: { Authorization: `Token ${API_TOKEN}` } }
+      expect.objectContaining({
+        headers: { Authorization: `Token ${API_TOKEN}` },
+        signal: expect.any(AbortSignal),
+      })
     );
     expect(status).toHaveBeenCalledWith(200);
     expect(json).toHaveBeenCalledWith({
@@ -103,7 +106,10 @@ describe("resyncPaperlessNgx", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://my.domain.com/paperless/api/documents/123/download/",
-      { headers: { Authorization: `Token ${API_TOKEN}` } }
+      expect.objectContaining({
+        headers: { Authorization: `Token ${API_TOKEN}` },
+        signal: expect.any(AbortSignal),
+      })
     );
     expect(json).toHaveBeenCalledWith({
       success: true,
@@ -150,7 +156,10 @@ describe("resyncPaperlessNgx", () => {
     expect(json).toHaveBeenCalledWith({ success: false, content: null });
   });
 
-  test("a network level failure is reported as an unsuccessful resync", async () => {
+  test("a network level failure is retried, then reported as an unsuccessful resync", async () => {
+    // Skip the real backoff delays between attempts
+    jest.spyOn(global, "setTimeout").mockImplementation((fn) => fn());
+    jest.spyOn(console, "warn").mockImplementation(() => {});
     fetchMock.mockRejectedValue(
       new Error("ECONNREFUSED paperless.example.com")
     );
@@ -162,7 +171,7 @@ describe("resyncPaperlessNgx", () => {
 
     await handler({ chunkSource }, response);
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(json).toHaveBeenCalledWith({ success: false, content: null });
   });
 
@@ -182,7 +191,10 @@ describe("resyncPaperlessNgx", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://paperless.example.com/api/documents//download/",
-      { headers: { Authorization: `Token ${API_TOKEN}` } }
+      expect.objectContaining({
+        headers: { Authorization: `Token ${API_TOKEN}` },
+        signal: expect.any(AbortSignal),
+      })
     );
     expect(json).toHaveBeenCalledWith({ success: false, content: null });
   });

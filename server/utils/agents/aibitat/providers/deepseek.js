@@ -16,7 +16,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(config = {}) {
     super();
-    const { model = "deepseek-chat", reasoningEffort = null } = config;
+    const { model = "deepseek-flash", reasoningEffort = null } = config;
     const client = new OpenAI({
       baseURL: "https://api.deepseek.com/v1",
       apiKey: process.env.DEEPSEEK_API_KEY ?? null,
@@ -47,17 +47,6 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get supportsAgentStreaming() {
     return true;
-  }
-
-  /**
-   * DeepSeek models do not support vision/image inputs.
-   * Strip attachments from messages to prevent API errors.
-   * @param {Object} message - Message with potential attachments
-   * @returns {Object} Message without attachments
-   */
-  formatMessageWithAttachments(message) {
-    const { attachments: _, ...rest } = message;
-    return rest;
   }
 
   /**
@@ -113,37 +102,13 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
     });
   }
 
-  /**
-   * Strip attachments from all messages since DeepSeek doesn't support vision.
-   * @param {Array} messages - Array of messages
-   * @returns {Array} Messages with attachments removed
-   */
-  #stripAttachments(messages) {
-    let hasAttachments = false;
-    const stripped = messages.map((msg) => {
-      if (msg.attachments && msg.attachments.length > 0) {
-        hasAttachments = true;
-        const { attachments: _, ...rest } = msg;
-        return rest;
-      }
-      return msg;
-    });
-    if (hasAttachments) {
-      this.providerLog(
-        "DeepSeek does not support vision - stripped image attachments from messages."
-      );
-    }
-    return stripped;
-  }
-
   async stream(messages, functions = [], eventHandler = null) {
     const useNative = this.supportsNativeToolCalling();
-    const cleanedMessages = this.#stripAttachments(messages);
 
     if (!useNative) {
       return await UnTooled.prototype.stream.call(
         this,
-        cleanedMessages,
+        messages,
         functions,
         this.#handleFunctionCallStream.bind(this),
         eventHandler
@@ -158,7 +123,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
       return await tooledStream(
         this.client,
         this.model,
-        cleanedMessages,
+        messages,
         functions,
         eventHandler,
         this.#tooledOptions
@@ -179,12 +144,11 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
 
   async complete(messages, functions = []) {
     const useNative = this.supportsNativeToolCalling();
-    const cleanedMessages = this.#stripAttachments(messages);
 
     if (!useNative) {
       return await UnTooled.prototype.complete.call(
         this,
-        cleanedMessages,
+        messages,
         functions,
         this.#handleFunctionCallChat.bind(this)
       );
@@ -194,7 +158,7 @@ class DeepSeekProvider extends InheritMultiple([Provider, UnTooled]) {
       const result = await tooledComplete(
         this.client,
         this.model,
-        cleanedMessages,
+        messages,
         functions,
         this.getCost.bind(this),
         this.#tooledOptions

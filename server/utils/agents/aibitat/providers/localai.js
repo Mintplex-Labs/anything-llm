@@ -41,10 +41,25 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * Whether the loaded model supports native OpenAI-compatible tool calling.
+   * Checks the LocalAI /v1/models/capabilities endpoint for the `tools` usecase.
+   * Falls back to native tool calling when LocalAI cannot report it (older versions).
+   * @returns {Promise<boolean>}
+   */
+  async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
+    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
+    const localai = new LocalAiLLM(null, this.model);
+    const capabilities = await localai.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools !== false;
+    return this._supportsToolCalling;
+  }
+
   // ---- UnTooled callbacks (used when native tool calling is not supported) ----
 
   async #handleFunctionCallChat({ messages = [] }) {
-    await LocalAiLLM.cacheContextWindows();
+    await LocalAiLLM.contextWindows.ensure(this.model);
     return await this.client.chat.completions
       .create({
         model: this.model,
@@ -64,7 +79,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
-    await LocalAiLLM.cacheContextWindows();
+    await LocalAiLLM.contextWindows.ensure(this.model);
     return await this.client.chat.completions.create({
       model: this.model,
       ...temperatureParam(this.temperature),
@@ -96,7 +111,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     );
 
     try {
-      await LocalAiLLM.cacheContextWindows();
+      await LocalAiLLM.contextWindows.ensure(this.model);
       return await tooledStream(
         this.client,
         this.model,
@@ -136,7 +151,7 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     }
 
     try {
-      await LocalAiLLM.cacheContextWindows();
+      await LocalAiLLM.contextWindows.ensure(this.model);
       const result = await tooledComplete(
         this.client,
         this.model,

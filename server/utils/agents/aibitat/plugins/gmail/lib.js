@@ -399,6 +399,27 @@ class GmailBridge {
   }
 
   /**
+   * Subject and recipients a reply to this thread will go out with, so the
+   * approval card can show them. Best effort: an unreadable thread yields {}.
+   * @param {string} threadId - The thread ID
+   * @param {boolean} replyAll - Whether the reply goes to everyone on the last message
+   * @returns {Promise<{subject?: string, to?: string}>}
+   */
+  async getReplyContext(threadId, replyAll = false) {
+    const result = await this.request("get_threads", {
+      threadIds: [threadId],
+      attachments: false,
+    });
+    const thread = result.success ? result.data?.[0] : null;
+    const last = thread?.messages?.at(-1);
+    if (!last) return {};
+    const to = replyAll
+      ? [last.from, last.to, last.cc].filter(Boolean).join(", ")
+      : last.from;
+    return { subject: thread.subject, to };
+  }
+
+  /**
    * Create a new draft email.
    * @param {string} to - Recipient email
    * @param {string} subject - Email subject

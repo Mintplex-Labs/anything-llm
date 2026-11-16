@@ -28,7 +28,7 @@ export default function VectorDatabase({ workspace }) {
     <div className="w-full relative">
       <AutosaveForm
         onSave={handleUpdate}
-        className="w-1/2 flex flex-col gap-y-[32px]"
+        className="w-full xl:w-1/2 flex flex-col gap-y-[32px]"
       >
         <div className="flex items-start gap-x-5">
           <VectorDBIdentifier workspace={workspace} />

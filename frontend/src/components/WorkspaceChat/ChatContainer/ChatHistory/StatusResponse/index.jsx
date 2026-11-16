@@ -62,10 +62,10 @@ export default function StatusResponse({
   const workingActive = isThinking && !thinkingActive;
   const active = thinkingActive || workingActive;
 
-  const { arrivals, finalizedAt } = useActivityTimestamps(messages, active);
-  const firstArrival = chainId ? arrivals[chainId] : null;
+  const clock = clockChain(messages, active);
+  const settledAt = clock?.settledAt ?? null;
   const totalDuration =
-    finalizedAt && firstArrival ? (finalizedAt - firstArrival) / 1000 : null;
+    settledAt && clock ? (settledAt - clock.start) / 1000 : null;
 
   const lastStatusNode = workingActive
     ? messages.findLast((m) => m.type !== "thoughtChain")
@@ -90,22 +90,28 @@ export default function StatusResponse({
           />
         }
         pending={active}
+        trailing={
+          active && clock ? (
+            <>
+              · <ElapsedTime since={clock.start} />
+            </>
+          ) : null
+        }
       >
         {headerLabel}
       </ChainOfThoughtHeader>
       <ChainOfThoughtContent>
         {messages.map((node, index) => {
-          const start = node.uuid ? arrivals[node.uuid] : null;
-          const end = arrivals[messages[index + 1]?.uuid] ?? finalizedAt;
+          const isActiveStep = active && index === messages.length - 1;
+          const start = arrivalOf(node);
+          const end = arrivalOf(messages[index + 1]) ?? settledAt;
           const seconds =
             start && end && end > start ? (end - start) / 1000 : null;
           return (
             <ChainOfThoughtStep
               key={node.uuid || `activity-${index}`}
               icon={node.type === "thoughtChain" ? Brain : undefined}
-              status={
-                active && index === messages.length - 1 ? "active" : "complete"
-              }
+              status={isActiveStep ? "active" : "complete"}
               label={
                 node.type === "thoughtChain" ? (
                   <ThoughtNode content={node.content} />
@@ -113,7 +119,13 @@ export default function StatusResponse({
                   node.content
                 )
               }
-              description={seconds ? formatDuration(seconds) : undefined}
+              description={
+                isActiveStep && start ? (
+                  <ElapsedTime since={start} />
+                ) : seconds ? (
+                  formatDuration(seconds)
+                ) : undefined
+              }
             />
           );
         })}
@@ -122,43 +134,81 @@ export default function StatusResponse({
   );
 }
 
-/**
- * Times activity client-side. Status updates and thoughts carry no server
+/*
+ * Client-side activity clock. Status updates and thoughts carry no server
  * timestamps and are never persisted, so each node is stamped when it first
- * appears and the chain is stamped once more when it settles. A node's
- * duration runs to the next node's arrival (or the settle time for the last
- * one); a chain loaded from history was never active and shows no durations.
+ * appears in a live chain, and the chain is stamped again when it settles. A
+ * reloaded chat shows no durations, same as it shows no tool execution times.
+ *
+ * Stamps live outside React state, keyed by node uuid, so a chain keeps its
+ * clock when it remounts - the chain is keyed by its first node, which can be
+ * dropped mid-run (removeStatusResponse, a status that turns into the reply).
+ * Nodes of one chain share a single `{ start, settledAt }` record. Insertion
+ * order doubles as eviction order, which bounds memory over a long session.
+ */
+const MAX_CLOCKED_NODES = 500;
+const nodeClock = new Map();
+
+function arrivalOf(node) {
+  return node?.uuid ? (nodeClock.get(node.uuid)?.arrival ?? null) : null;
+}
+
+/**
+ * Stamps any unseen nodes of a chain and returns the chain's shared clock.
+ * Safe to call during render: it only fills missing stamps, so repeated calls
+ * for the same input are no-ops.
  * @param {Array} messages - activity nodes
  * @param {boolean} active - the chain is still doing work
- * @returns {{arrivals: Object<string, number>, finalizedAt: number|null}}
+ * @returns {{start: number, settledAt: number|null}|null} null for a chain
+ *   that was never seen live (loaded from history)
  */
-function useActivityTimestamps(messages, active) {
-  const [arrivals, setArrivals] = useState({});
-  const [finalizedAt, setFinalizedAt] = useState(null);
-  const [everActive, setEverActive] = useState(false);
+function clockChain(messages, active) {
+  let chain = null;
+  for (const m of messages) {
+    const clocked = m.uuid ? nodeClock.get(m.uuid) : null;
+    if (clocked && (!chain || clocked.chain.start < chain.start))
+      chain = clocked.chain;
+  }
+  if (!chain && !active) return null;
 
-  useEffect(() => {
-    if (!messages.some((m) => m.uuid && arrivals[m.uuid] == null)) return;
-    setArrivals((prev) => {
-      const next = { ...prev };
-      for (const m of messages) {
-        if (m.uuid && next[m.uuid] == null) next[m.uuid] = Date.now();
-      }
-      return next;
-    });
-  }, [messages, arrivals]);
-
-  useEffect(() => {
-    if (active) {
-      setEverActive(true);
-      // A new node re-activated a settled chain - the settle time is stale.
-      if (finalizedAt !== null) setFinalizedAt(null);
-      return;
+  const now = Date.now();
+  chain ??= { start: now, settledAt: null };
+  let stamped = false;
+  for (const m of messages) {
+    if (!m.uuid) continue;
+    const clocked = nodeClock.get(m.uuid);
+    if (clocked) {
+      // Two chains merged (the message between them was swept) - the
+      // earlier start wins.
+      clocked.chain = chain;
+      continue;
     }
-    if (everActive && finalizedAt === null) setFinalizedAt(Date.now());
-  }, [active, everActive, finalizedAt]);
+    nodeClock.set(m.uuid, { arrival: now, chain });
+    stamped = true;
+    if (nodeClock.size > MAX_CLOCKED_NODES)
+      nodeClock.delete(nodeClock.keys().next().value);
+  }
 
-  return { arrivals, finalizedAt };
+  // Re-activation (a new node after settling) makes the old settle stale.
+  if (active) chain.settledAt = null;
+  else if (chain.settledAt === null || stamped) chain.settledAt = now;
+  return chain;
+}
+
+/**
+ * Live whole-second counter. Owns its interval so only this text re-renders
+ * each tick, and derives from Date.now() so throttled background tabs catch
+ * up instead of drifting. Mounted only while its chain is active.
+ * @param {{since: number}} props - epoch ms the count starts from
+ */
+function ElapsedTime({ since }) {
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const seconds = Math.max(0, Math.floor((now - since) / 1000));
+  return seconds < 60 ? `${seconds}s` : formatDuration(seconds);
 }
 
 const ThoughtNode = memo(function ThoughtNode({ content }) {

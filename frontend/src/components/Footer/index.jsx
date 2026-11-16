@@ -2,6 +2,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import {
   BookOpen,
+  ChatsCircle,
   DiscordLogo,
   GithubLogo,
   Briefcase,
@@ -83,15 +84,15 @@ export default function Footer() {
           </div>
           <div className="flex w-fit">
             <Link
-              to={paths.discord()}
+              to={paths.discussions()}
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
-              aria-label="Join our Discord server"
+              aria-label="Join the discussion on GitHub"
               data-tooltip-id="footer-item"
-              data-tooltip-content="Join the AnythingLLM Discord"
+              data-tooltip-content="Join the AnythingLLM community discussions"
             >
-              <DiscordLogo
+              <ChatsCircle
                 weight="fill"
                 className="h-5 w-5 text-white light:text-slate-800"
               />

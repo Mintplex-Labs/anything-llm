@@ -156,6 +156,25 @@ describe("executeApiCall", () => {
       );
     });
 
+    it("skips header rows without a name and trims header names", async () => {
+      const fetchMock = mockResponse("{}");
+      await executeApiCall(
+        {
+          url: "https://example.com/items",
+          method: "GET",
+          headers: [
+            { key: " Authorization ", value: "Bearer token" },
+            { key: "", value: "" },
+            { key: "   ", value: "ignored" },
+          ],
+        },
+        context
+      );
+      const [, requestConfig] = fetchMock.mock.calls[0];
+      expect(requestConfig.headers).toEqual({ Authorization: "Bearer token" });
+      expect(() => new Headers(requestConfig.headers)).not.toThrow();
+    });
+
     it("does not attach a body to GET requests", async () => {
       const fetchMock = mockResponse("{}");
       await executeApiCall(
@@ -238,6 +257,67 @@ describe("executeApiCall", () => {
       const [, requestConfig] = fetchMock.mock.calls[0];
       expect(requestConfig.body).toBeUndefined();
       expect(requestConfig.headers["Content-Type"]).toBe("application/json");
+    });
+
+    it("keeps a Content-Type header set on the block for json bodies", async () => {
+      const fetchMock = mockResponse("{}");
+      await executeApiCall(
+        {
+          url: "https://example.com/items",
+          method: "POST",
+          headers: [{ key: "Content-Type", value: "application/vnd.api+json" }],
+          bodyType: "json",
+          body: '{"data": {"type": "items"}}',
+        },
+        context
+      );
+      const [, requestConfig] = fetchMock.mock.calls[0];
+      expect(requestConfig.headers).toEqual({
+        "Content-Type": "application/vnd.api+json",
+      });
+    });
+
+    it("does not add a second content type next to a lower-case header", async () => {
+      const fetchMock = mockResponse("{}");
+      await executeApiCall(
+        {
+          url: "https://example.com/items/42",
+          method: "PATCH",
+          headers: [
+            { key: "content-type", value: "application/merge-patch+json" },
+          ],
+          bodyType: "json",
+          body: '{"name": "widget"}',
+        },
+        context
+      );
+      const [, requestConfig] = fetchMock.mock.calls[0];
+      expect(new Headers(requestConfig.headers).get("content-type")).toBe(
+        "application/merge-patch+json"
+      );
+    });
+
+    it("keeps a Content-Type header set on the block for form bodies", async () => {
+      const fetchMock = mockResponse("{}");
+      await executeApiCall(
+        {
+          url: "https://example.com/items",
+          method: "POST",
+          headers: [
+            {
+              key: "Content-Type",
+              value: "application/x-www-form-urlencoded; charset=UTF-8",
+            },
+          ],
+          bodyType: "form",
+          formData: [{ key: "name", value: "widget" }],
+        },
+        context
+      );
+      const [, requestConfig] = fetchMock.mock.calls[0];
+      expect(requestConfig.headers).toEqual({
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      });
     });
 
     it("sends text bodies as strings", async () => {

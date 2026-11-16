@@ -55,7 +55,6 @@ export default function ChatContainer({
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const { chatHistoryRef } = useChatContainerQuickScroll();
   const pendingMessageChecked = useRef(false);
-  const pendingResetRef = useRef(false);
   const activeThreadSlug = threadSlug;
 
   const isEmpty =
@@ -260,10 +259,13 @@ export default function ChatContainer({
 
   const regenerateAssistantMessage = useCallback(
     (chatId) => {
-      const filteredHistory = chatHistoryRef2.current.slice(0, -1);
-      const lastUserMessage = filteredHistory.findLast(
-        (msg) => msg.role === "user"
-      );
+      // Drop the whole previous response, not just the reply - agent status
+      // updates sit between the prompt and the reply, and leaving them would
+      // fold the old run's activity (and its timing) into the new one.
+      const history = chatHistoryRef2.current;
+      const lastUserIdx = history.findLastIndex((msg) => msg.role === "user");
+      const filteredHistory = history.slice(0, lastUserIdx + 1);
+      const lastUserMessage = history[lastUserIdx];
       Workspace.deleteChats(workspace.slug, [chatId])
         .then(() =>
           sendCommandRef.current({
@@ -332,7 +334,6 @@ export default function ChatContainer({
         // server to abort the agent and close the socket; fall through to the
         // /reset flow below which resets memory + clears chat history.
         if (promptMessage.userMessage.trim() !== "/reset") return;
-        pendingResetRef.current = true;
       }
 
       if (!promptMessage || !promptMessage?.userMessage) return false;
@@ -417,26 +418,10 @@ export default function ChatContainer({
           setAgentSessionActive(false);
           setAgentSessionSocket(null);
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          // When the close was triggered by /reset, skip the "Agent session
-          // complete." status - the pending /reset flow will clear history.
-          if (pendingResetRef.current) {
-            pendingResetRef.current = false;
-          } else {
-            setChatHistory((prev) => [
-              ...prev.filter((msg) => !!msg.content),
-              {
-                uuid: v4(),
-                type: "statusResponse",
-                content: "Agent session complete.",
-                role: "assistant",
-                sources: [],
-                closed: true,
-                error: null,
-                animate: false,
-                pending: false,
-              },
-            ]);
-          }
+          // Session end is stream plumbing, not conversation, so nothing is
+          // appended. Still sweep content-less placeholders (e.g. the pending
+          // dots from the @agent handoff) in case no agent event replaced them.
+          setChatHistory((prev) => prev.filter((msg) => !!msg.content));
           setLoadingResponse(false);
           setWebsocket(null);
           setSocketId(null);

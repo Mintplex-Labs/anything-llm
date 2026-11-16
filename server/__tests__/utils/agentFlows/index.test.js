@@ -94,9 +94,7 @@ describe("AgentFlows.loadFlowPlugin - categorized variables", () => {
     const fn = registerFlowWithVariables(variables);
     expect(Object.keys(fn.parameters.properties)).toEqual(["query", "limit"]);
     expect(fn.parameters.required).toEqual(["query"]);
-    expect(fn.parameters.properties.query.description).toBe(
-      "The search query"
-    );
+    expect(fn.parameters.properties.query.description).toBe("The search query");
   });
 
   it("executes with valid args and drops keys for static or unknown variables", async () => {
@@ -205,6 +203,40 @@ describe("FlowExecutor.executeFlow - variable initialization", () => {
     const result = await executor.executeFlow(flow, { city: "New York" });
     expect(result.success).toBe(true);
     expect(result.variables.city).toBe("New York");
-    expect(result.variables.apiKey).toBe("secret");
+  });
+
+  it("keeps static variables out of the flow result", async () => {
+    const flow = {
+      config: {
+        steps: [
+          {
+            type: "start",
+            config: {
+              variables: [
+                { name: "city", value: "San Francisco", type: "optional" },
+                { name: "apiKey", value: "secret", type: "static" },
+              ],
+            },
+          },
+        ],
+      },
+    };
+
+    const executor = new FlowExecutor();
+    const result = await executor.executeFlow(flow, { city: "New York" });
+    expect(result.variables).toEqual({ city: "New York" });
+    expect(JSON.stringify(result)).not.toContain("secret");
+  });
+
+  it("masks static variable values in status messages", async () => {
+    const introspect = jest.fn();
+    const executor = new FlowExecutor();
+    executor.staticVariables = new Set(["apiKey"]);
+    executor.variables = { apiKey: "secret" };
+    executor.attachLogging(introspect, jest.fn());
+    executor.introspect("Sending body to https://example.com?key=secret");
+    expect(introspect).toHaveBeenCalledWith(
+      "Sending body to https://example.com?key=[redacted]"
+    );
   });
 });

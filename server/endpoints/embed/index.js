@@ -6,6 +6,7 @@ const { EmbedChats } = require("../../models/embedChats");
 const {
   validEmbedConfig,
   canRespond,
+  canAccessHistory,
   setConnectionMeta,
 } = require("../../utils/middleware/embedMiddleware");
 const {
@@ -68,7 +69,7 @@ function embeddedEndpoints(app) {
 
   app.get(
     "/embed/:embedId/:sessionId",
-    [validEmbedConfig],
+    [validEmbedConfig, canAccessHistory],
     async (request, response) => {
       try {
         const { sessionId } = request.params;
@@ -91,7 +92,7 @@ function embeddedEndpoints(app) {
 
   app.delete(
     "/embed/:embedId/:sessionId",
-    [validEmbedConfig],
+    [validEmbedConfig, canAccessHistory],
     async (request, response) => {
       try {
         const { sessionId } = request.params;

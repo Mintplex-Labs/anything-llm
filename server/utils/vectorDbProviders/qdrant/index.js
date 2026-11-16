@@ -186,13 +186,8 @@ class QDrant extends VectorDatabase {
               namespace,
             });
 
+          const records = [];
           for (const chunk of chunks) {
-            const submission = {
-              ids: [],
-              vectors: [],
-              payloads: [],
-            };
-
             // Before sending to Qdrant and saving the records to our db
             // we need to assign the id of each chunk that is stored in the cached file.
             // The id property must be defined or else it will be unable to be managed by ALLM.
@@ -201,24 +196,16 @@ class QDrant extends VectorDatabase {
               if (chunk?.payload?.hasOwnProperty("id")) {
                 const { id: _id, ...payload } = chunk.payload;
                 documentVectors.push({ docId, vectorId: id });
-                submission.ids.push(id);
-                submission.vectors.push(chunk.vector);
-                submission.payloads.push(payload);
+                records.push({ id, vector: chunk.vector, payload });
               } else {
                 console.error(
                   "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
                 );
               }
             });
-
-            const additionResult = await client.upsert(namespace, {
-              wait: true,
-              batch: { ...submission },
-            });
-            if (additionResult?.status !== "completed")
-              throw new Error("Error embedding into QDrant", additionResult);
           }
 
+          await this.#upsertRecords(client, namespace, records);
           await DocumentVectors.bulkInsert(documentVectors);
           return { vectorized: true, error: null };
         }
@@ -292,40 +279,41 @@ class QDrant extends VectorDatabase {
         });
 
       if (vectors.length > 0) {
-        const chunks = [];
-
         this.logger("Inserting vectorized chunks into QDrant collection.");
-        for (const chunk of toChunks(vectors, 500)) {
-          const batchIds = [],
-            batchVectors = [],
-            batchPayloads = [];
-          chunks.push(chunk);
-          chunk.forEach((v) => {
-            batchIds.push(v.id);
-            batchVectors.push(v.vector);
-            batchPayloads.push(v.payload);
-          });
-
-          const additionResult = await client.upsert(namespace, {
-            wait: true,
-            batch: {
-              ids: batchIds,
-              vectors: batchVectors,
-              payloads: batchPayloads,
-            },
-          });
-          if (additionResult?.status !== "completed")
-            throw new Error("Error embedding into QDrant", additionResult);
-        }
-
-        await storeVectorResult(chunks, fullFilePath);
+        await this.#upsertRecords(client, namespace, vectors);
+        await storeVectorResult(toChunks(vectors, 500), fullFilePath);
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      this.logger("addDocumentToNamespace", e.message);
-      return { vectorized: false, error: e.message };
+      // Qdrant's reason for a rejected request is in the response body, not the message.
+      const reason = e?.data?.status?.error;
+      const message = reason ? `${e.message}: ${reason}` : e.message;
+      this.logger("addDocumentToNamespace", message);
+      return { vectorized: false, error: message };
+    }
+  }
+
+  /**
+   * Upsert points in batches small enough to stay under Qdrant's default 32MB
+   * request limit. A 500-point batch of 4096-dim vectors is ~42MB of JSON.
+   * @param {QdrantClient} client
+   * @param {string} namespace
+   * @param {{id: string, vector: number[], payload: object}[]} records
+   */
+  async #upsertRecords(client, namespace, records) {
+    for (const batch of toChunks(records, 100)) {
+      const result = await client.upsert(namespace, {
+        wait: true,
+        batch: {
+          ids: batch.map((r) => r.id),
+          vectors: batch.map((r) => r.vector),
+          payloads: batch.map((r) => r.payload),
+        },
+      });
+      if (result?.status !== "completed")
+        throw new Error("Error embedding into QDrant", result);
     }
   }
 

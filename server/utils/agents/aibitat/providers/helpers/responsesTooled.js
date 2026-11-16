@@ -10,7 +10,8 @@ const {
 /**
  * Shared OpenAI Responses API tool-calling utilities.
  * Mirrors the pattern of tooled.js but for providers that EXACTLY implement
- * the OpenAI Responses API (native OpenAI, OpenAI GPT models on Bedrock).
+ * the OpenAI Responses API (native OpenAI, OpenAI GPT models on Bedrock,
+ * Azure OpenAI when opted in).
  * Do not use for providers that only implement Chat Completions.
  */
 
@@ -190,6 +191,12 @@ async function responsesTooledStream(
     };
 
     for await (const chunk of response) {
+      if (chunk.type === "response.failed") {
+        throw new Error(
+          chunk.response?.error?.message || "Responses API request failed"
+        );
+      }
+
       if (chunk.type === "response.reasoning_summary_text.delta") {
         if (!chunk.delta) continue;
         reportText(

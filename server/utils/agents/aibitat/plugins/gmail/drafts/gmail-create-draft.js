@@ -1,6 +1,7 @@
 const gmailLib = require("../lib.js");
 const { prepareAttachment, MAX_TOTAL_ATTACHMENT_SIZE } = require("../lib.js");
 const { humanFileSize } = require("../../../../../helpers");
+const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.GmailCreateDraft = {
   name: "gmail-create-draft",
@@ -161,6 +162,14 @@ module.exports.GmailCreateDraft = {
                     `${this.caller}: User rejected the ${this.name} request.`
                   );
                   return approval.message;
+                }
+
+                ({ to, subject, body, cc, bcc, htmlBody } = applyEmailEdits(
+                  { to, subject, body, cc, bcc, htmlBody },
+                  approval.payload
+                ));
+                if (!to || !subject || !body) {
+                  return "Error: 'to', 'subject', and 'body' are required.";
                 }
               }
 

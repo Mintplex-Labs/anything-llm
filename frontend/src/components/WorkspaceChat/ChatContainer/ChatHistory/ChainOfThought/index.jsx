@@ -75,11 +75,13 @@ export function ChainOfThought({
  * @param {Object} props
  * @param {React.ReactNode} [props.icon] - leading indicator, defaults to a brain glyph
  * @param {boolean} [props.pending] - sweeps a shine across the label while work is in flight
+ * @param {React.ReactNode} [props.trailing] - shown after the label and never truncated with it
  */
 export function ChainOfThoughtHeader({
   className,
   icon,
   pending = false,
+  trailing,
   children,
   ...props
 }) {
@@ -112,6 +114,9 @@ export function ChainOfThoughtHeader({
       >
         {children ?? "Thoughts"}
       </span>
+      {trailing && (
+        <span className="flex-shrink-0 tabular-nums">{trailing}</span>
+      )}
       <CaretRight
         className={cn(
           "size-3 flex-shrink-0 transition-transform",

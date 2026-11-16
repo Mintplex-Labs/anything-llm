@@ -173,4 +173,31 @@ describe("agentWebsocket relayToSocket", () => {
 
     expect(socket.close).toHaveBeenCalled();
   });
+
+  it.each(["exit", "/exit", "stop", "/stop", "halt", "/halt"])(
+    "notifies the user before closing on %s mid-run",
+    (command) => {
+      const { socket, relay } = session;
+
+      relay(JSON.stringify({ feedback: command }));
+
+      expect(socket.send).toHaveBeenCalledWith(
+        JSON.stringify({ type: "agentSessionExited", content: command })
+      );
+      expect(socket.send.mock.invocationCallOrder[0]).toBeLessThan(
+        socket.close.mock.invocationCallOrder[0]
+      );
+    }
+  );
+
+  it.each(["/reset", "/EXIT", " /exit", "exit please", "", undefined])(
+    "sends no exit notice for %p mid-run",
+    (command) => {
+      const { socket, relay } = session;
+
+      relay(JSON.stringify({ feedback: command }));
+
+      expect(socket.send).not.toHaveBeenCalled();
+    }
+  );
 });

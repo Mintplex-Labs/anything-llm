@@ -5,6 +5,11 @@ const {
 const { convertToChatHistory } = require("../helpers/chat/responses.js");
 
 const THOUGHT_TAGS = "thinking|think|thought|thought_chain";
+// A thought or wrapper tag is the exact lowercase name, optionally followed by
+// whitespace and attributes, the same rule the chat window uses. Anything else
+// in angle brackets, like Promise<Response> or a JSX <Thought>, is reply text.
+const TAG_ATTRS = "(?:\\s[^>]*)?";
+const THOUGHT_BLOCK = `<(${THOUGHT_TAGS})${TAG_ATTRS}>([\\s\\S]*?)</(${THOUGHT_TAGS})\\s*>`;
 const THUMB_EDGE = 96;
 const THUMB_GAP = 8;
 const THUMB_COLUMNS = 4;
@@ -23,10 +28,7 @@ const validExportTypes = ["pdf", "markdown", "plaintext", "json", "html"];
 // Extract thought chain content from assistant messages.
 function extractThoughtChain(text = "") {
   const matches = [];
-  const regex = new RegExp(
-    `<(${THOUGHT_TAGS})[^>]*>([\\s\\S]*?)</(${THOUGHT_TAGS})\\s*>`,
-    "gi"
-  );
+  const regex = new RegExp(THOUGHT_BLOCK, "g");
   let m;
   while ((m = regex.exec(text)) !== null) matches.push(m[2].trim());
   return matches.join("\n\n") || null;
@@ -35,14 +37,11 @@ function extractThoughtChain(text = "") {
 // Strip the assistant's thought chain so the export only contains the response.
 function stripThoughtChain(text = "") {
   return text
+    .replace(new RegExp(THOUGHT_BLOCK, "g"), "")
     .replace(
-      new RegExp(
-        `<(${THOUGHT_TAGS})[^>]*>[\\s\\S]*?</(${THOUGHT_TAGS})\\s*>`,
-        "gi"
-      ),
+      new RegExp(`</?(${THOUGHT_TAGS}|response|answer)${TAG_ATTRS}>`, "g"),
       ""
     )
-    .replace(new RegExp(`</?(${THOUGHT_TAGS}|response|answer)[^>]*>`, "gi"), "")
     .trim();
 }
 

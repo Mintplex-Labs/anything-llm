@@ -144,15 +144,26 @@ function markdownToTelegram(
     /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))+)\)/g,
     (_, label, url) => {
       const placeholder = `\x00LINK${links.length}\x00`;
-      links.push(url);
+      links.push(url.replace(/"/g, "&quot;"));
       return `<a href="${placeholder}">${label}</a>`;
     }
   );
 
-  // Convert markdown to HTML (order matters - do bold before italic)
+  // Convert list items before emphasis so a "* item" marker is not read as an
+  // opening italic *: - item or * item → • item
+  result = result.replace(/^[-*]\s+/gm, "• ");
+
+  // Convert markdown to HTML (order matters - do triple emphasis before bold/italic)
+  result = result.replace(/\*\*\*(.+?)\*\*\*/g, "<b><i>$1</i></b>");
+  result = result.replace(/___(.+?)___/g, "<b><i>$1</i></b>");
   result = result.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   result = result.replace(/__(.+?)__/g, "<b>$1</b>");
-  result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<i>$1</i>");
+  // As in CommonMark, * only opens italic when not followed by a space and
+  // only closes it when not preceded by one, so "2 * 3 * 4" stays as text.
+  result = result.replace(
+    /(?<!\*)\*(?![\s*])(.+?)(?<![\s*])\*(?!\*)/g,
+    "<i>$1</i>"
+  );
   result = result.replace(
     /(?<![a-zA-Z0-9])_([^_]+)_(?![a-zA-Z0-9])/g,
     "<i>$1</i>"
@@ -161,9 +172,7 @@ function markdownToTelegram(
   result = result.replace(/^&gt;\s*(.+)$/gm, "<i>$1</i>");
   result = result.replace(/^[-*_]{3,}$/gm, "————————————");
   result = result.replace(/^#{1,6}\s+(.+)$/gm, "<b>$1</b>");
-
-  // Convert list items: - item or * item → • item
-  result = result.replace(/^[-*]\s+/gm, "• ");
+  result = nestCrossedTags(result);
 
   // Restore preserved blocks
   thinkBlocks.forEach((block, i) => {
@@ -176,7 +185,7 @@ function markdownToTelegram(
     result = result.replace(`\x00INLINECODE${i}\x00`, () => code);
   });
   links.forEach((url, i) => {
-    result = result.replace(`\x00LINK${i}\x00`, () => url);
+    result = result.replaceAll(`\x00LINK${i}\x00`, () => url);
   });
 
   // Close any unclosed HTML tags to prevent Telegram API errors during streaming
@@ -195,6 +204,90 @@ function escapeHTML(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+// Escaped lengths for the agent-supplied parts of a tool approval prompt.
+// Together with the fixed text they keep the prompt under Telegram's
+// 4096-character message limit.
+const MAX_TOOL_DESCRIPTION_PREVIEW = 1000;
+const MAX_TOOL_PAYLOAD_PREVIEW = 2500;
+
+/**
+ * Escape text for Telegram HTML and cut the escaped result to `max`
+ * characters. The cut is made after escaping because escaping can grow the
+ * text up to five times, and any entity left partial by the cut is dropped.
+ * @param {string} text
+ * @param {number} max
+ * @returns {string}
+ */
+function escapeAndTruncate(text, max) {
+  const escaped = escapeHTML(text);
+  if (escaped.length <= max) return escaped;
+  return `${escaped.slice(0, max).replace(/&[a-z]*$/, "")}\n…`;
+}
+
+/**
+ * Build the HTML text of a tool approval prompt. The skill name, description
+ * and parameters come from the agent, so they are escaped before they go into
+ * the HTML message.
+ * @param {Object} request
+ * @param {string} request.skillName
+ * @param {string} [request.description]
+ * @param {Object} [request.payload]
+ * @returns {string}
+ */
+function toolApprovalMessage({ skillName, description, payload }) {
+  let payloadText = "";
+  if (payload && Object.keys(payload).length > 0) {
+    const json = escapeAndTruncate(
+      JSON.stringify(payload, null, 2),
+      MAX_TOOL_PAYLOAD_PREVIEW
+    );
+    payloadText = `\n\n<b>Parameters:</b>\n<code>${json}</code>`;
+  }
+  const descText = description
+    ? `\n${escapeAndTruncate(String(description), MAX_TOOL_DESCRIPTION_PREVIEW)}`
+    : "";
+
+  return (
+    `🔧 <b>Tool Approval Required</b>\n\n` +
+    `The agent wants to execute: <b>${escapeHTML(String(skillName))}</b>${descText}${payloadText}\n\n` +
+    `Do you want to allow this action?`
+  );
+}
+
+/**
+ * Rewrite overlapping inline tags so they nest, since Telegram rejects HTML
+ * like <b>a <i>b</b> c</i>. Each regex pass in markdownToTelegram converts one
+ * marker type on its own, so mixed markers (eg: ***a** b*) can produce
+ * overlapping tags. When a closing tag does not match the innermost open tag,
+ * the tags opened after it are closed first and reopened after it:
+ * <b>a <i>b</b> c</i> → <b>a <i>b</i></b><i> c</i>
+ * Empty pairs left behind by the reopen are removed.
+ * @param {string} html
+ * @returns {string}
+ */
+function nestCrossedTags(html) {
+  const open = [];
+  const nested = html.replace(
+    /<(\/?)(a|b|i|s)(\s[^>]*)?>/g,
+    (tag, closing, name) => {
+      if (!closing) {
+        open.push({ name, tag });
+        return tag;
+      }
+      const idx = open.map((t) => t.name).lastIndexOf(name);
+      if (idx === -1) return tag;
+      const inner = open.splice(idx).slice(1);
+      open.push(...inner);
+      const closeInner = [...inner]
+        .reverse()
+        .map((t) => `</${t.name}>`)
+        .join("");
+      return closeInner + tag + inner.map((t) => t.tag).join("");
+    }
+  );
+  return nested.replace(/<(b|i|s)><\/\1>/g, "");
 }
 
 /**
@@ -284,4 +377,5 @@ function convertTableToPreformatted(tableMarkdown) {
 module.exports = {
   escapeHTML,
   markdownToTelegram,
+  toolApprovalMessage,
 };

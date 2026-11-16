@@ -38,21 +38,7 @@ async function grepCommand(message, user = null) {
     }
   }
 
-  // Replace all preset commands with their corresponding prompts
-  // Allows multiple commands in one message
-  let updatedMessage = message;
-  for (const preset of userPresets) {
-    // Match the command when it starts the message or follows a space (`lead`),
-    // and is not part of a longer command (e.g. don't match /weather in /weatherman).
-    // `lead` is captured so we can keep the space when swapping in the prompt.
-    const regex = new RegExp(`(^|\\s)(${preset.command})(?![a-z0-9_-])`, "g");
-    updatedMessage = updatedMessage.replace(
-      regex,
-      (_match, lead) => `${lead}${preset.prompt}`
-    );
-  }
-
-  return updatedMessage;
+  return expandPresetCommands(message, userPresets);
 }
 
 /**
@@ -61,12 +47,33 @@ async function grepCommand(message, user = null) {
  * @returns {Promise<string>}
  */
 async function grepAllSlashCommands(message) {
-  const allPresets = await SlashCommandPresets.where({});
+  return expandPresetCommands(message, await SlashCommandPresets.where({}));
+}
 
-  // Replace all preset commands with their corresponding prompts
-  // Allows multiple commands in one message
+/**
+ * Replaces only the given user's preset commands with their prompts. Built-in
+ * commands like /reset are left as typed.
+ * @param {string} message
+ * @param {import("@prisma/client").users|null} user - null in single-user mode
+ * @returns {Promise<string>}
+ */
+async function grepUserSlashCommands(message, user = null) {
+  return expandPresetCommands(
+    message,
+    await SlashCommandPresets.getUserPresets(user?.id)
+  );
+}
+
+/**
+ * Replaces every preset command in the message with its prompt. Allows
+ * multiple commands in one message.
+ * @param {string} message
+ * @param {{command: string, prompt: string}[]} presets
+ * @returns {string}
+ */
+function expandPresetCommands(message, presets = []) {
   let updatedMessage = message;
-  for (const preset of allPresets) {
+  for (const preset of presets) {
     // Match the command when it starts the message or follows a space (`lead`),
     // and is not part of a longer command (e.g. don't match /weather in /weatherman).
     // `lead` is captured so we can keep the space when swapping in the prompt.
@@ -159,6 +166,7 @@ module.exports = {
   chatPrompt,
   grepCommand,
   grepAllSlashCommands,
+  grepUserSlashCommands,
   isReservedCommand,
   VALID_COMMANDS,
 };
