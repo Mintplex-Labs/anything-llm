@@ -18,7 +18,12 @@ async function asMbox({
 }) {
   console.log(`-- Working ${filename} --`);
 
-  const mails = await mboxParser(fs.createReadStream(fullFilePath))
+  // mbox-parser decodes each chunk on its own, so a raw byte stream turns a
+  // character split across two chunks into two U+FFFD. A utf8 stream only
+  // emits whole characters.
+  const mails = await mboxParser(
+    fs.createReadStream(fullFilePath, { encoding: "utf8" })
+  )
     .then((mails) => mails)
     .catch((error) => {
       console.log(`Could not parse mail items`, error);
