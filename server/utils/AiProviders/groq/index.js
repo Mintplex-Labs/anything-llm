@@ -53,8 +53,6 @@ class GroqLLM {
   }
 
   static promptWindowLimit(modelName) {
-    // The model map stores bare model names, so strip an org prefix
-    // like the "openai/" in "openai/gpt-oss-120b".
     const model = String(modelName ?? "")
       .split("/")
       .pop();
