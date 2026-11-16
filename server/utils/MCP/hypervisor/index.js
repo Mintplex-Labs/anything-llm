@@ -50,6 +50,38 @@ class MCPHypervisor {
    * @type { { [key: string]: {status: 'success' | 'failed', message: string} } }
    */
   mcpLoadingResults = {};
+  /**
+   * When each MCP server last failed to boot, by server name.
+   * @type { { [key: string]: number } }
+   */
+  failedBootAttempts = {};
+
+  /**
+   * MCP servers the admin stopped. They are never started automatically - not by boot retries,
+   * automatic restarts or reloads - until the admin starts them again or deletes them.
+   * @type {Set<string>}
+   */
+  stoppedServers = new Set();
+
+  /** @type {number} - How long to wait before retrying an MCP server that failed to boot */
+  static BOOT_RETRY_COOLDOWN_MS = 60_000;
+
+  /**
+   * Pending automatic restarts of MCP servers that went away after they were running, by server name.
+   * @type { { [key: string]: NodeJS.Timeout } }
+   */
+  restartTimers = {};
+  /**
+   * Consecutive automatic restarts of each MCP server, by server name. Used to back off restarts of a
+   * server that keeps dying and reset once a server stays up for MAX_RESTART_DELAY_MS.
+   * @type { { [key: string]: number } }
+   */
+  restartAttempts = {};
+
+  /** @type {number} - Delay before the first automatic restart of an MCP server that went away */
+  static RESTART_BASE_DELAY_MS = 2_000;
+  /** @type {number} - Upper bound of the automatic restart backoff */
+  static MAX_RESTART_DELAY_MS = 60_000;
 
   constructor() {
     if (MCPHypervisor._instance) return MCPHypervisor._instance;
@@ -205,6 +237,17 @@ class MCPHypervisor {
    * @returns {Promise<{success: boolean, error: string | null}>}
    */
   async startMCPServer(name) {
+    this.#cancelRestart(name);
+    this.stoppedServers.delete(name);
+    return this.#startMCPServerByName(name);
+  }
+
+  /**
+   * Start a single MCP server by its server name without clearing an admin stop.
+   * @param {string} name - The name of the MCP server to start
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  async #startMCPServerByName(name) {
     if (this.mcps[name])
       return { success: false, error: `MCP server ${name} already running` };
     const config = this.mcpServerConfigs.find((s) => s.name === name);
@@ -220,6 +263,7 @@ class MCPHypervisor {
         status: "success",
         message: `Successfully connected to MCP server: ${name}`,
       };
+      delete this.failedBootAttempts[name];
 
       return { success: true, message: `MCP server ${name} started` };
     } catch (e) {
@@ -230,10 +274,12 @@ class MCPHypervisor {
         path: e.path,
         stack: e.stack,
       });
-      this.mcpLoadingResults[name] = {
-        status: "failed",
-        message: `Failed to start MCP server: ${name} [${e.code || "NO_CODE"}] ${e.message}`,
-      };
+      // Keep the stopped status if the admin stopped the server while it was starting
+      if (!this.stoppedServers.has(name))
+        this.mcpLoadingResults[name] = {
+          status: "failed",
+          message: `Failed to start MCP server: ${name} [${e.code || "NO_CODE"}] ${e.message}`,
+        };
 
       // Clean up failed connection
       if (this.mcps[name]) {
@@ -250,21 +296,37 @@ class MCPHypervisor {
    * @returns {boolean} - True if the MCP server was pruned, false otherwise
    */
   pruneMCPServer(name) {
-    if (!name || !this.mcps[name]) return true;
+    if (!name) return true;
+
+    // Stopped servers stay off until the admin starts them again - even if they are
+    // currently waiting to be retried or restarted.
+    this.stoppedServers.add(name);
+    this.#cancelRestart(name);
+    delete this.restartAttempts[name];
+    delete this.failedBootAttempts[name];
+    this.#markStopped(name);
+    if (!this.mcps[name]) return true;
 
     this.log(`Pruning MCP server: ${name}`);
     const mcp = this.mcps[name];
     if (!mcp.transport) return true;
+    // Forget the server before closing it so the close is not mistaken for the server going away
+    delete this.mcps[name];
     const childProcess = mcp.transport._process;
     if (childProcess) childProcess.kill("SIGTERM");
     mcp.transport.close();
+    return true;
+  }
 
-    delete this.mcps[name];
+  /**
+   * Record that an MCP server was stopped by the admin in its loading results
+   * @param {string} name - The name of the MCP server
+   */
+  #markStopped(name) {
     this.mcpLoadingResults[name] = {
       status: "failed",
       message: `Server was stopped manually by the administrator.`,
     };
-    return true;
   }
 
   /**
@@ -274,9 +336,16 @@ class MCPHypervisor {
   pruneMCPServers() {
     this.log(`Pruning ${Object.keys(this.mcps).length} MCP servers...`);
 
-    for (const name of Object.keys(this.mcps)) {
-      if (!this.mcps[name]) continue;
-      const mcp = this.mcps[name];
+    for (const name of Object.keys(this.restartTimers))
+      this.#cancelRestart(name);
+    this.restartAttempts = {};
+
+    // Forget the servers before closing them so the closes are not mistaken for the servers going away
+    const mcps = this.mcps;
+    this.mcps = {};
+    for (const name of Object.keys(mcps)) {
+      if (!mcps[name]) continue;
+      const mcp = mcps[name];
       if (!mcp.transport) continue;
       const childProcess = mcp.transport._process;
       if (childProcess)
@@ -287,8 +356,10 @@ class MCPHypervisor {
       mcp.transport.close();
       mcp.close();
     }
-    this.mcps = {};
     this.mcpLoadingResults = {};
+    this.failedBootAttempts = {};
+    // Servers the admin stopped stay stopped across reloads
+    for (const name of this.stoppedServers) this.#markStopped(name);
   }
 
   /**
@@ -482,21 +553,143 @@ class MCPHypervisor {
       if (timeoutId) clearTimeout(timeoutId);
       throw error;
     }
+
+    // The admin stopped the server while it was connecting
+    if (this.mcps[name] !== mcp) {
+      await mcp.close().catch(() => {});
+      throw new Error(`MCP server ${name} was stopped while it was starting`);
+    }
+
+    // Now that it is connected, bring the server back on its own if it goes away (process exits, connection drops)
+    const connectedAt = Date.now();
+    mcp.onclose = () => this.#handleUnexpectedClose(name, mcp, connectedAt);
     return true;
   }
 
   /**
+   * Handle a running MCP server going away without being stopped - eg: its process crashed or was killed.
+   * The server is dropped from the running servers and restarted automatically.
+   * @param {string} name - The name of the MCP server
+   * @param {Client} mcp - The client of the MCP server that closed
+   * @param {number} connectedAt - When the client connected
+   */
+  #handleUnexpectedClose(name, mcp, connectedAt) {
+    // Stopped on purpose or already replaced by a newer client - nothing to do.
+    if (this.mcps[name] !== mcp) return;
+
+    delete this.mcps[name];
+    if (Date.now() - connectedAt >= MCPHypervisor.MAX_RESTART_DELAY_MS)
+      delete this.restartAttempts[name];
+
+    if (this.#blockRestart(name)) return;
+    this.log(`MCP server ${name} went away unexpectedly, restarting it.`);
+    this.mcpLoadingResults[name] = {
+      status: "failed",
+      message: `MCP server ${name} went away unexpectedly and is being restarted.`,
+    };
+    this.#scheduleRestart(name);
+  }
+
+  /**
+   * Check if an MCP server must not be restarted automatically - it was stopped by the admin,
+   * has autoStart disabled, or was removed from the config file. Records why in the loading results.
+   * @param {string} name - The name of the MCP server
+   * @returns {boolean} - True if the MCP server must not be restarted
+   */
+  #blockRestart(name) {
+    const config = this.mcpServerConfigs.find((s) => s.name === name);
+    let reason = null;
+    if (this.stoppedServers.has(name)) {
+      this.#markStopped(name);
+      reason = "it was stopped by the administrator";
+    } else if (!config) {
+      reason = "it was removed from the config file";
+    } else if (config.server?.anythingllm?.autoStart === false) {
+      reason = "anythingllm.autoStart is set to false";
+      this.mcpLoadingResults[name] = {
+        status: "failed",
+        message: `MCP server ${name} went away and was not restarted because ${reason}.`,
+      };
+    }
+    if (!reason) return false;
+
+    this.log(`MCP server ${name} will not be restarted because ${reason}.`);
+    this.#cancelRestart(name);
+    delete this.restartAttempts[name];
+    return true;
+  }
+
+  /**
+   * Restart an MCP server after a backoff delay that grows with each consecutive restart.
+   * Keeps retrying until the server is running again, stopped by the admin, or removed from the config.
+   * @param {string} name - The name of the MCP server
+   */
+  #scheduleRestart(name) {
+    this.#cancelRestart(name);
+    const attempt = this.restartAttempts[name] ?? 0;
+    this.restartAttempts[name] = attempt + 1;
+    const delay = Math.min(
+      MCPHypervisor.RESTART_BASE_DELAY_MS * 2 ** attempt,
+      MCPHypervisor.MAX_RESTART_DELAY_MS
+    );
+
+    const timer = setTimeout(async () => {
+      delete this.restartTimers[name];
+      if (this.mcps[name] || this.#blockRestart(name)) return;
+
+      this.log(`Restarting MCP server ${name} (attempt ${attempt + 1})`);
+      const { success } = await this.#startMCPServerByName(name);
+      if (!success && !this.mcps[name] && !this.#blockRestart(name))
+        this.#scheduleRestart(name);
+    }, delay);
+    timer.unref?.();
+    this.restartTimers[name] = timer;
+  }
+
+  /**
+   * Cancel a pending automatic restart of an MCP server
+   * @param {string} name - The name of the MCP server
+   */
+  #cancelRestart(name) {
+    if (!this.restartTimers[name]) return;
+    clearTimeout(this.restartTimers[name]);
+    delete this.restartTimers[name];
+  }
+
+  /**
+   * Should this MCP server be started by bootMCPServers()?
+   * - Running servers are left alone.
+   * - Servers that have not been attempted yet are booted.
+   * - Servers that failed to boot are retried once the cooldown has passed so a server that was
+   *   unreachable at the time (eg: container network not up yet) does not stay missing from agents.
+   * - Servers stopped by the admin or with autoStart disabled are not restarted.
+   * @param {string} name - The name of the MCP server
+   * @returns {boolean}
+   */
+  #shouldBootMCPServer(name) {
+    if (this.mcps[name] || this.stoppedServers.has(name)) return false;
+    if (!this.mcpLoadingResults[name]) return true;
+
+    const failedAt = this.failedBootAttempts[name];
+    if (!failedAt) return false;
+    return Date.now() - failedAt >= MCPHypervisor.BOOT_RETRY_COOLDOWN_MS;
+  }
+
+  /**
    * Boot the MCP servers according to the server definitions.
-   * This function will skip booting MCP servers if they are already running.
+   * This function will skip booting MCP servers if they are already running and will retry
+   * MCP servers that previously failed to boot.
    * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
    */
   async bootMCPServers() {
-    if (Object.keys(this.mcps).length > 0) {
-      this.log("MCP Servers already running, skipping boot.");
+    const serverDefinitions = this.mcpServerConfigs.filter(({ name }) =>
+      this.#shouldBootMCPServer(name)
+    );
+    if (serverDefinitions.length === 0) {
+      this.log("No MCP servers need booting, skipping boot.");
       return this.mcpLoadingResults;
     }
 
-    const serverDefinitions = this.mcpServerConfigs;
     for (const { name, server } of serverDefinitions) {
       if (
         server.anythingllm?.hasOwnProperty("autoStart") &&
@@ -509,6 +702,7 @@ class MCPHypervisor {
           status: "failed",
           message: `MCP server ${name} has anythingllm.autoStart property set to false, boot skipped!`,
         };
+        delete this.failedBootAttempts[name];
         continue;
       }
 
@@ -520,6 +714,7 @@ class MCPHypervisor {
           status: "success",
           message: `Successfully connected to MCP server: ${name}`,
         };
+        delete this.failedBootAttempts[name];
       } catch (e) {
         this.log(`Failed to start MCP server: ${name}`, {
           error: e.message,
@@ -528,10 +723,16 @@ class MCPHypervisor {
           path: e.path,
           stack: e.stack, // Adding stack trace for better debugging
         });
-        this.mcpLoadingResults[name] = {
-          status: "failed",
-          message: `Failed to start MCP server: ${name} [${e.code || "NO_CODE"}] ${e.message}`,
-        };
+        // Stopped by the admin while it was booting - keep it stopped and do not retry it
+        if (this.stoppedServers.has(name)) {
+          this.#markStopped(name);
+        } else {
+          this.mcpLoadingResults[name] = {
+            status: "failed",
+            message: `Failed to start MCP server: ${name} [${e.code || "NO_CODE"}] ${e.message}`,
+          };
+          this.failedBootAttempts[name] = Date.now();
+        }
 
         // Clean up failed connection
         if (this.mcps[name]) {

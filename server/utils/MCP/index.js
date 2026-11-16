@@ -243,6 +243,8 @@ class MCPCompatibilityLayer extends MCPHypervisor {
 
     delete this.mcps[name];
     delete this.mcpLoadingResults[name];
+    delete this.failedBootAttempts[name];
+    this.stoppedServers.delete(name);
     this.log(`MCP server was killed and removed from config file: ${name}`);
     return { success: true, error: null };
   }
