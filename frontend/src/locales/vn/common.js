@@ -1934,8 +1934,6 @@ const TRANSLATIONS = {
     "new-router-button": "Router mới",
     "delete-confirm":
       'Bạn có chắc chắn muốn xóa thiết bị định tuyến "{{name}}"?\nHành động này sẽ xóa tất cả các cài đặt và ngắt kết nối mọi không gian làm việc đang sử dụng nó.\n\nHành động này là không thể hoàn tác.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Thiết bị định tuyến đã bị xóa",
     "toast-delete-failed": "Không thể xóa thiết bị định tuyến: {{error}}",
     "new-router": {

@@ -1052,8 +1052,6 @@ const TRANSLATIONS = {
     "new-router-button": "Új útválasztó",
     "delete-confirm":
       "Biztosan törli a(z) „{{name}}” útválasztót?\nEz az összes szabályát eltávolítja, és leválasztja az azt használó munkaterületeket.\n\nEz a művelet nem vonható vissza.",
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Útválasztó törölve",
     "toast-delete-failed": "Nem sikerült törölni az útválasztót: {{error}}",
     "new-router": {

@@ -1053,8 +1053,6 @@ const TRANSLATIONS = {
     "new-router-button": "Router Baru",
     "delete-confirm":
       'Apakah Anda yakin ingin menghapus router "{{name}}"?\nIni akan menghapus semua aturannya dan melepaskan ruang kerja yang menggunakannya.\n\nTindakan ini tidak dapat dibatalkan.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router dihapus",
     "toast-delete-failed": "Gagal menghapus router: {{error}}",
     "new-router": {

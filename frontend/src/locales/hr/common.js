@@ -1059,8 +1059,6 @@ const TRANSLATIONS = {
     "new-router-button": "Novi usmjerivač",
     "delete-confirm":
       'Jeste li sigurni da želite izbrisati usmjerivač "{{name}}"?\nOvo će ukloniti sva njegova pravila i odspojiti sve radne prostore koji ga koriste.\n\nOva radnja je nepovratna.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Usmjerivač izbrisan",
     "toast-delete-failed": "Brisanje usmjerivača nije uspjelo: {{error}}",
     "new-router": {

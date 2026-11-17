@@ -1908,8 +1908,6 @@ const TRANSLATIONS = {
     "new-router-button": "جهاز توجيه جديد",
     "delete-confirm":
       'هل أنت متأكد من أنك تريد حذف جهاز التوجيه "{{name}}"؟\nسيؤدي ذلك إلى إزالة جميع قواعده وقطع الاتصال بأي مساح عمل تستخدمه.\n\nهذا الإجراء غير قابل للتراجع.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "تم حذف جهاز التوجيه.",
     "toast-delete-failed": "فشل حذف جهاز التوجيه: {{error}}",
     "new-router": {

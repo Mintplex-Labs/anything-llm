@@ -1061,8 +1061,6 @@ const TRANSLATIONS = {
     "new-router-button": "Нов маршрутизатор",
     "delete-confirm":
       'Сигурни ли сте, че искате да изтриете маршрутизатора "{{name}}"?\nТова ще премахне всичките му правила и ще го откачи от пространствата, които го използват.\n\nДействието е необратимо.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Маршрутизаторът е изтрит",
     "toast-delete-failed":
       "Изтриването на маршрутизатора се провали: {{error}}",

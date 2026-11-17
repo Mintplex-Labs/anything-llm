@@ -1893,8 +1893,6 @@ const TRANSLATIONS = {
     "new-router-button": "Uus ruuter",
     "delete-confirm":
       "Kas olete kindel, et soovite seadme {{name}} kustutada?\nSee kustutab kõik selle reeglid ja lõhub ära kõik selle abil kasutatavad tööruumid.\n\nSee tegevus on pööratav.",
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Router on kustutatud",
     "toast-delete-failed": "Ei õnnestunud režiinide kustutamine: {{error}}",
     "new-router": {

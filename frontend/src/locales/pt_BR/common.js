@@ -1931,8 +1931,6 @@ const TRANSLATIONS = {
     "new-router-button": "Novo Roteador",
     "delete-confirm":
       'Tem certeza de que deseja excluir o roteador "{{name}}"?\nIsso removerá todas as suas configurações e desassociará quaisquer espaços de trabalho que estejam utilizando-o.\n\nEsta ação é irreversível.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "Roteador excluído",
     "toast-delete-failed": "Falhou ao excluir o roteador: {{error}}",
     "new-router": {

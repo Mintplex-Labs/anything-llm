@@ -1925,8 +1925,6 @@ const TRANSLATIONS = {
     "new-router-button": "روتر جدید",
     "delete-confirm":
       'آیا مطمئن هستید که می‌خواهید روتر "{{name}}" را حذف کنید؟\nاین کار تمام تنظیمات و ارتباطات آن را حذف کرده و هر فضای کاری که از آن استفاده می‌کند را از بین می‌برد.\n\nاین عمل غیرقابل بازگشت است.',
-    "delete-confirm-in-use":
-      'Are you sure you want to delete the router "{{name}}"?\nThis will remove all its rules. It is currently used by {{count}} workspace(s), which will fail to chat until their chat provider is changed.\n\nThis action is irreversible.',
     "toast-deleted": "دستگاه روتر حذف شد",
     "toast-delete-failed": "عدم حذف روتر: {{error}}",
     "new-router": {

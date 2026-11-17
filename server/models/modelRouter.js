@@ -233,9 +233,15 @@ const ModelRouter = {
     if (!id) return false;
 
     try {
-      await prisma.model_routers.delete({
-        where: { id: Number(id) },
-      });
+      await prisma.$transaction([
+        prisma.workspaces.updateMany({
+          where: { router_id: Number(id) },
+          data: { chatProvider: null, chatModel: null, router_id: null },
+        }),
+        prisma.model_routers.delete({
+          where: { id: Number(id) },
+        }),
+      ]);
       return true;
     } catch (error) {
       console.error(error.message);

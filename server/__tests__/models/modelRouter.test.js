@@ -2,7 +2,14 @@ process.env.STORAGE_DIR = __dirname;
 process.env.NODE_ENV = "test";
 
 jest.mock("../../utils/prisma", () => ({
-  model_routers: { create: jest.fn(async ({ data }) => ({ id: 1, ...data })) },
+  $transaction: jest.fn(async (ops) => Promise.all(ops)),
+  model_routers: {
+    create: jest.fn(async ({ data }) => ({ id: 1, ...data })),
+    delete: jest.fn(async ({ where }) => ({ id: where.id })),
+  },
+  workspaces: {
+    updateMany: jest.fn(async () => ({ count: 1 })),
+  },
 }));
 
 const prisma = require("../../utils/prisma");
@@ -57,5 +64,62 @@ describe("ModelRouter.create cooldown_seconds", () => {
   it("falls back to 30s when an explicit cooldown fails validation", async () => {
     await ModelRouter.create({ ...VALID_ROUTER, cooldown_seconds: 999999 });
     expect(createdWith().cooldown_seconds).toBe(30);
+  });
+});
+/**
+ * Deleting a router previously left referencing workspaces with a dangling
+ * `router_id` and `chatProvider: "anythingllm-router"`, so every chat in
+ * those workspaces failed with "No model router found". The delete now
+ * unlinks affected workspaces back onto the system LLM inside the same
+ * transaction that removes the router.
+ */
+describe("ModelRouter.delete", () => {
+  const ROUTER_ID = 5;
+
+  beforeEach(() => {
+    prisma.$transaction.mockClear();
+    prisma.model_routers.delete.mockClear();
+    prisma.workspaces.updateMany.mockClear();
+  });
+
+  it("resets referencing workspaces to the system LLM and deletes the router in one transaction", async () => {
+    const success = await ModelRouter.delete(ROUTER_ID);
+
+    expect(success).toBe(true);
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(prisma.$transaction.mock.calls[0][0]).toHaveLength(2);
+    expect(prisma.workspaces.updateMany).toHaveBeenCalledWith({
+      where: { router_id: ROUTER_ID },
+      data: { chatProvider: null, chatModel: null, router_id: null },
+    });
+    expect(prisma.model_routers.delete).toHaveBeenCalledWith({
+      where: { id: ROUTER_ID },
+    });
+  });
+
+  it("scopes the workspace reset to workspaces assigned to the deleted router only", async () => {
+    await ModelRouter.delete(ROUTER_ID);
+
+    expect(prisma.workspaces.updateMany).toHaveBeenCalledTimes(1);
+    const { where } = prisma.workspaces.updateMany.mock.calls[0][0];
+    expect(where).toEqual({ router_id: ROUTER_ID });
+  });
+
+  it("resets nothing and reports failure when the router delete fails", async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    prisma.model_routers.delete.mockRejectedValueOnce(
+      new Error("Foreign key constraint failed")
+    );
+
+    const success = await ModelRouter.delete(ROUTER_ID);
+
+    expect(success).toBe(false);
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    await expect(prisma.$transaction.mock.results[0].value).rejects.toThrow(
+      "Foreign key constraint failed"
+    );
+    consoleErrorSpy.mockRestore();
   });
 });
