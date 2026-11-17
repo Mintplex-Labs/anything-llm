@@ -639,6 +639,24 @@ function workspaceEndpoints(app) {
           });
         }
 
+        const invalidIndex = messages.findIndex((item) => {
+          if (!item || typeof item !== "object" || Array.isArray(item)) {
+            return true;
+          }
+
+          return (
+            typeof item.heading !== "string" ||
+            typeof item.message !== "string" ||
+            item.message.trim().length === 0
+          );
+        });
+        if (invalidIndex !== -1) {
+          return response.status(400).json({
+            success: false,
+            message: `Invalid messages[${invalidIndex}]. Expected a string heading and a message with non-whitespace content.`,
+          });
+        }
+
         const saved = await WorkspaceSuggestedMessages.saveAll(messages, slug);
         if (!saved) {
           return response.status(500).json({
