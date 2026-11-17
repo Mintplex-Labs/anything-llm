@@ -2,6 +2,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const os = require("os");
 const { randomBytes } = require("crypto");
+const { StringDecoder } = require("string_decoder");
 const { createTwoFilesPatch } = require("diff");
 const { humanFileSize } = require("../../../../helpers");
 
@@ -133,15 +134,21 @@ class FilesystemManager {
   #isPathWithinAllowedDirectories(absolutePath, allowedDirs) {
     if (!Array.isArray(allowedDirs) || allowedDirs.length === 0) return false;
 
+    // Windows paths are case-insensitive, so d:\llm and D:\llm are the same folder.
+    const foldCase = (p) =>
+      process.platform === "win32" ? p.toLowerCase() : p;
+
     const normalizedPath = this.#normalizeAndValidatePath(absolutePath);
     if (!normalizedPath) return false;
+    const comparablePath = foldCase(normalizedPath);
 
     return allowedDirs.some((dir) => {
       const normalizedDir = this.#normalizeAndValidatePath(dir);
       if (!normalizedDir) return false;
+      const comparableDir = foldCase(normalizedDir);
 
-      if (normalizedPath === normalizedDir) return true;
-      return normalizedPath.startsWith(normalizedDir + path.sep);
+      if (comparablePath === comparableDir) return true;
+      return comparablePath.startsWith(comparableDir + path.sep);
     });
   }
 
@@ -323,7 +330,7 @@ class FilesystemManager {
       let position = fileSize;
       const chunk = Buffer.alloc(FilesystemManager.FILE_READ_CHUNK_SIZE);
       let linesFound = 0;
-      let remainingText = "";
+      let remainingBytes = Buffer.alloc(0);
 
       while (position > 0 && linesFound < numLines) {
         const size = Math.min(FilesystemManager.FILE_READ_CHUNK_SIZE, position);
@@ -332,15 +339,27 @@ class FilesystemManager {
         const { bytesRead } = await fileHandle.read(chunk, 0, size, position);
         if (!bytesRead) break;
 
-        const readData = chunk.slice(0, bytesRead).toString("utf-8");
-        const chunkText = readData + remainingText;
-
-        const chunkLines = this.#normalizeLineEndings(chunkText).split("\n");
-
+        let data = Buffer.concat([
+          chunk.subarray(0, bytesRead),
+          remainingBytes,
+        ]);
         if (position > 0) {
-          remainingText = chunkLines[0];
-          chunkLines.shift();
+          // Keep the first line as bytes until the previous chunk is read, so a
+          // character split by the chunk boundary is decoded whole.
+          let cut = data.indexOf(0x0a);
+          if (cut === -1) cut = data.length;
+          else if (cut > 0 && data[cut - 1] === 0x0d) cut--;
+          remainingBytes = data.subarray(0, cut);
+          data = data.subarray(cut);
         }
+
+        const chunkLines = this.#normalizeLineEndings(
+          data.toString("utf-8")
+        ).split("\n");
+        if (position > 0) chunkLines.shift();
+
+        if (position + size === fileSize && chunkLines.at(-1) === "")
+          chunkLines.pop();
 
         for (
           let i = chunkLines.length - 1;
@@ -371,12 +390,13 @@ class FilesystemManager {
       let buffer = "";
       let bytesRead = 0;
       const chunk = Buffer.alloc(FilesystemManager.FILE_READ_CHUNK_SIZE);
+      const decoder = new StringDecoder("utf-8");
 
       while (lines.length < numLines) {
         const result = await fileHandle.read(chunk, 0, chunk.length, bytesRead);
         if (result.bytesRead === 0) break;
         bytesRead += result.bytesRead;
-        buffer += chunk.slice(0, result.bytesRead).toString("utf-8");
+        buffer += decoder.write(chunk.subarray(0, result.bytesRead));
 
         const newLineIndex = buffer.lastIndexOf("\n");
         if (newLineIndex !== -1) {
@@ -389,6 +409,7 @@ class FilesystemManager {
         }
       }
 
+      buffer += decoder.end();
       if (buffer.length > 0 && lines.length < numLines) {
         lines.push(buffer);
       }
@@ -575,20 +596,21 @@ class FilesystemManager {
         });
 
         if (isMatch) {
-          const originalIndent = contentLines[i].match(/^\s*/)?.[0] || "";
+          // Each new line takes the indentation of the file line it replaces,
+          // shifted by its indentation relative to the matching oldText line.
+          // Lines past the end of oldText are placed relative to its last line.
           const newLines = normalizedNew.split("\n").map((line, j) => {
-            if (j === 0) return originalIndent + line.trimStart();
-            const oldIndent = oldLines[j]?.match(/^\s*/)?.[0] || "";
+            if (!line.trim()) return line;
+            const k = Math.min(j, oldLines.length - 1);
+            const fileIndent = potentialMatch[k].match(/^\s*/)?.[0] || "";
+            const oldIndent = oldLines[k].match(/^\s*/)?.[0] || "";
             const newIndent = line.match(/^\s*/)?.[0] || "";
-            if (oldIndent && newIndent) {
-              const relativeIndent = newIndent.length - oldIndent.length;
-              return (
-                originalIndent +
-                " ".repeat(Math.max(0, relativeIndent)) +
-                line.trimStart()
-              );
-            }
-            return line;
+            const delta = newIndent.length - oldIndent.length;
+            const indent =
+              delta >= 0
+                ? fileIndent + newIndent.slice(newIndent.length - delta)
+                : fileIndent.slice(0, Math.max(0, fileIndent.length + delta));
+            return indent + line.trimStart();
           });
 
           contentLines.splice(i, oldLines.length, ...newLines);
@@ -642,6 +664,7 @@ class FilesystemManager {
       filePath,
       (content) => {
         const lines = this.#normalizeLineEndings(content).split("\n");
+        if (lines.at(-1) === "") lines.pop();
         return lines.slice(-numLines).join("\n");
       },
       () => this.#tailFileRaw(filePath, numLines)

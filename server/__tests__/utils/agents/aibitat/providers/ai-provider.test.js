@@ -18,6 +18,37 @@ class MixinProvider extends InheritMultiple([Provider, UnTooled]) {
   model = "mixin-model";
 }
 
+describe("UnTooled message formatting", () => {
+  test("preserves images when appending tool results to a user message", () => {
+    const provider = new MixinProvider();
+    const image = "data:image/png;base64,aW1hZ2U=";
+    const messages = [
+      {
+        role: "user",
+        content: "Compare this image with the search result",
+        attachments: [{ contentString: image }],
+      },
+      { role: "function", name: "web-search", content: "Search result" },
+      { role: "function", name: "web-scraping", content: "Page content" },
+    ];
+
+    expect(provider.cleanMsgs(messages)).toEqual([
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Compare this image with the search result" },
+          { type: "image_url", image_url: { url: image } },
+          { type: "text", text: "Search result" },
+          { type: "text", text: "Page content" },
+        ],
+      },
+    ]);
+    expect(messages[0].content).toBe(
+      "Compare this image with the search result"
+    );
+  });
+});
+
 describe("Provider usage tracking", () => {
   test("recordUsage accumulates tokens across multiple completions", () => {
     const provider = new TestProvider();

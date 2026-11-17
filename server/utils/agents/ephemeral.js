@@ -121,6 +121,7 @@ class EphemeralAgentHandler extends AgentHandler {
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
+        if (!response?.text) return;
         const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
@@ -534,13 +535,14 @@ class EphemeralAgentHandler extends AgentHandler {
   ) {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-4.1-nano",
+      model: this.model ?? "gpt-5.6-luna",
       temperature: this.#workspace?.openAiTemp,
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: {
           workspace: this.#workspace,
           workspace_id: this.#workspace?.id ?? null,
+          user_id: this.#userId || null,
         },
         log: this.log,
         routingMetadata: this.routingMetadata || null,
@@ -707,6 +709,8 @@ class EphemeralEventListener extends EventEmitter {
       // live card event is not a text response and is ignored here.
       if (["imageGenerationCard", "imageGenerationPending"].includes(msg.type))
         continue;
+      // Slide previews are live-only thumbnails for the chat UI.
+      if (msg.type === "pptxSlidePreview") continue;
 
       if (msg.type === "reportStreamEvent") {
         const inner = msg.content;
@@ -776,6 +780,8 @@ class EphemeralEventListener extends EventEmitter {
       // live card event has nothing to stream.
       if (["imageGenerationCard", "imageGenerationPending"].includes(data.type))
         return;
+      // Slide previews are live-only thumbnails for the chat UI.
+      if (data.type === "pptxSlidePreview") return;
 
       if (data.type === "reportStreamEvent") {
         const inner = data.content;

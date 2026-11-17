@@ -29,6 +29,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
+import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
@@ -67,6 +68,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
+import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 import LlmmanOptions from "@/components/LLMSelection/LlmmanOptions";
 import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
@@ -283,14 +285,6 @@ const LLMS = [
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
   },
-  // {
-  //   name: "Native",
-  //   value: "native",
-  //   logo: AnythingLLMIcon,
-  //   options: (settings) => <NativeLLMOptions settings={settings} />,
-  //   description:
-  //     "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-  // },
   {
     name: "AWS Bedrock",
     value: "bedrock",
@@ -341,6 +335,13 @@ const LLMS = [
     description: "500+ AI Models all in one API.",
   },
   {
+    name: "Microsoft Foundry Local",
+    value: "foundry",
+    logo: FoundryLogo,
+    options: (settings) => <FoundryOptions settings={settings} />,
+    description: "Run Microsoft's Foundry models locally.",
+  },
+  {
     name: "GiteeAI",
     value: "giteeai",
     logo: GiteeAILogo,
@@ -375,6 +376,7 @@ export default function LLMPreference({
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
+  const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
 
   const TITLE = t("onboarding.llm.title");
@@ -404,6 +406,7 @@ export default function LLMPreference({
       }
     }
   }
+
   function handleBack() {
     navigate(paths.onboarding.home());
   }
@@ -467,6 +470,7 @@ export default function LLMPreference({
           </div>
           <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
             {filteredLLMs.map((llm) => {
+              if (llm.value === "native" && isHosted) return null;
               return (
                 <LLMItem
                   key={llm.name}

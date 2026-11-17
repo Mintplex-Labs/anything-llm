@@ -137,6 +137,11 @@ if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");
   const IndexPage = new MetaGenerator();
 
+  app.get("/manifest.json", async function (_, response) {
+    IndexPage.generateManifest(response);
+    return;
+  });
+
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
@@ -151,11 +156,6 @@ if (process.env.NODE_ENV !== "development") {
   app.get("/robots.txt", function (_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
-  });
-
-  app.get("/manifest.json", async function (_, response) {
-    IndexPage.generateManifest(response);
-    return;
   });
 
   app.use("/", function (_, response) {

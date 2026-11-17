@@ -25,7 +25,10 @@ describe("AnythingLLMModelRouter temperature", () => {
     const router = new AnythingLLMModelRouter(workspace, null, temperature);
     const route = { provider: "generic-openai", model: "gemma4" };
     Object.assign(router.routerService, {
-      resolveRouterForWorkspace: async () => ({ rules: [] }),
+      resolveRouterForWorkspace: async () => ({
+        router: { rules: [] },
+        state: {},
+      }),
       routeCacheKey: () => "key",
       logRoutingContext: () => {},
       evaluateCalculatedRules: () => route,

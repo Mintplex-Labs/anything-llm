@@ -2,6 +2,7 @@ const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { WorkspaceThread } = require("../../../models/workspaceThread");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
+const { writeResponseChunk } = require("../../../utils/helpers/chat/responses");
 const { reqBody } = require("../../../utils/http");
 const prisma = require("../../../utils/prisma");
 const { getModelTag } = require("../../utils");
@@ -181,11 +182,27 @@ async function handleMobileCommand(request, response) {
       workspace,
       thread,
       message,
-      mode: "chat",
+      mode: workspace.chatMode,
       user: user,
       sessionId: null,
       attachments: [],
       reset: false,
+    });
+    // If thread was renamed emit event to the client via special `action` response.
+    await WorkspaceThread.autoRenameThread({
+      thread,
+      workspace,
+      user,
+      prompt: message,
+      onRename: (thread) => {
+        writeResponseChunk(response, {
+          action: "rename_thread",
+          thread: {
+            slug: thread.slug,
+            name: thread.name,
+          },
+        });
+      },
     });
     return response.end();
   }

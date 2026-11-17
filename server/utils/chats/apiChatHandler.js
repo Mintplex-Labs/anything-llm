@@ -10,6 +10,7 @@ const {
   sourceIdentifier,
   recentChatHistory,
   grepAllSlashCommands,
+  grepUserSlashCommands,
 } = require("./index");
 const {
   EphemeralAgentHandler,
@@ -82,13 +83,16 @@ async function processDocumentAttachments(attachments = []) {
       const filename = sanitizeFileName(
         normalizePath(attachment.name || `attachment-${uuidv4()}`)
       );
-      const filePath = normalizePath(path.join(hotdirPath, filename));
+      const hotdirFilename = `${uuidv4().split("-")[0]}-${filename}`;
+      const filePath = normalizePath(path.join(hotdirPath, hotdirFilename));
       if (!isWithin(hotdirPath, filePath))
         throw new Error(`Invalid file path for attachment ${filename}`);
       fs.writeFileSync(filePath, buffer);
 
-      const { success, reason, documents } =
-        await Collector.parseDocument(filename);
+      const { success, reason, documents } = await Collector.parseDocument(
+        hotdirFilename,
+        { originalFilename: filename }
+      );
       if (success && documents?.length > 0) parsedDocuments.push(...documents);
       else console.warn(`Failed to parse attachment ${filename}:`, reason);
     } catch (error) {
@@ -266,7 +270,7 @@ async function chatSync({
     });
 
   const VectorDb = getVectorDbClass();
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
@@ -509,8 +513,12 @@ async function chatSync({
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  contextDocuments: { title: string; pageContent: string }[],
+ *  agentEventListener: EphemeralEventListener|null,
+ *  onAgentReady: ((agentHandler: EphemeralAgentHandler) => Promise<void>|void)|null,
+ *  userSlashCommands: boolean,
  *  reset: boolean,
- * }} parameters
+ * }} parameters - userSlashCommands expands only the user's own slash command presets instead of every user's
  * @returns {Promise<VoidFunction>}
  */
 async function streamChat({
@@ -522,6 +530,10 @@ async function streamChat({
   thread = null,
   sessionId = null,
   attachments = [],
+  contextDocuments = [],
+  agentEventListener = null,
+  onAgentReady = null,
+  userSlashCommands = false,
   reset = false,
 }) {
   const uuid = uuidv4();
@@ -554,13 +566,15 @@ async function streamChat({
 
   // Check for and process slash commands
   // Since preset commands are not supported in API calls, we can just process the message here
-  const processedMessage = await grepAllSlashCommands(message);
-  message = processedMessage;
+  message = userSlashCommands
+    ? await grepUserSlashCommands(message, user)
+    : await grepAllSlashCommands(message);
 
   // Document attachments are parsed to text up front so agent and normal chats
   // both receive their contents as context, leaving only images as attachments.
   const { parsedDocuments, imageAttachments } =
     await processDocumentAttachments(attachments);
+  parsedDocuments.push(...contextDocuments);
   attachments = imageAttachments;
 
   if (
@@ -588,9 +602,10 @@ async function streamChat({
     // Establish event listener that emulates websocket calls
     // in Aibitat so that we can keep the same interface in Aibitat
     // but use HTTP.
-    const eventListener = new EphemeralEventListener();
+    const eventListener = agentEventListener ?? new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
+    await onAgentReady?.(agentHandler);
 
     agentHandler.startAgentCluster();
 
@@ -649,7 +664,7 @@ async function streamChat({
   abortConnectorOnClientDisconnect(response, LLMConnector);
 
   const VectorDb = getVectorDbClass();
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 

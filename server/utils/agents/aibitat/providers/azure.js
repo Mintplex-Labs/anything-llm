@@ -2,14 +2,27 @@ const { OpenAI } = require("openai");
 const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
 const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
 const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the Azure OpenAI API.
- * Uses the shared native tool calling helper for OpenAI-compatible tool calling.
+ * Uses the shared native tool calling helper for OpenAI-compatible tool calling,
+ * or the Responses API when AZURE_OPENAI_AGENT_API is set to "responses".
  */
 class AzureOpenAiProvider extends Provider {
   model;
+
+  /**
+   * Not every Azure deployment or region supports the Responses API, so agent
+   * calls use Chat Completions unless the user opts in. Newer reasoning
+   * deployments (eg: GPT-6) reject function tools on Chat Completions, so this
+   * also flips on for the session when a deployment asks for /v1/responses.
+   */
+  #useResponsesAPI = process.env.AZURE_OPENAI_AGENT_API === "responses";
 
   constructor(config = { model: null }) {
     const client = new OpenAI({
@@ -30,6 +43,40 @@ class AzureOpenAiProvider extends Provider {
   }
 
   /**
+   * Switches this session to the Responses API if the error is a deployment
+   * refusing function tools on Chat Completions.
+   * @param {Error & {status?: number}} error
+   * @returns {boolean} Whether the request should be retried on the Responses API.
+   */
+  #switchToResponsesAPI(error) {
+    if (this.#useResponsesAPI) return false;
+    if (error?.status !== 400 || !/\/v1\/responses/.test(error?.message ?? ""))
+      return false;
+    this.providerLog(
+      "Deployment requires the Responses API for tool calls - switching for this session."
+    );
+    this.#useResponsesAPI = true;
+    return true;
+  }
+
+  /**
+   * Maps an Azure OpenAI error to the error aibitat should handle.
+   * @param {Error} error
+   * @returns {Error}
+   */
+  #toAgentError(error) {
+    if (error instanceof OpenAI.AuthenticationError) return error;
+    if (
+      error instanceof OpenAI.RateLimitError ||
+      error instanceof OpenAI.InternalServerError ||
+      error instanceof OpenAI.APIError
+    ) {
+      return new RetryError(error.message);
+    }
+    return error;
+  }
+
+  /**
    * Stream a chat completion from Azure OpenAI with tool calling.
    *
    * @param {any[]} messages
@@ -38,10 +85,15 @@ class AzureOpenAiProvider extends Provider {
    * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
    */
   async stream(messages, functions = [], eventHandler = null) {
-    this.providerLog("Provider.stream - will process this chat completion.");
+    const streamFn = this.#useResponsesAPI
+      ? responsesTooledStream
+      : tooledStream;
+    this.providerLog(
+      `Provider.stream${this.#useResponsesAPI ? " (responses)" : ""} - will process this chat completion.`
+    );
 
     try {
-      return await tooledStream(
+      return await streamFn(
         this.client,
         this.model,
         messages,
@@ -50,16 +102,10 @@ class AzureOpenAiProvider extends Provider {
         { provider: this }
       );
     } catch (error) {
+      if (this.#switchToResponsesAPI(error))
+        return this.stream(messages, functions, eventHandler);
       console.error(error.message, error);
-      if (error instanceof OpenAI.AuthenticationError) throw error;
-      if (
-        error instanceof OpenAI.RateLimitError ||
-        error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError
-      ) {
-        throw new RetryError(error.message);
-      }
-      throw error;
+      throw this.#toAgentError(error);
     }
   }
 
@@ -72,14 +118,22 @@ class AzureOpenAiProvider extends Provider {
    */
   async complete(messages, functions = []) {
     try {
-      const result = await tooledComplete(
-        this.client,
-        this.model,
-        messages,
-        functions,
-        this.getCost.bind(this),
-        { provider: this }
-      );
+      const result = this.#useResponsesAPI
+        ? await responsesTooledComplete(
+            this.client,
+            this.model,
+            messages,
+            functions,
+            { provider: this }
+          )
+        : await tooledComplete(
+            this.client,
+            this.model,
+            messages,
+            functions,
+            this.getCost.bind(this),
+            { provider: this }
+          );
 
       if (result.retryWithError) {
         return this.complete([...messages, result.retryWithError], functions);
@@ -87,15 +141,9 @@ class AzureOpenAiProvider extends Provider {
 
       return result;
     } catch (error) {
-      if (error instanceof OpenAI.AuthenticationError) throw error;
-      if (
-        error instanceof OpenAI.RateLimitError ||
-        error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError
-      ) {
-        throw new RetryError(error.message);
-      }
-      throw error;
+      if (this.#switchToResponsesAPI(error))
+        return this.complete(messages, functions);
+      throw this.#toAgentError(error);
     }
   }
 

@@ -18,6 +18,7 @@ const {
   userFromSession,
   multiUserMode,
   queryParams,
+  toBoundedInt,
 } = require("../utils/http");
 const {
   handleAssetUpload,
@@ -1149,7 +1150,9 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { offset = 0, limit = 10 } = reqBody(request);
+        const body = reqBody(request);
+        const offset = toBoundedInt(body.offset, 0, { min: 0 });
+        const limit = toBoundedInt(body.limit, 10, { min: 1 });
         const logs = await EventLogs.whereWithData({}, limit, offset * limit, {
           id: "desc",
         });
@@ -1192,7 +1195,9 @@ function systemEndpoints(app) {
     ],
     async (request, response) => {
       try {
-        const { offset = 0, limit = 20 } = reqBody(request);
+        const body = reqBody(request);
+        const offset = toBoundedInt(body.offset, 0, { min: 0 });
+        const limit = toBoundedInt(body.limit, 20, { min: 1 });
         const chats = await WorkspaceChats.whereWithData(
           {},
           limit,

@@ -183,7 +183,11 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.#filterToolCallMarkup(eventHandler),
-        { provider: this }
+        {
+          provider: this,
+          maxTokens: FoundryLLM.promptWindowLimit(this.model),
+          maxTokensKey: "max_completion_tokens",
+        }
       );
     } catch (error) {
       console.error(error.message, error);
@@ -225,7 +229,11 @@ class FoundryProvider extends InheritMultiple([Provider, UnTooled]) {
         messages,
         functions,
         this.getCost.bind(this),
-        { provider: this }
+        {
+          provider: this,
+          maxTokens: FoundryLLM.promptWindowLimit(this.model),
+          maxTokensKey: "max_completion_tokens",
+        }
       );
 
       if (result.retryWithError) {

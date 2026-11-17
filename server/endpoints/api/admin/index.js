@@ -6,7 +6,7 @@ const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { WorkspaceUser } = require("../../../models/workspaceUsers");
 const { canModifyAdmin } = require("../../../utils/helpers/admin");
-const { multiUserMode, reqBody } = require("../../../utils/http");
+const { multiUserMode, reqBody, toBoundedInt } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
 function apiAdminEndpoints(app) {
@@ -195,6 +195,11 @@ function apiAdminEndpoints(app) {
       const { id } = request.params;
       const updates = reqBody(request);
       const user = await User.get({ id: Number(id) });
+      if (!user) {
+        response.status(200).json({ success: false, error: "User not found." });
+        return;
+      }
+
       const validAdminRoleModification = await canModifyAdmin(user, updates);
 
       if (!validAdminRoleModification.valid) {
@@ -204,7 +209,7 @@ function apiAdminEndpoints(app) {
         return;
       }
 
-      const { success, error } = await User.update(id, updates);
+      const { success, error } = await User.update(user.id, updates);
       response.status(200).json({ success, error });
     } catch (e) {
       console.error(e);
@@ -714,7 +719,7 @@ function apiAdminEndpoints(app) {
     */
       try {
         const pgSize = 20;
-        const { offset = 0 } = reqBody(request);
+        const offset = toBoundedInt(reqBody(request).offset, 0, { min: 0 });
         const chats = await WorkspaceChats.whereWithData(
           {},
           pgSize,

@@ -4,6 +4,7 @@ import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
@@ -202,6 +203,7 @@ function ChatsContainer({
   canNext,
   t,
 }) {
+  const multiUserMode = useMultiUserMode();
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
   };
@@ -236,9 +238,11 @@ function ChatsContainer({
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("recorded.table.id")}
             </th>
-            <th scope="col" className="px-6 py-3">
-              {t("recorded.table.by")}
-            </th>
+            {multiUserMode && (
+              <th scope="col" className="px-6 py-3">
+                {t("recorded.table.by")}
+              </th>
+            )}
             <th scope="col" className="px-6 py-3">
               {t("recorded.table.workspace")}
             </th>

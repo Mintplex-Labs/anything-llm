@@ -2,7 +2,13 @@ const fs = require("fs/promises");
 const path = require("path");
 const filesystem = require("./lib.js");
 
-async function copyRecursive(source, destination) {
+/**
+ * Copies a file or directory tree to the destination.
+ * `skip` is the real path of the root destination: when copying into a
+ * subdirectory of the source, the newly created destination shows up in the
+ * source listing and must not be copied into itself.
+ */
+async function copyRecursive(source, destination, skip = null) {
   const lstat = await fs.lstat(source);
 
   if (lstat.isSymbolicLink()) {
@@ -13,12 +19,12 @@ async function copyRecursive(source, destination) {
 
   if (lstat.isDirectory()) {
     await fs.mkdir(destination, { recursive: true });
+    skip ??= await fs.realpath(destination);
     const entries = await fs.readdir(source);
     for (const entry of entries) {
-      await copyRecursive(
-        path.join(source, entry),
-        path.join(destination, entry)
-      );
+      const entrySource = path.join(source, entry);
+      if (entrySource === skip) continue;
+      await copyRecursive(entrySource, path.join(destination, entry), skip);
     }
   } else {
     await fs.copyFile(source, destination);

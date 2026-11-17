@@ -160,7 +160,7 @@ describe("MCPCompatibilityLayer.servers", () => {
     mcpLayer = new MCPCompatibilityLayer();
 
     // Simulate a server that connected at boot but has since died - its
-    // ping() rejects. bootMCPServers() skips booting since mcps is populated.
+    // ping() rejects.
     mcpLayer.mcps = {
       "dead-server": {
         ping: () => Promise.reject(new Error("fetch failed")),

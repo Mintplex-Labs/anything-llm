@@ -1,3 +1,4 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
@@ -26,7 +27,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     super();
     this.providerTag = "generic-openai";
-    const { model = "gpt-4.1-nano" } = config;
+    const { model = "gpt-5.6-luna", reasoningEffort = null } = config;
     const client = new OpenAI({
       baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
@@ -38,6 +39,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
     this._supportsToolCalling = null;
     this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS
@@ -47,6 +49,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  get reasoningConfig() {
+    return reasoningParams("generic-openai", this.reasoningEffort);
   }
 
   /**
@@ -76,31 +82,6 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
-  /**
-   * Whether this provider supports native OpenAI-compatible tool calling.
-   * - This can be any OpenAI compatible provider that supports tool calling
-   * - We check the ENV to see if the provider supports tool calling.
-   * - If the ENV is not set, we default to false.
-   * @returns {boolean|Promise<boolean>}
-   */
-  supportsNativeToolCalling() {
-    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
-    const genericOpenAi = new GenericOpenAiLLM(null, this.model);
-    const capabilities = genericOpenAi.getModelCapabilities();
-    this._supportsToolCalling = capabilities.tools === true;
-
-    if (this._supportsToolCalling)
-      this.providerLog(
-        "Generic OpenAI supports native tool calling is ENABLED."
-      );
-    else
-      this.providerLog(
-        "Generic OpenAI supports native tool calling is DISABLED. Will use UnTooled instead."
-      );
-
-    return this._supportsToolCalling;
-  }
-
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
@@ -108,6 +89,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         ...temperatureParam(this.temperature),
         messages,
         ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
+        ...this.reasoningConfig,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
@@ -128,6 +110,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
       stream: true,
       messages,
       ...maxTokensParam(this.maxTokens, GenericOpenAiLLM.maxTokensKey()),
+      ...this.reasoningConfig,
     });
   }
 

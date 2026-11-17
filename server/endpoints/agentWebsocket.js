@@ -5,6 +5,7 @@ const {
 const { AgentHandler } = require("../utils/agents");
 const {
   WEBSOCKET_BAIL_COMMANDS,
+  notifySessionExited,
 } = require("../utils/agents/aibitat/plugins/websocket");
 const { safeJsonParse } = require("../utils/http");
 
@@ -55,6 +56,7 @@ function agentWebsocket(app) {
           // aibitat may not exist yet if the bail arrives while the session
           // is still being built - closing the socket alone is enough then.
           agentHandler.aibitat?.abort();
+          notifySessionExited(socket, content);
           socket.close();
           return;
         }
