@@ -580,6 +580,11 @@ const SystemSettings = {
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
       // Kokoro TTS
+      // GMI Cloud TTS
+      TTSGmicloudKey: !!process.env["TTS_" + "GMICLOUD_API_KEY"],
+      TTSGmicloudModel: process.env.TTS_GMICLOUD_MODEL,
+      TTSGmicloudVoiceModel: process.env.TTS_GMICLOUD_VOICE_MODEL,
+      TTSGmicloudEndpoint: process.env.TTS_GMICLOUD_ENDPOINT,
       TTSKokoroEndpoint: process.env.TTS_KOKORO_ENDPOINT,
       TTSKokoroKey: !!process.env.TTS_KOKORO_KEY,
       TTSKokoroVoiceModel: process.env.TTS_KOKORO_VOICE_MODEL,

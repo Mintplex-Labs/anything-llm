@@ -13,6 +13,9 @@ function getTTSProvider() {
     case "kokoro":
       const { KokoroTTS } = require("./kokoro");
       return new KokoroTTS();
+    case "gmicloud":
+      const { GmicloudTTS } = require("./gmicloud");
+      return new GmicloudTTS();
     default:
       throw new Error("ENV: No TTS_PROVIDER value found in environment!");
   }

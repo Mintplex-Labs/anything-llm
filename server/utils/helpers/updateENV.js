@@ -791,6 +791,24 @@ const KEY_MAPPING = {
     envKey: "TTS_KOKORO_ENDPOINT",
     checks: [isValidURL],
   },
+
+  // GMI Cloud TTS (Inworld, MiniMax and Chatterbox behind one request queue)
+  TTSGmicloudKey: {
+    envKey: "TTS_GMICLOUD_API_KEY",
+    checks: [],
+  },
+  TTSGmicloudModel: {
+    envKey: "TTS_GMICLOUD_MODEL",
+    checks: [],
+  },
+  TTSGmicloudVoiceModel: {
+    envKey: "TTS_GMICLOUD_VOICE_MODEL",
+    checks: [],
+  },
+  TTSGmicloudEndpoint: {
+    envKey: "TTS_GMICLOUD_ENDPOINT",
+    checks: [isValidURL],
+  },
   TTSKokoroKey: {
     envKey: "TTS_KOKORO_KEY",
     checks: [],

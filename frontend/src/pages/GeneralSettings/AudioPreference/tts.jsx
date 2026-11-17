@@ -9,6 +9,7 @@ import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import PiperTTSIcon from "@/media/ttsproviders/piper.png";
 import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
 import KokoroIcon from "@/media/ttsproviders/kokoro.png";
+import GmicloudIcon from "@/media/ttsproviders/gmicloud.png";
 
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
@@ -16,6 +17,7 @@ import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
 import KokoroTTSOptions from "@/components/TextToSpeech/KokoroOptions";
+import GmicloudTTSOptions from "@/components/TextToSpeech/GmicloudOptions";
 import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
 
 const PROVIDERS = [
@@ -54,6 +56,14 @@ const PROVIDERS = [
     options: (settings) => <KokoroTTSOptions settings={settings} />,
     description:
       "Connect to a self-hosted kokoro-fastapi server for high-quality open-source voices.",
+  },
+  {
+    name: "GMI Cloud",
+    value: "gmicloud",
+    logo: GmicloudIcon,
+    options: (settings) => <GmicloudTTSOptions settings={settings} />,
+    description:
+      "GMI Cloud speech models (Inworld Realtime TTS, MiniMax, Chatterbox) behind one request-queue API.",
   },
   {
     name: "OpenAI Compatible",
