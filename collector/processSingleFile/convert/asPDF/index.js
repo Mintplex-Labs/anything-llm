@@ -60,7 +60,7 @@ async function asPdf({
     title: metadata.title || filename,
     docAuthor:
       metadata.docAuthor ||
-      docs[0]?.metadata?.pdf?.info?.Creator ||
+      docs[0]?.metadata?.pdf?.info?.Author ||
       "no author found",
     description:
       metadata.description ||
