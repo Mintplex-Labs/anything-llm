@@ -41,6 +41,26 @@ Pull in the latest image from docker. Supports both `amd64` and `arm64` CPU arch
 docker pull mintplexlabs/anythingllm
 ```
 
+The browser used for web scraping needs a small set of additional syscalls. Download the bundled seccomp profile before using the Docker commands below; this keeps the container from needing the broad `SYS_ADMIN` capability.
+
+The profile is based on [Moby’s default seccomp profile at `seccomp/v0.3.0`](https://github.com/moby/profiles/blob/seccomp/v0.3.0/seccomp/default.json). It allows `fanotify_init`, `setdomainname`, `sethostname`, `setns`, `unshare`, and `vhangup` without their capability gates. It also allows `clone` without an argument filter so Chromium can create its user-namespace sandbox; the kernel still enforces capability checks for other namespaces. Moby already allows `mlock`, `mlockall`, and `statx` in its default profile. The upstream Apache-2.0 license is included in `docker/seccomp-profile.LICENSE`.
+
+Linux/macOS:
+
+```shell
+export SECCOMP_PROFILE="$HOME/anythingllm-seccomp-profile.json"
+curl -fsSL https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/docker/seccomp-profile.json -o "$SECCOMP_PROFILE"
+```
+
+Windows PowerShell:
+
+```powershell
+$env:SECCOMP_PROFILE = Join-Path $HOME "anythingllm-seccomp-profile.json"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/docker/seccomp-profile.json" -OutFile $env:SECCOMP_PROFILE
+```
+
+If you pin the image to a release tag, use that same tag in the profile URL instead of `master`.
+
 <table>
 <tr>
 <th colspan="2">Mount the storage locally and run AnythingLLM in Docker</th>
@@ -56,7 +76,8 @@ export STORAGE_LOCATION=$HOME/anythingllm && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d --rm -p 3001:3001 \
---cap-add SYS_ADMIN \
+--security-opt "seccomp=$SECCOMP_PROFILE" \
+--security-opt no-new-privileges:true \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -77,7 +98,8 @@ $env:STORAGE_LOCATION="$HOME\Documents\anythingllm"; `
 If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory}; `
 If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env" -ItemType File}; `
 docker run -d --rm -p 3001:3001 `
---cap-add SYS_ADMIN `
+--security-opt "seccomp=$env:SECCOMP_PROFILE" `
+--security-opt no-new-privileges:true `
 -v "$env:STORAGE_LOCATION`:/app/server/storage" `
 -v "$env:STORAGE_LOCATION\.env:/app/server/.env" `
 -e STORAGE_DIR="/app/server/storage" `
@@ -99,8 +121,9 @@ services:
     container_name: anythingllm
     ports:
     - "3001:3001"
-    cap_add:
-      - SYS_ADMIN
+    security_opt:
+      - no-new-privileges:true
+      - "seccomp=${SECCOMP_PROFILE:?Download the profile first}"
     environment:
     # Adjust for your environment
       - STORAGE_DIR=/app/server/storage
@@ -169,7 +192,8 @@ export STORAGE_LOCATION=$HOME/anythingllm && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
---cap-add SYS_ADMIN \
+--security-opt "seccomp=$SECCOMP_PROFILE" \
+--security-opt no-new-privileges:true \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -192,7 +216,8 @@ for AMD and Intel GPUs. Without a GPU, models run on the CPU.
 
 ```shell
 docker run -d -p 3001:3001 \
---cap-add SYS_ADMIN \
+--security-opt "seccomp=$SECCOMP_PROFILE" \
+--security-opt no-new-privileges:true \
 --device /dev/dri \
 --group-add $(getent group render | cut -d: -f3) \
 -v ${STORAGE_LOCATION}:/app/server/storage \
@@ -210,7 +235,8 @@ first. Docker Desktop on Windows supports `--gpus all` out of the box.
 
 ```shell
 docker run -d -p 3001:3001 \
---cap-add SYS_ADMIN \
+--security-opt "seccomp=$SECCOMP_PROFILE" \
+--security-opt no-new-privileges:true \
 --gpus all \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
@@ -228,8 +254,9 @@ services:
     image: mintplexlabs/anythingllm
     ports:
       - "3001:3001"
-    cap_add:
-      - SYS_ADMIN
+    security_opt:
+      - no-new-privileges:true
+      - "seccomp=${SECCOMP_PROFILE:?Download the profile first}"
     volumes:
       - ${STORAGE_LOCATION}:/app/server/storage
       - ${STORAGE_LOCATION}/.env:/app/server/.env

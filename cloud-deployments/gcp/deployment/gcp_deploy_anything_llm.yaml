@@ -34,8 +34,9 @@ resources:
               touch /home/anythingllm/.env
               sudo chown -R ubuntu:ubuntu /home/anythingllm
                
+              curl -fsSL https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/docker/seccomp-profile.json -o /home/anythingllm/seccomp-profile.json || exit 1
               sudo docker pull mintplexlabs/anythingllm
-              sudo docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/anythingllm:/app/server/storage -v /home/anythingllm/.env:/app/server/.env -e STORAGE_DIR="/app/server/storage" mintplexlabs/anythingllm
+              sudo docker run -d -p 3001:3001 --security-opt seccomp=/home/anythingllm/seccomp-profile.json --security-opt no-new-privileges:true -v /home/anythingllm:/app/server/storage -v /home/anythingllm/.env:/app/server/.env -e STORAGE_DIR="/app/server/storage" mintplexlabs/anythingllm
               echo "Container ID: $(sudo docker ps --latest --quiet)"  
 
               export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)  
