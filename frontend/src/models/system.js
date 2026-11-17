@@ -565,9 +565,12 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error(res.statusText || "Error generating api key.");
+          const body = await res.json().catch(() => null);
+          throw new Error(
+            body?.error || res.statusText || "Error generating api key."
+          );
         }
         return res.json();
       })

@@ -1,12 +1,19 @@
 const MCPCompatibilityLayer = require("../../../utils/MCP");
 const { reqBody } = require("../../../utils/http");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  validApiKey,
+  apiKeyScope,
+  SCOPES,
+} = require("../../../utils/middleware/validApiKey");
 
 function apiMCPServerEndpoints(app) {
   if (!app) return;
 
-  app.get("/v1/mcp-servers", [validApiKey], async (_, response) => {
-    /*
+  app.get(
+    "/v1/mcp-servers",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (_, response) => {
+      /*
     #swagger.tags = ['MCP Servers']
     #swagger.description = 'List all MCP servers in the config file with their status, config, and available tools. Will boot servers that have not been started yet.'
     #swagger.responses[200] = {
@@ -36,17 +43,21 @@ function apiMCPServerEndpoints(app) {
       }
     }
     */
-    try {
-      const servers = await new MCPCompatibilityLayer().servers();
-      response.status(200).json({ servers });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+      try {
+        const servers = await new MCPCompatibilityLayer().servers();
+        response.status(200).json({ servers });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.post("/v1/mcp-servers/new", [validApiKey], async (request, response) => {
-    /*
+  app.post(
+    "/v1/mcp-servers/new",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (request, response) => {
+      /*
     #swagger.tags = ['MCP Servers']
     #swagger.description = 'Add a new MCP server to the config file and start it. The server is saved even if it fails to start - check `running` and `startError` in the response.'
     #swagger.requestBody = {
@@ -91,22 +102,26 @@ function apiMCPServerEndpoints(app) {
       }
     }
     */
-    try {
-      const { name, config } = reqBody(request);
-      const result = await new MCPCompatibilityLayer().saveServer(
-        name,
-        config,
-        { create: true }
-      );
-      response.status(result.success ? 200 : 400).json(result);
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+      try {
+        const { name, config } = reqBody(request);
+        const result = await new MCPCompatibilityLayer().saveServer(
+          name,
+          config,
+          { create: true }
+        );
+        response.status(result.success ? 200 : 400).json(result);
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.post("/v1/mcp-servers/reload", [validApiKey], async (_, response) => {
-    /*
+  app.post(
+    "/v1/mcp-servers/reload",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (_, response) => {
+      /*
     #swagger.tags = ['MCP Servers']
     #swagger.description = 'Stop all MCP servers and boot them again from the config file.'
     #swagger.responses[200] = {
@@ -125,19 +140,20 @@ function apiMCPServerEndpoints(app) {
       }
     }
     */
-    try {
-      const mcp = new MCPCompatibilityLayer();
-      await mcp.reloadMCPServers();
-      response.status(200).json({ servers: await mcp.servers() });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+      try {
+        const mcp = new MCPCompatibilityLayer();
+        await mcp.reloadMCPServers();
+        response.status(200).json({ servers: await mcp.servers() });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.post(
     "/v1/mcp-servers/:name/update",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['MCP Servers']
@@ -207,7 +223,7 @@ function apiMCPServerEndpoints(app) {
 
   app.post(
     "/v1/mcp-servers/:name/toggle",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['MCP Servers']
@@ -250,7 +266,7 @@ function apiMCPServerEndpoints(app) {
 
   app.post(
     "/v1/mcp-servers/:name/toggle-tool",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['MCP Servers']
@@ -320,7 +336,7 @@ function apiMCPServerEndpoints(app) {
 
   app.delete(
     "/v1/mcp-servers/:name",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
     #swagger.tags = ['MCP Servers']

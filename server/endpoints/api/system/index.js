@@ -8,7 +8,11 @@ const {
 } = require("../../../utils/helpers/chat/convertTo");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  validApiKey,
+  apiKeyScope,
+  SCOPES,
+} = require("../../../utils/middleware/validApiKey");
 
 function apiSystemEndpoints(app) {
   if (!app) return;
@@ -36,8 +40,11 @@ function apiSystemEndpoints(app) {
     }
   });
 
-  app.get("/v1/system", [validApiKey], async (_, response) => {
-    /*
+  app.get(
+    "/v1/system",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (_, response) => {
+      /*
     #swagger.tags = ['System Settings']
     #swagger.description = 'Get all current system settings that are defined.'
     #swagger.responses[200] = {
@@ -64,17 +71,21 @@ function apiSystemEndpoints(app) {
       }
     }
     */
-    try {
-      const settings = await SystemSettings.currentSettings();
-      response.status(200).json({ settings });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+      try {
+        const settings = await SystemSettings.currentSettings();
+        response.status(200).json({ settings });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.get("/v1/system/vector-count", [validApiKey], async (_, response) => {
-    /*
+  app.get(
+    "/v1/system/vector-count",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (_, response) => {
+      /*
     #swagger.tags = ['System Settings']
     #swagger.description = 'Number of all vectors in connected vector database'
     #swagger.responses[200] = {
@@ -95,19 +106,20 @@ function apiSystemEndpoints(app) {
       }
     }
     */
-    try {
-      const VectorDb = getVectorDbClass();
-      const vectorCount = await VectorDb.totalVectors();
-      response.status(200).json({ vectorCount });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+      try {
+        const VectorDb = getVectorDbClass();
+        const vectorCount = await VectorDb.totalVectors();
+        response.status(200).json({ vectorCount });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.post(
     "/v1/system/update-env",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['System Settings']
@@ -156,7 +168,7 @@ function apiSystemEndpoints(app) {
 
   app.get(
     "/v1/system/export-chats",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
     #swagger.tags = ['System Settings']
@@ -218,7 +230,7 @@ function apiSystemEndpoints(app) {
   );
   app.delete(
     "/v1/system/remove-documents",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['System Settings']

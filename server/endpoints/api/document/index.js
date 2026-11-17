@@ -1,5 +1,9 @@
 const { Telemetry } = require("../../../models/telemetry");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  validApiKey,
+  apiKeyScope,
+  SCOPES,
+} = require("../../../utils/middleware/validApiKey");
 const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
   findDocumentInDocuments,
@@ -17,6 +21,8 @@ const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
+const { ApiKey } = require("../../../models/apiKeys");
+const { Workspace } = require("../../../models/workspace");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
 const createFilesLib = require("../../../utils/agents/aibitat/plugins/create-files/lib");
 const documentsPath =
@@ -31,7 +37,7 @@ const documentsPath =
  * @param {*} next
  * @returns
  */
-function validateWorkspaceSlugQuery(request, response, next) {
+async function validateWorkspaceSlugQuery(request, response, next) {
   const { addToWorkspaces = "" } = reqBody(request);
   if (!addToWorkspaces) return next();
   if (typeof addToWorkspaces !== "string") {
@@ -43,6 +49,27 @@ function validateWorkspaceSlugQuery(request, response, next) {
       })
       .end();
   }
+
+  const apiKey = response.locals.apiKey;
+  if (ApiKey.isFullAccess(apiKey)) return next();
+
+  const slugs = [
+    ...new Set(
+      addToWorkspaces.split(",").map((slug) => slug.trim().toLowerCase())
+    ),
+  ];
+  const workspaces = await Workspace.where({ slug: { in: slugs } });
+  const permitted =
+    workspaces.length === slugs.length &&
+    workspaces.every((workspace) =>
+      ApiKey.canAccessWorkspace(apiKey, workspace.id)
+    );
+  if (!permitted)
+    return response.status(403).json({
+      success: false,
+      error:
+        "This api key's scope does not permit access to one or more workspaces in addToWorkspaces.",
+    });
   next();
 }
 
@@ -51,7 +78,12 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload",
-    [validApiKey, handleAPIFileUpload, validateWorkspaceSlugQuery],
+    [
+      validApiKey,
+      apiKeyScope([SCOPES.workspace]),
+      handleAPIFileUpload,
+      validateWorkspaceSlugQuery,
+    ],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -182,7 +214,12 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload/:folderName",
-    [validApiKey, handleAPIFileUpload, validateWorkspaceSlugQuery],
+    [
+      validApiKey,
+      apiKeyScope([SCOPES.workspace]),
+      handleAPIFileUpload,
+      validateWorkspaceSlugQuery,
+    ],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
@@ -337,7 +374,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload-link",
-    [validApiKey, validateWorkspaceSlugQuery],
+    [validApiKey, apiKeyScope([SCOPES.workspace]), validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -519,7 +556,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/raw-text",
-    [validApiKey, validateWorkspaceSlugQuery],
+    [validApiKey, apiKeyScope([SCOPES.workspace]), validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
      #swagger.tags = ['Documents']
@@ -666,8 +703,11 @@ function apiDocumentEndpoints(app) {
     }
   );
 
-  app.get("/v1/documents", [validApiKey], async (request, response) => {
-    /*
+  app.get(
+    "/v1/documents",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (request, response) => {
+      /*
     #swagger.tags = ['Documents']
     #swagger.description = 'List of all locally-stored documents in instance. Optionally, pass ?folder=name to fetch the contents of a single folder, paginated with offset and limit (limit=all returns every document in that folder).'
     #swagger.responses[200] = {
@@ -701,30 +741,31 @@ function apiDocumentEndpoints(app) {
       }
     }
     */
-    try {
-      const { folder, offset, limit } = queryParams(request);
-      if (folder) {
-        // Additive opt-in. Pagination is passed through as-is:
-        // getDocumentsByFolder clamps the window and understands `limit=all`.
-        const result = await getDocumentsByFolder(folder, { offset, limit });
-        response.status(result.code).json(result);
-      } else {
-        // Deliberately the full tree, unchanged from before folder support
-        // existed. This parses every document on disk and is slow on large
-        // instances, but silently returning empty `items` arrays to existing
-        // integrations would be worse. New callers should use ?folder=.
-        const localFiles = await viewLocalFiles();
-        response.status(200).json({ localFiles });
+      try {
+        const { folder, offset, limit } = queryParams(request);
+        if (folder) {
+          // Additive opt-in. Pagination is passed through as-is:
+          // getDocumentsByFolder clamps the window and understands `limit=all`.
+          const result = await getDocumentsByFolder(folder, { offset, limit });
+          response.status(result.code).json(result);
+        } else {
+          // Deliberately the full tree, unchanged from before folder support
+          // existed. This parses every document on disk and is slow on large
+          // instances, but silently returning empty `items` arrays to existing
+          // integrations would be worse. New callers should use ?folder=.
+          const localFiles = await viewLocalFiles();
+          response.status(200).json({ localFiles });
+        }
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
       }
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
   app.get(
     "/v1/documents/folder/:folderName",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -809,7 +850,7 @@ function apiDocumentEndpoints(app) {
 
   app.get(
     "/v1/document/accepted-file-types",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (_, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -866,7 +907,7 @@ function apiDocumentEndpoints(app) {
 
   app.get(
     "/v1/document/metadata-schema",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (_, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -916,8 +957,11 @@ function apiDocumentEndpoints(app) {
 
   // Be careful and place as last route to prevent override of the other /document/ GET
   // endpoints!
-  app.get("/v1/document/:docName", [validApiKey], async (request, response) => {
-    /*
+  app.get(
+    "/v1/document/:docName",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (request, response) => {
+      /*
     #swagger.tags = ['Documents']
     #swagger.description = 'Get a single document by its unique AnythingLLM document name'
     #swagger.parameters['docName'] = {
@@ -957,23 +1001,24 @@ function apiDocumentEndpoints(app) {
       }
     }
     */
-    try {
-      const { docName } = request.params;
-      const document = await findDocumentInDocuments(docName);
-      if (!document) {
-        response.sendStatus(404).end();
-        return;
+      try {
+        const { docName } = request.params;
+        const document = await findDocumentInDocuments(docName);
+        if (!document) {
+          response.sendStatus(404).end();
+          return;
+        }
+        response.status(200).json({ document });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
       }
-      response.status(200).json({ document });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
   app.post(
     "/v1/document/create-folder",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
@@ -1047,7 +1092,7 @@ function apiDocumentEndpoints(app) {
 
   app.delete(
     "/v1/document/remove-folder",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
@@ -1106,7 +1151,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/move-files",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
@@ -1218,7 +1263,7 @@ function apiDocumentEndpoints(app) {
 
   app.get(
     "/v1/document/generated-files/:filename",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.full])],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']

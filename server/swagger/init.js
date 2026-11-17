@@ -7,7 +7,7 @@ const doc = {
     version: "1.0.0",
     title: "AnythingLLM Developer API",
     description:
-      "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.",
+      "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.\n\nAPI keys are scoped when created. Full access keys can call every endpoint. Workspace keys can only call the workspace, thread, chat, and document upload endpoints for their selected workspaces. User management keys can only call the user, invite, and workspace membership endpoints. A key used outside of its scope receives a 403.",
   },
   // Swagger-autogen does not allow us to use relative paths as these will resolve to
   // http:///api in the openapi.json file, so we need to monkey-patch this post-generation.

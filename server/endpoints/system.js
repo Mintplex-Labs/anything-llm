@@ -1070,11 +1070,19 @@ function systemEndpoints(app) {
           return response.sendStatus(401).end();
         }
 
-        const { name = null } = reqBody(request);
-        const { apiKey, error } = await ApiKey.create(null, name);
+        const {
+          name = null,
+          scope = null,
+          workspaceIds = [],
+        } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(null, name, {
+          scope,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
         await EventLogs.logEvent(
           "api_key_created",
-          { name: apiKey?.name },
+          { name: apiKey?.name, scope: apiKey?.scope },
           response?.locals?.user?.id
         );
         return response.status(200).json({

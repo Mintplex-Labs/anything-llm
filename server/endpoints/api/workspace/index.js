@@ -3,13 +3,18 @@ const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
+const { ApiKey } = require("../../../models/apiKeys");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const {
   getVectorDbClass,
   resolveProviderConnector,
 } = require("../../../utils/helpers");
 const { multiUserMode, reqBody, toBoundedInt } = require("../../../utils/http");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  validApiKey,
+  apiKeyScope,
+  SCOPES,
+} = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
 const { EventLogs } = require("../../../models/eventLogs");
 const {
@@ -25,8 +30,11 @@ const {
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
 
-  app.post("/v1/workspace/new", [validApiKey], async (request, response) => {
-    /*
+  app.post(
+    "/v1/workspace/new",
+    [validApiKey, apiKeyScope([SCOPES.full])],
+    async (request, response) => {
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
@@ -75,39 +83,43 @@ function apiWorkspaceEndpoints(app) {
       }
     }
     */
-    try {
-      const { name = null, ...additionalFields } = reqBody(request);
-      const { workspace, message } = await Workspace.new(
-        name,
-        null,
-        additionalFields
-      );
+      try {
+        const { name = null, ...additionalFields } = reqBody(request);
+        const { workspace, message } = await Workspace.new(
+          name,
+          null,
+          additionalFields
+        );
 
-      if (!workspace) {
-        response.status(400).json({ workspace: null, message });
-        return;
+        if (!workspace) {
+          response.status(400).json({ workspace: null, message });
+          return;
+        }
+
+        await Telemetry.sendTelemetry("workspace_created", {
+          multiUserMode: multiUserMode(response),
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
+          LLMModel: getModelTag(),
+        });
+        await EventLogs.logEvent("api_workspace_created", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
+        response.status(200).json({ workspace, message });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
       }
-
-      await Telemetry.sendTelemetry("workspace_created", {
-        multiUserMode: multiUserMode(response),
-        LLMSelection: process.env.LLM_PROVIDER || "openai",
-        Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-        VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-        TTSSelection: process.env.TTS_PROVIDER || "native",
-        LLMModel: getModelTag(),
-      });
-      await EventLogs.logEvent("api_workspace_created", {
-        workspaceName: workspace?.name || "Unknown Workspace",
-      });
-      response.status(200).json({ workspace, message });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
-  app.get("/v1/workspaces", [validApiKey], async (request, response) => {
-    /*
+  app.get(
+    "/v1/workspaces",
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
+    async (request, response) => {
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'List all current workspaces'
     #swagger.responses[200] = {
@@ -140,28 +152,32 @@ function apiWorkspaceEndpoints(app) {
       }
     }
     */
-    try {
-      const workspaces = await Workspace._findMany({
-        where: {},
-        include: {
-          threads: {
-            select: {
-              user_id: true,
-              slug: true,
-              name: true,
+      try {
+        const workspaces = await Workspace._findMany({
+          where: ApiKey.workspaceClause(response.locals.apiKey),
+          include: {
+            threads: {
+              select: {
+                user_id: true,
+                slug: true,
+                name: true,
+              },
             },
           },
-        },
-      });
-      response.status(200).json({ workspaces });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+        });
+        response.status(200).json({ workspaces });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.get("/v1/workspace/:slug", [validApiKey], async (request, response) => {
-    /*
+  app.get(
+    "/v1/workspace/:slug",
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
+    async (request, response) => {
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspace by its unique slug.'
     #swagger.parameters['slug'] = {
@@ -201,33 +217,34 @@ function apiWorkspaceEndpoints(app) {
       }
     }
     */
-    try {
-      const { slug } = request.params;
-      const workspace = await Workspace._findMany({
-        where: {
-          slug: String(slug),
-        },
-        include: {
-          documents: true,
-          threads: {
-            select: {
-              user_id: true,
-              slug: true,
+      try {
+        const { slug } = request.params;
+        const workspace = await Workspace._findMany({
+          where: {
+            slug: String(slug),
+          },
+          include: {
+            documents: true,
+            threads: {
+              select: {
+                user_id: true,
+                slug: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      response.status(200).json({ workspace });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+        response.status(200).json({ workspace });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.delete(
     "/v1/workspace/:slug",
-    [validApiKey, workspaceDeletionProtection],
+    [validApiKey, apiKeyScope([SCOPES.workspace]), workspaceDeletionProtection],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
@@ -278,7 +295,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/update",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
@@ -359,7 +376,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.get(
     "/v1/workspace/:slug/chats",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
@@ -456,7 +473,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/update-embeddings",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
@@ -533,7 +550,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/update-pin",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspaces']
@@ -602,7 +619,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/chat",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
    #swagger.tags = ['Workspaces']
@@ -736,7 +753,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/stream-chat",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
    #swagger.tags = ['Workspaces']
@@ -898,7 +915,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.post(
     "/v1/workspace/:slug/vector-search",
-    [validApiKey],
+    [validApiKey, apiKeyScope([SCOPES.workspace])],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']

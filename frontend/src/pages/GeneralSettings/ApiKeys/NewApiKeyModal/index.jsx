@@ -12,24 +12,51 @@ import {
   ModalPrimaryButton,
   ModalSecondaryButton,
   ModalInput,
+  ModalLabel,
+  ModalHint,
 } from "@/components/lib/Modal";
+import WorkspaceMultiSelect from "./WorkspaceMultiSelect";
 
-export default function NewApiKeyModal({ closeModal, onSuccess }) {
+const getScopes = (t) => ({
+  full: {
+    label: t("api.scopes.full"),
+    hint: t("api.modal.scope.helper.full"),
+  },
+  workspace: {
+    label: t("api.scopes.workspace"),
+    hint: t("api.modal.scope.helper.workspace"),
+  },
+  user: {
+    label: t("api.scopes.user"),
+    hint: t("api.modal.scope.helper.user"),
+  },
+});
+
+export default function NewApiKeyModal({ closeModal, onSuccess, workspaces }) {
   const { t } = useTranslation();
   const [apiKey, setApiKey] = useState(null);
   const [name, setName] = useState("");
+  const [scope, setScope] = useState("full");
+  const [workspaceIds, setWorkspaceIds] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const missingWorkspaces = scope === "workspace" && workspaceIds.length === 0;
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
+    if (creating || missingWorkspaces) return;
+    setCreating(true);
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
 
     const { apiKey: newApiKey, error } = await Model.generateApiKey({
       name,
+      scope,
+      workspaceIds: scope === "workspace" ? workspaceIds : [],
     });
+    setCreating(false);
     if (!!newApiKey) {
       setApiKey(newApiKey);
       onSuccess();
@@ -72,6 +99,13 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
             hint={t("api.modal.name.helper")}
           />
         )}
+        <ScopeSelect visible={!apiKey} scope={scope} onChange={setScope} />
+        <WorkspaceMultiSelect
+          visible={!apiKey && scope === "workspace"}
+          workspaces={workspaces}
+          selected={workspaceIds}
+          onChange={setWorkspaceIds}
+        />
         {apiKey && (
           <div className="relative">
             <input
@@ -116,7 +150,10 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
             <ModalSecondaryButton onClick={closeModal} type="button">
               {t("api.modal.cancel")}
             </ModalSecondaryButton>
-            <ModalPrimaryButton type="submit">
+            <ModalPrimaryButton
+              type="submit"
+              disabled={creating || missingWorkspaces}
+            >
               {t("api.modal.create")}
             </ModalPrimaryButton>
           </>
@@ -127,5 +164,29 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
         )}
       </ModalFooter>
     </form>
+  );
+}
+
+function ScopeSelect({ visible, scope, onChange }) {
+  const { t } = useTranslation();
+  const scopes = getScopes(t);
+  if (!visible) return null;
+  return (
+    <div className="flex flex-col gap-y-1.5 w-full">
+      <ModalLabel htmlFor="scope">{t("api.modal.scope.label")}</ModalLabel>
+      <select
+        id="scope"
+        value={scope}
+        onChange={(e) => onChange(e.target.value)}
+        className="border-none w-full h-[34px] px-3 text-sm rounded-lg outline-none bg-zinc-800 text-zinc-100 light:bg-white light:text-slate-900 light:outline light:outline-1 light:outline-slate-300"
+      >
+        {Object.entries(scopes).map(([value, { label }]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
+      <ModalHint>{scopes[scope].hint}</ModalHint>
+    </div>
   );
 }

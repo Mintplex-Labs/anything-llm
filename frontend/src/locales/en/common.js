@@ -978,6 +978,11 @@ const TRANSLATIONS = {
     messages: {
       error: "Error: {{error}}",
     },
+    scopes: {
+      full: "Full access",
+      workspace: "Specific workspaces",
+      user: "User management",
+    },
     modal: {
       title: "Create new API key",
       cancel: "Cancel",
@@ -991,17 +996,32 @@ const TRANSLATIONS = {
         helper:
           "Optional. Use a friendly name so you can identify this key later.",
       },
+      scope: {
+        label: "Scope",
+        helper: {
+          full: "Can access and manage everything on this instance.",
+          workspace:
+            "Can only chat with, upload to, and manage the selected workspaces.",
+          user: "Can only manage users, invites, and workspace membership.",
+        },
+      },
+      workspaces: {
+        placeholder: "Select workspaces",
+        empty: "No workspaces found",
+      },
     },
     row: {
       copy: "Copy API Key",
       copied: "Copied",
       unnamed: "--",
+      noWorkspaces: "No workspaces",
       deleteConfirm:
         "Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.",
     },
     table: {
       name: "Name",
       key: "API Key",
+      scope: "Scope",
       by: "Created By",
       created: "Created",
     },

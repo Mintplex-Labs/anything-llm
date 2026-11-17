@@ -4,13 +4,20 @@ const { multiUserMode } = require("../../../utils/http");
 const {
   simpleSSOEnabled,
 } = require("../../../utils/middleware/simpleSSOEnabled");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  validApiKey,
+  apiKeyScope,
+  SCOPES,
+} = require("../../../utils/middleware/validApiKey");
 
 function apiUserManagementEndpoints(app) {
   if (!app) return;
 
-  app.get("/v1/users", [validApiKey], async (request, response) => {
-    /*
+  app.get(
+    "/v1/users",
+    [validApiKey, apiKeyScope([SCOPES.user])],
+    async (request, response) => {
+      /*
       #swagger.tags = ['User Management']
       #swagger.description = 'List all users'
       #swagger.responses[200] = {
@@ -45,28 +52,29 @@ function apiUserManagementEndpoints(app) {
       description: "Instance is not in Multi-User mode. Permission denied.",
     }
       */
-    try {
-      if (!multiUserMode(response))
-        return response
-          .status(401)
-          .send("Instance is not in Multi-User mode. Permission denied.");
+      try {
+        if (!multiUserMode(response))
+          return response
+            .status(401)
+            .send("Instance is not in Multi-User mode. Permission denied.");
 
-      const users = await User.where();
-      const filteredUsers = users.map((user) => ({
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      }));
-      response.status(200).json({ users: filteredUsers });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
+        const users = await User.where();
+        const filteredUsers = users.map((user) => ({
+          id: user.id,
+          username: user.username,
+          role: user.role,
+        }));
+        response.status(200).json({ users: filteredUsers });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get(
     "/v1/users/:id/issue-auth-token",
-    [validApiKey, simpleSSOEnabled],
+    [validApiKey, apiKeyScope([SCOPES.user]), simpleSSOEnabled],
     async (request, response) => {
       /*
       #swagger.tags = ['User Management']

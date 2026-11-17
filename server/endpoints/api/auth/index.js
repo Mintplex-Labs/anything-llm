@@ -1,10 +1,17 @@
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  validApiKey,
+  apiKeyScope,
+  SCOPES,
+} = require("../../../utils/middleware/validApiKey");
 
 function apiAuthEndpoints(app) {
   if (!app) return;
 
-  app.get("/v1/auth", [validApiKey], (_, response) => {
-    /* 
+  app.get(
+    "/v1/auth",
+    [validApiKey, apiKeyScope([SCOPES.workspace, SCOPES.user])],
+    (_, response) => {
+      /* 
     #swagger.tags = ['Authentication']
     #swagger.description = 'Verify the attached Authentication header contains a valid API token.'
     #swagger.responses[200] = {
@@ -26,8 +33,9 @@ function apiAuthEndpoints(app) {
       }
     }
     */
-    response.status(200).json({ authenticated: true });
-  });
+      response.status(200).json({ authenticated: true });
+    }
+  );
 }
 
 module.exports = { apiAuthEndpoints };

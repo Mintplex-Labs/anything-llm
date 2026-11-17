@@ -532,11 +532,23 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { name = null } = reqBody(request);
-        const { apiKey, error } = await ApiKey.create(user.id, name);
+        const {
+          name = null,
+          scope = null,
+          workspaceIds = [],
+        } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(user.id, name, {
+          scope,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
         await EventLogs.logEvent(
           "api_key_created",
-          { createdBy: user?.username, name: apiKey?.name },
+          {
+            createdBy: user?.username,
+            name: apiKey?.name,
+            scope: apiKey?.scope,
+          },
           user?.id
         );
         return response.status(200).json({
