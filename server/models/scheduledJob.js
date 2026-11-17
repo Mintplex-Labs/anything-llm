@@ -43,13 +43,39 @@ const ScheduledJob = {
   MAX_ACTIVE: null,
 
   /**
-   * Parse a cron expression into a @breejs/later schedule, reading weekday 7
-   * as Sunday like cron does.
+   * Parse a cron expression into a @breejs/later schedule with standard cron
+   * day matching and weekday 7 treated as Sunday.
    * @param {string} cronExpression
    * @returns {object}
    */
   parseCron: function (cronExpression) {
-    return later.parse.cron(sundayAsZero(cronExpression));
+    const cron = sundayAsZero(cronExpression);
+    const fields = String(cron).trim().split(/\s+/);
+    const [minute, hour, dayOfMonth, month, dayOfWeek] = fields;
+
+    // Cron uses either day field when both are explicit. Fields that begin
+    // with "*" (including steps like "*/2") use the existing joint match.
+    if (
+      fields.length !== 5 ||
+      /^[*?]/.test(dayOfMonth) ||
+      /^[*?]/.test(dayOfWeek)
+    )
+      return later.parse.cron(cron);
+
+    const byMonthDay = later.parse.cron(
+      `${minute} ${hour} ${dayOfMonth} ${month} *`
+    );
+    const byWeekday = later.parse.cron(
+      `${minute} ${hour} * ${month} ${dayOfWeek}`
+    );
+    // Later's nearest-weekday extension uses global exceptions. Keep its
+    // existing behavior for any stored expressions outside standard cron.
+    if (byMonthDay.exceptions.length) return later.parse.cron(cron);
+
+    return {
+      schedules: [...byMonthDay.schedules, ...byWeekday.schedules],
+      exceptions: [],
+    };
   },
 
   /**
