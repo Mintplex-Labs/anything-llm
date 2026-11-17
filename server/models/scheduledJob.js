@@ -53,8 +53,9 @@ const ScheduledJob = {
     const fields = String(cron).trim().split(/\s+/);
     const [minute, hour, dayOfMonth, month, dayOfWeek] = fields;
 
-    // Cron uses either day field when both are explicit. Fields that begin
-    // with "*" (including steps like "*/2") use the existing joint match.
+    // When both day fields are restricted, cron fires if either one matches.
+    // A field starting with "*" (including steps like "*/2") counts as
+    // unrestricted, as in cronie, so both fields must match together.
     if (
       fields.length !== 5 ||
       /^[*?]/.test(dayOfMonth) ||
@@ -68,8 +69,8 @@ const ScheduledJob = {
     const byWeekday = later.parse.cron(
       `${minute} ${hour} * ${month} ${dayOfWeek}`
     );
-    // Later's nearest-weekday extension uses global exceptions. Keep its
-    // existing behavior for any stored expressions outside standard cron.
+    // Later's nearest-weekday extension (e.g. "15W") produces global
+    // exceptions that cannot be split per schedule, so parse it as one.
     if (byMonthDay.exceptions.length) return later.parse.cron(cron);
 
     return {
