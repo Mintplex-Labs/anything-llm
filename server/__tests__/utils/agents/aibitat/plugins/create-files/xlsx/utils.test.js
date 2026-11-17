@@ -141,6 +141,22 @@ describe("validateCSVData", () => {
 });
 
 describe("detectDelimiter", () => {
+  test("ignores delimiters inside quoted fields when parsing XLSX input", () => {
+    const csv = '"City, State, Country";Postal Code\n"Portland, OR, US";97201';
+    const delimiter = detectDelimiter(csv);
+
+    expect(delimiter).toBe(";");
+    expect(parseCSV(csv, delimiter)).toEqual([
+      ["City, State, Country", "Postal Code"],
+      ["Portland, OR, US", "97201"],
+    ]);
+  });
+
+  test("scans the entire first record when a quoted field spans lines", () => {
+    const csv = '"Say ""hello, there""\r\nagain"|Status\r\nx,y,z';
+    expect(detectDelimiter(csv)).toBe("|");
+  });
+
   test.each([
     ["a,b,c\n1,2,3", ","],
     ["a;b;c\n1;2;3", ";"],
