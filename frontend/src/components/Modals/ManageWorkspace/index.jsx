@@ -1,4 +1,5 @@
 import React, { useState, useEffect, memo } from "react";
+import { createPortal } from "react-dom";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -8,18 +9,11 @@ import { isMobileOnly } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
-import Modal, {
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalPrimaryButton,
-} from "@/components/lib/Modal";
 import { EmbeddingProgressProvider } from "@/EmbeddingProgressContext";
 import { useModalEscape } from "@/hooks/useModalEscape";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
-  const { t } = useTranslation();
   const { slug } = useParams();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
@@ -44,24 +38,29 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
   if (!workspace) return null;
 
+  // Portaled because the mobile sidebar drawer that opens this is transformed,
+  // which would otherwise trap a fixed full-screen sheet inside it.
   if (isMobileOnly) {
-    return (
-      <Modal isOpen={true} onClose={hideModal} size="md">
-        <ModalHeader
-          title={`${t("connectors.manage.editing")} "${workspace.name}"`}
-          onClose={hideModal}
-        />
-        <ModalBody>
-          <p className="text-zinc-300 light:text-slate-700">
-            {t("connectors.manage.desktop-only")}
-          </p>
-        </ModalBody>
-        <ModalFooter className="justify-end">
-          <ModalPrimaryButton type="button" onClick={hideModal}>
-            {t("connectors.manage.dismiss")}
-          </ModalPrimaryButton>
-        </ModalFooter>
-      </Modal>
+    return createPortal(
+      <div className="fixed inset-0 z-99 flex flex-col bg-zinc-900 light:bg-white pt-[env(safe-area-inset-top)]">
+        <div className="shrink-0 flex items-center justify-between gap-x-3 pl-5 pr-3 h-14">
+          <h3 className="text-base font-semibold truncate text-slate-50 light:text-slate-900">
+            {workspace.name}
+          </h3>
+          <button
+            onClick={hideModal}
+            type="button"
+            aria-label="Close"
+            className="border-none bg-transparent w-11 h-11 shrink-0 flex items-center justify-center rounded-xl text-slate-50 light:text-slate-900 active:bg-zinc-800 light:active:bg-slate-100"
+          >
+            <X size={20} weight="bold" />
+          </button>
+        </div>
+        <EmbeddingProgressProvider>
+          <DocumentSettings workspace={workspace} variant="mobile" />
+        </EmbeddingProgressProvider>
+      </div>,
+      document.getElementById("root")
     );
   }
 

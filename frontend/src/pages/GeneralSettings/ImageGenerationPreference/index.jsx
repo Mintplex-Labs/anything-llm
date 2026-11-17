@@ -11,6 +11,7 @@ import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import LlmmanLogo from "@/media/llmprovider/llmman.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
+import MinimaxLogo from "@/media/llmprovider/minimax.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/ImageGenerationSelection/OpenAiOptions";
@@ -20,6 +21,7 @@ import OpenRouterOptions from "@/components/ImageGenerationSelection/OpenRouterO
 import LocalAiOptions from "@/components/ImageGenerationSelection/LocalAiOptions";
 import LlmmanOptions from "@/components/ImageGenerationSelection/LlmmanOptions";
 import GeminiOptions from "@/components/ImageGenerationSelection/GeminiOptions";
+import MinimaxOptions from "@/components/ImageGenerationSelection/MinimaxOptions";
 import ImageGenerationItem from "@/components/ImageGenerationSelection/ImageGenerationItem";
 
 import CTAButton from "@/components/lib/CTAButton";
@@ -76,6 +78,13 @@ const PROVIDERS = [
     logo: OpenRouterLogo,
     options: (settings) => <OpenRouterOptions settings={settings} />,
     description: "Generate images from image models on OpenRouter.",
+  },
+  {
+    name: "MiniMax",
+    value: "minimax",
+    logo: MinimaxLogo,
+    options: (settings) => <MinimaxOptions settings={settings} />,
+    description: "Generate and edit images with MiniMax image models.",
   },
 ];
 

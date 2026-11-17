@@ -1,3 +1,4 @@
+const { createHash } = require("crypto");
 const { Workspace } = require("../../../../../models/workspace");
 const { resolveWorkspaceProvider } = require("../../index");
 const {
@@ -5,6 +6,11 @@ const {
   SUPPORT_CUSTOM_MODELS,
 } = require("../../../../helpers/customModels");
 const MODELS_PER_PAGE = 8;
+
+// Telegram caps callback_data at 64 bytes and model ids can be longer, so the
+// button carries a short hash of the id instead of the id itself.
+const modelCallbackToken = (id) =>
+  createHash("sha256").update(id).digest("hex").slice(0, 16);
 
 /**
  * Show the model selection inline keyboard with pagination.
@@ -65,7 +71,7 @@ async function showModelMenu(ctx, chatId, page = 0, messageId = null) {
     return [
       {
         text: isActive ? `🟢 ${displayName} (active)` : displayName,
-        callback_data: `mdl:${workspace.id}:${modelId.slice(0, 40)}`,
+        callback_data: `mdl:${workspace.id}:${modelCallbackToken(modelId)}`,
       },
     ];
   });
@@ -95,4 +101,4 @@ async function showModelMenu(ctx, chatId, page = 0, messageId = null) {
   }
 }
 
-module.exports = { showModelMenu };
+module.exports = { showModelMenu, modelCallbackToken };

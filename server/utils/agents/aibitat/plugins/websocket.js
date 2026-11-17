@@ -23,6 +23,25 @@ async function userCanToggleTools(userId = null) {
 }
 
 /**
+ * Agent follow-ups arrive over the socket rather than the HTTP chat routes, so
+ * the 24-hour message limit is checked here before each of the agent's turns.
+ * Returns the quota message when the user is over their limit, otherwise null.
+ * Single-user mode, admins, and users without a limit always pass.
+ * @param {number|null} userId - User id from the agent invocation.
+ * @returns {Promise<string|null>}
+ */
+async function chatQuotaExceededMessage(userId = null) {
+  if (!userId) return null;
+  const { SystemSettings } = require("../../../../models/systemSettings");
+  if (!(await SystemSettings.isMultiUserMode())) return null;
+
+  const { User } = require("../../../../models/user");
+  const user = await User.get({ id: Number(userId) });
+  if (!user || (await User.canSendChat(user))) return null;
+  return `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`;
+}
+
+/**
  * Returns the timeout in ms for agent tool-call approval prompts.
  * Reads from `TOOL_CALL_APPROVAL_TIMEOUT_MS` env var; defaults to 120 000 ms (2 min).
  * @returns {number}
@@ -38,6 +57,12 @@ const CLARIFICATION_DEFAULT_TIMEOUT_MS = 120 * 1_000; // 2 mins for clarifying q
 // Once the user starts interacting with the clarification card they are present and
 // should not race the clock - this ceiling only exists so an abandoned card cannot hang the turn.
 const CLARIFICATION_ENGAGED_TIMEOUT_MS = 15 * 60 * 1_000; // 15 mins
+// Same ceiling once the user starts editing an email on the tool approval card,
+// but never shorter than the configured approval timeout.
+const TOOL_APPROVAL_ENGAGED_TIMEOUT_MS = Math.max(
+  TOOL_APPROVAL_TIMEOUT_MS,
+  CLARIFICATION_ENGAGED_TIMEOUT_MS
+);
 
 /**
  * Websocket Interface plugin. It prints the messages on the console and asks for feedback
@@ -61,6 +86,19 @@ const WEBSOCKET_BAIL_COMMANDS = [
   "/halt",
   "/reset", // Will not reset but will bail. Powerusers always do this and the LLM responds.
 ];
+
+/**
+ * Tells the frontend the user ended the agent session with a bail command so
+ * it can note that in the chat. /reset clears the chat right after, so it gets
+ * no notice.
+ * @param {object} socket
+ * @param {string} command - the feedback the user sent
+ */
+function notifySessionExited(socket, command) {
+  if (command === "/reset" || !WEBSOCKET_BAIL_COMMANDS.includes(command))
+    return;
+  socket.send(JSON.stringify({ type: "agentSessionExited", content: command }));
+}
 /**
  * Detects the /img slash command (optionally followed by a prompt) so it can be
  * handled inline during an active agent session instead of being handed to the
@@ -217,7 +255,7 @@ const websocket = {
          * @param {string} options.skillName - The name of the skill/tool requesting approval
          * @param {Object} [options.payload={}] - Optional payload data to display to the user
          * @param {string} [options.description] - Optional description of what the skill will do
-         * @returns {Promise<{approved: boolean, message: string}>} - The approval result
+         * @returns {Promise<{approved: boolean, message: string, payload?: object|null}>} - The approval result. `payload` carries any edits the user made on the approval card before approving.
          */
         aibitat.requestToolApproval = async function ({
           skillName,
@@ -260,6 +298,7 @@ const websocket = {
           const requestId = uuidv4();
           return new Promise((resolve) => {
             let timeoutId = null;
+            let held = false;
 
             // Resolve exactly once and tear down every waiter, whichever of the
             // three outcomes lands first: user response, abort, or timeout.
@@ -268,6 +307,17 @@ const websocket = {
               clearTimeout(timeoutId);
               aibitat.emitter.removeListener("abort", abortListener);
               resolve(result);
+            };
+
+            const handleTimeout = (ms) => {
+              console.log(
+                chalk.yellow(`Tool approval request timed out after ${ms}ms`)
+              );
+              settle({
+                approved: false,
+                message:
+                  "Tool approval request timed out. User did not respond in time.",
+              });
             };
 
             // The socket is already gone once the session aborts, so no response
@@ -283,16 +333,32 @@ const websocket = {
             socket.handleToolApproval = (message) => {
               try {
                 const data = safeJsonParse(message, {});
-                if (
-                  data?.type !== "toolApprovalResponse" ||
-                  data?.requestId !== requestId
-                )
+                if (data?.requestId !== requestId) return;
+
+                if (data?.type === "toolApprovalHold") {
+                  if (held) return;
+                  held = true;
+                  clearTimeout(timeoutId);
+                  timeoutId = setTimeout(
+                    () => handleTimeout(TOOL_APPROVAL_ENGAGED_TIMEOUT_MS),
+                    TOOL_APPROVAL_ENGAGED_TIMEOUT_MS
+                  );
                   return;
+                }
+
+                if (data?.type !== "toolApprovalResponse") return;
 
                 if (data.approved) {
+                  const payload =
+                    data.payload &&
+                    typeof data.payload === "object" &&
+                    !Array.isArray(data.payload)
+                      ? data.payload
+                      : null;
                   return settle({
                     approved: true,
                     message: "User approved the tool execution.",
+                    payload,
                   });
                 }
 
@@ -316,18 +382,10 @@ const websocket = {
               })
             );
 
-            timeoutId = setTimeout(() => {
-              console.log(
-                chalk.yellow(
-                  `Tool approval request timed out after ${TOOL_APPROVAL_TIMEOUT_MS}ms`
-                )
-              );
-              settle({
-                approved: false,
-                message:
-                  "Tool approval request timed out. User did not respond in time.",
-              });
-            }, TOOL_APPROVAL_TIMEOUT_MS);
+            timeoutId = setTimeout(
+              () => handleTimeout(TOOL_APPROVAL_TIMEOUT_MS),
+              TOOL_APPROVAL_TIMEOUT_MS
+            );
           });
         };
 
@@ -355,16 +413,34 @@ const websocket = {
             let timeoutId = null;
             let held = false;
 
-            const handleTimeout = (ms) => {
+            const settle = (result) => {
               delete socket.handleClarificationResponse;
-              console.log(
-                chalk.yellow(`Clarification request timed out after ${ms}ms`)
-              );
-              resolve({
+              clearTimeout(timeoutId);
+              aibitat.emitter.removeListener("abort", abortListener);
+              resolve(result);
+            };
+
+            // Abort and timeout both mean no answers will arrive, so both
+            // resolve with every question marked skipped.
+            const settleUnanswered = () =>
+              settle({
                 skipped: false,
                 timedOut: true,
                 answers: questions.map(() => ({ skipped: true, answer: null })),
               });
+
+            // The socket is gone once the session aborts, so settle now instead of
+            // waiting out the timeout.
+            function abortListener() {
+              settleUnanswered();
+            }
+            aibitat.emitter.once("abort", abortListener);
+
+            const handleTimeout = (ms) => {
+              console.log(
+                chalk.yellow(`Clarification request timed out after ${ms}ms`)
+              );
+              settleUnanswered();
             };
 
             socket.handleClarificationResponse = (message) => {
@@ -385,11 +461,8 @@ const websocket = {
 
                 if (data?.type !== "clarificationResponse") return;
 
-                delete socket.handleClarificationResponse;
-                clearTimeout(timeoutId);
-
                 if (data.skipped) {
-                  return resolve({
+                  return settle({
                     skipped: true,
                     timedOut: false,
                     answers: questions.map(() => ({
@@ -407,7 +480,7 @@ const websocket = {
                     answer: a.answer ?? null,
                   };
                 });
-                return resolve({
+                return settle({
                   skipped: false,
                   timedOut: false,
                   answers: normalized,
@@ -448,9 +521,19 @@ const websocket = {
         });
 
         aibitat.onInterrupt(async (node) => {
-          const { feedback, attachments, reasoningEffort } =
+          const { feedback, attachments, reasoningEffort, timedOut } =
             await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
+            if (!timedOut) notifySessionExited(socket, feedback);
+            socket.close();
+            return;
+          }
+
+          const quotaMessage = await chatQuotaExceededMessage(userId);
+          if (quotaMessage) {
+            socket.send(
+              JSON.stringify({ type: "wssFailure", content: quotaMessage })
+            );
             socket.close();
             return;
           }
@@ -488,7 +571,11 @@ const websocket = {
                       `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
                     )
                   );
-                  resolve({ feedback: "exit", attachments: [] });
+                  resolve({
+                    feedback: "exit",
+                    attachments: [],
+                    timedOut: true,
+                  });
                   return;
                 }, SOCKET_TIMEOUT_MS);
               };
@@ -544,5 +631,6 @@ const websocket = {
 module.exports = {
   websocket,
   WEBSOCKET_BAIL_COMMANDS,
+  notifySessionExited,
   toolApprovalTimeoutMs,
 };

@@ -30,6 +30,9 @@ export function answerForDraft(question, draft) {
 
   if (draft.otherSelected) {
     const trimmed = String(draft.otherText || "").trim();
+    // An empty "Other" adds nothing, but the options ticked next to it still count.
+    if (!trimmed && question.multiSelect && draft.selected?.length)
+      return { skipped: false, answer: draft.selected };
     if (!trimmed) return { skipped: true, answer: null };
     if (question.multiSelect)
       return {

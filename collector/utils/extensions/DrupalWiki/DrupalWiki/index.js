@@ -333,7 +333,7 @@ class DrupalWiki {
         }
 
         require("fs").writeFileSync(localFilePath, Buffer.from(buffer));
-        await processSingleFile(localFilePath);
+        await processSingleFile(path.basename(localFilePath));
       }
     } catch (err) {
       console.error(`Fetching/processing attachments failed:`, err);

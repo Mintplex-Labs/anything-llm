@@ -1,6 +1,7 @@
 process.env.STORAGE_DIR = "test-storage";
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 // Mock fix-path as a noop to prevent SIGSEGV (segfault)
 // Returns ESM-style default export for dynamic import()
@@ -8,7 +9,10 @@ jest.mock("fix-path", () => ({ default: jest.fn() }));
 
 const { FFMPEGWrapper } = require("../../../../utils/WhisperProviders/ffmpeg");
 
-const describeRunner = process.env.GITHUB_ACTIONS ? describe.skip : describe;
+// Needs a real ffmpeg on PATH, so skip in CI and on machines without one.
+const hasFFMPEG = !spawnSync("ffmpeg", ["-version"]).error;
+const describeRunner =
+  process.env.GITHUB_ACTIONS || !hasFFMPEG ? describe.skip : describe;
 
 describeRunner("FFMPEGWrapper", () => {
   /** @type { import("../../../../utils/WhisperProviders/ffmpeg/index").FFMPEGWrapper } */
@@ -50,9 +54,7 @@ describeRunner("FFMPEGWrapper", () => {
 
     const response = await fetch(sampleUrl);
     if (!response.ok)
-      throw new Error(
-        `Failed to download sample file: ${response.statusText}`
-      );
+      throw new Error(`Failed to download sample file: ${response.statusText}`);
 
     const buffer = await response.arrayBuffer();
     fs.writeFileSync(inputPath, Buffer.from(buffer));

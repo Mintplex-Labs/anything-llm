@@ -12,14 +12,12 @@ const { v4: uuidv4 } = require("uuid");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 // Talks the Ollama API, which llmman serves alongside OpenAI- and
 // Anthropic-compatible ones, so the same client library is reused.
 // llmman: https://github.com/llmmanorg/llmman
 class LlmmanLLM {
-  /** @see LlmmanLLM.cacheContextWindows */
-  static modelContextWindows = {};
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LLMMAN_BASE_PATH)
       throw new Error("No llmman Base Path was set.");
@@ -42,10 +40,9 @@ class LlmmanLLM {
     });
     this.embedder = embedder ?? new NativeEmbedder();
 
-    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
     this.limits = null;
-
-    LlmmanLLM.cacheContextWindows(true);
+    LlmmanLLM.contextWindows.ensure(this.model);
     this.#log(`initialized with model: ${this.model}`);
   }
 
@@ -59,7 +56,7 @@ class LlmmanLLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await LlmmanLLM.cacheContextWindows();
+    await LlmmanLLM.contextWindows.ensure(this.model);
     await this.#syncLoadedContextWindow();
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -71,71 +68,79 @@ class LlmmanLLM {
     );
   }
 
+  static #contextClient() {
+    const authToken = process.env.LLMMAN_AUTH_TOKEN;
+    return new Ollama({
+      host: process.env.LLMMAN_BASE_PATH,
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+    });
+  }
+
+  /** @returns {Promise<Record<string, number>>} Runtime context window by loaded model name. */
+  static async #loadedContextWindows(client) {
+    const { models = [] } = await client.ps().catch(() => ({}));
+    const limits = {};
+    for (const model of models ?? [])
+      if (model?.context_length)
+        limits[model.name] = Number(model.context_length);
+    return limits;
+  }
+
   /**
-   * Cache the context windows for the models llmman serves.
-   * This is done once and then cached for the lifetime of the server. This is absolutely necessary to ensure that the context windows are correct.
-   *
-   * This is a convenience to ensure that the context windows are correct and that the user
-   * does not have to manually set the context window for each model.
-   * @param {boolean} force - Force the cache to be refreshed.
-   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   * llmman serves the Ollama API surface but /api/show does not always
+   * include the `capabilities` array or `model_info` block Ollama returns,
+   * so both are treated as optional here. The loaded-model report from
+   * /api/ps carries the accurate runtime `context_length`, so it takes
+   * priority over whatever /api/show advertises.
+   * @returns {Promise<number|null>} null for embedding models.
+   */
+  static async #fetchModelContextWindow(model, client, loaded) {
+    if (loaded[model]) return loaded[model];
+    const { capabilities = [], model_info = {} } = await client
+      .show({ model })
+      .catch(() => ({}));
+    if ((capabilities || []).includes("embedding")) return null;
+    const contextKey = Object.keys(model_info || {}).find((key) =>
+      key.endsWith(".context_length")
+    );
+    return contextKey ? model_info[contextKey] : 4096;
+  }
+
+  /** @see ContextWindowCache */
+  static contextWindows = new ContextWindowCache({
+    connection: () =>
+      `${process.env.LLMMAN_BASE_PATH}|${process.env.LLMMAN_AUTH_TOKEN ?? ""}`,
+    fetchOne: async (model) => {
+      const client = LlmmanLLM.#contextClient();
+      const loaded = await LlmmanLLM.#loadedContextWindows(client);
+      return LlmmanLLM.#fetchModelContextWindow(model, client, loaded);
+    },
+    fetchAll: async () => {
+      const client = LlmmanLLM.#contextClient();
+      const { models = [] } = await client.list();
+      const loaded = await LlmmanLLM.#loadedContextWindows(client);
+      const limits = {};
+      await Promise.all(
+        models.map(async ({ name }) => {
+          limits[name] = await LlmmanLLM.#fetchModelContextWindow(
+            name,
+            client,
+            loaded
+          );
+        })
+      );
+      return limits;
+    },
+    log: (...args) => LlmmanLLM.#slog(...args),
+  });
+
+  /**
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
    */
   static async cacheContextWindows(force = false) {
-    try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(LlmmanLLM.modelContextWindows).length > 0 && !force)
-        return;
-
-      const authToken = process.env.LLMMAN_AUTH_TOKEN;
-      const basePath = process.env.LLMMAN_BASE_PATH;
-      const client = new Ollama({
-        host: basePath,
-        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
-      });
-
-      const { models } = await client.list().catch(() => ({ models: [] }));
-      if (!models.length) return;
-
-      // llmman serves the Ollama API surface but /api/show does not always
-      // include the `capabilities` array or `model_info` block Ollama returns,
-      // so both are treated as optional here. The loaded-model report from
-      // /api/ps carries the accurate runtime `context_length`, so it takes
-      // priority over whatever /api/show advertises.
-      const loadedModels = await client
-        .ps()
-        .then((res) => res?.models || [])
-        .catch(() => []);
-      const loadedContextWindows = {};
-      loadedModels.forEach((model) => {
-        if (!model?.context_length) return;
-        loadedContextWindows[model.name] = Number(model.context_length);
-      });
-
-      const infoPromises = models.map((model) =>
-        client
-          .show({ model: model.name })
-          .then((info) => ({ name: model.name, ...info }))
-          .catch(() => ({ name: model.name }))
-      );
-      const infos = await Promise.all(infoPromises);
-      infos.forEach((showInfo) => {
-        if ((showInfo.capabilities || []).includes("embedding")) return;
-        if (loadedContextWindows[showInfo.name])
-          return (LlmmanLLM.modelContextWindows[showInfo.name] =
-            loadedContextWindows[showInfo.name]);
-        const contextWindowKey = Object.keys(showInfo.model_info || {}).find(
-          (key) => key.endsWith(".context_length")
-        );
-        if (!contextWindowKey)
-          return (LlmmanLLM.modelContextWindows[showInfo.name] = 4096);
-        LlmmanLLM.modelContextWindows[showInfo.name] =
-          showInfo.model_info[contextWindowKey];
-      });
-      LlmmanLLM.#slog(`Context windows cached for all models!`);
-    } catch (e) {
-      LlmmanLLM.#slog(`Error caching context windows`, e);
-      return;
-    }
+    await LlmmanLLM.contextWindows.refresh({ force });
   }
 
   /**
@@ -167,7 +172,7 @@ class LlmmanLLM {
       }
 
       if (!loaded?.context_length) return;
-      LlmmanLLM.modelContextWindows[this.model] = Number(loaded.context_length);
+      LlmmanLLM.contextWindows.set(this.model, loaded.context_length);
     } catch {
       // Model may not be pullable/loadable right now - the cached or default
       // context window will be used instead.
@@ -231,7 +236,7 @@ class LlmmanLLM {
   }
 
   static promptWindowLimit(modelName) {
-    if (Object.keys(LlmmanLLM.modelContextWindows).length === 0) {
+    if (LlmmanLLM.contextWindows.size === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -264,9 +269,8 @@ class LlmmanLLM {
   }
 
   static maxContextWindow(modelName = null) {
-    if (Object.keys(LlmmanLLM.modelContextWindows).length === 0 || !modelName)
-      return 4096;
-    return Number(LlmmanLLM.modelContextWindows[modelName]) || 16384;
+    if (LlmmanLLM.contextWindows.size === 0 || !modelName) return 4096;
+    return Number(LlmmanLLM.contextWindows.get(modelName)) || 16384;
   }
 
   async isValidChatCompletionModel(_ = "") {

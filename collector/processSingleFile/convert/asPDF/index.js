@@ -23,7 +23,8 @@ async function asPdf({
   const pageContent = [];
   let docs = await pdfLoader.load();
 
-  if (docs.length === 0) {
+  // A scan can carry a text layer with no text in it, which gives empty pages.
+  if (!docs.some((doc) => doc.pageContent?.length)) {
     console.log(
       `[asPDF] No text content found for ${filename}. Will attempt OCR parse.`
     );

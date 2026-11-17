@@ -18,6 +18,7 @@ const RESERVED_FILES = ["__HOTDIR__.md"];
  * @param {Object} options - The options for the file processing
  * @param {boolean} options.parseOnly - If true, the file will not be saved as a document even when `writeToServerDocuments` is called in the handler. Must be explicitly set to true to use.
  * @param {string} options.absolutePath - If provided, use this absolute path instead of resolving relative to WATCH_DIRECTORY. For internal use only.
+ * @param {string} options.originalFilename - If provided, the user-facing filename to use for titles and output names instead of `targetFilename`.
  * @param {Object} metadata - The metadata for the file processing
  * @returns {Promise<{success: boolean, reason: string, documents: Object[]}>} - The documents from the file processing
  */
@@ -53,7 +54,7 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
     };
 
   const fileExtension = path.extname(fullFilePath).toLowerCase();
-  if (fullFilePath.includes(".") && !fileExtension) {
+  if (path.basename(fullFilePath).includes(".") && !fileExtension) {
     return {
       success: false,
       reason: `No file extension found. This file cannot be processed.`,
@@ -84,7 +85,11 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
   ]);
   return await FileTypeProcessor({
     fullFilePath,
-    filename: targetFilename,
+    // Uploads land in the hotdir under a unique name so concurrent uploads
+    // cannot collide - titles and output names use the user-facing name.
+    filename: options.originalFilename
+      ? path.basename(normalizePath(options.originalFilename))
+      : targetFilename,
     options,
     metadata,
   });

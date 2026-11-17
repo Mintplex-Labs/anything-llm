@@ -10,15 +10,13 @@ const { OpenAI: OpenAIApi } = require("openai");
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 /**
  * OMLX (oMLX) is an OpenAI-compatible MLX inference server for Apple Silicon.
  * https://github.com/jundot/omlx
  */
 class OMLXLLM {
-  /** @see OMLXLLM.cacheContextWindows */
-  static modelContextWindows = {};
-
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.OMLX_LLM_BASE_PATH)
       throw new Error("No OMLX API Base Path was set.");
@@ -34,10 +32,9 @@ class OMLXLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
 
-    // Lazy load the limits to avoid blocking the main thread on cacheContextWindows
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
     this.limits = null;
-
-    OMLXLLM.cacheContextWindows(true);
+    OMLXLLM.contextWindows.ensure(this.model);
     this.#log(`initialized with model: ${this.model}`);
   }
 
@@ -51,7 +48,7 @@ class OMLXLLM {
 
   async assertModelContextLimits() {
     if (this.limits !== null) return;
-    await OMLXLLM.cacheContextWindows();
+    await OMLXLLM.contextWindows.ensure(this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -63,54 +60,47 @@ class OMLXLLM {
   }
 
   /**
-   * Cache the context windows for the models available on the OMLX server.
    * OMLX reports the effective context window of each model via the
-   * vLLM-compatible `max_model_len` field on `/v1/models`, so we can discover
-   * limits without the user having to set them manually.
-   * @param {boolean} force - Force the cache to be refreshed.
-   * @returns {Promise<void>} - A promise that resolves when the cache is refreshed.
+   * vLLM-compatible `max_model_len` field on `/v1/models`.
+   * @see ContextWindowCache
    */
-  static async cacheContextWindows(force = false) {
-    try {
-      // Skip if we already have cached context windows and we're not forcing a refresh
-      if (Object.keys(OMLXLLM.modelContextWindows).length > 0 && !force) return;
-
+  static contextWindows = new ContextWindowCache({
+    connection: () =>
+      `${process.env.OMLX_LLM_BASE_PATH}|${process.env.OMLX_LLM_API_KEY ?? ""}`,
+    fetchAll: async () => {
       const endpoint = new URL(
         parseOMLXBasePath(process.env.OMLX_LLM_BASE_PATH)
       );
       endpoint.pathname += "/models";
-      await fetch(endpoint.toString(), {
+      const res = await fetch(endpoint.toString(), {
         headers: {
           "Content-Type": "application/json",
           ...(process.env.OMLX_LLM_API_KEY
             ? { Authorization: `Bearer ${process.env.OMLX_LLM_API_KEY}` }
             : {}),
         },
-      })
-        .then((res) => {
-          if (!res.ok)
-            throw new Error(`OMLX:cacheContextWindows - ${res.statusText}`);
-          return res.json();
-        })
-        .then(({ data: models }) => {
-          models.forEach((model) => {
-            // A model can omit max_model_len - cache the 16k fallback for it
-            // so it is not later mistaken for a large-context model.
-            if (!model?.max_model_len)
-              return (OMLXLLM.modelContextWindows[model.id] = 16000);
-            OMLXLLM.modelContextWindows[model.id] = Number(model.max_model_len);
-          });
-        })
-        .catch((e) => {
-          OMLXLLM.#slog(`Error caching context windows`, e);
-          return;
-        });
+      });
+      if (!res.ok) throw new Error(`OMLX:/models ${res.statusText}`);
 
-      OMLXLLM.#slog(`Context windows cached for all models!`);
-    } catch (e) {
-      OMLXLLM.#slog(`Error caching context windows`, e);
-      return;
-    }
+      const { data: models = [] } = await res.json();
+      const limits = {};
+      for (const model of models) {
+        // A model can omit max_model_len - cache the 16k fallback for it
+        // so it is not later mistaken for a large-context model.
+        limits[model.id] = Number(model?.max_model_len) || 16000;
+      }
+      return limits;
+    },
+    log: (...args) => OMLXLLM.#slog(...args),
+  });
+
+  /**
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
+   */
+  static async cacheContextWindows(force = false) {
+    await OMLXLLM.contextWindows.refresh({ force });
   }
 
   #appendContext(contextTexts = []) {
@@ -130,7 +120,7 @@ class OMLXLLM {
   }
 
   static promptWindowLimit(modelName) {
-    if (Object.keys(OMLXLLM.modelContextWindows).length === 0) {
+    if (OMLXLLM.contextWindows.size === 0) {
       this.#slog(
         "No context windows cached - Context window may be inaccurately reported."
       );
@@ -163,9 +153,8 @@ class OMLXLLM {
   }
 
   static maxContextWindow(modelName = null) {
-    if (Object.keys(OMLXLLM.modelContextWindows).length === 0 || !modelName)
-      return 16384;
-    return Number(OMLXLLM.modelContextWindows[modelName]) || 16384;
+    if (OMLXLLM.contextWindows.size === 0 || !modelName) return 16384;
+    return Number(OMLXLLM.contextWindows.get(modelName)) || 16384;
   }
 
   async isValidChatCompletionModel(_ = "") {

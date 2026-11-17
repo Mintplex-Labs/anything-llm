@@ -9,6 +9,27 @@ const cronValidate = require("cron-validate").default;
 // when displaying.
 later.date.UTC();
 
+/**
+ * Cron allows 7 for Sunday in the day-of-week field, but @breejs/later reads it
+ * as Saturday. Write a 7, and a range ending at 7, with 0 instead.
+ * @param {string} cronExpression
+ * @returns {string}
+ */
+function sundayAsZero(cronExpression) {
+  const fields = String(cronExpression).trim().split(/\s+/);
+  if (fields.length !== 5) return cronExpression;
+  fields[4] = fields[4]
+    .split(",")
+    .map((part) => {
+      if (part === "7") return "0";
+      const range = /^([0-6])-7$/.exec(part);
+      if (!range) return part;
+      return range[1] === "0" ? "0-6" : `0,${range[1]}-6`;
+    })
+    .join(",");
+  return fields.join(" ");
+}
+
 const ScheduledJob = {
   writable: ["name", "prompt", "tools", "schedule", "enabled"],
 
@@ -22,6 +43,30 @@ const ScheduledJob = {
   MAX_ACTIVE: null,
 
   /**
+   * Parse a cron expression into a @breejs/later schedule, matching cron's
+   * day-field rules and reading weekday 7 as Sunday.
+   * @param {string} cronExpression
+   * @returns {object}
+   */
+  parseCron: function (cronExpression) {
+    const cron = sundayAsZero(cronExpression);
+    const [min, hour, dom, month, dow] = String(cron).trim().split(/\s+/);
+
+    // Cron runs when either day field matches if both are set, but later
+    // requires both to match, so give each day field its own schedule.
+    // A field starting with "*" (like "*/2") counts as unset.
+    if (/^\*/.test(dom) || /^\*/.test(dow)) return later.parse.cron(cron);
+
+    return {
+      schedules: [
+        ...later.parse.cron(`${min} ${hour} ${dom} ${month} *`).schedules,
+        ...later.parse.cron(`${min} ${hour} * ${month} ${dow}`).schedules,
+      ],
+      exceptions: [],
+    };
+  },
+
+  /**
    * Compute the next run time from a cron expression.
    * Uses @breejs/later which is already available via Bree.
    * @param {string} cronExpression
@@ -29,7 +74,7 @@ const ScheduledJob = {
    */
   computeNextRunAt: function (cronExpression) {
     try {
-      const sched = later.parse.cron(cronExpression);
+      const sched = this.parseCron(cronExpression);
       const next = later.schedule(sched).next(1);
       return next || null;
     } catch (error) {
@@ -87,9 +132,12 @@ const ScheduledJob = {
         }
       }
 
-      // Recompute nextRunAt if schedule changed
-      if (updates.schedule) {
-        updates.nextRunAt = this.computeNextRunAt(updates.schedule);
+      // Recompute nextRunAt if the schedule changed, or when the job is turned
+      // back on, since the stored value is from before it was disabled.
+      if (updates.schedule || updates.enabled === true) {
+        const schedule =
+          updates.schedule || (await this.get({ id: Number(id) }))?.schedule;
+        if (schedule) updates.nextRunAt = this.computeNextRunAt(schedule);
       }
 
       updates.updatedAt = new Date();

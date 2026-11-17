@@ -55,6 +55,15 @@ const KEY_MAPPING = {
           : "Invalid model type. Must be one of: default, reasoning.",
     ],
   },
+  AzureOpenAiAgentApi: {
+    envKey: "AZURE_OPENAI_AGENT_API",
+    checks: [
+      (input) =>
+        ["chat", "responses"].includes(input)
+          ? null
+          : "Invalid agent API. Must be one of: chat, responses.",
+    ],
+  },
 
   // Anthropic Settings
   AnthropicApiKey: {
@@ -356,6 +365,18 @@ const KEY_MAPPING = {
   ImageGenerationGeminiApiKey: {
     envKey: "IMAGE_GEN_GEMINI_API_KEY",
     checks: [isNotEmpty],
+  },
+  ImageGenerationMinimaxApiKey: {
+    envKey: "IMAGE_GEN_MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationMinimaxResolution: {
+    envKey: "IMAGE_GEN_MINIMAX_RESOLUTION",
+    checks: [],
+  },
+  ImageGenerationMinimaxPromptEnhancement: {
+    envKey: "IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT",
+    checks: [],
   },
 
   // Vector Database Selection Settings
@@ -708,6 +729,10 @@ const KEY_MAPPING = {
   },
   AgentFirecrawlApiKey: {
     envKey: "AGENT_FIRECRAWL_API_KEY",
+    checks: [],
+  },
+  AgentDeepSeekApiKey: {
+    envKey: "AGENT_DEEPSEEK_API_KEY",
     checks: [],
   },
 
@@ -1341,6 +1366,7 @@ function supportedImageGenerationProvider(input = "") {
     "localai",
     "llmman",
     "gemini",
+    "minimax",
   ];
   return supported.includes(input)
     ? null
@@ -1615,6 +1641,7 @@ function dumpENV() {
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
     "DISABLE_SWAGGER_DOCS",
+    "DISABLE_METRICS_ENDPOINT",
     "WORKSPACE_DELETION_PROTECTION",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",

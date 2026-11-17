@@ -111,6 +111,25 @@ function toValidNumber(number = null, fallback = null) {
 }
 
 /**
+ * Parses a caller-supplied integer (query string or JSON body value) and clamps it.
+ * Anything that does not parse to a finite integer returns the fallback, so bad
+ * input never reaches Prisma as NaN, where `take`/`skip` would throw.
+ * @param {any} value - The raw value from the request.
+ * @param {number} fallback - Returned when the value is not an integer.
+ * @param {{min?: number, max?: number}} bounds - Inclusive clamp applied to parsed values.
+ * @returns {number}
+ */
+function toBoundedInt(
+  value,
+  fallback,
+  { min = -Infinity, max = Infinity } = {}
+) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(max, Math.max(min, parsed));
+}
+
+/**
  * Decode HTML entities from a string.
  * The DMR response is encoded with HTML entities, so we need to decode them
  * so we can parse the JSON and report the progress percentage.
@@ -137,5 +156,6 @@ module.exports = {
   safeJsonParse,
   isValidUrl,
   toValidNumber,
+  toBoundedInt,
   decodeHtmlEntities,
 };

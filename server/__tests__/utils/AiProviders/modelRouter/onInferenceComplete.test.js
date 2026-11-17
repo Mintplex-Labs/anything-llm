@@ -34,6 +34,7 @@ const NON_FALLBACK_ROUTE = {
 function makeRouter() {
   const router = new AnythingLLMModelRouter({ slug: "test-ws", name: "Test" });
   router._routeKey = "user:1|test-ws|thread:1";
+  router._routeState = {};
   router.resolvedRoute = { ...NON_FALLBACK_ROUTE };
   return router;
 }
@@ -48,7 +49,11 @@ describe("AnythingLLMModelRouter.onInferenceComplete", () => {
     router.onInferenceComplete();
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith(router._routeKey, router.resolvedRoute);
+    expect(spy).toHaveBeenCalledWith(
+      router._routeState,
+      router._routeKey,
+      router.resolvedRoute
+    );
     spy.mockRestore();
   });
 

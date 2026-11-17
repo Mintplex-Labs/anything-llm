@@ -143,6 +143,46 @@ describe("htmlToMarkdown", () => {
     });
   });
 
+  describe("preformatted text", () => {
+    it("keeps the text of a <pre> without <code> as it is", async () => {
+      // How a browser shows a text/plain URL, eg: a raw README.md.
+      const markdown = await htmlToMarkdown(
+        "<body><pre># Setup\n\nRun `python __main__.py`.\n</pre></body>"
+      );
+      expect(markdown).toBe("```\n# Setup\n\nRun `python __main__.py`.\n```");
+    });
+
+    it("keeps highlighted spans and <br> line breaks", async () => {
+      const markdown = await htmlToMarkdown(
+        '<div class="highlight"><pre><span class="k">def</span> __init__(self):<br>    items[1:]</pre></div>'
+      );
+      expect(markdown).toBe("```\ndef __init__(self):\n    items[1:]\n```");
+    });
+
+    it("writes a <pre> in a table cell as one inline code span", async () => {
+      const markdown = await htmlToMarkdown(
+        "<table><tr><th>Call</th><th>Body</th></tr>" +
+          "<tr><td>a</td><td><pre>def f():\n    return x_1</pre></td></tr>" +
+          "<tr><td>b</td><td><pre><code>use `x`\nok</code></pre></td></tr>" +
+          "<tr><td>c</td><td><pre>`tick`</pre></td></tr></table>"
+      );
+      expect(markdown).toBe(
+        [
+          "| Call | Body |",
+          "| --- | --- |",
+          "| a | `def f(): return x_1` |",
+          "| b | ``use `x` ok`` |",
+          "| c | `` `tick` `` |",
+        ].join("\n")
+      );
+    });
+
+    it("fences it past any fence inside the text", async () => {
+      const markdown = await htmlToMarkdown("<pre>```\na_b\n```</pre>");
+      expect(markdown).toBe("````\n```\na_b\n```\n````");
+    });
+  });
+
   describe("long URL stripping", () => {
     const longUrl = `https://ex.com/${"a".repeat(300)}`;
 

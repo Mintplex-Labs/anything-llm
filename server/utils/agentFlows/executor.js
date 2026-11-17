@@ -5,18 +5,70 @@ const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
 const { safeJsonParse } = require("../http");
 
+/**
+ * Whether a position in a JSON text is inside a string literal.
+ * Inside a string a backslash escapes the next character, so \" does not end
+ * the string but the quote after \\ does.
+ * @param {string} text - The JSON text
+ * @param {number} position - The position to check
+ * @returns {boolean} True if the position is inside a string literal
+ */
+function isInsideJsonString(text, position) {
+  let inString = false;
+  for (let i = 0; i < position; i++) {
+    if (inString && text[i] === "\\") {
+      i++;
+      continue;
+    }
+    if (text[i] === '"') inString = !inString;
+  }
+  return inString;
+}
+
 class FlowExecutor {
   constructor() {
     this.variables = {};
+    this.staticVariables = new Set();
     this.introspect = (...args) => console.log("[introspect] ", ...args);
     this.logger = console.info;
     this.aibitat = null;
   }
 
   attachLogging(introspectFn = null, loggerFn = null) {
-    this.introspect =
+    const introspect =
       introspectFn || ((...args) => console.log("[introspect] ", ...args));
+    this.introspect = (message, ...args) =>
+      introspect(this.redactStaticValues(message), ...args);
     this.logger = loggerFn || console.info;
+  }
+
+  /**
+   * Returns a copy of the flow variables without static variables. Static
+   * variables are hidden from the LLM, so they must never be part of what the
+   * flow reports back as its result.
+   * @returns {Object}
+   */
+  publicVariables() {
+    return Object.fromEntries(
+      Object.entries(this.variables).filter(
+        ([name]) => !this.staticVariables.has(name)
+      )
+    );
+  }
+
+  /**
+   * Masks static variable values in a status message shown to the user.
+   * @param {*} message
+   * @returns {*}
+   */
+  redactStaticValues(message) {
+    if (typeof message !== "string") return message;
+    let redacted = message;
+    for (const name of this.staticVariables) {
+      const value = String(this.variables[name] ?? "");
+      if (value) redacted = redacted.split(value).join("[redacted]");
+    }
+    return redacted;
   }
 
   /**
@@ -143,9 +195,7 @@ class FlowExecutor {
     return body.replace(/\${([^}]+)}/g, (match, varName, offset) => {
       const value = this.getValueFromPath(this.variables, varName);
       if (value === undefined) return match;
-      // An odd number of unescaped quotes before the match means we are inside a string literal
-      const quotesBefore = body.slice(0, offset).match(/(?<!\\)"/g) || [];
-      const inString = quotesBefore.length % 2 === 1;
+      const inString = isInsideJsonString(body, offset);
       // JSON.stringify wraps in quotes, slice them off since the template already has its own
       return inString ? JSON.stringify(String(value)).slice(1, -1) : value;
     });
@@ -177,7 +227,7 @@ class FlowExecutor {
             }
           });
         }
-        result = this.variables;
+        result = this.publicVariables();
         break;
       case FLOW_TYPES.API_CALL.type:
         result = await executeApiCall(config, context);
@@ -212,12 +262,18 @@ class FlowExecutor {
   async executeFlow(flow, initialVariables = {}, aibitat) {
     await Telemetry.sendTelemetry("agent_flow_execution_started");
 
+    const startVariables =
+      flow.config.steps.find((s) => s.type === "start")?.config?.variables ||
+      [];
+    this.staticVariables = new Set(
+      startVariables
+        .filter((v) => v.name && v.type === "static")
+        .map((v) => v.name)
+    );
+
     // Initialize variables with both initial values and any passed-in values
     this.variables = {
-      ...(
-        flow.config.steps.find((s) => s.type === "start")?.config?.variables ||
-        []
-      ).reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
+      ...startVariables.reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
       ...initialVariables, // This will override any default values with passed-in values
     };
 
@@ -247,7 +303,7 @@ class FlowExecutor {
     return {
       success: results.every((r) => r.success),
       results,
-      variables: this.variables,
+      variables: this.publicVariables(),
       directOutput: directOutputResult,
     };
   }

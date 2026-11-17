@@ -25,9 +25,10 @@ const AGENT_AWAITING_USER_EVENTS = [
 // of these can arrive after the execution loop already finished (e.g.
 // rename_thread fires once the async chat save + thread auto-rename complete),
 // so they must not re-show the stop generation button.
-const AGENT_PASSIVE_EVENTS = ["rename_thread"];
+const AGENT_PASSIVE_EVENTS = ["rename_thread", "pptxSlidePreview"];
 const AGENT_PASSIVE_STREAM_EVENTS = [
   "chatId",
+  "promptChatId",
   "usageMetrics",
   "citations",
   "removeStatusResponse",
@@ -64,6 +65,25 @@ function takeBufferedCitations(uuid) {
   bufferedCitations.delete(uuid);
   return citations;
 }
+
+/**
+ * Set the saved chat id on the latest prompt so it stays editable if the reply
+ * is stopped. Clears the pending placeholder's userMessage so the update does
+ * not resend the prompt.
+ * @param {Object[]} history
+ * @param {number} chatId
+ * @returns {Object[]}
+ */
+function tagPromptChatId(history, chatId) {
+  if (!chatId) return history;
+  const promptIdx = history.findLastIndex((msg) => msg.role === "user");
+  return history.map((msg, i) => {
+    if (i === promptIdx) return { ...msg, chatId };
+    if (msg.pending) return { ...msg, userMessage: null };
+    return msg;
+  });
+}
+
 const handledEvents = [
   "statusResponse",
   "fileDownloadCard",
@@ -72,9 +92,11 @@ const handledEvents = [
   "scheduledJobCreated",
   "awaitingFeedback",
   "wssFailure",
+  "agentSessionExited",
   "rechartVisualize",
   "toolApprovalRequest",
   "clarificationRequest",
+  "pptxSlidePreview",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -153,6 +175,12 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
   }
 
   if (data.type === "reportStreamEvent") {
+    // Arrives before any reply, so it must not set the streaming flag below.
+    if (data.content.type === "promptChatId")
+      return setChatHistory((prev) =>
+        tagPromptChatId(prev, data.content.chatId)
+      );
+
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
     // If we get this message we know the provider supports agentic streaming
     socket.supportsAgentStreaming = true;
@@ -318,6 +346,39 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     });
   }
 
+  // Images of a presentation's slides while it is built: one card per deck
+  // that gains a slide with each event. They live only in this session.
+  if (data.type === "pptxSlidePreview") {
+    const { deckId, index, image, done } = data.content;
+    return setChatHistory((prev) => {
+      const card = prev.find((msg) => msg.uuid === deckId);
+      // A deck that never sent a slide gets no card.
+      if (!card && !image) return prev;
+      const slides = [...(card?.content?.slides || [])];
+      if (
+        Number.isInteger(index) &&
+        typeof image === "string" &&
+        image.startsWith("data:image/")
+      )
+        slides[index] = image;
+      const next = {
+        type: "pptxSlidePreview",
+        uuid: deckId,
+        content: { slides, done: !!done || !!card?.content?.done },
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      };
+      return card
+        ? prev.map((msg) => (msg.uuid === deckId ? next : msg))
+        : [...prev.filter((msg) => !!msg.content), next];
+    });
+  }
+
   if (data.type === "fileDownloadCard") {
     return setChatHistory((prev) => {
       return [
@@ -422,6 +483,26 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         },
       ];
     });
+  }
+
+  // Sent only when the user ends the session with an exit command - not on
+  // timeouts, aborts, or disconnects. Live only; it is never persisted.
+  if (data.type === "agentSessionExited") {
+    return setChatHistory((prev) => [
+      ...prev.filter((msg) => !!msg.content),
+      {
+        uuid: v4(),
+        type: "agentSessionExited",
+        content: data.content,
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      },
+    ]);
   }
 
   if (data.type === "toolApprovalRequest") {
