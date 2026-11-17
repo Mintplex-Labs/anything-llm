@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 import Toggle from "@/components/lib/Toggle";
+import showToast from "@/utils/toast";
 
 /**
  * Anonymous telemetry opt-out toggle. Turning it off sends the
@@ -11,6 +12,7 @@ import Toggle from "@/components/lib/Toggle";
  */
 export default function TelemetryToggle({ verbose = false }) {
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [telemetry, setTelemetry] = useState(true);
   const { t } = useTranslation();
 
@@ -23,11 +25,28 @@ export default function TelemetryToggle({ verbose = false }) {
     fetchSettings();
   }, []);
 
-  async function toggleTelemetry() {
-    await System.updateSystem({
-      DisableTelemetry: !telemetry ? "false" : "true",
-    });
-    setTelemetry(!telemetry);
+  async function toggleTelemetry(enabled) {
+    setSaving(true);
+    const disableTelemetry = enabled ? "false" : "true";
+    const result = await System.updateSystem({
+      DisableTelemetry: disableTelemetry,
+    }).catch(() => null);
+    setSaving(false);
+
+    if (
+      result?.error ||
+      result?.newValues?.DisableTelemetry !== disableTelemetry
+    ) {
+      showToast(
+        t(
+          "privacy.telemetry-save-failed",
+          "Could not save the telemetry setting. Please try again."
+        ),
+        "error"
+      );
+      return;
+    }
+    setTelemetry(enabled);
   }
 
   if (loading) return null;
@@ -38,6 +57,7 @@ export default function TelemetryToggle({ verbose = false }) {
         className="mb-2"
         label={t("privacy.anonymous")}
         enabled={telemetry}
+        disabled={saving}
         onChange={toggleTelemetry}
       />
       {verbose ? <LongDescription /> : <ShortDescription />}
