@@ -596,20 +596,21 @@ class FilesystemManager {
         });
 
         if (isMatch) {
-          const originalIndent = contentLines[i].match(/^\s*/)?.[0] || "";
+          // Each new line takes the indentation of the file line it replaces,
+          // shifted by its indentation relative to the matching oldText line.
+          // Lines past the end of oldText are placed relative to its last line.
           const newLines = normalizedNew.split("\n").map((line, j) => {
-            if (j === 0) return originalIndent + line.trimStart();
-            const oldIndent = oldLines[j]?.match(/^\s*/)?.[0] || "";
+            if (!line.trim()) return line;
+            const k = Math.min(j, oldLines.length - 1);
+            const fileIndent = potentialMatch[k].match(/^\s*/)?.[0] || "";
+            const oldIndent = oldLines[k].match(/^\s*/)?.[0] || "";
             const newIndent = line.match(/^\s*/)?.[0] || "";
-            if (oldIndent && newIndent) {
-              const relativeIndent = newIndent.length - oldIndent.length;
-              return (
-                originalIndent +
-                " ".repeat(Math.max(0, relativeIndent)) +
-                line.trimStart()
-              );
-            }
-            return line;
+            const delta = newIndent.length - oldIndent.length;
+            const indent =
+              delta >= 0
+                ? fileIndent + newIndent.slice(newIndent.length - delta)
+                : fileIndent.slice(0, Math.max(0, fileIndent.length + delta));
+            return indent + line.trimStart();
           });
 
           contentLines.splice(i, oldLines.length, ...newLines);

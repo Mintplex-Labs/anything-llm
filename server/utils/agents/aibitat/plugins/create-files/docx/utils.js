@@ -415,7 +415,7 @@ async function processList(
             ...(await processInlineElements(wrapper, docx, {}, log))
           );
         }
-      } else if (child.nodeType === 3 && child.textContent.trim()) {
+      } else if (child.nodeType === 3 && child.textContent) {
         const wrapper = li.ownerDocument.createElement("span");
         wrapper.textContent = child.textContent;
         inlineChildren.push(
@@ -481,6 +481,9 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
 
   // Each top-level list gets its own numbering instance so ordered lists restart at 1.
   let listInstance = 0;
+  // A numbered list that a code block or paragraph interrupted comes back from
+  // marked as <ol start="N">, so it keeps counting in the previous list's instance.
+  let lastOrdered = null;
 
   for (const child of body.children) {
     const tagName = child.tagName.toLowerCase();
@@ -527,7 +530,11 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
           );
         }
       } else if (tagName === "ul" || tagName === "ol") {
-        listInstance++;
+        const start = Number(child.getAttribute("start")) || 1;
+        const continues = tagName === "ol" && lastOrdered?.next === start;
+        const instance = continues ? lastOrdered.instance : ++listInstance;
+        if (tagName === "ol")
+          lastOrdered = { instance, next: start + child.children.length };
         elements.push(
           ...(await processList(
             child,
@@ -535,7 +542,7 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
             tagName === "ol",
             0,
             log,
-            listInstance
+            instance
           ))
         );
       } else if (tagName === "table") {
