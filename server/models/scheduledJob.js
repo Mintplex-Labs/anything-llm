@@ -43,38 +43,25 @@ const ScheduledJob = {
   MAX_ACTIVE: null,
 
   /**
-   * Parse a cron expression into a @breejs/later schedule with standard cron
-   * day matching and weekday 7 treated as Sunday.
+   * Parse a cron expression into a @breejs/later schedule, matching cron's
+   * day-field rules and reading weekday 7 as Sunday.
    * @param {string} cronExpression
    * @returns {object}
    */
   parseCron: function (cronExpression) {
     const cron = sundayAsZero(cronExpression);
-    const fields = String(cron).trim().split(/\s+/);
-    const [minute, hour, dayOfMonth, month, dayOfWeek] = fields;
+    const [min, hour, dom, month, dow] = String(cron).trim().split(/\s+/);
 
-    // When both day fields are restricted, cron fires if either one matches.
-    // A field starting with "*" (including steps like "*/2") counts as
-    // unrestricted, as in cronie, so both fields must match together.
-    if (
-      fields.length !== 5 ||
-      /^[*?]/.test(dayOfMonth) ||
-      /^[*?]/.test(dayOfWeek)
-    )
-      return later.parse.cron(cron);
-
-    const byMonthDay = later.parse.cron(
-      `${minute} ${hour} ${dayOfMonth} ${month} *`
-    );
-    const byWeekday = later.parse.cron(
-      `${minute} ${hour} * ${month} ${dayOfWeek}`
-    );
-    // Later's nearest-weekday extension (e.g. "15W") produces global
-    // exceptions that cannot be split per schedule, so parse it as one.
-    if (byMonthDay.exceptions.length) return later.parse.cron(cron);
+    // Cron runs when either day field matches if both are set, but later
+    // requires both to match, so give each day field its own schedule.
+    // A field starting with "*" (like "*/2") counts as unset.
+    if (/^\*/.test(dom) || /^\*/.test(dow)) return later.parse.cron(cron);
 
     return {
-      schedules: [...byMonthDay.schedules, ...byWeekday.schedules],
+      schedules: [
+        ...later.parse.cron(`${min} ${hour} ${dom} ${month} *`).schedules,
+        ...later.parse.cron(`${min} ${hour} * ${month} ${dow}`).schedules,
+      ],
       exceptions: [],
     };
   },
