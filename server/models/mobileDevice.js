@@ -167,7 +167,7 @@ const MobileDevice = {
   /**
    * Fetches mobile device by params.
    * @param {object} clause - Prisma props for search
-   * @returns {Promise<import("@prisma/client").desktop_mobile_devices[]>}
+   * @returns {Promise<import("@prisma/client").desktop_mobile_devices|null>}
    */
   get: async function (clause = {}, include = null) {
     try {
@@ -178,7 +178,7 @@ const MobileDevice = {
       return device;
     } catch (error) {
       console.error("FAILED TO GET MOBILE DEVICE.", error);
-      return [];
+      return null;
     }
   },
 
