@@ -155,7 +155,7 @@ module.exports.FilesystemSearchFiles = {
 
                 for (const dir of allowedDirs) {
                   try {
-                    const { files } = searchFilesWithRipgrepGlob({
+                    const { files } = await searchFilesWithRipgrepGlob({
                       searchPath: dir,
                       patterns: effectivePatterns,
                       excludePatterns,
@@ -201,7 +201,7 @@ module.exports.FilesystemSearchFiles = {
 
               for (const dir of allowedDirs) {
                 try {
-                  const results = searchWithRipgrep({
+                  const results = await searchWithRipgrep({
                     searchPath: dir,
                     pattern,
                     filePattern,
@@ -254,15 +254,14 @@ module.exports.FilesystemSearchFiles = {
 
 /**
  * Search for files by glob pattern using ripgrep (fast file listing).
- * @returns {{ files: string[], method: string }}
+ * @returns {Promise<{ files: string[], method: string }>}
  */
-function searchFilesWithRipgrepGlob({
+async function searchFilesWithRipgrepGlob({
   searchPath,
   patterns,
   excludePatterns = [],
   maxResults = 100,
 }) {
-  const { spawnSync } = require("child_process");
   let rgPath;
   try {
     ({ rgPath } = require("@vscode/ripgrep"));
@@ -283,22 +282,13 @@ function searchFilesWithRipgrepGlob({
   // The "--" prevents searchPath from being parsed as an option if it starts with "-"
   // (defense against argument injection attacks)
   args.push("--", searchPath);
-  const result = spawnSync(rgPath, args, {
-    encoding: "utf-8",
-    maxBuffer: 10 * 1024 * 1024,
-  });
-
-  if (result.status > 1) {
-    throw new Error(
-      result.stderr || `ripgrep exited with code ${result.status}`
-    );
-  }
+  const stdout = await runRipgrep(rgPath, args);
 
   // unique files
   const files = new Set();
-  if (!result.stdout) return { files: Array.from(files), method: "ripgrep" };
+  if (!stdout) return { files: Array.from(files), method: "ripgrep" };
 
-  const lines = result.stdout.trim().split("\n").filter(Boolean);
+  const lines = stdout.trim().split("\n").filter(Boolean);
   for (const line of lines) {
     files.add(line);
     if (files.size >= maxResults) break;
@@ -308,9 +298,9 @@ function searchFilesWithRipgrepGlob({
 }
 
 /**
- * Search file contents using @vscode/ripgrep binary directly via spawnSync.
+ * Search file contents using @vscode/ripgrep without blocking the event loop.
  */
-function searchWithRipgrep({
+async function searchWithRipgrep({
   searchPath,
   pattern,
   filePattern,
@@ -318,7 +308,6 @@ function searchWithRipgrep({
   caseSensitive,
   maxResults,
 }) {
-  const { spawnSync } = require("child_process");
   let rgPath;
   try {
     ({ rgPath } = require("@vscode/ripgrep"));
@@ -347,21 +336,11 @@ function searchWithRipgrep({
     throw new Error("search pattern must not start with '-'");
   }
   args.push("--", pattern, searchPath);
-  const result = spawnSync(rgPath, args, {
-    encoding: "utf-8",
-    maxBuffer: 10 * 1024 * 1024, // 10MB
-  });
-
-  // Exit code 1 means no matches (not an error)
-  if (result.status > 1) {
-    throw new Error(
-      result.stderr || `ripgrep exited with code ${result.status}`
-    );
-  }
+  const stdout = await runRipgrep(rgPath, args);
 
   const results = [];
-  if (!result.stdout) return results;
-  const matches = safeJsonParse(result.stdout, []).filter(
+  if (!stdout) return results;
+  const matches = safeJsonParse(stdout, []).filter(
     (m) => m.type === "match" && m.data
   );
 
@@ -374,6 +353,25 @@ function searchWithRipgrep({
   }
 
   return results;
+}
+
+/**
+ * Run ripgrep asynchronously, retaining the output limit and no-match semantics.
+ */
+function runRipgrep(rgPath, args) {
+  const { execFile } = require("child_process");
+  return new Promise((resolve, reject) => {
+    execFile(
+      rgPath,
+      args,
+      { encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 },
+      (error, stdout) => {
+        // Exit code 1 means no matches; other failures must reach the caller.
+        if (error && error.code !== 1) return reject(error);
+        resolve(stdout);
+      }
+    );
+  });
 }
 
 /**
