@@ -10,15 +10,33 @@ const prisma = require("../utils/prisma");
  * @property {string} connection_information
  * @property {string} session_id
  * @property {boolean} include
+ * @property {boolean|null} feedbackScore
  */
 
 const EmbedChats = {
+  validations: {
+    // Embed visitors can only mark a reply as good or clear it.
+    feedbackScore: (value = null) => (value === true ? true : null),
+  },
+
+  /**
+   * Stores a prompt and its reply for an embed session.
+   * @param {object} params
+   * @param {number} params.embedId
+   * @param {string} params.prompt
+   * @param {object} [params.response] - reply text, type, sources, and metrics
+   * @param {object} [params.connection_information]
+   * @param {string} params.sessionId
+   * @param {boolean} [params.include] - `false` stores the chat outside the session's visible history
+   * @returns {Promise<{chat: EmbedChat|null, message: string|null}>}
+   */
   new: async function ({
     embedId,
     prompt,
     response = {},
     connection_information = {},
     sessionId,
+    include = true,
   }) {
     try {
       const chat = await prisma.embed_chats.create({
@@ -28,6 +46,7 @@ const EmbedChats = {
           response: JSON.stringify(response),
           connection_information: JSON.stringify(connection_information),
           session_id: String(sessionId),
+          include: include !== false,
         },
       });
       return { chat, message: null };
@@ -103,6 +122,26 @@ const EmbedChats = {
       return;
     } catch (error) {
       console.error(error.message);
+    }
+  },
+
+  /**
+   * Sets or clears the feedback score on an embed chat.
+   * @param {number} chatId
+   * @param {boolean|null} feedbackScore - `true` marks the reply as good, anything else clears it
+   * @returns {Promise<boolean>} whether the update succeeded
+   */
+  updateFeedbackScore: async function (chatId = null, feedbackScore = null) {
+    if (!chatId) return false;
+    try {
+      await prisma.embed_chats.update({
+        where: { id: Number(chatId) },
+        data: { feedbackScore: this.validations.feedbackScore(feedbackScore) },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
     }
   },
 
