@@ -14,6 +14,8 @@ work on, check the [good first issue](https://github.com/mintplex-labs/anything-
 
 If there's an issue you are interested in working on, please leave a comment on the issue. This will help us avoid duplicate work. Additionally, if you have questions about the issue, please ask them in the issue comments. We are happy to provide guidance on how to approach the issue.
 
+**Do not open PRs for issues labeled `core-team-only`.** That label means the core team is building it, usually because the change touches core behavior or is already in progress. PRs for these issues will be closed without review, however complete they are.
+
 ## Before you start
 
 Keep in mind that we are a small team and have limited resources. We will do our best to review and merge your PRs, but please be patient. Ultimately, **we become the maintainer** of your changes. It is our responsibility to make sure that the changes are working as expected and are of high quality as well as being compatible with the rest of the project both for existing users and for future users & features.
