@@ -154,13 +154,15 @@ module.exports.FilesystemSearchFiles = {
                   `${this.caller}: Searching for "${pattern}"${patternNote} in ${allowedDirs.length} allowed director${allowedDirs.length === 1 ? "y" : "ies"}`
                 );
 
+                // Collect one past maxResults only to learn whether more exist.
+                const collectLimit = maxResults + 1;
                 for (const dir of allowedDirs) {
                   try {
                     const { files } = await searchFilesWithRipgrepGlob({
                       searchPath: dir,
                       patterns: effectivePatterns,
                       excludePatterns,
-                      maxResults: maxResults - allResults.length,
+                      maxResults: collectLimit - allResults.length,
                     });
 
                     for (const filePath of files) {
@@ -173,12 +175,13 @@ module.exports.FilesystemSearchFiles = {
                     // Skip directories that fail (e.g., don't exist)
                   }
 
-                  if (allResults.length >= maxResults) break;
+                  if (allResults.length >= collectLimit) break;
                 }
 
+                const hasMore = allResults.length > maxResults;
                 const limitedResults = allResults.slice(0, maxResults);
                 this.super.introspect(
-                  `Found ${allResults.length} matching files${allResults.length > maxResults ? ` (showing first ${maxResults})` : ""}`
+                  `Found ${limitedResults.length}${hasMore ? "+" : ""} matching files${hasMore ? ` (showing first ${maxResults})` : ""}`
                 );
 
                 if (limitedResults.length === 0) return "No matches found";
@@ -191,7 +194,10 @@ module.exports.FilesystemSearchFiles = {
                   );
                 }
 
-                return limitedResults.join("\n");
+                return (
+                  limitedResults.join("\n") +
+                  (hasMore ? moreResultsHint(maxResults) : "")
+                );
               }
 
               // Content search mode using ripgrep across all allowed directories
@@ -202,6 +208,8 @@ module.exports.FilesystemSearchFiles = {
               const allResults = [];
               const seenKeys = new Set();
 
+              // Collect one past maxResults only to learn whether more exist.
+              const collectLimit = maxResults + 1;
               for (const dir of allowedDirs) {
                 try {
                   const results = await searchWithRipgrep({
@@ -210,7 +218,7 @@ module.exports.FilesystemSearchFiles = {
                     filePattern,
                     excludePatterns,
                     caseSensitive,
-                    maxResults: maxResults - allResults.length,
+                    maxResults: collectLimit - allResults.length,
                   });
 
                   for (const result of results) {
@@ -221,18 +229,22 @@ module.exports.FilesystemSearchFiles = {
                     }
                   }
 
-                  if (allResults.length >= maxResults) break;
+                  if (allResults.length >= collectLimit) break;
                 } catch {
                   // Skip directories that fail
                 }
               }
 
+              const hasMore = allResults.length > maxResults;
+              const limitedResults = allResults.slice(0, maxResults);
               this.super.introspect(
-                `Found ${allResults.length} matches${allResults.length > maxResults ? ` (showing first ${maxResults})` : ""}`
+                `Found ${limitedResults.length}${hasMore ? "+" : ""} matches${hasMore ? ` (showing first ${maxResults})` : ""}`
               );
 
               if (includeFileContents) {
-                const uniqueFiles = [...new Set(allResults.map((r) => r.file))];
+                const uniqueFiles = [
+                  ...new Set(limitedResults.map((r) => r.file)),
+                ];
                 return await readMatchingFileContents.call(
                   this,
                   uniqueFiles,
@@ -240,7 +252,7 @@ module.exports.FilesystemSearchFiles = {
                 );
               }
 
-              return formatSearchResults(allResults, maxResults);
+              return formatSearchResults(limitedResults, hasMore, maxResults);
             } catch (e) {
               this.super.handlerProps.log(
                 `filesystem-search-files error: ${e.message}`
@@ -408,24 +420,34 @@ async function searchWithRipgrep({
 }
 
 /**
- * Format search results for display.
+ * Tells the model its results were cut off at maxResults, so it can tell the
+ * search was too broad and refine it instead of treating the list as complete.
+ * @param {number} maxResults
+ * @returns {string}
  */
-function formatSearchResults(results, maxResults) {
+function moreResultsHint(maxResults) {
+  return (
+    `\n\n[Showing the first ${maxResults} results - more exist. ` +
+    `The search may be too broad; refine the pattern or narrow it with filePattern/excludePatterns to find what you need.]`
+  );
+}
+
+/**
+ * Format content search results for display.
+ * @param {{ file: string, line: number, content: string }[]} results - already limited to maxResults
+ * @param {boolean} hasMore - whether more matches exist beyond `results`
+ * @param {number} maxResults
+ */
+function formatSearchResults(results, hasMore, maxResults) {
   if (results.length === 0) {
     return "No matches found";
   }
 
   const formatted = results
-    .slice(0, maxResults)
     .map((r) => `${r.file}:${r.line}: ${r.content}`)
     .join("\n");
 
-  const suffix =
-    results.length > maxResults
-      ? `\n\n... and ${results.length - maxResults} more matches`
-      : "";
-
-  return formatted + suffix;
+  return formatted + (hasMore ? moreResultsHint(maxResults) : "");
 }
 
 /**
