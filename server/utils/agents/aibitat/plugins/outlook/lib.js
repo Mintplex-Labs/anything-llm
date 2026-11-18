@@ -39,15 +39,19 @@ function needsFullBody(msg) {
 }
 
 /**
- * Parses a comma-separated email string into Graph API recipient format.
- * @param {string} emailString - Comma-separated email addresses
+ * Parses an email string into Graph API recipient format. Addresses can be
+ * separated by commas or by semicolons (the separator Outlook itself uses).
+ * Empty entries, e.g. from a trailing separator, are dropped.
+ * @param {string} emailString - Comma or semicolon separated email addresses
  * @returns {Array<{emailAddress: {address: string}}>}
  */
 function parseEmailRecipients(emailString) {
   if (!emailString) return [];
-  return emailString.split(",").map((email) => ({
-    emailAddress: { address: email.trim() },
-  }));
+  return emailString
+    .split(/[,;]/)
+    .map((email) => email.trim())
+    .filter(Boolean)
+    .map((address) => ({ emailAddress: { address } }));
 }
 
 /**
