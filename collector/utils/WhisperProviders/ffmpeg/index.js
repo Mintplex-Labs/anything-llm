@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync, spawnSync } = require("child_process");
+const { execSync, spawn } = require("child_process");
 const { patchShellEnvironmentPath } = require("../../shell");
 /**
  * Custom FFMPEG wrapper class for audio file conversion.
@@ -86,28 +86,44 @@ class FFMPEGWrapper {
 
     this.log(`Converting ${path.basename(inputPath)} to WAV format...`);
     // Convert to 16k hz mono 32f
-    const result = spawnSync(
-      await this.ffmpegPath(),
-      [
-        "-i",
-        inputPath,
-        "-ar",
-        "16000",
-        "-ac",
-        "1",
-        "-acodec",
-        "pcm_f32le",
-        "-y",
-        outputPath,
-      ],
-      { encoding: "utf8" }
-    );
+    const result = await this.#run(await this.ffmpegPath(), [
+      "-i",
+      inputPath,
+      "-ar",
+      "16000",
+      "-ac",
+      "1",
+      "-acodec",
+      "pcm_f32le",
+      "-y",
+      outputPath,
+    ]);
 
     // ffmpeg writes progress to stderr
     if (result.stderr) this.log(result.stderr.trim());
     if (result.status !== 0) throw new Error(`FFMPEG conversion failed`);
     this.log(`Conversion complete: ${path.basename(outputPath)}`);
     return true;
+  }
+
+  /**
+   * Runs ffmpeg without blocking the event loop. A long conversion would
+   * otherwise stall every other request the collector is serving until it
+   * finished.
+   * @param {string} binary - Path to the ffmpeg binary
+   * @param {string[]} args
+   * @returns {Promise<{status: number|null, stderr: string}>} status is null if ffmpeg could not be started
+   */
+  #run(binary, args) {
+    return new Promise((resolve) => {
+      let stderr = "";
+      const child = spawn(binary, args, { windowsHide: true });
+      child.stdout.resume();
+      child.stderr.setEncoding("utf8");
+      child.stderr.on("data", (chunk) => (stderr += chunk));
+      child.on("error", () => resolve({ status: null, stderr }));
+      child.on("close", (status) => resolve({ status, stderr }));
+    });
   }
 }
 
