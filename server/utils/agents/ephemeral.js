@@ -10,6 +10,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { DocumentManager } = require("../DocumentManager");
 const { safeJsonParse } = require("../http");
+const { stripReasoningFromHistory } = require("../helpers/chat/responses");
 const {
   USER_AGENT,
   WORKSPACE_AGENT,
@@ -122,6 +123,8 @@ class EphemeralAgentHandler extends AgentHandler {
       rawHistory.forEach((chatLog) => {
         const response = safeJsonParse(chatLog.response, {});
         if (!response?.text) return;
+        const content = stripReasoningFromHistory(response.text);
+        if (!content.trim()) return;
         const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
@@ -134,7 +137,7 @@ class EphemeralAgentHandler extends AgentHandler {
           {
             from: WORKSPACE_AGENT.name,
             to: USER_AGENT.name,
-            content: response?.text || "",
+            content,
             state: "success",
           }
         );

@@ -8,6 +8,7 @@ const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
+const { stripReasoningFromHistory } = require("../helpers/chat/responses");
 const {
   USER_AGENT,
   WORKSPACE_AGENT,
@@ -109,6 +110,8 @@ class AgentHandler {
         // A prompt that never got a response is left out of the agent history -
         // some providers (ex: Bedrock) reject a blank assistant message.
         if (!response?.text) return;
+        const content = stripReasoningFromHistory(response.text);
+        if (!content.trim()) return;
         const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
@@ -121,7 +124,7 @@ class AgentHandler {
           {
             from: WORKSPACE_AGENT.name,
             to: USER_AGENT.name,
-            content: response?.text || "",
+            content,
             state: "success",
           }
         );

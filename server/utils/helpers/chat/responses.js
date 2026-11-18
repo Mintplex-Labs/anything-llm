@@ -277,6 +277,14 @@ function formatClarifyingSurveyForPrompt(survey) {
 }
 
 /**
+ * Remove saved reasoning only from the copy of an assistant reply sent to the LLM.
+ * An interrupted, unclosed trace extends through the end of the reply.
+ */
+function stripReasoningFromHistory(content) {
+  return content.replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, "");
+}
+
+/**
  * Converts a chat history to a prompt history.
  * @param {Object[]} history - The chat history to convert
  * @returns {{role: string, content: string, attachments?: import("..").Attachment}[]}
@@ -310,7 +318,7 @@ function convertToPromptHistory(history = []) {
     // If the agent saved one or more clarifying-question surveys on this
     // record, append them to the assistant content so future LLM turns
     // (agent or normal chat) can recall what the user answered.
-    let assistantContent = data.text;
+    let assistantContent = stripReasoningFromHistory(data.text);
     if (data?.clarifyingQuestions?.length > 0) {
       const surveyBlocks = data.clarifyingQuestions
         .map(formatClarifyingSurveyForPrompt)
@@ -319,6 +327,9 @@ function convertToPromptHistory(history = []) {
       if (surveyBlocks)
         assistantContent = `${assistantContent}\n\n${surveyBlocks}`;
     }
+
+    // Keep the pair out if removing an interrupted trace leaves no answer.
+    if (!assistantContent.trim()) continue;
 
     const { chatHistoryAttachments } = require("../../files");
     const attachments = chatHistoryAttachments(data);
@@ -412,4 +423,5 @@ module.exports = {
   formatChatHistory,
   safeJSONStringify,
   extractReasoningContent,
+  stripReasoningFromHistory,
 };
