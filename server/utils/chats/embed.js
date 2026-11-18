@@ -87,10 +87,7 @@ async function streamChatWithForEmbed(
     include: true,
   };
   activeReplies.add(reply);
-  // Not every caller hands us a real express response (ex: a test double).
-  if (typeof response?.on === "function")
-    response.on("close", () => activeReplies.delete(reply));
-  else activeReplies.delete(reply);
+  response.on("close", () => activeReplies.delete(reply));
 
   const VectorDb = getVectorDbClass();
 

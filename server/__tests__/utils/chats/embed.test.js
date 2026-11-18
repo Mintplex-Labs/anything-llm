@@ -45,7 +45,7 @@ function embedConfig(overrides = {}) {
   };
 }
 
-const fakeResponse = () => ({ write: jest.fn(), locals: {} });
+const fakeResponse = () => ({ write: jest.fn(), on: jest.fn(), locals: {} });
 
 describe("streamChatWithForEmbed overrides", () => {
   it("keeps the workspace prompt and temperature when the request sends none", async () => {
@@ -103,8 +103,9 @@ describe("streamChatWithForEmbed overrides", () => {
 describe("streamChatWithForEmbed saving the chat", () => {
   async function chatWithReply(
     textResponse,
-    { streaming = true, response = fakeResponse(), whileStreaming } = {}
+    { streaming = true, whileStreaming } = {}
   ) {
+    const response = fakeResponse();
     EmbedChats.forEmbedByUser.mockResolvedValueOnce([]);
     getVectorDbClass.mockReturnValue({
       hasNamespace: async () => false,
@@ -134,7 +135,6 @@ describe("streamChatWithForEmbed saving the chat", () => {
     return response;
   }
 
-  const expressResponse = () => ({ ...fakeResponse(), on: jest.fn() });
   const sentChatId = (response) =>
     response.write.mock.calls.some(([chunk]) =>
       chunk.includes("finalizeResponseStream")
@@ -149,16 +149,13 @@ describe("streamChatWithForEmbed saving the chat", () => {
   });
 
   it("sends the saved chat id once the reply is stored", async () => {
-    const response = await chatWithReply("An answer.", {
-      response: expressResponse(),
-    });
+    const response = await chatWithReply("An answer.");
     expect(EmbedChats.new.mock.calls[0][0].include).toBe(true);
     expect(sentChatId(response)).toBe(true);
   });
 
   it("stores the reply as invalidated when its session is reset mid-stream", async () => {
     const response = await chatWithReply("An answer.", {
-      response: expressResponse(),
       whileStreaming: () => invalidateActiveReplies(1, "session"),
     });
     expect(EmbedChats.new.mock.calls[0][0].include).toBe(false);
@@ -167,7 +164,6 @@ describe("streamChatWithForEmbed saving the chat", () => {
 
   it("keeps the reply when another session is reset mid-stream", async () => {
     await chatWithReply("An answer.", {
-      response: expressResponse(),
       whileStreaming: () => invalidateActiveReplies(1, "other-session"),
     });
     expect(EmbedChats.new.mock.calls[0][0].include).toBe(true);
