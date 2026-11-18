@@ -1,7 +1,8 @@
-const { defineConfig } = require("prisma/config")
+// A plain object rather than defineConfig() from "prisma/config", so this file loads where the Prisma CLI is not
+// installed as a dependency (the Docker image generates the client with a one-off npx install of the CLI).
 const { databaseUrl } = require("./utils/prisma/datasource")
 
-module.exports = defineConfig({
+module.exports = {
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
@@ -10,4 +11,4 @@ module.exports = defineConfig({
   datasource: {
     url: databaseUrl()
   }
-})
+}
