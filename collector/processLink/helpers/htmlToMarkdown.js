@@ -278,13 +278,18 @@ function htmlToMarkdown(html, baseUrl) {
   try {
     let root = parse(html);
 
-    // Prefer the narrowest content container to avoid page chrome.
-    // article > main because sites like GitHub put the file tree inside <main>
-    // but scope the README to <article>.
-    const content =
-      root.querySelector("article") ||
-      root.querySelector("main") ||
-      root.querySelector('[role="main"]');
+    const main =
+      root.querySelector("main") || root.querySelector('[role="main"]');
+    const mainArticle = main?.querySelector("article");
+    const hasSiblingArticle = mainArticle?.parentNode.childNodes.some(
+      (sibling) => sibling !== mainArticle && sibling.tagName === "ARTICLE"
+    );
+
+    // Keep sibling articles together. Otherwise prefer the article to avoid
+    // page chrome, such as the file tree next to a GitHub README.
+    const content = hasSiblingArticle
+      ? main
+      : root.querySelector("article") || main;
     if (content) root = content;
 
     const junkSelectors = [
