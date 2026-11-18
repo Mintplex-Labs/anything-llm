@@ -156,6 +156,8 @@ FROM build AS backend-build
 COPY --chown=anythingllm:anythingllm ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
+# The Prisma client has no platform-specific engine, so it is generated once here instead of on every boot.
+RUN CHECKPOINT_DISABLE=1 npx prisma generate
 WORKDIR /app
 
 # Install collector dependencies
