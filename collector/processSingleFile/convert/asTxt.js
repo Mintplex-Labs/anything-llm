@@ -3,6 +3,7 @@ const fs = require("fs");
 const { tokenizeString } = require("../../utils/tokenizer");
 const {
   createdDate,
+  sanitizeFileName,
   trashFile,
   writeToServerDocuments,
 } = require("../../utils/files");
@@ -46,9 +47,13 @@ async function asTxt({
     token_count_estimate: tokenizeString(content),
   };
 
+  // The sanitized slug is ASCII. Reserve space in the 255-byte basename
+  // for the UUID and the extension added by writeToServerDocuments.
+  const slug = sanitizeFileName(slugify(filename));
+  const maxSlugLength = 255 - Buffer.byteLength(`-${data.id}.json`);
   const document = writeToServerDocuments({
     data,
-    filename: `${slugify(filename)}-${data.id}`,
+    filename: `${slug.slice(0, maxSlugLength)}-${data.id}`,
     options: { parseOnly: options.parseOnly },
   });
   if (!options.absolutePath) trashFile(fullFilePath);
