@@ -565,14 +565,11 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
-      .then(async (res) => {
-        if (!res.ok) {
-          const body = await res.json().catch(() => null);
-          throw new Error(
-            body?.error || res.statusText || "Error generating api key."
-          );
-        }
-        return res.json();
+      .then((res) => res.json().catch(() => ({})))
+      .then((res) => {
+        if (!res.apiKey)
+          throw new Error(res.error || "Error generating api key.");
+        return res;
       })
       .catch((e) => {
         console.error(e);

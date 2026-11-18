@@ -2,10 +2,9 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import Admin from "@/models/admin";
 import { Trash } from "@phosphor-icons/react";
-import { userFromStorage } from "@/utils/request";
+import { safeJsonParse, userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import { useTranslation } from "react-i18next";
-import { safeJsonParse } from "@/utils/request";
 
 export default function ApiKeyRow({ apiKey, removeApiKey, workspaces }) {
   const { t } = useTranslation();
@@ -79,13 +78,26 @@ export default function ApiKeyRow({ apiKey, removeApiKey, workspaces }) {
 
 function ScopeLabel({ apiKey, workspaces }) {
   const { t } = useTranslation();
-  if (apiKey.scope === "user") return t("api.scopes.user");
-  if (apiKey.scope !== "workspace") return t("api.scopes.full");
+  switch (apiKey.scope) {
+    case "user":
+      return t("api.scopes.user");
+    case "workspace":
+      return (
+        scopedWorkspaceNames(apiKey, workspaces) || t("api.row.noWorkspaces")
+      );
+    default:
+      return t("api.scopes.full");
+  }
+}
 
-  const ids = safeJsonParse(apiKey.scopeConfig, {})?.workspaceIds ?? [];
-  const names = workspaces
-    .filter((workspace) => ids.includes(workspace.id))
-    .map((workspace) => workspace.name);
-  if (names.length === 0) return t("api.row.noWorkspaces");
-  return names.join(", ");
+/**
+ * Comma-separated names of the workspaces a workspace-scoped key can access.
+ * @returns {string} empty when none of the key's workspaces still exist
+ */
+function scopedWorkspaceNames(apiKey, workspaces = []) {
+  const { workspaceIds = [] } = safeJsonParse(apiKey.scopeConfig, {}) ?? {};
+  return workspaces
+    .filter((workspace) => workspaceIds.includes(workspace.id))
+    .map((workspace) => workspace.name)
+    .join(", ");
 }
