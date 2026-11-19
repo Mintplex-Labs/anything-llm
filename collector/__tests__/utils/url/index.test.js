@@ -144,14 +144,35 @@ describe("validYoutubeVideoUrl", () => {
     expect(validYoutubeVideoUrl(`youtube.com/watch?v=${ID}`)).toBe(true);
   });
 
-  it("accepts uppercase schemes and hosts", () => {
-    expect(validYoutubeVideoUrl(`HTTPS://WWW.YOUTUBE.COM/watch?v=${ID}`)).toBe(
-      true
-    );
-    expect(
-      validYoutubeVideoUrl(`https://YOUTUBE.COM/watch?v=${ID}`, true)
-    ).toBe(ID);
-    expect(validYoutubeVideoUrl(`https://YOUTU.BE/${ID}`)).toBe(true);
+  // Scheme and host are case-insensitive; the video ID keeps its case.
+  it.each([
+    `HTTPS://WWW.YOUTUBE.COM/watch?v=${ID}`,
+    `Https://www.youtube.com/watch?v=${ID}`,
+    `https://WwW.YouTube.Com/watch?v=${ID}`,
+    `HTTP://M.YOUTUBE.COM/watch?v=${ID}`,
+    `https://MUSIC.YOUTUBE.COM/watch?v=${ID}`,
+    `HTTPS://YOUTU.BE/${ID}`,
+    `WWW.YOUTUBE.COM/shorts/${ID}`,
+  ])("accepts any scheme and host casing: %s", (link) => {
+    expect(validYoutubeVideoUrl(link, true)).toBe(ID);
+  });
+
+  it("keeps the path and query case-sensitive", () => {
+    expect(validYoutubeVideoUrl(`https://youtube.com/WATCH?v=${ID}`)).toBe(false);
+    expect(validYoutubeVideoUrl(`https://youtube.com/watch?V=${ID}`)).toBe(false);
+  });
+
+  it.each([
+    `https://youtube.com.evil.com/watch?v=${ID}`,
+    `https://notyoutube.com/watch?v=${ID}`,
+    `https://evil.com/youtube.com/watch?v=${ID}`,
+    `https://youtube.com@evil.com/watch?v=${ID}`,
+    `https://evil.com/?u=youtube.com/watch?v=${ID}`,
+    `ftp://youtube.com/watch?v=${ID}`,
+    `javascript:alert(1)//youtube.com/watch?v=${ID}`,
+    ID,
+  ])("rejects lookalike or non-http links: %s", (link) => {
+    expect(validYoutubeVideoUrl(link, true)).toBe(null);
   });
 
   it("returns true for youtu.be short URLs", () => {
