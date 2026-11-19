@@ -1629,6 +1629,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Memuat riwayat obrolan...",
+    loading_chat_recalling: "Memanggil kembali percakapan kita...",
+    loading_chat_remembering: "Mengingat apa yang kita bicarakan...",
     attachments_processing: "Lampiran sedang diproses. Harap tunggu...",
     send_message: "Kirim pesan",
     attach_file: "Lampirkan berkas ke obrolan ini",

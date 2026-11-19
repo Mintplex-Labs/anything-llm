@@ -1193,6 +1193,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Đang tải lịch sử trò chuyện...",
+    loading_chat_recalling: "Đang khôi phục cuộc trò chuyện của chúng ta...",
+    loading_chat_remembering: "Đang nhớ lại những gì chúng ta đã nói...",
     send_message: "Gửi tin nhắn",
     attach_file: "Đính kèm tệp vào cuộc trò chuyện này",
     text_size: "Thay đổi kích thước văn bản.",

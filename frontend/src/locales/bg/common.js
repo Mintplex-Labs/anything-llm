@@ -1658,6 +1658,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Зареждане на историята на чата...",
+    loading_chat_recalling: "Възстановяване на нашия разговор...",
+    loading_chat_remembering: "Спомням си за какво говорихме...",
     attachments_processing:
       "Прикачените файлове се обработват. Моля, изчакайте...",
     generating_response: "Генериране на отговор",

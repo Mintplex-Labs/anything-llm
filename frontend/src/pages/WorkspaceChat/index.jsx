@@ -29,13 +29,16 @@ function ShowWorkspaceChat() {
   const [workspace, setWorkspace] = useState(null);
   // Tracks which workspace `workspace` belongs to. While a new workspace's
   // data is in flight, we keep the previous workspace's chat mounted
-  // (Slack/Linear-style transition) instead of flashing a skeleton.
+  // (Slack/Linear-style transition) instead of flashing a loader.
   const [loadedSlug, setLoadedSlug] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
+      if (cancelled) return;
       if (!_workspace) {
         setWorkspace(null);
         setLoadedSlug(slug);
@@ -46,6 +49,8 @@ function ShowWorkspaceChat() {
         Workspace.getSuggestedMessages(slug),
         Workspace.agentCommandAvailable(slug),
       ]);
+      if (cancelled) return;
+
       setWorkspace({
         ..._workspace,
         suggestedMessages,
@@ -61,6 +66,10 @@ function ShowWorkspaceChat() {
       );
     }
     getWorkspace();
+
+    return () => {
+      cancelled = true;
+    };
   }, [slug]);
 
   return (

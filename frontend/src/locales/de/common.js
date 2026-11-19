@@ -1384,6 +1384,10 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Chatverlauf wird geladen...",
+    loading_chat_recalling: "Unser Gespräch wird abgerufen...",
+    loading_chat_remembering:
+      "Ich erinnere mich, worüber wir gesprochen haben...",
     attachments_processing: "Anhänge werden verarbeitet. Bitte warten...",
     send_message: "Schreibe eine Nachricht",
     attach_file: "Füge eine Datei zum Chat hinzu",

@@ -1385,6 +1385,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Načítání historie chatu...",
+    loading_chat_recalling: "Obnovuji náš rozhovor...",
+    loading_chat_remembering: "Vzpomínám, o čem jsme mluvili...",
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
     send_message: "Odeslat zprávu",
     attach_file: "Přiložit soubor k tomuto chatu",

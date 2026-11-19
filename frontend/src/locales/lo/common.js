@@ -1550,6 +1550,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "ກຳລັງໂຫຼດປະຫວັດການສົນທະນາ...",
+    loading_chat_recalling: "ກຳລັງທົບທວນການສົນທະນາຂອງພວກເຮົາ...",
+    loading_chat_remembering: "ກຳລັງຈື່ສິ່ງທີ່ພວກເຮົາໄດ້ລົມກັນ...",
     attachments_processing: "ກຳລັງປະມວນຜົນໄຟລ໌ແນບ. ກະລຸນາລໍຖ້າ...",
     send_message: "ສົ່ງຂໍ້ຄວາມ",
     attach_file: "ແນບໄຟລ໌ໃນແຊັດນີ້",

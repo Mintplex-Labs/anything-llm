@@ -1614,6 +1614,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "चैट इतिहास लोड हो रहा है...",
+    loading_chat_recalling: "हमारी बातचीत वापस लाई जा रही है...",
+    loading_chat_remembering: "याद कर रहे हैं कि हमने किस बारे में बात की...",
     attachments_processing:
       "संलग्न फ़ाइलें संसाधित की जा रही हैं। कृपया प्रतीक्षा करें...",
     send_message: "संदेश भेजें",

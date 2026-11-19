@@ -1120,6 +1120,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "正在載入聊天記錄...",
+    loading_chat_recalling: "正在回顧我們的對話...",
+    loading_chat_remembering: "正在回想我們聊過的內容...",
     send_message: "傳送訊息",
     attach_file: "將檔案附加到這段對話",
     text_size: "調整文字大小。",

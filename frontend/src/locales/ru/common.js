@@ -1207,6 +1207,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Загрузка истории чата...",
+    loading_chat_recalling: "Восстанавливаю наш разговор...",
+    loading_chat_remembering: "Вспоминаю, о чём мы говорили...",
     send_message: "Отправить сообщение",
     attach_file: "Прикрепить файл к чату",
     text_size: "Изменить размер текста.",

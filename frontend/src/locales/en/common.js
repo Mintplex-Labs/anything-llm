@@ -1633,6 +1633,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Loading chat history...",
+    loading_chat_recalling: "Recalling our conversation...",
+    loading_chat_remembering: "Remembering what we talked about...",
     attachments_processing: "Attachments are processing. Please wait...",
     generating_response: "Generating response",
     thought_in_progress: "Model is Thinking...",
