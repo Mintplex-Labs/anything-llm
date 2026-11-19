@@ -18,7 +18,7 @@ const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
 const { ApiKey } = require("../../../models/apiKeys");
-const { routeRule } = require("../../../utils/middleware/apiKeyScopes");
+const { WORKSPACE_LOOKUPS } = require("../../../utils/middleware/apiKeyScopes");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
 const createFilesLib = require("../../../utils/agents/aibitat/plugins/create-files/lib");
 const documentsPath =
@@ -49,7 +49,7 @@ async function validateWorkspaceSlugQuery(request, response, next) {
   const { apiKey } = response.locals;
   if (ApiKey.workspaceIds(apiKey) === null) return next();
 
-  const workspaces = await routeRule(request).bodyWorkspaces(request);
+  const workspaces = await WORKSPACE_LOOKUPS.addToWorkspaces(request);
   const permitted =
     !!workspaces &&
     ApiKey.canAccessWorkspaces(

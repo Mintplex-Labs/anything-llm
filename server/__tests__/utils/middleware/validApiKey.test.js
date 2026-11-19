@@ -63,7 +63,7 @@ jest.mock("../../../models/user", () => ({
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const {
   ROUTE_SCOPES,
-  routeRule,
+  WORKSPACE_LOOKUPS,
 } = require("../../../utils/middleware/apiKeyScopes");
 const { developerEndpoints } = require("../../../endpoints/api");
 
@@ -180,54 +180,31 @@ describe("validApiKey", () => {
         jest.requireActual("../../../models/apiKeys").ApiKey.scopes
       );
       for (const rule of Object.values(ROUTE_SCOPES))
-        for (const scope of rule.all ?? rule.any)
+        for (const scope of rule.all ?? rule.any ?? [])
           expect(known).toContain(scope);
     });
   });
 
   describe("addToWorkspaces lookup", () => {
-    const uploadRoutes = [
-      "/v1/document/upload",
-      "/v1/document/upload/:folderName",
-      "/v1/document/upload-link",
-      "/v1/document/raw-text",
-    ];
-    const lookup = (path, addToWorkspaces) => {
-      const request = {
-        method: "POST",
-        route: { path },
-        body: { addToWorkspaces },
-      };
-      return routeRule(request).bodyWorkspaces(request);
-    };
-
-    it.each(uploadRoutes)("is the table entry for POST %s", async (path) => {
-      const workspaces = await lookup(path, "granted");
-      expect(workspaces.map((workspace) => workspace.id)).toEqual([1]);
-    });
+    const lookup = (addToWorkspaces) =>
+      WORKSPACE_LOOKUPS.addToWorkspaces({ body: { addToWorkspaces } });
 
     it("finds every workspace in the list, ignoring case, spaces and repeats", async () => {
-      const workspaces = await lookup(
-        uploadRoutes[0],
-        "Granted, other,granted"
-      );
+      const workspaces = await lookup("Granted, other,granted");
       expect(workspaces.map((workspace) => workspace.id)).toEqual([1, 2]);
     });
 
     it.each(["missing", "granted,missing", "granted,,other"])(
       "resolves to null when %p names a workspace that does not exist",
       async (addToWorkspaces) => {
-        expect(await lookup(uploadRoutes[0], addToWorkspaces)).toBeNull();
+        expect(await lookup(addToWorkspaces)).toBeNull();
       }
     );
 
     it("reads a body that has not been parsed into an object", async () => {
-      const request = {
-        method: "POST",
-        route: { path: uploadRoutes[2] },
+      const workspaces = await WORKSPACE_LOOKUPS.addToWorkspaces({
         body: JSON.stringify({ addToWorkspaces: "other" }),
-      };
-      const workspaces = await routeRule(request).bodyWorkspaces(request);
+      });
       expect(workspaces.map((workspace) => workspace.id)).toEqual([2]);
     });
   });

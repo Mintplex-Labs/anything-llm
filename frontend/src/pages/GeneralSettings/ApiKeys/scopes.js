@@ -54,13 +54,9 @@ export function parseKeyScopes(apiKey) {
   if (apiKey.scope === null || apiKey.scope === undefined)
     return { scopes: [FULL_ACCESS], workspaceIds: null };
 
-  const known = Object.keys(getScopes(() => ""));
   const scopes = safeJsonParse(apiKey.scope, []);
   return {
-    // Scopes this version does not know are dropped so they cannot block a save.
-    scopes: Array.isArray(scopes)
-      ? scopes.filter((scope) => known.includes(scope))
-      : [],
+    scopes: Array.isArray(scopes) ? scopes : [],
     workspaceIds: parseWorkspaceIds(apiKey.scopeConfig),
   };
 }

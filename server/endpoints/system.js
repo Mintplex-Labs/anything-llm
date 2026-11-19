@@ -1099,8 +1099,6 @@ function systemEndpoints(app) {
     }
   );
 
-  // TODO: This endpoint is replicated in the admin endpoints file.
-  // and should be consolidated to be a single endpoint with flexible role protection.
   app.post(
     "/system/api-key/:id",
     [validatedRequest],
@@ -1129,6 +1127,8 @@ function systemEndpoints(app) {
     }
   );
 
+  // TODO: This endpoint is replicated in the admin endpoints file.
+  // and should be consolidated to be a single endpoint with flexible role protection.
   app.delete(
     "/system/api-key/:id",
     [validatedRequest],

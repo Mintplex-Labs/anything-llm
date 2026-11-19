@@ -38,6 +38,8 @@ const WORKSPACE_LOOKUPS = {
   },
 
   // Resolves to null when any slug in the comma-separated list does not exist.
+  // Upload bodies are multipart and only parsed after `validApiKey`, so the
+  // document routes run this lookup themselves once the body is available.
   addToWorkspaces: async (request) => {
     const slugs = [
       ...new Set(
@@ -52,11 +54,7 @@ const WORKSPACE_LOOKUPS = {
 };
 
 // Needs no scope, so every valid key passes.
-const ANY_KEY = { all: [] };
-const UPLOAD = {
-  any: [SCOPES.documents],
-  bodyWorkspaces: WORKSPACE_LOOKUPS.addToWorkspaces,
-};
+const ANY_KEY = { anyKey: true };
 const EMBED = {
   any: [SCOPES.embeds],
   workspace: WORKSPACE_LOOKUPS.embedUuid,
@@ -74,12 +72,8 @@ const EMBED = {
  * this check. `user` loads the user from the `:id` param into
  * `response.locals.targetUser`.
  *
- * `bodyWorkspaces` finds every workspace an upload embeds into. Upload bodies
- * are multipart and only parsed after `validApiKey`, so the document routes
- * run this lookup themselves once the body is available.
- *
  * Routes that list workspaces filter by the key's workspaces in the handler.
- * @type {Object<string, {all?: string[], any?: string[], workspace?: Function, bodyWorkspaces?: Function, notFound?: string, user?: boolean}>}
+ * @type {Object<string, {anyKey?: boolean, all?: string[], any?: string[], workspace?: Function, notFound?: string, user?: boolean}>}
  */
 const ROUTE_SCOPES = {
   "GET /v1/auth": ANY_KEY,
@@ -113,10 +107,10 @@ const ROUTE_SCOPES = {
     any: [SCOPES.workspace],
   },
 
-  "POST /v1/document/upload": UPLOAD,
-  "POST /v1/document/upload/:folderName": UPLOAD,
-  "POST /v1/document/upload-link": UPLOAD,
-  "POST /v1/document/raw-text": UPLOAD,
+  "POST /v1/document/upload": { any: [SCOPES.documents] },
+  "POST /v1/document/upload/:folderName": { any: [SCOPES.documents] },
+  "POST /v1/document/upload-link": { any: [SCOPES.documents] },
+  "POST /v1/document/raw-text": { any: [SCOPES.documents] },
   "GET /v1/documents": { any: [SCOPES.documents] },
   "GET /v1/documents/folder/:folderName": { any: [SCOPES.documents] },
   "GET /v1/document/:docName": { any: [SCOPES.documents] },
@@ -187,12 +181,13 @@ function routeRule(request) {
 
 /**
  * @param {import("../../models/apiKeys").ApiKeyRecord} apiKey
- * @param {{all?: string[], any?: string[]}} [rule] - The route's entry in ROUTE_SCOPES
+ * @param {{anyKey?: boolean, all?: string[], any?: string[]}} [rule] - The route's entry in ROUTE_SCOPES
  * @returns {boolean}
  */
 function keyPermitted(apiKey, rule) {
   if (ApiKey.isFullAccess(apiKey)) return true;
   if (!rule) return false;
+  if (rule.anyKey) return true;
 
   const held = ApiKey.scopesOf(apiKey);
   if (rule.all) return rule.all.every((scope) => held.includes(scope));

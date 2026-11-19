@@ -42,23 +42,26 @@ async function validApiKey(request, response, next) {
       error: "This api key's scopes do not permit access to this endpoint.",
     });
 
-  const findWorkspace = String(request.route?.path).startsWith(
+  const underWorkspaceSlug = String(request.route?.path).startsWith(
     "/v1/workspace/:slug"
-  )
+  );
+  const findWorkspace = underWorkspaceSlug
     ? WORKSPACE_LOOKUPS.slug
     : rule?.workspace;
-  if (
-    findWorkspace &&
-    !(await setApiKeyWorkspace(
+  if (findWorkspace) {
+    const workspaceSet = await setApiKeyWorkspace(
       request,
       response,
       findWorkspace,
       rule?.notFound
-    ))
-  )
-    return;
+    );
+    if (!workspaceSet) return;
+  }
 
-  if (rule?.user && !(await setTargetUser(request, response))) return;
+  if (rule?.user) {
+    const userSet = await setTargetUser(request, response);
+    if (!userSet) return;
+  }
   next();
 }
 
