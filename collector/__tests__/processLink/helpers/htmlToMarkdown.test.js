@@ -26,6 +26,32 @@ describe("htmlToMarkdown", () => {
       expect(markdown).toBe("readme body");
     });
 
+    it.each([
+      ["<main>", "</main>"],
+      ['<div role="main">', "</div>"],
+    ])("keeps sibling articles in %s", async (openingTag, closingTag) => {
+      const markdown = await htmlToMarkdown(
+        "<p>outside</p>" +
+          openingTag +
+          "<article><p>Billing reference: B-101.</p></article>" +
+          "<article><p>Shipping reference: S-202.</p></article>" +
+          closingTag
+      );
+      expect(markdown).toBe(
+        "Billing reference: B-101.\n\nShipping reference: S-202."
+      );
+    });
+
+    it("scopes sibling articles to their shared parent, not all of <main>", async () => {
+      const markdown = await htmlToMarkdown(
+        "<main>" +
+          "<div><p>Language filter</p><a href='/x'>Abkhazian</a></div>" +
+          "<div><article><p>first repo</p></article><article><p>second repo</p></article></div>" +
+          "</main>"
+      );
+      expect(markdown).toBe("first repo\n\nsecond repo");
+    });
+
     it("scopes to [role=main] when no article or main exists", async () => {
       const markdown = await htmlToMarkdown(
         '<div role="main"><p>kept</p></div><div><p>outside</p></div>'
