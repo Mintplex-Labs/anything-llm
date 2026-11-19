@@ -46,17 +46,9 @@ If your report depends on an attacker knowing or guessing a UUID (e.g., a sessio
 
 ### Reports based on Developer API Key access
 
-Developer API keys are **system-level credentials** that are only creatable by administrators. Each key has a scope that an administrator selects when the key is created:
+Developer API keys are **system-level credentials**. They are only creatable by administrators and intentionally grant full, unrestricted access to the entire `/v1/*` API surface — equivalent to admin access. If your report's attack chain starts with "attacker has a developer API key," you are describing an attacker who already has admin-equivalent access. There is no privilege escalation possible from a developer API key because it is already the highest privilege level.
 
-- **Full access** (the `full` scope, and any key with no scope set, which includes every key created before scopes existed) intentionally grants full, unrestricted access to the entire `/v1/*` API surface — equivalent to admin access.
-- **Specific workspaces** (the `workspace` scope) can only use the workspace, thread, chat, and document upload endpoints for the workspaces selected on the key.
-- **User management** (the `user` scope) can only use the user, invite, and workspace membership endpoints.
-
-If your report's attack chain starts with "attacker has a full access developer API key," you are describing an attacker who already has admin-equivalent access. There is no privilege escalation possible from a full access developer API key because it is already the highest privilege level. This includes reports about full access API keys being able to mint auth tokens, access admin endpoints, or perform actions on behalf of other users. All of these are intended capabilities of a full access key.
-
-A `user` scoped key can create and modify users of any role and issue their login tokens, so it is also admin-equivalent by design. Reports that a `user` scoped key can reach admin access through user management are not valid.
-
-A report showing a `workspace` or `user` scoped key calling an endpoint outside of its scope, or a `workspace` scoped key reading or modifying a workspace that was not selected on the key, **is a valid report** and will be investigated and fixed.
+This includes reports about API keys being able to mint auth tokens, access admin endpoints, or perform actions on behalf of other users. All of these are intended capabilities of the API key system. If you believe a developer API key should have scoped or limited permissions, that is a feature request, not a vulnerability.
 
 ### Reports about admin-enabled agent tools doing "too much"
 

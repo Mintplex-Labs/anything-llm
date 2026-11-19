@@ -4,20 +4,13 @@ const { multiUserMode } = require("../../../utils/http");
 const {
   simpleSSOEnabled,
 } = require("../../../utils/middleware/simpleSSOEnabled");
-const {
-  validApiKey,
-  apiKeyScope,
-  SCOPES,
-} = require("../../../utils/middleware/validApiKey");
+const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
 function apiUserManagementEndpoints(app) {
   if (!app) return;
 
-  app.get(
-    "/v1/users",
-    [validApiKey, apiKeyScope([SCOPES.user])],
-    async (request, response) => {
-      /*
+  app.get("/v1/users", [validApiKey], async (request, response) => {
+    /*
       #swagger.tags = ['User Management']
       #swagger.description = 'List all users'
       #swagger.responses[200] = {
@@ -52,29 +45,28 @@ function apiUserManagementEndpoints(app) {
       description: "Instance is not in Multi-User mode. Permission denied.",
     }
       */
-      try {
-        if (!multiUserMode(response))
-          return response
-            .status(401)
-            .send("Instance is not in Multi-User mode. Permission denied.");
+    try {
+      if (!multiUserMode(response))
+        return response
+          .status(401)
+          .send("Instance is not in Multi-User mode. Permission denied.");
 
-        const users = await User.where();
-        const filteredUsers = users.map((user) => ({
-          id: user.id,
-          username: user.username,
-          role: user.role,
-        }));
-        response.status(200).json({ users: filteredUsers });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
+      const users = await User.where();
+      const filteredUsers = users.map((user) => ({
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      }));
+      response.status(200).json({ users: filteredUsers });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
   app.get(
     "/v1/users/:id/issue-auth-token",
-    [validApiKey, apiKeyScope([SCOPES.user]), simpleSSOEnabled],
+    [validApiKey, simpleSSOEnabled],
     async (request, response) => {
       /*
       #swagger.tags = ['User Management']
@@ -109,12 +101,9 @@ function apiUserManagementEndpoints(app) {
     }
       */
       try {
-        const { id: userId } = request.params;
-        const user = await User.get({ id: Number(userId) });
-        if (!user)
-          return response.status(404).json({ error: "User not found" });
-
-        const { token, error } = await TemporaryAuthToken.issue(userId);
+        const { token, error } = await TemporaryAuthToken.issue(
+          response.locals.targetUser.id
+        );
         if (error) return response.status(500).json({ error: error });
 
         response.status(200).json({

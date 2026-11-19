@@ -128,6 +128,7 @@ export default function AdminApiKeys() {
                         apiKey={apiKey}
                         removeApiKey={removeApiKey}
                         workspaces={workspaces}
+                        onUpdate={fetchExistingKeys}
                       />
                     ))
                   )}

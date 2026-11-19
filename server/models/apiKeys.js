@@ -6,8 +6,8 @@ const { safeJsonParse } = require("../utils/http");
  * @property {number} id
  * @property {string|null} name
  * @property {string|null} secret
- * @property {string|null} scope
- * @property {string|null} scopeConfig - JSON, eg: `{"workspaceIds":[1,2]}`
+ * @property {string|null} scope - JSON array of scopes, eg: `["chat","documents"]`. Null is full access.
+ * @property {string|null} scopeConfig - JSON, eg: `{"workspaceIds":[1,2]}`. Null is every workspace.
  * @property {number|null} createdBy
  * @property {Date} createdAt
  * @property {Date} lastUpdatedAt
@@ -17,23 +17,35 @@ const ApiKey = {
   tablename: "api_keys",
   writable: ["name"],
 
-  /** A key with a null scope is treated as `full`. */
+  /**
+   * `full` is never stored. A key with null `scope` is a full access key.
+   * `users` can create and promote admins, so it is effectively full access.
+   */
   scopes: {
     full: "full",
+    chat: "chat",
     workspace: "workspace",
-    user: "user",
+    documents: "documents",
+    openai: "openai",
+    embeds: "embeds",
+    mcp: "mcp",
+    users: "users",
+    sso: "sso",
   },
 
   validations: {
-    scope: (value) => {
+    scopes: (value) => {
       if (value === null || value === undefined) return null;
-      if (!Object.values(ApiKey.scopes).includes(value))
-        throw new Error(
-          `Invalid scope. Must be one of ${Object.values(ApiKey.scopes).join(", ")}.`
-        );
-      return value;
+      if (!Array.isArray(value) || value.length === 0)
+        throw new Error("scopes must be a list of scopes.");
+      const scopes = [...new Set(value)];
+      const valid = Object.values(ApiKey.scopes);
+      if (scopes.some((scope) => !valid.includes(scope)))
+        throw new Error(`Invalid scope. Must be any of ${valid.join(", ")}.`);
+      return scopes.includes(ApiKey.scopes.full) ? null : scopes;
     },
     workspaceIds: (value) => {
+      if (value === null || value === undefined) return null;
       if (!Array.isArray(value))
         throw new Error("workspaceIds must be an array.");
       const ids = [...new Set(value.map((id) => Number(id)))];
@@ -48,19 +60,33 @@ const ApiKey = {
 
   /**
    * @param {ApiKeyRecord} apiKey
-   * @returns {boolean}
+   * @returns {string[]} `["full"]` for a full access key. Empty when the stored value is unreadable.
    */
-  isFullAccess: function (apiKey) {
-    if (!apiKey) return false;
-    return !apiKey.scope || apiKey.scope === this.scopes.full;
+  scopesOf: function (apiKey) {
+    if (!apiKey) return [];
+    if (apiKey.scope === null || apiKey.scope === undefined)
+      return [this.scopes.full];
+    const scopes = safeJsonParse(apiKey.scope, []);
+    return Array.isArray(scopes) ? scopes : [];
   },
 
   /**
    * @param {ApiKeyRecord} apiKey
-   * @returns {number[]}
+   * @returns {boolean}
+   */
+  isFullAccess: function (apiKey) {
+    return this.scopesOf(apiKey).includes(this.scopes.full);
+  },
+
+  /**
+   * @param {ApiKeyRecord} apiKey
+   * @returns {number[]|null} Null when the key is not limited to specific workspaces
    */
   workspaceIds: function (apiKey) {
-    const ids = safeJsonParse(apiKey?.scopeConfig, {})?.workspaceIds;
+    if (this.isFullAccess(apiKey)) return null;
+    if (apiKey?.scopeConfig === null || apiKey?.scopeConfig === undefined)
+      return null;
+    const ids = safeJsonParse(apiKey.scopeConfig, {})?.workspaceIds;
     return Array.isArray(ids) ? ids.map((id) => Number(id)) : [];
   },
 
@@ -70,50 +96,49 @@ const ApiKey = {
    * @returns {boolean}
    */
   canAccessWorkspace: function (apiKey, workspaceId) {
-    if (this.isFullAccess(apiKey)) return true;
-    if (apiKey.scope !== this.scopes.workspace) return false;
-    return this.workspaceIds(apiKey).includes(Number(workspaceId));
+    const ids = this.workspaceIds(apiKey);
+    return ids === null || ids.includes(Number(workspaceId));
   },
 
   /**
    * @param {ApiKeyRecord} apiKey
-   * @param {string} slug
-   * @returns {Promise<boolean>}
+   * @param {number[]} workspaceIds
+   * @returns {boolean}
    */
-  canAccessWorkspaceSlug: async function (apiKey, slug) {
-    if (this.isFullAccess(apiKey)) return true;
-    const workspace = await prisma.workspaces.findFirst({
-      where: { slug: String(slug) },
-      select: { id: true },
-    });
-    return !!workspace && this.canAccessWorkspace(apiKey, workspace.id);
+  canAccessWorkspaces: function (apiKey, workspaceIds = []) {
+    return [workspaceIds]
+      .flat()
+      .every((id) => this.canAccessWorkspace(apiKey, id));
   },
 
   /**
    * @param {ApiKeyRecord} apiKey
+   * @param {string} [field] - Column holding the workspace id on the queried table
    * @returns {Object} Prisma where clause for the workspaces the key can access
    */
-  workspaceClause: function (apiKey) {
-    if (this.isFullAccess(apiKey)) return {};
-    return { id: { in: this.workspaceIds(apiKey) } };
+  workspaceClause: function (apiKey, field = "id") {
+    const ids = this.workspaceIds(apiKey);
+    return ids === null ? {} : { [field]: { in: ids } };
   },
 
   /**
-   * @param {string|null} scope
-   * @param {number[]} workspaceIds
+   * @param {string[]|null} scopes
+   * @param {number[]|null} workspaceIds
    * @returns {Promise<{scope: string|null, scopeConfig: string|null}>}
    */
-  scopeData: async function (scope = null, workspaceIds = []) {
-    const validScope = this.validations.scope(scope);
-    if (validScope !== this.scopes.workspace)
-      return { scope: validScope, scopeConfig: null };
+  scopeData: async function (scopes = null, workspaceIds = null) {
+    const validScopes = this.validations.scopes(scopes);
+    if (validScopes === null) return { scope: null, scopeConfig: null };
 
     const ids = this.validations.workspaceIds(workspaceIds);
+    if (ids === null)
+      return { scope: JSON.stringify(validScopes), scopeConfig: null };
+
     const found = await prisma.workspaces.count({ where: { id: { in: ids } } });
     if (found !== ids.length)
       throw new Error("One or more selected workspaces do not exist.");
     return {
-      scope: validScope,
+      scope: JSON.stringify(validScopes),
       scopeConfig: JSON.stringify({ workspaceIds: ids }),
     };
   },
@@ -127,14 +152,14 @@ const ApiKey = {
    * @param {number|null} createdByUserId
    * @param {string|null} name
    * @param {Object} [options]
-   * @param {string|null} [options.scope]
-   * @param {number[]} [options.workspaceIds] - Required for the `workspace` scope
+   * @param {string[]|null} [options.scopes] - Null for full access
+   * @param {number[]|null} [options.workspaceIds] - Null for every workspace
    * @returns {Promise<{apiKey: ApiKeyRecord|null, error: string|null}>}
    */
   create: async function (
     createdByUserId = null,
     name = null,
-    { scope = null, workspaceIds = [] } = {}
+    { scopes = null, workspaceIds = null } = {}
   ) {
     try {
       const normalizedName =
@@ -144,13 +169,41 @@ const ApiKey = {
           name: normalizedName,
           secret: this.makeSecret(),
           createdBy: createdByUserId,
-          ...(await this.scopeData(scope, workspaceIds)),
+          ...(await this.scopeData(scopes, workspaceIds)),
         },
       });
 
       return { apiKey, error: null };
     } catch (error) {
       console.error("FAILED TO CREATE API KEY.", error.message);
+      return { apiKey: null, error: error.message };
+    }
+  },
+
+  /**
+   * Replaces the scopes and workspace limit of an existing key.
+   * @param {number} id
+   * @param {Object} [options]
+   * @param {string[]|null} [options.scopes] - Null for full access
+   * @param {number[]|null} [options.workspaceIds] - Null for every workspace
+   * @returns {Promise<{apiKey: ApiKeyRecord|null, error: string|null}>}
+   */
+  updateScopes: async function (
+    id,
+    { scopes = null, workspaceIds = null } = {}
+  ) {
+    try {
+      if (!(await this.get({ id: Number(id) })))
+        throw new Error("API key not found.");
+      const apiKey = await prisma.api_keys.update({
+        where: { id: Number(id) },
+        data: {
+          ...(await this.scopeData(scopes, workspaceIds)),
+          lastUpdatedAt: new Date(),
+        },
+      });
+      return { apiKey, error: null };
+    } catch (error) {
       return { apiKey: null, error: error.message };
     }
   },

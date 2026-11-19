@@ -1,21 +1,14 @@
 const { EmbedConfig } = require("../../../models/embedConfig");
 const { EmbedChats } = require("../../../models/embedChats");
-const {
-  validApiKey,
-  apiKeyScope,
-  SCOPES,
-} = require("../../../utils/middleware/validApiKey");
+const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { reqBody } = require("../../../utils/http");
-const { Workspace } = require("../../../models/workspace");
+const { ApiKey } = require("../../../models/apiKeys");
 
 function apiEmbedEndpoints(app) {
   if (!app) return;
 
-  app.get(
-    "/v1/embed",
-    [validApiKey, apiKeyScope([SCOPES.full])],
-    async (request, response) => {
-      /*
+  app.get("/v1/embed", [validApiKey], async (request, response) => {
+    /*
       #swagger.tags = ['Embed']
       #swagger.description = 'List all active embeds'
       #swagger.responses[200] = {
@@ -61,31 +54,32 @@ function apiEmbedEndpoints(app) {
         }
       }
     */
-      try {
-        const embeds = await EmbedConfig.whereWithWorkspace();
-        const filteredEmbeds = embeds.map((embed) => ({
-          id: embed.id,
-          uuid: embed.uuid,
-          enabled: embed.enabled,
-          chat_mode: embed.chat_mode,
-          createdAt: embed.createdAt,
-          workspace: {
-            id: embed.workspace.id,
-            name: embed.workspace.name,
-          },
-          chat_count: embed._count.embed_chats,
-        }));
-        response.status(200).json({ embeds: filteredEmbeds });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
+    try {
+      const embeds = await EmbedConfig.whereWithWorkspace(
+        ApiKey.workspaceClause(response.locals.apiKey, "workspace_id")
+      );
+      const filteredEmbeds = embeds.map((embed) => ({
+        id: embed.id,
+        uuid: embed.uuid,
+        enabled: embed.enabled,
+        chat_mode: embed.chat_mode,
+        createdAt: embed.createdAt,
+        workspace: {
+          id: embed.workspace.id,
+          name: embed.workspace.name,
+        },
+        chat_count: embed._count.embed_chats,
+      }));
+      response.status(200).json({ embeds: filteredEmbeds });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
   app.get(
     "/v1/embed/:embedUuid/chats",
-    [validApiKey, apiKeyScope([SCOPES.full])],
+    [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Embed']
@@ -147,7 +141,7 @@ function apiEmbedEndpoints(app) {
 
   app.get(
     "/v1/embed/:embedUuid/chats/:sessionUuid",
-    [validApiKey, apiKeyScope([SCOPES.full])],
+    [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Embed']
@@ -206,11 +200,8 @@ function apiEmbedEndpoints(app) {
     }
   );
 
-  app.post(
-    "/v1/embed/new",
-    [validApiKey, apiKeyScope([SCOPES.full])],
-    async (request, response) => {
-      /*
+  app.post("/v1/embed/new", [validApiKey], async (request, response) => {
+    /*
       #swagger.tags = ['Embed']
       #swagger.description = 'Create a new embed configuration'
       #swagger.requestBody = {
@@ -269,38 +260,22 @@ function apiEmbedEndpoints(app) {
         description: "Workspace not found"
       }
     */
-      try {
-        const data = reqBody(request);
+    try {
+      const data = reqBody(request);
+      const { embed, message: error } = await EmbedConfig.new({
+        ...data,
+        workspace_id: response.locals.workspace.id,
+      });
 
-        if (!data.workspace_slug)
-          return response
-            .status(400)
-            .json({ error: "Workspace slug is required" });
-        const workspace = await Workspace.get({
-          slug: String(data.workspace_slug),
-        });
-
-        if (!workspace)
-          return response.status(404).json({ error: "Workspace not found" });
-
-        const { embed, message: error } = await EmbedConfig.new({
-          ...data,
-          workspace_id: workspace.id,
-        });
-
-        response.status(200).json({ embed, error });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
+      response.status(200).json({ embed, error });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
-  app.post(
-    "/v1/embed/:embedUuid",
-    [validApiKey, apiKeyScope([SCOPES.full])],
-    async (request, response) => {
-      /*
+  app.post("/v1/embed/:embedUuid", [validApiKey], async (request, response) => {
+    /*
       #swagger.tags = ['Embed']
       #swagger.description = 'Update an existing embed configuration'
       #swagger.parameters['embedUuid'] = {
@@ -352,27 +327,29 @@ function apiEmbedEndpoints(app) {
         description: "Embed not found"
       }
     */
-      try {
-        const { embedUuid } = request.params;
-        const data = reqBody(request);
+    try {
+      const data = reqBody(request);
+      const { apiKey, embed } = response.locals;
+      if (
+        "workspace_id" in data &&
+        !ApiKey.canAccessWorkspace(apiKey, data.workspace_id)
+      )
+        return response.status(403).json({
+          success: false,
+          error: "This api key is not permitted to access this workspace.",
+        });
 
-        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-        if (!embed) {
-          return response.status(404).json({ error: "Embed not found" });
-        }
-
-        const { success, error } = await EmbedConfig.update(embed.id, data);
-        response.status(200).json({ success, error });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
+      const { success, error } = await EmbedConfig.update(embed.id, data);
+      response.status(200).json({ success, error });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
   app.delete(
     "/v1/embed/:embedUuid",
-    [validApiKey, apiKeyScope([SCOPES.full])],
+    [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Embed']
@@ -406,11 +383,9 @@ function apiEmbedEndpoints(app) {
       }
     */
       try {
-        const { embedUuid } = request.params;
-        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-        if (!embed)
-          return response.status(404).json({ error: "Embed not found" });
-        const success = await EmbedConfig.delete({ id: embed.id });
+        const success = await EmbedConfig.delete({
+          id: response.locals.embed.id,
+        });
         response
           .status(200)
           .json({ success, error: success ? null : "Failed to delete embed" });

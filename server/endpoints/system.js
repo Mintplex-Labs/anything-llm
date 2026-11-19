@@ -1072,17 +1072,17 @@ function systemEndpoints(app) {
 
         const {
           name = null,
-          scope = null,
-          workspaceIds = [],
+          scopes = null,
+          workspaceIds = null,
         } = reqBody(request);
         const { apiKey, error } = await ApiKey.create(null, name, {
-          scope,
+          scopes,
           workspaceIds,
         });
         if (!apiKey) return response.status(400).json({ apiKey, error });
         await EventLogs.logEvent(
           "api_key_created",
-          { name: apiKey?.name, scope: apiKey?.scope },
+          { name: apiKey?.name, scopes: ApiKey.scopesOf(apiKey) },
           response?.locals?.user?.id
         );
         return response.status(200).json({
@@ -1101,6 +1101,34 @@ function systemEndpoints(app) {
 
   // TODO: This endpoint is replicated in the admin endpoints file.
   // and should be consolidated to be a single endpoint with flexible role protection.
+  app.post(
+    "/system/api-key/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (response.locals.multiUserMode) return response.sendStatus(401);
+        const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400);
+
+        const { scopes = null, workspaceIds = null } = reqBody(request);
+        const { apiKey, error } = await ApiKey.updateScopes(Number(id), {
+          scopes,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
+        await EventLogs.logEvent(
+          "api_key_updated",
+          { name: apiKey.name, scopes: ApiKey.scopesOf(apiKey) },
+          response?.locals?.user?.id
+        );
+        return response.status(200).json({ apiKey, error });
+      } catch (error) {
+        console.error(error);
+        response.sendStatus(500);
+      }
+    }
+  );
+
   app.delete(
     "/system/api-key/:id",
     [validatedRequest],

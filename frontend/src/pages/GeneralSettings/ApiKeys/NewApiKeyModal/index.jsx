@@ -12,49 +12,33 @@ import {
   ModalPrimaryButton,
   ModalSecondaryButton,
   ModalInput,
-  ModalLabel,
-  ModalHint,
 } from "@/components/lib/Modal";
-import WorkspaceMultiSelect from "./WorkspaceMultiSelect";
-
-const getScopes = (t) => ({
-  full: {
-    label: t("api.scopes.full"),
-    hint: t("api.modal.scope.helper.full"),
-  },
-  workspace: {
-    label: t("api.scopes.workspace"),
-    hint: t("api.modal.scope.helper.workspace"),
-  },
-  user: {
-    label: t("api.scopes.user"),
-    hint: t("api.modal.scope.helper.user"),
-  },
-});
+import ScopeFields from "../ScopeFields";
+import { FULL_ACCESS, scopePayload, validScopeSelection } from "../scopes";
 
 export default function NewApiKeyModal({ closeModal, onSuccess, workspaces }) {
   const { t } = useTranslation();
   const [apiKey, setApiKey] = useState(null);
   const [name, setName] = useState("");
-  const [scope, setScope] = useState("full");
+  const [scopes, setScopes] = useState([FULL_ACCESS]);
+  const [limited, setLimited] = useState(false);
   const [workspaceIds, setWorkspaceIds] = useState([]);
   const [creating, setCreating] = useState(false);
-  const missingWorkspaces = scope === "workspace" && workspaceIds.length === 0;
+  const validScopes = validScopeSelection(scopes, limited, workspaceIds);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
-    if (creating || missingWorkspaces) return;
+    if (creating || !validScopes) return;
     setCreating(true);
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
 
     const { apiKey: newApiKey, error } = await Model.generateApiKey({
       name,
-      scope,
-      workspaceIds: scope === "workspace" ? workspaceIds : [],
+      ...scopePayload(scopes, limited, workspaceIds),
     });
     setCreating(false);
     if (!!newApiKey) {
@@ -99,13 +83,17 @@ export default function NewApiKeyModal({ closeModal, onSuccess, workspaces }) {
             hint={t("api.modal.name.helper")}
           />
         )}
-        <ScopeSelect visible={!apiKey} scope={scope} onChange={setScope} />
-        <WorkspaceMultiSelect
-          visible={!apiKey && scope === "workspace"}
-          workspaces={workspaces}
-          selected={workspaceIds}
-          onChange={setWorkspaceIds}
-        />
+        {!apiKey && (
+          <ScopeFields
+            scopes={scopes}
+            onScopesChange={setScopes}
+            limited={limited}
+            onLimitedChange={setLimited}
+            workspaces={workspaces}
+            workspaceIds={workspaceIds}
+            onWorkspaceIdsChange={setWorkspaceIds}
+          />
+        )}
         {apiKey && (
           <div className="relative">
             <input
@@ -152,7 +140,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess, workspaces }) {
             </ModalSecondaryButton>
             <ModalPrimaryButton
               type="submit"
-              disabled={creating || missingWorkspaces}
+              disabled={creating || !validScopes}
             >
               {t("api.modal.create")}
             </ModalPrimaryButton>
@@ -164,29 +152,5 @@ export default function NewApiKeyModal({ closeModal, onSuccess, workspaces }) {
         )}
       </ModalFooter>
     </form>
-  );
-}
-
-function ScopeSelect({ visible, scope, onChange }) {
-  const { t } = useTranslation();
-  const scopes = getScopes(t);
-  if (!visible) return null;
-  return (
-    <div className="flex flex-col gap-y-1.5 w-full">
-      <ModalLabel htmlFor="scope">{t("api.modal.scope.label")}</ModalLabel>
-      <select
-        id="scope"
-        value={scope}
-        onChange={(e) => onChange(e.target.value)}
-        className="border-none w-full h-[34px] px-3 text-sm rounded-lg outline-none bg-zinc-800 text-zinc-100 light:bg-white light:text-slate-900 light:outline light:outline-1 light:outline-slate-300"
-      >
-        {Object.entries(scopes).map(([value, { label }]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
-      <ModalHint>{scopes[scope].hint}</ModalHint>
-    </div>
   );
 }
