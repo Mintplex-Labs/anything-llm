@@ -1,4 +1,5 @@
 const { reasoningParams } = require("../../../helpers/reasoningEffort");
+const { TokenManager } = require("../../../helpers/tiktoken");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -11,6 +12,10 @@ const { Ollama } = require("ollama");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
 
+// Tool results are injected as a user turn so providers can attach images.
+// That placeholder is not the question Ollama has to see in the transcript.
+const TOOL_ATTACHMENT_PROMPT = "[Attached image(s) from tool result]";
+
 /**
  * The agent provider for the Ollama provider.
  * Supports true OpenAI-compatible tool calling when the model supports it,
@@ -18,6 +23,9 @@ const { safeJsonParse } = require("../../../http");
  */
 class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
+  // Last real user prompt seen by this provider. One instance serves a whole
+  // tool loop, so a later turn can put the prompt back if history lost it.
+  #nativeUserPrompt = null;
 
   constructor(config = {}) {
     const {
@@ -228,6 +236,158 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return formatted;
   }
 
+  /**
+   * A user turn Ollama will accept as the query. Tool-image placeholders are
+   * user-role messages, but they are not the question that started the loop.
+   * @param {object} message
+   * @returns {boolean}
+   */
+  #isNativeUserQuery(message) {
+    if (message?.role !== "user" || typeof message.content !== "string")
+      return false;
+    const content = message.content.trim();
+    return content.length > 0 && content !== TOOL_ATTACHMENT_PROMPT;
+  }
+
+  /**
+   * Keep a role:"user" query in the native tool transcript.
+   * Ollama 0.40 qwen renderers return 500 "no user query found in messages"
+   * when the array has none. The same provider instance handles every turn of
+   * one tool loop, so the prompt from an earlier turn can be put back.
+   * @param {Array} messages
+   * @returns {Array}
+   */
+  #withNativeUserPrompt(messages) {
+    for (const message of messages) {
+      if (this.#isNativeUserQuery(message))
+        this.#nativeUserPrompt = message.content;
+    }
+    if (messages.some((message) => this.#isNativeUserQuery(message)))
+      return messages;
+    if (!this.#nativeUserPrompt) return messages;
+
+    const user = { role: "user", content: this.#nativeUserPrompt };
+    const insertAt = messages.findIndex((message) => message.role !== "system");
+    if (insertAt === -1) return [...messages, user];
+    return [...messages.slice(0, insertAt), user, ...messages.slice(insertAt)];
+  }
+
+  /**
+   * Token budget for the native tool request. Stay under num_ctx: Ollama
+   * truncates from the front, keeps system messages, and aborts when the
+   * candidate tail has no user query instead of truncating further.
+   * @returns {number}
+   */
+  #nativeToolTokenBudget() {
+    const limit = OllamaAILLM.promptWindowLimit(this.model);
+    const reserve = Math.min(1024, Math.floor(limit / 4));
+    return Math.max(256, limit - reserve);
+  }
+
+  /**
+   * @param {Array} messages
+   * @param {Array} tools
+   * @returns {number}
+   */
+  #estimateNativeToolTokens(messages, tools) {
+    const text = `${messages.map((message) => JSON.stringify(message)).join("\n")}\n${
+      tools?.length ? JSON.stringify(tools) : ""
+    }`;
+    try {
+      const count = new TokenManager(this.model).countFromString(text);
+      if (count > 0) return count;
+    } catch {}
+    return Math.ceil(text.length / 4);
+  }
+
+  /**
+   * Drop the oldest tool turns until the transcript fits, always keeping the
+   * user query and the newest tool result. Clip that result if it alone is
+   * larger than the window.
+   * @param {Array} messages
+   * @param {Array} tools
+   * @returns {Array}
+   */
+  #fitNativeToolMessages(messages, tools) {
+    const budget = this.#nativeToolTokenBudget();
+    if (this.#estimateNativeToolTokens(messages, tools) <= budget)
+      return messages;
+
+    const pinned = new Set();
+    let userIndex = -1;
+    messages.forEach((message, index) => {
+      if (message.role === "system") pinned.add(index);
+      if (this.#isNativeUserQuery(message)) userIndex = index;
+    });
+    if (userIndex !== -1) pinned.add(userIndex);
+
+    for (let index = messages.length - 1; index >= 0; index--) {
+      if (messages[index].role !== "tool") continue;
+      pinned.add(index);
+      if (messages[index - 1]?.role === "assistant") pinned.add(index - 1);
+      break;
+    }
+
+    const dropped = new Set();
+    const kept = () => messages.filter((_, index) => !dropped.has(index));
+    for (let index = 0; index < messages.length; index++) {
+      if (this.#estimateNativeToolTokens(kept(), tools) <= budget) break;
+      if (pinned.has(index) || dropped.has(index)) continue;
+      dropped.add(index);
+      const next = messages[index + 1];
+      if (
+        messages[index].role === "assistant" &&
+        next?.role === "tool" &&
+        !pinned.has(index + 1)
+      )
+        dropped.add(index + 1);
+    }
+
+    let fitted = kept();
+    let guard = 0;
+    while (
+      this.#estimateNativeToolTokens(fitted, tools) > budget &&
+      guard < 8
+    ) {
+      guard += 1;
+      const toolIndex = fitted.findIndex(
+        (message) =>
+          message.role === "tool" &&
+          typeof message.content === "string" &&
+          message.content.length > 400
+      );
+      if (toolIndex === -1) break;
+      const content = fitted[toolIndex].content;
+      fitted = fitted.slice();
+      fitted[toolIndex] = {
+        ...fitted[toolIndex],
+        content: `${content.slice(0, Math.max(200, Math.floor(content.length / 2)))}\n...[truncated]`,
+      };
+    }
+
+    if (fitted.length !== messages.length)
+      this.providerLog(
+        "Dropped older Ollama tool turns so the user prompt stays inside the context window."
+      );
+    return fitted;
+  }
+
+  /**
+   * @param {Array} messages
+   * @param {Array} functions
+   * @returns {{messages: Array, tools: Array}}
+   */
+  #prepareNativeToolMessages(messages, functions) {
+    const tools = formatFunctionsToTools(functions);
+    const formatted = this.#withNativeUserPrompt(
+      this.#formatMessagesForOllamaTools(messages)
+    );
+    return {
+      tools,
+      messages: this.#fitNativeToolMessages(formatted, tools),
+    };
+  }
+
   async streamingFunctionCall(
     messages,
     functions,
@@ -343,8 +503,8 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.resetUsage();
       await OllamaAILLM.contextWindows.ensure(this.model);
       const msgUUID = v4();
-      const formattedMessages = this.#formatMessagesForOllamaTools(messages);
-      const tools = formatFunctionsToTools(functions);
+      const { messages: formattedMessages, tools } =
+        this.#prepareNativeToolMessages(messages, functions);
 
       const stream = await this.client.chat({
         model: this.model,
@@ -573,8 +733,8 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     if (useNative) {
       this.resetUsage();
       await OllamaAILLM.contextWindows.ensure(this.model);
-      const formattedMessages = this.#formatMessagesForOllamaTools(messages);
-      const tools = formatFunctionsToTools(functions);
+      const { messages: formattedMessages, tools } =
+        this.#prepareNativeToolMessages(messages, functions);
 
       const response = await this.client.chat({
         model: this.model,
