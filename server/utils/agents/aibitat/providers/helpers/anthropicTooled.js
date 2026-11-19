@@ -200,6 +200,10 @@ async function anthropicTooledStream(
     for await (const chunk of response) {
       if (chunk.type === "message_start" && chunk.message?.usage) {
         usage.input_tokens = chunk.message.usage.input_tokens || 0;
+        usage.cache_read_input_tokens =
+          chunk.message.usage.cache_read_input_tokens || 0;
+        usage.cache_creation_input_tokens =
+          chunk.message.usage.cache_creation_input_tokens || 0;
       }
 
       if (chunk.type === "message_delta" && chunk.usage) {

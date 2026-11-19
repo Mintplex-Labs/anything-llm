@@ -6,11 +6,12 @@ import AgentPlugins from "./experimental/agentPlugins";
 import SystemPromptVariable from "./systemPromptVariable";
 
 /**
- * @typedef {Object} ModelPricingOverride - USD per 1,000,000 tokens
+ * @typedef {Object} ModelPricingOverride - price per 1,000,000 tokens
  * @property {string} provider - LLM provider slug
  * @property {string|null} model - model id, null applies to every model of the provider
- * @property {number} input - cost per 1M prompt tokens
- * @property {number} output - cost per 1M completion tokens
+ * @property {number} input - cost per 1M prompt tokens, in `currency`
+ * @property {number} output - cost per 1M completion tokens, in `currency`
+ * @property {string} currency - currency the price was entered in and is kept in
  */
 
 /**
@@ -19,6 +20,7 @@ import SystemPromptVariable from "./systemPromptVariable";
  * @property {string|null} currency - instance display currency, null when unset
  * @property {string[]} currencies - currency codes the display currency can be set to
  * @property {Record<string, number>|null} rates - units per USD, null when unavailable
+ * @property {string|null} asOf - day (YYYY-MM-DD) the rates were published for, null when unavailable
  */
 
 const System = {

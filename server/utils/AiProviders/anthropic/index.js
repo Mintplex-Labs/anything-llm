@@ -11,6 +11,10 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
 const { reasoningParams } = require("../../helpers/reasoningEffort");
+const {
+  normalizeTokenUsage,
+  promptUsage,
+} = require("../../helpers/modelPricing/usage");
 
 // Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
 // a 400, and every model accepts requests without it, so omitting it everywhere
@@ -243,8 +247,9 @@ class AnthropicLLM {
           .finalMessage()
       );
 
-      const promptTokens = result.output.usage.input_tokens;
-      const completionTokens = result.output.usage.output_tokens;
+      const tokens = normalizeTokenUsage(result.output.usage);
+      const promptTokens = tokens.prompt_tokens;
+      const completionTokens = tokens.completion_tokens;
 
       return {
         // Models that think by default put a thinking block before the answer,
@@ -254,8 +259,7 @@ class AnthropicLLM {
           .map((block) => block.text)
           .join(""),
         metrics: {
-          prompt_tokens: promptTokens,
-          completion_tokens: completionTokens,
+          ...tokens,
           total_tokens: promptTokens + completionTokens,
           outputTps: completionTokens / result.duration,
           duration: result.duration,
@@ -353,8 +357,9 @@ class AnthropicLLM {
       stream.on("streamEvent", (message) => {
         const data = message;
 
+        // The prompt total includes the cached tokens Anthropic reports beside it.
         if (data.type === "message_start")
-          usage.prompt_tokens = data?.message?.usage?.input_tokens;
+          Object.assign(usage, promptUsage(data?.message?.usage));
         if (data.type === "message_delta")
           usage.completion_tokens = data?.usage?.output_tokens;
 

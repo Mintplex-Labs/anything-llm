@@ -54,7 +54,10 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
 const { exportChatsAsType } = require("../utils/helpers/chat/convertTo");
-const { MODEL_PRICING } = require("../utils/helpers/modelPricing");
+const {
+  MODEL_PRICING,
+  InvalidPricingOverrideError,
+} = require("../utils/helpers/modelPricing");
 const {
   CURRENCY_EXCHANGE,
   SUPPORTED_CURRENCIES,
@@ -943,6 +946,8 @@ function systemEndpoints(app) {
    * `currency` is null when the admin has not picked one (the frontend then
    * infers it from the browser locale) and `rates` is null when no rates have
    * ever been fetched (eg: air-gapped install) - the frontend then shows USD.
+   * `asOf` is the day the rates were published for, which stays on the last
+   * successful sync while the rate source cannot be reached.
    */
   app.get(
     "/system/exchange-rates",
@@ -958,6 +963,7 @@ function systemEndpoints(app) {
           currency: setting?.value || null,
           currencies: SUPPORTED_CURRENCIES,
           rates,
+          asOf: rates ? CURRENCY_EXCHANGE.asOf : null,
         });
       } catch (e) {
         console.error(e.message, e);
@@ -1008,6 +1014,10 @@ function systemEndpoints(app) {
           overrides: MODEL_PRICING.setOverrides(overrides),
         });
       } catch (e) {
+        if (e instanceof InvalidPricingOverrideError)
+          return response
+            .status(400)
+            .json({ success: false, error: e.message });
         console.error(e.message, e);
         return response.status(500).json({ success: false, error: e.message });
       }

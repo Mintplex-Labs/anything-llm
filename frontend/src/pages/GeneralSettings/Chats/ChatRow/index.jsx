@@ -144,6 +144,20 @@ function CostCell({ metrics, formatCost }) {
   if (typeof metrics?.totalCost !== "number")
     return <td className="px-6 whitespace-nowrap">—</td>;
 
+  // No price was known for the model (or for part of an agent run), so the
+  // recorded cost is zero or incomplete rather than the real cost.
+  if (metrics.costKnown === false)
+    return (
+      <td
+        className="px-6 whitespace-nowrap"
+        title={t("recorded.table.cost-unknown-hint")}
+      >
+        {metrics.totalCost > 0
+          ? `≥ ${formatCost(metrics.totalCost, "significant")}`
+          : t("recorded.table.cost-unknown")}
+      </td>
+    );
+
   return (
     <td
       className="px-6 whitespace-nowrap"

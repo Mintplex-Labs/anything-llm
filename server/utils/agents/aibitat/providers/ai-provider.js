@@ -19,6 +19,10 @@ const { getLLMProviderClass } = require("../../../helpers");
 const { MODEL_PRICING } = require("../../../helpers/modelPricing");
 const { toNonNegativeNumber } = require("../../../helpers/numbers");
 const {
+  TOKEN_DETAIL_KEYS,
+  normalizeTokenUsage,
+} = require("../../../helpers/modelPricing/usage");
+const {
   watchTokenLimit,
 } = require("../../../helpers/chat/LLMPerformanceMonitor");
 const { maxTokensParam, temperatureParam } = require("./helpers/tooled.js");
@@ -46,6 +50,10 @@ const { bindAbortSignal } = require("../../../helpers/abortSignals");
  * @property {number} [inputCost] - USD cost of the prompt tokens. Zero when pricing is unknown.
  * @property {number} [outputCost] - USD cost of the completion tokens. Zero when pricing is unknown.
  * @property {number} [totalCost] - USD sum of input and output costs. Zero when pricing is unknown.
+ * @property {false} [costKnown] - Only present, as false, when a completion had no known price.
+ * @property {number} [cache_read_tokens] - Prompt tokens read from the provider's cache, when above zero.
+ * @property {number} [cache_write_tokens] - Prompt tokens written to the provider's cache, when above zero.
+ * @property {number} [reasoning_tokens] - Completion tokens spent on reasoning, when above zero.
  */
 
 /**
@@ -725,18 +733,13 @@ class Provider {
     }
 
     const safeUsage = usage && typeof usage === "object" ? usage : {};
-    const promptTokens = toNonNegativeNumber(
-      safeUsage.prompt_tokens || safeUsage.input_tokens
-    );
-    const completionTokens = toNonNegativeNumber(
-      safeUsage.completion_tokens || safeUsage.output_tokens
-    );
+    const tokens = normalizeTokenUsage(safeUsage);
     const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
 
     this.applyUsage({
-      prompt_tokens: promptTokens,
-      completion_tokens: completionTokens,
-      total_tokens: totalTokens || promptTokens + completionTokens,
+      ...tokens,
+      total_tokens:
+        totalTokens || tokens.prompt_tokens + tokens.completion_tokens,
       duration,
     });
   }
@@ -748,7 +751,7 @@ class Provider {
    * call this so accumulation still happens in one place.
    * Every value is coerced to a safe number so a malformed payload from any
    * provider cannot crash the run or corrupt the accumulated totals.
-   * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number}} usage
+   * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number, cache_read_tokens?: number, cache_write_tokens?: number, reasoning_tokens?: number}} usage
    */
   applyUsage(usage = {}) {
     const safeUsage = usage && typeof usage === "object" ? usage : {};
@@ -756,6 +759,12 @@ class Provider {
     const completionTokens = toNonNegativeNumber(safeUsage.completion_tokens);
     const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
     const duration = toNonNegativeNumber(safeUsage.duration);
+    // Cached and reasoning counts inside the totals, kept only when above zero.
+    const tokenDetails = {};
+    for (const key of TOKEN_DETAIL_KEYS) {
+      const count = toNonNegativeNumber(safeUsage[key]);
+      if (count) tokenDetails[key] = count;
+    }
 
     const timestamp = new Date();
     // Cost is priced per-call (not derived from the summed totals) so the
@@ -763,12 +772,14 @@ class Provider {
     const cost = MODEL_PRICING.getCostBreakdown(this.providerSlug, this.model, {
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
+      ...tokenDetails,
     });
 
     this.lastUsage = {
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
       total_tokens: totalTokens,
+      ...tokenDetails,
       outputTps:
         completionTokens && duration > 0 ? completionTokens / duration : 0,
       duration,
@@ -793,6 +804,10 @@ class Provider {
     totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
     totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;
     totals.totalCost = (totals.totalCost ?? 0) + cost.totalCost;
+    for (const [key, count] of Object.entries(tokenDetails))
+      totals[key] = (totals[key] ?? 0) + count;
+    // One completion without a known price leaves the run's total incomplete.
+    if (cost.costKnown === false) totals.costKnown = false;
   }
 
   /**

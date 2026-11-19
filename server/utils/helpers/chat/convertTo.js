@@ -262,10 +262,11 @@ async function exportChatsAsType(
 /**
  * Token and cost columns for an exported chat. Costs are stored in USD and
  * converted into the export currency. Chats recorded before cost tracking
- * existed export empty cost columns.
+ * existed export empty cost columns, and `cost_known` is false for chats
+ * whose model had no known price (their costs are zero).
  * @param {Object} [metrics] - the chat's response metrics
  * @param {string} currency - supported currency code
- * @returns {{prompt_tokens: number|null, completion_tokens: number|null, input_cost: number|null, output_cost: number|null, total_cost: number|null, currency: string|null}}
+ * @returns {{prompt_tokens: number|null, completion_tokens: number|null, input_cost: number|null, output_cost: number|null, total_cost: number|null, cost_known: boolean|null, currency: string|null}}
  */
 function metricsExportFields(metrics, currency = "USD") {
   const converted = convertMetricsCost(metrics ?? {}, currency);
@@ -275,6 +276,10 @@ function metricsExportFields(metrics, currency = "USD") {
     input_cost: converted.inputCost ?? null,
     output_cost: converted.outputCost ?? null,
     total_cost: converted.totalCost ?? null,
+    cost_known:
+      typeof converted.totalCost === "number"
+        ? converted.costKnown !== false
+        : null,
     currency: converted.currency ?? null,
   };
 }

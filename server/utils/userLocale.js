@@ -1,25 +1,22 @@
 /**
  * UserMetaCache
  *
- * Singleton in-memory cache for per-user browser metadata (timezone, language,
- * display currency).
+ * Singleton in-memory cache for per-user browser metadata (timezone, language).
  * Keyed by numeric user ID in multi-user mode, or the string 'primary' in
- * single-user mode. Populated from the X-Timezone / X-Language / X-Currency
- * request headers on every authenticated HTTP request via the validatedRequest
- * middleware.
+ * single-user mode. Populated from the X-Timezone / X-Language request headers
+ * on every authenticated HTTP request via the validatedRequest middleware.
  *
  * Because every request repopulates the cache from headers, the data stays
  * fresh within a session without any database writes.
  *
  * Usage:
  *   const { UserMetaCache } = require("../userLocale");
- *   UserMetaCache.set(userId, { timezone, lang, currency });
- *   const { timezone, lang, currency } = UserMetaCache.get(userId);
+ *   UserMetaCache.set(userId, { timezone, lang });
+ *   const { timezone, lang } = UserMetaCache.get(userId);
  */
 
 const DEFAULT_TIMEZONE = "UTC";
 const DEFAULT_LANG = "en";
-const DEFAULT_CURRENCY = "USD";
 
 class _UserMetaCache {
   #cache = new Map();
@@ -50,16 +47,12 @@ class _UserMetaCache {
 
   /**
    * Store or update locale metadata for a user.
-   * Invalid timezones and unsupported currencies are silently ignored
-   * (existing/default value kept).
+   * Invalid timezone strings are silently ignored (existing/default value kept).
    *
    * @param {number|null} userId - Numeric user ID, or null for single-user mode.
-   * @param {{ timezone?: string, lang?: string, currency?: string }} meta
+   * @param {{ timezone?: string, lang?: string }} meta
    */
-  set(userId, { timezone, lang, currency } = {}) {
-    const { isSupportedCurrency } = require("./helpers/currencyExchange");
-    const currencyCode =
-      typeof currency === "string" ? currency.trim().toUpperCase() : null;
+  set(userId, { timezone, lang } = {}) {
     const key = this.#key(userId);
     const current = this.#cache.get(key) || {};
     this.#cache.set(key, {
@@ -68,9 +61,6 @@ class _UserMetaCache {
           ? timezone
           : current.timezone || DEFAULT_TIMEZONE,
       lang: lang || current.lang || DEFAULT_LANG,
-      currency: isSupportedCurrency(currencyCode)
-        ? currencyCode
-        : current.currency || DEFAULT_CURRENCY,
     });
   }
 
@@ -79,20 +69,19 @@ class _UserMetaCache {
    * Returns defaults if nothing has been cached yet.
    *
    * @param {number|null} userId - Numeric user ID, or null for single-user mode.
-   * @returns {{ timezone: string, lang: string, currency: string }}
+   * @returns {{ timezone: string, lang: string }}
    */
   get(userId) {
     return (
       this.#cache.get(this.#key(userId)) || {
         timezone: DEFAULT_TIMEZONE,
         lang: DEFAULT_LANG,
-        currency: DEFAULT_CURRENCY,
       }
     );
   }
 
   /**
-   * Read X-Timezone, X-Language and X-Currency from an Express request and store them.
+   * Read X-Timezone and X-Language from an Express request and store them.
    * Intended to be called from the validatedRequest middleware after auth.
    *
    * @param {import('express').Request} request
@@ -101,9 +90,7 @@ class _UserMetaCache {
   setFromRequest(request, userId = null) {
     const timezone = request.header("X-Timezone");
     const lang = request.header("X-Language");
-    const currency = request.header("X-Currency");
-    if (timezone || lang || currency)
-      this.set(userId, { timezone, lang, currency });
+    if (timezone || lang) this.set(userId, { timezone, lang });
   }
 }
 

@@ -92,6 +92,8 @@ class CurrencyExchange {
 
   /** @type {Record<string, number>|null} - memoized units-per-USD rates keyed by currency code */
   #rates = null;
+  /** @type {string|null} - day (YYYY-MM-DD) the loaded rates were published for */
+  #asOf = null;
   /** @type {Promise<void>|null} - de-dupes concurrent refreshes */
   #inflightRefresh = null;
   /** @type {number} - epoch ms of the last failed refresh, 0 when the last one succeeded */
@@ -123,16 +125,20 @@ class CurrencyExchange {
     return Date.now() - cachedAt > CurrencyExchange.expiryMs;
   }
 
-  /** Loads and memoizes the sanitized rates map from the disk cache, if present. */
+  /** Loads and memoizes the sanitized rates and their date from the disk cache, if present. */
   #loadFromDisk() {
     try {
       if (!fs.existsSync(this.cacheFilePath)) return;
-      this.#rates = this.#sanitize(
-        JSON.parse(fs.readFileSync(this.cacheFilePath, { encoding: "utf8" }))
+      const cached = JSON.parse(
+        fs.readFileSync(this.cacheFilePath, { encoding: "utf8" })
       );
+      this.#rates = this.#sanitize(cached?.rates);
+      this.#asOf =
+        this.#rates && typeof cached.date === "string" ? cached.date : null;
     } catch (error) {
       this.log("Failed to read exchange rate cache from disk", error?.message);
       this.#rates = null;
+      this.#asOf = null;
     }
   }
 
@@ -177,10 +183,19 @@ class CurrencyExchange {
       if (!rates)
         throw new Error("Remote exchange rate data contained no usable rates");
 
+      // Frankfurter dates the rates with the working day they were published.
+      const date =
+        typeof data.date === "string"
+          ? data.date
+          : new Date().toISOString().slice(0, 10);
       this.#rates = rates;
+      this.#asOf = date;
       this.#lastFailedAt = 0;
       await Promise.all([
-        fs.promises.writeFile(this.cacheFilePath, JSON.stringify(rates)),
+        fs.promises.writeFile(
+          this.cacheFilePath,
+          JSON.stringify({ date, rates })
+        ),
         fs.promises.writeFile(this.cacheFileExpiryPath, Date.now().toString()),
       ]);
       this.log("Remote exchange rates synced and cached.");
@@ -208,6 +223,15 @@ class CurrencyExchange {
     );
     await this.#inflightRefresh;
     return this.#rates ? { ...this.#rates } : null;
+  }
+
+  /**
+   * The day (YYYY-MM-DD) the loaded rates were published for. It stays on the
+   * last successful sync while the remote source cannot be reached.
+   * @returns {string|null} null when no rates are loaded
+   */
+  get asOf() {
+    return this.#asOf;
   }
 
   /**

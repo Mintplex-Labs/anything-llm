@@ -842,6 +842,9 @@ const TRANSLATIONS = {
       at: "Sent At",
       "cost-breakdown":
         "Total: {{total}} · Input: {{input}} · Output: {{output}}",
+      "cost-unknown": "Unknown",
+      "cost-unknown-hint":
+        "No price is known for this model, so its cost is not counted. Add one in Model Pricing.",
     },
   },
   customization: {
@@ -941,6 +944,7 @@ const TRANSLATIONS = {
         description: "Currency used to display LLM usage costs.",
         automatic: "Automatic ({{currency}})",
         error: "Failed to update display currency.",
+        "rates-as-of": "Exchange rates as of {{date}}.",
       },
       logo: {
         title: "Brand Logo",
@@ -1044,7 +1048,7 @@ const TRANSLATIONS = {
   "model-pricing": {
     title: "Model Pricing",
     description:
-      "Set input and output prices for models whose pricing is unknown, or to replace the public pricing of a model. Chats with no known price are recorded at zero cost.",
+      "Set input and output prices for models whose pricing is unknown, or to replace the public pricing of a model. Chats with no known price are shown as unknown and are not counted.",
     add: "Add price",
     "all-models": "All models",
     "no-prices": "No custom prices",

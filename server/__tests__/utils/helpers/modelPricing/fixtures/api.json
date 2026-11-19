@@ -43,6 +43,17 @@
           }
         ]
       },
+      "gpt-detailed-rates": {
+        "id": "gpt-detailed-rates",
+        "name": "Model with cache and reasoning rates",
+        "cost": {
+          "input": 1,
+          "output": 4,
+          "cache_read": 0.1,
+          "cache_write": 1.25,
+          "reasoning": 8
+        }
+      },
       "gpt-Reasoner": {
         "id": "gpt-Reasoner",
         "name": "Reasoning model",

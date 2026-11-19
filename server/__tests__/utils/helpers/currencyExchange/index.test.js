@@ -212,7 +212,7 @@ describe("CurrencyExchange", () => {
       fs.mkdirSync(path.join(tempDir, "currency"), { recursive: true });
       fs.writeFileSync(
         path.join(tempDir, "currency", "exchange-rates.json"),
-        JSON.stringify({ EUR: 0.8 })
+        JSON.stringify({ date: "2026-08-01", rates: { EUR: 0.8 } })
       );
       fs.writeFileSync(path.join(tempDir, "currency", ".cached_at"), "0");
       global.fetch = jest.fn().mockRejectedValue(new Error("network down"));
@@ -221,6 +221,27 @@ describe("CurrencyExchange", () => {
       for (let i = 0; i < 3; i++)
         expect((await exchange.getRates()).EUR).toBe(0.8);
       expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("dates the rates with the last successful sync while the remote is down", async () => {
+      global.fetch = jest.fn().mockRejectedValue(new Error("network down"));
+      const offline = freshInstance();
+      await offline.getRates();
+      expect(offline.asOf).toBeNull();
+
+      jest.resetModules();
+      mockFetchWith(okResponse(FRANKFURTER_RESPONSE));
+      const synced = freshInstance();
+      await synced.getRates();
+      expect(synced.asOf).toBe("2026-08-06");
+
+      // A later sync fails: the rates and their date stay as they were.
+      fs.writeFileSync(path.join(tempDir, "currency", ".cached_at"), "0");
+      jest.resetModules();
+      global.fetch = jest.fn().mockRejectedValue(new Error("network down"));
+      const stale = freshInstance();
+      expect((await stale.getRates()).EUR).toBe(0.85);
+      expect(stale.asOf).toBe("2026-08-06");
     });
 
     it("survives a corrupted disk cache file", async () => {

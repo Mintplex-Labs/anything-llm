@@ -3,6 +3,7 @@ const moment = require("moment");
 const { isAbortError } = require("../abortSignals");
 const { safeJsonParse } = require("../../http");
 const { convertResponseCosts } = require("../currencyExchange");
+const { tokenDetails } = require("../modelPricing/usage");
 
 /**
  * Extract reasoning content from a message or delta, checking all known field names.
@@ -87,6 +88,9 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
+
+          // Cached and reasoning counts are priced at their own rates.
+          Object.assign(usage, tokenDetails(chunk.usage));
 
           // Cerebras sends time_info next to usage on the final chunk.
           // Its completion_time is used as the real duration of the completion.

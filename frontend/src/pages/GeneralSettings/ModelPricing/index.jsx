@@ -7,7 +7,7 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import System from "@/models/system";
 import { useModal } from "@/hooks/useModal";
 import showToast from "@/utils/toast";
-import useCurrency from "@/hooks/useCurrency";
+import { formatCost } from "@/utils/currency";
 import PriceModal from "./PriceModal";
 
 const GRID_COLUMNS = "grid-cols-[2fr_2fr_1fr_1fr_88px]";
@@ -145,7 +145,6 @@ function AddPriceButton({ visible = true, onClick }) {
 
 function PriceList({ loading, overrides, onCreate, onEdit, onDelete }) {
   const { t } = useTranslation();
-  const { formatCost } = useCurrency();
   if (loading)
     return (
       <div className="flex items-center justify-center py-20">
@@ -187,14 +186,25 @@ function PriceList({ loading, overrides, onCreate, onEdit, onDelete }) {
           onEdit={() => onEdit(index)}
           onDelete={() => onDelete(index)}
           showDivider={index < overrides.length - 1}
-          formatCost={formatCost}
         />
       ))}
     </div>
   );
 }
 
-function PriceRow({ override, onEdit, onDelete, showDivider, formatCost }) {
+/**
+ * A price exactly as it was entered, in its own currency. Prices are never
+ * converted for display, and every decimal is shown so a sub-cent price per
+ * 1M tokens does not read as zero.
+ * @param {number} amount
+ * @param {string} [currency]
+ * @returns {string}
+ */
+function formatPrice(amount, currency = "USD") {
+  return formatCost(amount, { currency, precision: "full" });
+}
+
+function PriceRow({ override, onEdit, onDelete, showDivider }) {
   const { t } = useTranslation();
   return (
     <>
@@ -209,10 +219,10 @@ function PriceRow({ override, onEdit, onDelete, showDivider, formatCost }) {
           {override.model ?? t("model-pricing.all-models")}
         </span>
         <span className="text-sm font-normal leading-5 text-zinc-400 light:text-slate-500">
-          {formatCost(override.input)}
+          {formatPrice(override.input, override.currency)}
         </span>
         <span className="text-sm font-normal leading-5 text-zinc-400 light:text-slate-500">
-          {formatCost(override.output)}
+          {formatPrice(override.output, override.currency)}
         </span>
         <div className="flex items-center justify-end gap-[14px]">
           <button

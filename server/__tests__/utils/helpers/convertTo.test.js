@@ -20,6 +20,7 @@ const emptyMetricsFields = {
   input_cost: null,
   output_cost: null,
   total_cost: null,
+  cost_known: null,
   currency: null,
 };
 

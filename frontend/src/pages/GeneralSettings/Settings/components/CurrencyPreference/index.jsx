@@ -15,11 +15,13 @@ export default function CurrencyPreference() {
   const { t, i18n } = useTranslation();
   const [currency, setCurrency] = useState("");
   const [currencies, setCurrencies] = useState([]);
+  const [ratesAsOf, setRatesAsOf] = useState(null);
 
   useEffect(() => {
     getCurrencySettings().then((settings) => {
       if (settings?.currency) setCurrency(settings.currency);
       setCurrencies(settings?.currencies ?? []);
+      setRatesAsOf(settings?.asOf ?? null);
     });
   }, []);
 
@@ -69,6 +71,28 @@ export default function CurrencyPreference() {
           ))}
         </select>
       </div>
+      {ratesAsOf && (
+        <p className="text-xs text-white/60 mt-2">
+          {t("customization.items.display-currency.rates-as-of", {
+            date: formatRatesDate(ratesAsOf, i18n.language),
+          })}
+        </p>
+      )}
     </div>
   );
+}
+
+/**
+ * @param {string} day - YYYY-MM-DD
+ * @param {string} locale - BCP 47 locale tag
+ * @returns {string} the day in the user's language, or as given when it cannot be parsed
+ */
+function formatRatesDate(day, locale) {
+  const date = new Date(`${day}T00:00:00`);
+  if (isNaN(date.getTime())) return day;
+  try {
+    return date.toLocaleDateString(locale, { dateStyle: "medium" });
+  } catch {
+    return date.toLocaleDateString(undefined, { dateStyle: "medium" });
+  }
 }

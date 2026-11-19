@@ -14,7 +14,7 @@ import LLMProviderModelPicker from "@/pages/GeneralSettings/ModelRouters/LLMProv
 import useCurrency from "@/hooks/useCurrency";
 import { currencySymbol } from "@/utils/currency";
 
-const EMPTY_PRICE = { input: "", output: "", listed: false, usd: {} };
+const EMPTY_PRICE = { input: "", output: "", listed: false };
 
 /**
  * @param {Object} props
@@ -30,20 +30,25 @@ export default function PriceModal({
   onSave,
 }) {
   const { t } = useTranslation();
-  const { currency, rate } = useCurrency();
+  const { currency: displayCurrency, rates } = useCurrency();
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [systemSettings, setSystemSettings] = useState(null);
   const [selection, setSelection] = useState({ provider: "", model: "" });
   const [price, setPrice] = useState(EMPTY_PRICE);
   const isEdit = !!override;
+  // A saved price stays in the currency it was entered in. A new price is
+  // entered in the display currency.
+  const currency = override?.currency ?? displayCurrency;
+  // Units of `currency` per USD, only used to fill in the models.dev price.
+  const rate = currency === "USD" ? 1 : rates?.[currency];
 
   useEffect(() => {
     if (!isOpen) return;
     setError(null);
-    setPrice(isEdit ? displayPrice(override, rate) : EMPTY_PRICE);
+    setPrice(isEdit ? savedPrice(override) : EMPTY_PRICE);
     if (!isEdit) System.keys().then((settings) => setSystemSettings(settings));
-  }, [isOpen, isEdit, rate]);
+  }, [isOpen, isEdit]);
 
   // Fill in the models.dev price for the selected model, and clear a
   // previously filled price when the new selection has none.
@@ -55,20 +60,18 @@ export default function PriceModal({
       provider === override.provider &&
       model === (override.model ?? "")
     ) {
-      const saved = displayPrice(override, rate);
-      setPrice((current) => (current.listed ? saved : current));
+      setPrice((current) => (current.listed ? savedPrice(override) : current));
       return;
     }
 
     let cancelled = false;
     const lookup =
-      provider && model
+      provider && model && rate
         ? System.modelPricingListed(provider, model)
         : Promise.resolve(null);
     lookup.then((listed) => {
       if (cancelled) return;
-      if (listed)
-        return setPrice({ ...displayPrice(listed, rate), listed: true });
+      if (listed) return setPrice(listedPrice(listed, rate));
       setPrice((current) => (current.listed ? EMPTY_PRICE : current));
     });
     return () => {
@@ -78,12 +81,7 @@ export default function PriceModal({
 
   function handlePriceChange(e) {
     const { name, value } = e.target;
-    setPrice((current) => ({
-      ...current,
-      [name]: value,
-      listed: false,
-      usd: { ...current.usd, [name]: undefined },
-    }));
+    setPrice((current) => ({ ...current, [name]: value, listed: false }));
   }
 
   async function handleSubmit(e) {
@@ -96,8 +94,9 @@ export default function PriceModal({
     const { success, error: apiError } = await onSave({
       provider,
       model: String(form.get("model") ?? "").trim() || null,
-      input: price.usd.input ?? Number(form.get("input")) / rate,
-      output: price.usd.output ?? Number(form.get("output")) / rate,
+      input: Number(form.get("input")),
+      output: Number(form.get("output")),
+      currency,
     });
     setSaving(false);
     if (!success) return setError(apiError || t("model-pricing.modal.error"));
@@ -179,19 +178,27 @@ export default function PriceModal({
 }
 
 /**
- * Converts a stored USD price into the display currency for the inputs,
- * rounded to 2 decimals. The exact USD values are kept so saving an untouched
- * field does not persist the rounded amount.
- * @param {{input: number, output: number}} price - USD per 1M tokens
- * @param {number} rate - display currency units per USD
- * @returns {{input: number, output: number, listed: false, usd: {input: number, output: number}}}
+ * The inputs for a saved price, exactly as it was entered.
+ * @param {import("@/models/system").ModelPricingOverride} override
+ * @returns {{input: number, output: number, listed: false}}
  */
-function displayPrice(price, rate) {
+function savedPrice(override) {
+  return { input: override.input, output: override.output, listed: false };
+}
+
+/**
+ * The inputs for a models.dev price, converted from USD into the currency the
+ * price is entered in and kept to 4 significant figures so small per-token
+ * prices are not rounded away.
+ * @param {{input: number, output: number}} listed - USD per 1M tokens
+ * @param {number} rate - units of the entry currency per USD
+ * @returns {{input: number, output: number, listed: true}}
+ */
+function listedPrice(listed, rate) {
   return {
-    input: Number((price.input * rate).toFixed(2)),
-    output: Number((price.output * rate).toFixed(2)),
-    listed: false,
-    usd: { input: price.input, output: price.output },
+    input: Number((listed.input * rate).toPrecision(4)),
+    output: Number((listed.output * rate).toPrecision(4)),
+    listed: true,
   };
 }
 
