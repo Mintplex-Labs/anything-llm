@@ -387,7 +387,7 @@ const TRANSLATIONS = {
       sql: {
         title: "SQL Connector",
         description:
-          "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+          "Enable your agent to be able to leverage SQL to answer your questions by connecting to various SQL database providers.",
       },
       scheduledJob: {
         title: "Create scheduled jobs",
@@ -1603,10 +1603,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",
-      "desktop-only":
-        "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
-      dismiss: "Dismiss",
-      editing: "Editing",
     },
     directory: {
       "my-documents": "My Documents",
@@ -1628,6 +1624,23 @@ const TRANSLATIONS = {
       deselect_all: "Deselect All",
       remove_selected: "Remove Selected",
       save_embed: "Save and Embed",
+      "in-workspace": "In workspace",
+      "upload-files": "Upload files",
+      "add-link": "Add link",
+      "selected-count_one": "{{count}} selected",
+      "selected-count_other": "{{count}} selected",
+      "move-to-folder": "Move to folder",
+      "ready-to-embed_one": "{{count}} file ready to embed",
+      "ready-to-embed_other": "{{count}} files ready to embed",
+      "add-to-queue": "Add to queue",
+      staged: "Ready to embed",
+      pinned: "Pinned",
+      watching: "Watching",
+      pin: "Pin to workspace",
+      unpin: "Unpin from workspace",
+      watch: "Watch for changes",
+      unwatch: "Stop watching for changes",
+      "remove-from-workspace": "Remove from workspace",
     },
     upload: {
       "processor-offline": "Document Processor Unavailable",
@@ -1667,6 +1680,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Loading chat history...",
+    loading_chat_recalling: "Recalling our conversation...",
+    loading_chat_remembering: "Remembering what we talked about...",
     attachments_processing: "Attachments are processing. Please wait...",
     generating_response: "Generating response",
     thought_in_progress: "Model is Thinking...",

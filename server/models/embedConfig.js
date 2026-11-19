@@ -231,7 +231,6 @@ const NUMBER_KEYS = [
   "max_chats_per_day",
   "max_chats_per_session",
   "workspace_id",
-  "message_limit",
 ];
 
 // Helper to validate a data object strictly into the proper format
@@ -265,6 +264,12 @@ function validatedCreationData(value, field) {
     } catch {
       return null;
     }
+  }
+
+  // 0 is valid (no history); invalid values fall back to the default.
+  if (field === "message_limit") {
+    const limit = parseInt(value);
+    return limit >= 0 ? limit : null;
   }
 
   if (BOOLEAN_KEYS.includes(field)) {

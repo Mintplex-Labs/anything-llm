@@ -128,20 +128,15 @@ function decodePathname(pathname = "") {
 function validYoutubeVideoUrl(link, returnVideoId = false) {
   try {
     if (!link || typeof link !== "string") return false;
-    let urlToValidate = link;
-
-    if (!link.startsWith("http://") && !link.startsWith("https://")) {
-      urlToValidate = "https://" + link;
-      urlToValidate = new URL(urlToValidate).toString();
-    }
+    const withScheme = /^https?:\/\//i.test(link) ? link : `https://${link}`;
+    const urlToValidate = new URL(withScheme).toString();
 
     const regex =
       /^(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?(?:.*&)?v=|live\/|shorts\/))([\w-]{11})(?:[?&#/]\S*)?$/;
     const match = urlToValidate.match(regex);
     if (returnVideoId) return match?.[1] ?? null;
     return !!match?.[1];
-  } catch (error) {
-    console.error("Error validating YouTube video URL", error);
+  } catch {
     return returnVideoId ? null : false;
   }
 }

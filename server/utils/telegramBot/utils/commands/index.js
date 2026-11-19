@@ -131,7 +131,18 @@ function commandPattern(command) {
   return new RegExp(`^\\/${command}(?:@\\w+)?(?:\\s|$)`);
 }
 
+/**
+ * Check if a message runs one of the bot's commands. Other messages that start
+ * with a slash, such as slash command presets, are sent to the chat.
+ * @param {string} text - The message text.
+ * @returns {boolean}
+ */
+function isBotCommand(text = "") {
+  return BOT_COMMANDS.some(({ command }) => commandPattern(command).test(text));
+}
+
 module.exports = {
   BOT_COMMANDS,
   commandPattern,
+  isBotCommand,
 };

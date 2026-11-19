@@ -7,14 +7,15 @@ const { default: slugify } = require("slugify");
 // in a script it cannot transliterate (eg: Chinese, Hebrew) would slug to "".
 const TITLE_SLUG_REMOVE = /[^\p{L}\p{M}\p{N}\s$*_+~.()'"!\-:@]+/gu;
 
-// Will remove the last .extension from the input
-// and stringify the input + move to lowercase.
+// Alphanumeric with at least one letter (eg: "pdf", "mp4", but not "0" or " Smith").
+const FILE_EXTENSION = /^(?=[a-z0-9]*[a-z])[a-z0-9]+$/i;
+
+// Strips a trailing file extension, if any, and slugifies the rest in lowercase.
 function stripAndSlug(input, options = {}) {
-  if (!input.includes(".")) return slugify(input, { lower: true, ...options });
-  return slugify(input.split(".").slice(0, -1).join("-"), {
-    lower: true,
-    ...options,
-  });
+  const parts = input.split(".");
+  if (parts.length > 1 && FILE_EXTENSION.test(parts[parts.length - 1]))
+    parts.pop();
+  return slugify(parts.join("-"), { lower: true, ...options });
 }
 
 const METADATA_KEYS = {

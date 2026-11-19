@@ -25,7 +25,7 @@ const AGENT_AWAITING_USER_EVENTS = [
 // of these can arrive after the execution loop already finished (e.g.
 // rename_thread fires once the async chat save + thread auto-rename complete),
 // so they must not re-show the stop generation button.
-const AGENT_PASSIVE_EVENTS = ["rename_thread"];
+const AGENT_PASSIVE_EVENTS = ["rename_thread", "pptxSlidePreview"];
 const AGENT_PASSIVE_STREAM_EVENTS = [
   "chatId",
   "promptChatId",
@@ -96,6 +96,7 @@ const handledEvents = [
   "rechartVisualize",
   "toolApprovalRequest",
   "clarificationRequest",
+  "pptxSlidePreview",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -342,6 +343,39 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             : msg
         );
       }
+    });
+  }
+
+  // Images of a presentation's slides while it is built: one card per deck
+  // that gains a slide with each event. They live only in this session.
+  if (data.type === "pptxSlidePreview") {
+    const { deckId, index, image, done } = data.content;
+    return setChatHistory((prev) => {
+      const card = prev.find((msg) => msg.uuid === deckId);
+      // A deck that never sent a slide gets no card.
+      if (!card && !image) return prev;
+      const slides = [...(card?.content?.slides || [])];
+      if (
+        Number.isInteger(index) &&
+        typeof image === "string" &&
+        image.startsWith("data:image/")
+      )
+        slides[index] = image;
+      const next = {
+        type: "pptxSlidePreview",
+        uuid: deckId,
+        content: { slides, done: !!done || !!card?.content?.done },
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      };
+      return card
+        ? prev.map((msg) => (msg.uuid === deckId ? next : msg))
+        : [...prev.filter((msg) => !!msg.content), next];
     });
   }
 

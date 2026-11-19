@@ -570,6 +570,22 @@ describe("GitHubRepoLoader recursive loader options", () => {
     expect(options.apiUrl).toBe("https://api.octocorp.ghe.com");
   });
 
+  test.each(["?tab=readme-ov-file", "#readme"])(
+    "a url copied with %s gives the upstream loader the bare repo url",
+    async (suffix) => {
+      mockGithubApi();
+      const loader = new GitHubRepoLoader({
+        repo: `https://github.com/org/repo${suffix}`,
+        branch: "main",
+      });
+      await loader.init();
+      await loader.recursiveLoader();
+
+      const [repoUrl] = LCGithubLoader.mock.calls[0];
+      expect(repoUrl).toBe("https://github.com/org/repo");
+    }
+  );
+
   test("recursiveLoader refuses to run before init", async () => {
     const loader = new GitHubRepoLoader({
       repo: "https://github.mycompany.com/org/repo",

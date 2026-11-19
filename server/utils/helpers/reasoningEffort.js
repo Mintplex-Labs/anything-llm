@@ -70,7 +70,7 @@ function modelsDevOptions(provider, model) {
  * The reasoning capabilities models.dev lists for a cloud model, as levels
  * this provider's request format can send. A model models.dev does not list
  * gets no reasoning controls.
- * @param {"openai"|"gemini"|"deepseek"|"openrouter"} provider
+ * @param {"openai"|"gemini"|"deepseek"|"openrouter"|"mistral"} provider
  * @param {string} model
  * @returns {{reasoning: 'unknown'|boolean, reasoningOptions: string[]}}
  */
@@ -79,7 +79,7 @@ function modelsDevReasoningCapabilities(provider, model) {
   if (!options) return { reasoning: "unknown", reasoningOptions: [] };
 
   const levels = new Set();
-  const noneIsOff = ["openai", "openrouter"].includes(provider);
+  const noneIsOff = ["openai", "openrouter", "mistral"].includes(provider);
   for (const value of options.effortValues)
     levels.add(noneIsOff && value === "none" ? "off" : value);
   if (["deepseek", "openrouter"].includes(provider) && options.toggle) {
@@ -182,8 +182,12 @@ function reasoningParams(provider, effort = null, model = null) {
         reasoning: toggle ? { enabled: effort === "on" } : { effort },
       };
     case "mistral":
-      // Reasoning models only accept "none" or "high" - other levels are rejected.
-      return { reasoning_effort: effort === "on" ? "high" : "none" };
+      // Accepted levels differ per model - see MistralLLM.getModelCapabilities.
+      // "on"/"off" are offered to reasoning models models.dev does not list.
+      // https://docs.mistral.ai/capabilities/reasoning/adjustable
+      return {
+        reasoning_effort: { off: "none", on: "high" }[effort] ?? effort,
+      };
     case "generic-openai":
       // OpenAI's Chat Completions field - "none" turns reasoning off.
       // https://developers.openai.com/api/docs/guides/reasoning

@@ -1,21 +1,21 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logosu"></a>
 </p>
 
 <div align='center'>
-<a href="https://trendshift.io/repositories/2415" target="_blank"><img src="https://trendshift.io/api/badge/repositories/2415" alt="Mintplex-Labs%2Fanything-llm | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/2415?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-2415" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/2415/yearly?language=JavaScript" alt="Mintplex-Labs%2Fanything-llm | Trendshift" width="250" height="55"/></a>
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
-    Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın; son derece özelleştirilebilir, çok kullanıcılı ve zahmetsiz kurulum.
+    <b>AnythingLLM:</b> Aradığınız hepsi bir arada yapay zekâ uygulaması.<br />
+    Belgelerinizle sohbet edin, yapay zekâ ajanlarını kullanın. Kapsamlı yapılandırma ve çoklu kullanıcı desteği; zahmetsiz kurulum.
 </p>
 
 <p align="center">
   <a href="https://github.com/Mintplex-Labs/anything-llm/discussions" target="_blank">
-      <img src="https://img.shields.io/github/discussions/Mintplex-Labs/anything-llm?style=flat&logo=github&label=discussions" alt="GitHub Discussions">
+      <img src="https://img.shields.io/github/discussions/Mintplex-Labs/anything-llm?style=flat&logo=github&label=discussions" alt="GitHub Tartışmaları">
   </a> |
   <a href="https://www.reddit.com/r/anythingllm/" target="_blank">
       <img src="https://img.shields.io/badge/reddit-r%2Fanythingllm-FF4500?style=flat&logo=reddit&logoColor=white" alt="r/anythingllm">
@@ -24,10 +24,10 @@
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="Lisans">
   </a> |
   <a href="https://docs.anythingllm.com" target="_blank">
-    Dokümanlar
+    Belgeler
   </a> |
-  <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
-    Barındırılan Örnek
+   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+    Barındırılan Kurulum
   </a>
 </p>
 
@@ -36,67 +36,75 @@
 </p>
 
 <p align="center">
-👉 Masaüstü için AnythingLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank">Şimdi İndir</a>
+👉 Masaüstü için AnythingLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Hemen indirin</a>
 </p>
 
-Belgelerinizle sohbet edin. Karmaşık iş akışlarını yapay zeka ajanlarıyla otomatikleştirin. Son derece özelleştirilebilir, çok kullanıcıya hazır, sahada denenmiş — ve varsayılan olarak sıfır kurulum zahmetiyle yerelde çalışır.
+<p align="center">
+📱 AnythingLLM Mobile (Android) açık kaynaklıdır! <a href="https://github.com/Mintplex-Labs/anythingllm-mobile" target="_blank">Depoyu görüntüleyin</a>
+</p>
 
-![Chatting](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
+Belgelerinizle sohbet edin. Karmaşık iş akışlarını yapay zekâ ajanlarıyla otomatikleştirin. Kapsamlı yapılandırma seçenekleri ve çoklu kullanıcı desteği sunan, gerçek kullanımda kendini kanıtlamış AnythingLLM, varsayılan olarak yerel ortamınızda çalışır ve zahmetsizce kurulur.
+
+![Sohbet](https://github.com/Mintplex-Labs/anything-llm/releases/download/v1.11.2/AnythingLLM720p.gif)
 
 <details>
-<summary><kbd>Demoyu izle!</kbd></summary>
+<summary><kbd>Demoyu izleyin!</kbd></summary>
 
-[![Videoyu izle](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
+[![Videoyu izleyin](../images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 </details>
 
-### Ürün Genel Bakışı
+### Ürüne Genel Bakış
 
-AnythingLLM, hiçbir ödün vermeden özel ve tam donanımlı bir ChatGPT oluşturmanızı sağlayan hepsi bir arada yapay zeka uygulamasıdır. Favori yerel veya bulut LLM'inizi bağlayın, belgelerinizi yükleyin ve dakikalar içinde sohbete başlayın. Kutudan çıktığı haliyle yerleşik ajanlar, çok kullanıcılı destek, vektör veritabanları ve belge işleme hatları sunar — ek yapılandırma gerekmez.
+AnythingLLM, gizliliğinizden veya özelliklerden ödün vermeden kendi ChatGPT deneyiminizi oluşturmanızı sağlayan, hepsi bir arada bir yapay zekâ uygulamasıdır. Tercih ettiğiniz yerel veya bulut tabanlı büyük dil modelini (LLM) bağlayın, belgelerinizi yükleyin ve dakikalar içinde sohbete başlayın. Yerleşik ajanlar, çoklu kullanıcı desteği, vektör veritabanları ve belge işleme hatları ek yapılandırma gerektirmeden kullanıma hazırdır.
 
-AnythingLLM ayrıca birden fazla kullanıcıyı destekler; örneğin güvenliği, gizliliği veya fikri mülkiyetinizi tehlikeye atmadan kullanıcı başına erişimi ve deneyimi kontrol edebilirsiniz.
+AnythingLLM, kurulumunuzun güvenliğinden, gizliliğinden veya fikrî mülkiyet haklarınızdan ödün vermeden her kullanıcının erişimini ve deneyimini ayrı ayrı yönetebileceğiniz çoklu kullanıcı desteği sunar.
 
-## AnythingLLM'in Harika Özellikleri
+## AnythingLLM'nin Öne Çıkan Özellikleri
 
-- [Dinamik Model Yönlendirme](https://docs.anythingllm.com/model-router/overview) - Tanımladığınız kurallara göre sohbetleri otomatik olarak en uygun sağlayıcıya ve modele yönlendirin.
-- [Otomatik ve Kullanıcı Yönetimli Hafıza](https://docs.anythingllm.com/features/memories) - LLM'inizin sizinle veya çalışma alanınızla ilgili önemli bilgileri hatırlamasını sağlayın.
-- [Zamanlanmış Görevler](https://docs.anythingllm.com/scheduled-jobs/overview) - Tekrarlayan görevleri veya istemleri, tüm ajan yetenekleriyle birlikte cron zamanlamasıyla çalıştırın.
-- [Akıllı Beceri Seçimi](https://docs.anythingllm.com/agent/intelligent-tool-selection) Modelleriniz için **sınırsız** araç etkinleştirirken sorgu başına token kullanımını %80'e kadar azaltın
-- [Kod yazmadan AI Ajanı oluşturucu](https://docs.anythingllm.com/agent-flows/overview)
+- [Yerleşik yerel LLM motoru](../docker/HOW_TO_USE_DOCKER.md#built-in-llm-engine-optional) - [Lemonade](https://lemonade-server.ai) ve [llama.cpp](https://github.com/ggml-org/llama.cpp) sayesinde yerel modelleri ek kurulum yapmadan CPU veya GPU üzerinde çalıştırın (NVIDIA için CUDA, AMD ve Intel için Vulkan).
+- [Dinamik Model Yönlendirme](https://docs.anythingllm.com/model-router/overview) - Tanımladığınız kurallara göre sohbetleri konuşmaya en uygun sağlayıcıya ve modele otomatik olarak yönlendirin.
+- [Otomatik ve Kullanıcı Tarafından Yönetilen Anılar](https://docs.anythingllm.com/features/memories) - LLM'nizin siz veya çalışma alanınız hakkındaki önemli bilgileri hatırlamasını sağlayın.
+- [Zamanlanmış Görevler](https://docs.anythingllm.com/scheduled-jobs/overview) - Yinelenen görevleri veya istemleri tüm ajan yetenekleriyle bir cron zamanlamasına göre çalıştırın.
+- [Akıllı Beceri Seçimi](https://docs.anythingllm.com/agent/intelligent-tool-selection) - Modelleriniz için **sınırsız** sayıda aracı etkinleştirirken sorgu başına token kullanımını %80'e kadar azaltın.
+- [Kod yazmadan yapay zekâ ajanı oluşturma](https://docs.anythingllm.com/agent-flows/overview)
 - [MCP uyumluluğu](https://docs.anythingllm.com/mcp-compatibility/overview)
-- [Çoklu-mod desteği (hem kapalı hem açık kaynak LLM'ler!)](https://docs.anythingllm.com/features/language-models)
-- [Özel Yapay Zeka Ajanları](https://docs.anythingllm.com/agent/custom/introduction)
-- 👤 Çok kullanıcılı örnek desteği ve yetkilendirme _Yalnızca Docker sürümü_
-- 🦾 Çalışma alanınız içinde ajanlar (web'de gezinme vb.)
-- 💬 [Web siteniz için özel gömülebilir sohbet aracı](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Yalnızca Docker sürümü_
-- 📖 Çoklu belge türü desteği (PDF, TXT, DOCX vb.)
-- Sürükle-bırak yükleme ve kaynak gösterimi olan sezgisel sohbet arayüzü.
-- Her türlü bulut dağıtımı için üretime hazır.
-- Tüm popüler [kapalı ve açık kaynak LLM sağlayıcılarıyla](#desteklenen-llmler-embedding-modelleri-konuşma-modelleri-ve-vektör-veritabanları) uyumlu.
-- Büyük belge kümeleri için yerleşik optimizasyonlar — diğer sohbet arayüzlerine göre daha düşük maliyet ve daha hızlı yanıt.
-- Özel entegrasyonlar için tam kapsamlı Geliştirici API'si!
-- ...ve çok daha fazlası — dakikalar içinde kurun ve kendiniz görün.
+- [Çok modlu model desteği (hem kapalı hem açık kaynaklı LLM'ler!)](https://docs.anythingllm.com/features/language-models)
+- [Özel Yapay Zekâ Ajanları](https://docs.anythingllm.com/agent/custom/introduction)
+- 👤 Çoklu kullanıcı ve yetkilendirme desteği. _Yalnızca Docker sürümünde._
+- 🎨 [Özel renk temaları ve kendi markanızla kullanım](https://docs.anythingllm.com/features/branding) - True Dark gibi yerleşik bir palet seçin veya marka renklerinizle kendi paletinizi oluşturup kurulumunuzdaki tüm kullanıcılara uygulayın. _Yalnızca Docker sürümünde._
+- 🦾 Çalışma alanınızda ajanlar (web'de gezinme ve daha fazlası).
+- 💬 [Web sitenize ekleyebileceğiniz özelleştirilebilir sohbet bileşeni](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md). _Yalnızca Docker sürümünde._
+- 📖 Birden fazla belge türü desteği (PDF, TXT, DOCX vb.).
+- Sürükleyip bırakarak dosya yükleme ve kaynak gösterme özelliklerine sahip, kullanımı kolay sohbet arayüzü.
+- Her türlü bulut dağıtımında üretim ortamına hazır.
+- Tüm popüler [kapalı ve açık kaynaklı LLM sağlayıcılarıyla](#supported-llms-embedder-models-speech-models-and-vector-databases) çalışır.
+- Büyük belge koleksiyonları için yerleşik optimizasyonlar: diğer sohbet arayüzlerine kıyasla daha düşük maliyet ve daha hızlı yanıtlar.
+- Özel entegrasyonlar için kapsamlı geliştirici API'si!
+- ...ve çok daha fazlası. Dakikalar içinde kurun ve kendiniz keşfedin.
 
-### Desteklenen LLM'ler, Embedding Modelleri, Konuşma Modelleri ve Vektör Veritabanları
+<a id="supported-llms-embedder-models-speech-models-and-vector-databases"></a>
 
-**Büyük Dil Modelleri (LLMs):**
+### Desteklenen LLM'ler, Vektörleştirme Modelleri, Konuşma Modelleri ve Vektör Veritabanları
 
-- [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
+**Büyük Dil Modelleri (LLM'ler):**
+
+- [llama.cpp uyumlu herhangi bir açık kaynaklı model](../server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
-- [OpenAI (Generic)](https://openai.com)
+- [OpenAI (Genel)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
-- [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
+- [NVIDIA NIM (sohbet modelleri)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
-- [Ollama (chat models)](https://ollama.ai/)
-- [LM Studio (all models)](https://lmstudio.ai)
-- [LocalAI (all models)](https://localai.io/)
-- [Together AI (chat models)](https://www.together.ai/)
-- [Fireworks AI (chat models)](https://fireworks.ai/)
-- [Perplexity (chat models)](https://www.perplexity.ai/)
-- [OpenRouter (chat models)](https://openrouter.ai/)
-- [DeepSeek (chat models)](https://deepseek.com/)
+- [Ollama (sohbet modelleri)](https://ollama.ai/)
+- [LM Studio (tüm modeller)](https://lmstudio.ai)
+- [LocalAI (tüm modeller)](https://localai.io/)
+- [Together AI (sohbet modelleri)](https://www.together.ai/)
+- [Fireworks AI (sohbet modelleri)](https://fireworks.ai/)
+- [Perplexity (sohbet modelleri)](https://www.perplexity.ai/)
+- [OpenRouter (sohbet modelleri)](https://openrouter.ai/)
+- [DeepSeek (sohbet modelleri)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
@@ -105,58 +113,58 @@ AnythingLLM ayrıca birden fazla kullanıcıyı destekler; örneğin güvenliği
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 - [Apipie](https://apipie.ai/)
 - [xAI](https://x.ai/)
-- [Z.AI (chat models)](https://z.ai/model-api)
-- [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
+- [Z.AI (sohbet modelleri)](https://z.ai/model-api)
+- [Novita AI (sohbet modelleri)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Gitee AI](https://ai.gitee.com/)
 - [Moonshot AI](https://www.moonshot.ai/)
 - [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
-- [CometAPI (chat models)](https://www.cometapi.com/)
+- [CometAPI (sohbet modelleri)](https://www.cometapi.com/)
 - [llmman](https://github.com/llmmanorg/llmman)
-- [PrivateModeAI (chat models)](https://privatemode.ai/)
-- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
+- [PrivateModeAI (sohbet modelleri)](https://privatemode.ai/)
+- [SambaNova Cloud (sohbet modelleri)](https://cloud.sambanova.ai/)
 - [Lemonade by AMD](https://lemonade-server.ai)
 - [Minimax](https://platform.minimax.io)
-- [Cerebras (chat models)](https://www.cerebras.ai/)
+- [Cerebras (sohbet modelleri)](https://www.cerebras.ai/)
 - [oMLX](https://github.com/jundot/omlx)
 
-**Embedder modelleri:**
+**Vektörleştirme modelleri:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [AnythingLLM'nin Yerleşik Vektörleştirme Modeli](../server/storage/models/README.md) (varsayılan)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Gemini](https://ai.google.dev/)
-- [LocalAI (all)](https://localai.io/)
-- [Ollama (all)](https://ollama.ai/)
-- [LM Studio (all)](https://lmstudio.ai)
+- [LocalAI (tümü)](https://localai.io/)
+- [Ollama (tümü)](https://ollama.ai/)
+- [LM Studio (tümü)](https://lmstudio.ai)
 - [Lemonade](https://lemonade-server.ai)
 - [OpenRouter](https://openrouter.ai/)
 - [LiteLLM](https://github.com/BerriAI/litellm)
 - [Cohere](https://cohere.com/)
 - [Voyage AI](https://www.voyageai.com/)
 - [Mistral](https://mistral.ai/)
-- Generic OpenAI-compatible embedding APIs
+- Genel OpenAI uyumlu vektörleştirme API'leri
 
-**Ses Transkripsiyon Modelleri:**
+**Ses kaydını metne dönüştürme modelleri:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [AnythingLLM'nin Yerleşik Modeli](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (varsayılan)
 - [OpenAI](https://openai.com/)
 
-**TTS (metinden konuşmaya) desteği:**
+**Metinden konuşmaya (TTS) desteği:**
 
-- Native Browser Built-in (default)
-- [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
+- Tarayıcının yerleşik özelliği (varsayılan)
+- [PiperTTSLocal - tarayıcıda çalışır](https://github.com/rhasspy/piper)
 - [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech#voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
-- Any OpenAI Compatible TTS service.
+- OpenAI uyumlu herhangi bir TTS hizmeti.
 
-**STT (konuşmadan metne) desteği:**
+**Konuşmadan metne (STT) desteği:**
 
-- Tarayıcı Yerleşik (varsayılan)
+- Tarayıcının yerleşik özelliği (varsayılan)
 
 **Vektör Veritabanları:**
 
-- [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [LanceDB](https://github.com/lancedb/lancedb) (varsayılan)
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
@@ -168,35 +176,39 @@ AnythingLLM ayrıca birden fazla kullanıcıyı destekler; örneğin güvenliği
 
 ### Teknik Genel Bakış
 
-Bu monorepo altı ana bölümden oluşmaktadır:
+Bu monorepo altı ana bölümden oluşur:
 
-- `frontend`: LLM'in kullanabileceği tüm içeriği kolayca oluşturup yönetmenizi sağlayan viteJS + React tabanlı bir ön yüz.
-- `server`: Tüm etkileşimleri yöneten, vektör veritabanı yönetimi ve LLM entegrasyonlarını gerçekleştiren NodeJS express sunucusu.
-- `collector`: Kullanıcı arayüzünden gelen belgeleri işleyen ve ayrıştıran NodeJS express sunucusu.
-- `docker`: Docker talimatları, derleme süreci ve kaynak koddan derleme bilgileri.
-- `embed`: [Web gömme aracının](https://github.com/Mintplex-Labs/anythingllm-embed) üretimi ve oluşturulması için alt modül.
-- `browser-extension`: [Chrome tarayıcı eklentisi](https://github.com/Mintplex-Labs/anythingllm-extension) için alt modül.
+- `frontend`: LLM'nin kullanabileceği tüm içerikleri kolayca oluşturup yönetmenizi sağlayan, ViteJS ve React ile geliştirilmiş ön yüz.
+- `server`: Tüm etkileşimleri, vektör veritabanı yönetimini ve LLM iletişimini yürüten NodeJS Express sunucusu.
+- `collector`: Arayüzden gelen belgeleri işleyen ve ayrıştıran NodeJS Express sunucusu.
+- `docker`: Docker yönergeleri, derleme süreci ve kaynak koddan derleme bilgileri.
+- `embed`: [Web'e gömülebilir sohbet bileşenini](https://github.com/Mintplex-Labs/anythingllm-embed) oluşturmak için kullanılan alt modül.
+- `browser-extension`: [Chrome tarayıcı uzantısının](https://github.com/Mintplex-Labs/anythingllm-extension) alt modülü.
 
 ## 🛳 Kendi Sunucunuzda Barındırma
 
-Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Tercih ettiğiniz ortamda nasıl dağıtım yapacağınızı öğrenmek veya otomatik dağıtım için aşağıdaki tabloya bakın.
+Mintplex Labs ve topluluk, AnythingLLM'yi yerel ortamınızda çalıştırmak için kullanabileceğiniz çeşitli dağıtım yöntemleri, betikler ve şablonlar sunar. Tercih ettiğiniz ortamın kurulum yönergelerine ulaşmak veya otomatik dağıtım başlatmak için aşağıdaki tabloya bakın.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
-| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
+| [![Docker üzerinde dağıt][docker-btn]][docker-deploy] | [![AWS üzerinde dağıt][aws-btn]][aws-deploy] | [![GCP üzerinde dağıt][gcp-btn]][gcp-deploy] | [![DigitalOcean üzerinde dağıt][do-btn]][do-deploy] | [![Render.com üzerinde dağıt][render-btn]][render-deploy] |
 
-| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                               |
-| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] | [![Deploy on Northflank][northflank-btn]][northflank-deploy] | [![Deploy on Sealos][sealos-btn]][sealos-deploy] |
+| Railway                                             | RepoCloud                                                 | Elestio                                             | Northflank                                                   | Sealos                                           |
+| --------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
+| [![Railway üzerinde dağıt][railway-btn]][railway-deploy] | [![RepoCloud üzerinde dağıt][repocloud-btn]][repocloud-deploy] | [![Elestio üzerinde dağıt][elestio-btn]][elestio-deploy] | [![Northflank üzerinde dağıt][northflank-btn]][northflank-deploy] | [![Sealos üzerinde dağıt][sealos-btn]][sealos-deploy] |
 
-[veya Docker kullanmadan üretim ortamında bir AnythingLLM örneği kurun →](../BARE_METAL.md)
+| Easypanel                                                 |
+| --------------------------------------------------------- |
+| [![Easypanel üzerinde dağıt][easypanel-btn]][easypanel-deploy] |
 
-## Geliştirme İçin Kurulum
+[Ya da Docker kullanmadan üretim ortamı için AnythingLLM kurulumu yapın →](../BARE_METAL.md)
 
-- `yarn setup` Uygulamanın her bölümünde ihtiyaç duyacağınız `.env` dosyalarını oluşturur (deponun kök dizininden).
-  - Devam etmeden önce bunları doldurun. `server/.env.development` dosyasının doldurulduğundan emin olun, aksi takdirde işler düzgün çalışmaz.
-- `yarn dev:server` Sunucuyu yerel olarak başlatır (deponun kök dizininden).
-- `yarn dev:frontend` Ön yüzü yerel olarak başlatır (deponun kök dizininden).
-- `yarn dev:collector` Ardından belge toplayıcıyı çalıştırır (deponun kök dizininden).
+## Geliştirme Ortamını Kurma
+
+- Depo kök dizininde `yarn setup` komutunu çalıştırarak uygulamanın her bölümü için gerekli `.env` dosyalarını oluşturun.
+  - Devam etmeden önce bu dosyaları doldurun. Özellikle `server/.env.development` dosyasını yapılandırın; aksi hâlde uygulama düzgün çalışmaz.
+- Sunucuyu yerel ortamda başlatmak için depo kök dizininde `yarn dev:server` komutunu çalıştırın.
+- Ön yüzü yerel ortamda başlatmak için depo kök dizininde `yarn dev:frontend` komutunu çalıştırın.
+- Ardından belge toplayıcısını çalıştırmak için depo kök dizininde `yarn dev:collector` komutunu çalıştırın.
 
 [Belgeler hakkında bilgi edinin](../server/storage/documents/DOCUMENTS.md)
 
@@ -205,51 +217,62 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 Mintplex Labs Inc tarafından geliştirilen AnythingLLM, anonim kullanım bilgileri toplayan bir telemetri özelliği içerir.
 
 <details>
-<summary><kbd>AnythingLLM için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>
+<summary><kbd>More about Telemetry & Privacy for AnythingLLM</kbd></summary>
 
 ### Neden?
 
-Bu bilgileri AnythingLLM'in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve AnythingLLM'in performansı ile kararlılığını iyileştirmek için kullanıyoruz.
+Bu bilgileri AnythingLLM'nin nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerini önceliklendirmek, performansı ve kararlılığı iyileştirmek için kullanıyoruz.
 
-### Devre Dışı Bırakma
+### Telemetriyi devre dışı bırakma
 
-Telemetriyi devre dışı bırakmak için sunucu veya docker .env ayarlarınızda `DISABLE_TELEMETRY` değerini "true" yapın. Bunu uygulama içinde de yapabilirsiniz: kenar çubuğu > `Gizlilik` > telemetriyi kapatın.
+Telemetriyi kapatmak için sunucu veya Docker `.env` ayarlarınızda `DISABLE_TELEMETRY=true` değerini kullanın. Bunu uygulama içinde kenar çubuğundaki `Gizlilik` bölümünden telemetriyi devre dışı bırakarak da yapabilirsiniz.
 
-### Tam Olarak Neleri Takip Ediyorsunuz?
+### Tam olarak neleri takip ediyorsunuz?
 
-Yalnızca ürün ve yol haritası kararlarını almamıza yardımcı olan kullanım ayrıntılarını takip ediyoruz, özellikle:
+Yalnızca ürün ve yol haritası kararlarımızı destekleyen şu kullanım bilgilerini takip ediyoruz:
 
-- Kurulumunuzun türü (Docker veya Masaüstü)
+- Kurulum türünüz (Docker veya Masaüstü).
 
-- Bir belgenin eklenmesi veya kaldırılması. Belge _hakkında_ hiçbir bilgi toplanmaz. Yalnızca olayın gerçekleştiği kaydedilir. Bu bize kullanım hakkında fikir verir.
+- Bir belgenin eklenmesi veya kaldırılması. Belgenin _içeriğiyle ilgili hiçbir bilgi_ toplanmaz; yalnızca olayın gerçekleştiği kaydedilir. Bu, kullanım hakkında fikir edinmemizi sağlar.
 
-- Kullanılan vektör veritabanı türü. Bu, ilgili sağlayıcı için güncellemeler geldiğinde değişikliklere öncelik vermemize yardımcı olur.
+- Kullanılan vektör veritabanının türü. Bu, ilgili sağlayıcının güncellemeleri için gerekli değişiklikleri önceliklendirmemizi sağlar.
 
-- Kullanılan LLM sağlayıcısı ve model etiketi. Bu, ilgili sağlayıcı veya model ya da bunların birleşimi için güncellemeler geldiğinde değişikliklere öncelik vermemize yardımcı olur. Örneğin: akıl yürüten modellere karşı normal modeller, çoklu-mod modelleri vb.
+- Kullanılan LLM sağlayıcısı ve model etiketi. Bu, sağlayıcıya, modele veya ikisinin birleşimine yönelik güncellemeleri önceliklendirmemizi sağlar. Örneğin, akıl yürütme modelleri, standart modeller ve çok modlu modeller.
 
-- Bir sohbet gönderildiğinde. Bu en düzenli "olay" olup, projenin tüm kurulumlardaki günlük etkinliği hakkında fikir verir. Yine yalnızca **olay** gönderilir — sohbetin niteliği veya içeriği hakkında hiçbir bilgimiz olmaz.
+- Bir sohbet mesajının gönderilmesi. En sık gerçekleşen bu olay, tüm kurulumlardaki günlük etkinlik hakkında fikir verir. Yalnızca **olay** gönderilir; sohbetin niteliği veya içeriği hakkında hiçbir bilgi toplanmaz.
 
-Bu iddiaları `Telemetry.sendTelemetry` çağrılarının tüm konumlarını bularak doğrulayabilirsiniz. Ayrıca etkinleştirilmişse bu olaylar çıktı günlüğüne yazılır, böylece gönderilen verileri de görebilirsiniz. **Hiçbir IP veya tanımlayıcı bilgi toplanmaz**. Telemetri sağlayıcısı, açık kaynaklı bir telemetri toplama hizmeti olan [PostHog](https://posthog.com/)'dur.
+Bu açıklamaları doğrulamak için `Telemetry.sendTelemetry` çağrılarının yapıldığı tüm yerleri inceleyebilirsiniz. Telemetri etkinse olaylar çıktı günlüğüne de yazılır; böylece gönderilen verileri görebilirsiniz. **IP adresi veya kimliğinizi belirleyebilecek başka hiçbir bilgi toplanmaz**. Telemetri sağlayıcısı, açık kaynaklı bir telemetri toplama hizmeti olan [PostHog](https://posthog.com/)'dur.
 
-Gizliliği çok ciddiye alıyoruz ve rahatsız edici anket pencereleri kullanmadan aracımızın nasıl kullanıldığını öğrenmek istediğimizi anlayışla karşılayacağınızı umuyoruz; böylece kullanmaya değer bir şey inşa edebiliriz. Anonim veriler üçüncü taraflarla _asla_ paylaşılmaz.
+Gizliliği çok ciddiye alıyoruz. Can sıkıcı açılır anketler kullanmadan aracımızın nasıl kullanıldığını öğrenerek kullanmaya değer bir ürün geliştirmek istiyoruz. Anonim veriler üçüncü taraflarla _asla_ paylaşılmaz.
 
-[Kaynak kodundaki tüm telemetri olaylarını görüntüle](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
+[Kaynak koddaki tüm telemetri olaylarını görüntüleyin](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry%28&type=code)
 
-### Diğer Dışa Bağlantılar
+### Diğer dış bağlantılar
 
-Telemetriyi devre dışı bıraksanız bile aşağıdaki hizmetlere giden bağlantıları görmeye devam edersiniz:
+Telemetriyi devre dışı bıraksanız bile aşağıdaki hizmetlere giden bağlantılar görebilirsiniz:
 
-- Harici bir araç, LLM, Embedding modeli veya Vektör veritabanı kullanıyorsanız, ilgili hizmet sağlayıcısına giden bağlantıları görmeye devam edersiniz.
-- `cdn.anythingllm.com` modelleri ayna CDN'imizden çekmek için kullanılır. Bu telemetri tarafından takip edilmez ve VPN kısıtlaması olan bölgelerdekiler için oldukça faydalıdır.
-- `github/githubusercontent.com` Bağlam penceresi önbelleklemesi için bu alan adlarından bazı düz dosyalar indirilir.
+- Harici bir araç, LLM, vektörleştirme modeli veya vektör veritabanı kullanıyorsanız ilgili hizmet sağlayıcısına giden bağlantılar devam eder.
+- Modelleri yansı CDN sunucumuzdan indirmek için `cdn.anythingllm.com` kullanılır. Bu bağlantılar telemetriyle takip edilmez ve VPN kısıtlamalarının bulunduğu bölgelerde yararlıdır.
+- `github/githubusercontent.com`: Bağlam penceresi bilgilerinin önbelleğe alınması için bu alan adlarından çeşitli düz dosyalar indirilir.
 
-Temel olarak, telemetri devre dışıysa hiçbir şey toplamayız. Ancak kurulumunuza bağlı olarak dışa bağlantılar görebilir ve ilgili hizmet sağlayıcısının hizmet şartlarına tabi olabilirsiniz.
+Telemetri devre dışıysa hiçbir veri toplamıyoruz. Ancak yapılandırmanıza bağlı olarak dış bağlantılar görebilirsiniz ve ilgili hizmet sağlayıcısının kullanım koşullarına tabi olabilirsiniz.
 
 </details>
 
 ## 👋 Katkıda Bulunma
 
-- [AnythingLLM'e Katkıda Bulunma](../CONTRIBUTING.md) - AnythingLLM'e nasıl katkıda bulunulur.
+- [AnythingLLM'ye katkıda bulunma](../CONTRIBUTING.md) - Katkı sağlama yönergeleri.
+
+## 💖 Sponsorlar
+
+<!--
+### Premium Sponsors
+premium-sponsors (reserved for $100/mth sponsors who request to be called out here and/or are non-private sponsors) -->
+<!-- premium-sponsors -->
+
+### Tüm Sponsorlar
+
+<!-- all-sponsors --><a href="https://github.com/jaschadub"><img src="https:&#x2F;&#x2F;github.com&#x2F;jaschadub.png" width="60px" alt="User avatar: Jascha" /></a><a href="https://github.com/KickingAss2024"><img src="https:&#x2F;&#x2F;github.com&#x2F;KickingAss2024.png" width="60px" alt="User avatar: KickAss" /></a><a href="https://github.com/ShadowArcanist"><img src="https:&#x2F;&#x2F;github.com&#x2F;ShadowArcanist.png" width="60px" alt="User avatar: ShadowArcanist" /></a><a href="https://github.com/AtlasVIA"><img src="https:&#x2F;&#x2F;github.com&#x2F;AtlasVIA.png" width="60px" alt="User avatar: Atlas" /></a><a href="https://github.com/cope"><img src="https:&#x2F;&#x2F;github.com&#x2F;cope.png" width="60px" alt="User avatar: Predrag Stojadinović" /></a><a href="https://github.com/DiegoSpinola"><img src="https:&#x2F;&#x2F;github.com&#x2F;DiegoSpinola.png" width="60px" alt="User avatar: Diego Spinola" /></a><a href="https://github.com/PortlandKyGuy"><img src="https:&#x2F;&#x2F;github.com&#x2F;PortlandKyGuy.png" width="60px" alt="User avatar: Kyle" /></a><a href="https://github.com/peperunas"><img src="https:&#x2F;&#x2F;github.com&#x2F;peperunas.png" width="60px" alt="User avatar: Giulio De Pasquale" /></a><a href="https://github.com/jasoncdavis0"><img src="https:&#x2F;&#x2F;github.com&#x2F;jasoncdavis0.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/macstadium"><img src="https:&#x2F;&#x2F;github.com&#x2F;macstadium.png" width="60px" alt="User avatar: MacStadium" /></a><a href="https://github.com/armlynobinguar"><img src="https:&#x2F;&#x2F;github.com&#x2F;armlynobinguar.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/MikeHago"><img src="https:&#x2F;&#x2F;github.com&#x2F;MikeHago.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/maaisde"><img src="https:&#x2F;&#x2F;github.com&#x2F;maaisde.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/mhollier117"><img src="https:&#x2F;&#x2F;github.com&#x2F;mhollier117.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/pleabargain"><img src="https:&#x2F;&#x2F;github.com&#x2F;pleabargain.png" width="60px" alt="User avatar: Dennis" /></a><a href="https://github.com/broichan"><img src="https:&#x2F;&#x2F;github.com&#x2F;broichan.png" width="60px" alt="User avatar: Michael Hamilton, Ph.D." /></a><a href="https://github.com/azim-charaniya"><img src="https:&#x2F;&#x2F;github.com&#x2F;azim-charaniya.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/gabriellemon"><img src="https:&#x2F;&#x2F;github.com&#x2F;gabriellemon.png" width="60px" alt="User avatar: TernaryLabs" /></a><a href="https://github.com/CelaDaniel"><img src="https:&#x2F;&#x2F;github.com&#x2F;CelaDaniel.png" width="60px" alt="User avatar: Daniel Cela" /></a><a href="https://github.com/altrsadmin"><img src="https:&#x2F;&#x2F;github.com&#x2F;altrsadmin.png" width="60px" alt="User avatar: Alesso" /></a><a href="https://github.com/bitjungle"><img src="https:&#x2F;&#x2F;github.com&#x2F;bitjungle.png" width="60px" alt="User avatar: Rune Mathisen" /></a><a href="https://github.com/pcrossleyAC"><img src="https:&#x2F;&#x2F;github.com&#x2F;pcrossleyAC.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/saroj-pattnaik"><img src="https:&#x2F;&#x2F;github.com&#x2F;saroj-pattnaik.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/techmedic5"><img src="https:&#x2F;&#x2F;github.com&#x2F;techmedic5.png" width="60px" alt="User avatar: Alan" /></a><a href="https://github.com/ddocta"><img src="https:&#x2F;&#x2F;github.com&#x2F;ddocta.png" width="60px" alt="User avatar: Damien Peters" /></a><a href="https://github.com/dcsdigital"><img src="https:&#x2F;&#x2F;github.com&#x2F;dcsdigital.png" width="60px" alt="User avatar: DCS Digital" /></a><a href="https://github.com/pm7y"><img src="https:&#x2F;&#x2F;github.com&#x2F;pm7y.png" width="60px" alt="User avatar: Paul Mcilreavy" /></a><a href="https://github.com/tilwolf"><img src="https:&#x2F;&#x2F;github.com&#x2F;tilwolf.png" width="60px" alt="User avatar: Til Wolf" /></a><a href="https://github.com/ozzyoss77"><img src="https:&#x2F;&#x2F;github.com&#x2F;ozzyoss77.png" width="60px" alt="User avatar: Leopoldo Crhistian Riverin Gomez" /></a><a href="https://github.com/AlphaEcho11"><img src="https:&#x2F;&#x2F;github.com&#x2F;AlphaEcho11.png" width="60px" alt="User avatar: AJEsau" /></a><a href="https://github.com/svanomm"><img src="https:&#x2F;&#x2F;github.com&#x2F;svanomm.png" width="60px" alt="User avatar: Steven VanOmmeren" /></a><a href="https://github.com/socketbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;socketbox.png" width="60px" alt="User avatar: Casey Boettcher" /></a><a href="https://github.com/zebbern"><img src="https:&#x2F;&#x2F;github.com&#x2F;zebbern.png" width="60px" alt="User avatar: zebbern" /></a><a href="https://github.com/avineetbespin"><img src="https:&#x2F;&#x2F;github.com&#x2F;avineetbespin.png" width="60px" alt="User avatar: Avineet" /></a><a href="https://github.com/invictus-1"><img src="https:&#x2F;&#x2F;github.com&#x2F;invictus-1.png" width="60px" alt="User avatar: Chris" /></a><a href="https://github.com/mirbyte"><img src="https:&#x2F;&#x2F;github.com&#x2F;mirbyte.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/bisonbet"><img src="https:&#x2F;&#x2F;github.com&#x2F;bisonbet.png" width="60px" alt="User avatar: Tim Champ" /></a><a href="https://github.com/Sinkingdev"><img src="https:&#x2F;&#x2F;github.com&#x2F;Sinkingdev.png" width="60px" alt="User avatar: Peter Mathisen" /></a><a href="https://github.com/Ed-STEM"><img src="https:&#x2F;&#x2F;github.com&#x2F;Ed-STEM.png" width="60px" alt="User avatar: Ed di Girolamo" /></a><a href="https://github.com/milkowski"><img src="https:&#x2F;&#x2F;github.com&#x2F;milkowski.png" width="60px" alt="User avatar: Wojciech Miłkowski" /></a><a href="https://github.com/ADS-Fund"><img src="https:&#x2F;&#x2F;github.com&#x2F;ADS-Fund.png" width="60px" alt="User avatar: ADS Fund" /></a><a href="https://github.com/arc46-io"><img src="https:&#x2F;&#x2F;github.com&#x2F;arc46-io.png" width="60px" alt="User avatar: arc46 GmbH" /></a><a href="https://github.com/liyin2015"><img src="https:&#x2F;&#x2F;github.com&#x2F;liyin2015.png" width="60px" alt="User avatar: Li Yin" /></a><a href="https://github.com/SylphAI-Inc"><img src="https:&#x2F;&#x2F;github.com&#x2F;SylphAI-Inc.png" width="60px" alt="User avatar: AdaL" /></a><a href="https://github.com/breesait"><img src="https:&#x2F;&#x2F;github.com&#x2F;breesait.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/mgMsquared"><img src="https:&#x2F;&#x2F;github.com&#x2F;mgMsquared.png" width="60px" alt="User avatar: Mik" /></a><a href="https://github.com/sswkor"><img src="https:&#x2F;&#x2F;github.com&#x2F;sswkor.png" width="60px" alt="User avatar: " /></a><!-- all-sponsors -->
 
 ## 🌟 Katkıda Bulunanlar
 
@@ -259,9 +282,10 @@ Temel olarak, telemetri devre dışıysa hiçbir şey toplamayız. Ancak kurulum
 
 ## 🔗 Diğer Ürünler
 
-- **[AnythingLLM Mobile (Açık Kaynak Lisanslı)][anythingllm-mobile]:** Aynı cihaz üzerinde AnythingLLM deneyimi, ama bu kez telefonunuzda.
-- **[AnythingLLM Tarayıcı Eklentisi][anythingllm-extension]:** AnythingLLM'i tarayıcınızda kullanmanızı sağlayan tarayıcı eklentisi.
-- **[AnythingLLM Embed][anythingllm-embed]:** AnythingLLM'i web sitenize gömmenizi sağlayan bir araç.
+- **[AnythingLLM Mobile (Açık Kaynak Lisanslı)][anythingllm-mobile]:** Aynı cihaz üzerinde çalışan AnythingLLM deneyimi, bu kez telefonunuzda.
+- **[AnythingLLM Tarayıcı Uzantısı][anythingllm-extension]:** AnythingLLM'yi tarayıcınızda kullanmanızı sağlayan uzantı.
+- **[AnythingLLM Embed][anythingllm-embed]:** AnythingLLM'yi web sitenize eklemenizi sağlayan sohbet bileşeni.
+- **[Open Computer][open-computer]:** Yapay zekâ ajanlarının kullanabileceği eksiksiz bir bilgisayar ortamı.
 
 <div align="right">
 
@@ -271,16 +295,17 @@ Temel olarak, telemetri devre dışıysa hiçbir şey toplamayız. Ancak kurulum
 
 ---
 
-Telif Hakkı © 2026 [Mintplex Labs][profile-link]. <br />
-Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
+Telif hakkı © 2026 [Mintplex Labs][profile-link]. <br />
+Bu proje [MIT](../LICENSE) lisansıyla sunulmaktadır.
 
 <!-- LINK GROUP -->
 
-[back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-222628?style=flat-square
+[back-to-top]: https://img.shields.io/badge/-BAŞA_DÖN-222628?style=flat-square
 [profile-link]: https://github.com/mintplex-labs
 [anythingllm-mobile]: https://github.com/Mintplex-Labs/anythingllm-mobile
 [anythingllm-extension]: https://github.com/Mintplex-Labs/anythingllm-extension
 [anythingllm-embed]: https://github.com/Mintplex-Labs/anythingllm-embed
+[open-computer]: https://github.com/Mintplex-Labs/open-computer
 [docker-btn]: ../images/deployBtns/docker.png
 [docker-deploy]: ../docker/HOW_TO_USE_DOCKER.md
 [aws-btn]: ../images/deployBtns/aws.png
@@ -303,3 +328,5 @@ Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
 [northflank-deploy]: https://northflank.com/stacks/deploy-anythingllm
 [sealos-btn]: https://sealos.io/Deploy-on-Sealos.svg
 [sealos-deploy]: https://sealos.io/products/app-store/anything-llm
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/anythingllm

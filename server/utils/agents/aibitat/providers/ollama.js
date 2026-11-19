@@ -1,4 +1,5 @@
 const { reasoningParams } = require("../../../helpers/reasoningEffort");
+const { TokenManager } = require("../../../helpers/tiktoken");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -18,6 +19,9 @@ const { safeJsonParse } = require("../../../http");
  */
 class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
+  // Token counts per message. The tool loop passes the same message objects
+  // on every turn, so each one is only counted once.
+  #tokenCounts = new WeakMap();
 
   constructor(config = {}) {
     const {
@@ -228,6 +232,73 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     return formatted;
   }
 
+  /**
+   * Keep a native tool request inside num_ctx. Ollama trims oversized requests
+   * from the front, which drops the user prompt; models using the qwen3.8
+   * renderer reject that outright with "no user query found in messages".
+   * Only system messages and everything from the user prompt onward are
+   * counted, since Ollama can trim earlier chat history safely. The oldest tool
+   * results are replaced with a short note first, then the newest is clipped.
+   * @param {Array} messages - aibitat messages, before Ollama formatting
+   * @param {Array} tools - formatted tool definitions
+   * @returns {Array}
+   */
+  #fitToolResults(messages, tools) {
+    const firstToolIdx = messages.findIndex((m) => m.role === "function");
+    if (firstToolIdx === -1) return messages;
+    const promptIdx = messages.findLastIndex(
+      (m, i) => i < firstToolIdx && m.role === "user"
+    );
+    const lastToolIdx = messages.findLastIndex((m) => m.role === "function");
+
+    const limit = OllamaAILLM.promptWindowLimit(this.model);
+    const budget = limit - Math.min(1024, Math.floor(limit / 4));
+    const tokenManager = new TokenManager(this.model);
+    const text = (m) =>
+      typeof m.content === "string" ? m.content : JSON.stringify(m.content);
+    const size = (m) => {
+      if (!this.#tokenCounts.has(m))
+        this.#tokenCounts.set(
+          m,
+          tokenManager.countFromString(
+            `${text(m)}${m.role === "function" ? JSON.stringify(m.originalFunctionCall ?? "") : ""}`
+          )
+        );
+      return this.#tokenCounts.get(m);
+    };
+    const counted = (m, i) => m.role === "system" || i >= promptIdx;
+
+    let total = tokenManager.countFromString(JSON.stringify(tools));
+    messages.forEach((m, i) => counted(m, i) && (total += size(m)));
+    if (total <= budget) return messages;
+
+    const fitted = [...messages];
+    for (let i = firstToolIdx; i < lastToolIdx && total > budget; i++) {
+      if (fitted[i].role !== "function") continue;
+      const note = {
+        ...fitted[i],
+        content: `[${fitted[i].name} result removed to fit the context window]`,
+      };
+      total += size(note) - size(fitted[i]);
+      fitted[i] = note;
+    }
+
+    if (total > budget) {
+      const latest = fitted[lastToolIdx];
+      const content = text(latest);
+      const keep = Math.max(0, 1 - (total - budget) / size(latest));
+      fitted[lastToolIdx] = {
+        ...latest,
+        content: `${content.slice(0, Math.floor(content.length * keep))}\n[result truncated to fit the context window]`,
+      };
+    }
+
+    this.providerLog(
+      `Shortened tool results to keep the request inside the ${limit} token context window.`
+    );
+    return fitted;
+  }
+
   async streamingFunctionCall(
     messages,
     functions,
@@ -333,6 +404,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    messages = OllamaAILLM.stripHistoryReasoning(messages);
     const useNative = await this.supportsNativeToolCalling();
 
     if (useNative) {
@@ -342,8 +414,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.resetUsage();
       await OllamaAILLM.contextWindows.ensure(this.model);
       const msgUUID = v4();
-      const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
+      const formattedMessages = this.#formatMessagesForOllamaTools(
+        this.#fitToolResults(messages, tools)
+      );
 
       const stream = await this.client.chat({
         model: this.model,
@@ -357,6 +431,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.watchTokenLimit(stream);
 
       let textResponse = "";
+      let reasoningText = "";
       let toolCalls = null;
 
       for await (const chunk of stream) {
@@ -370,7 +445,26 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (!chunk?.message) continue;
 
+        if (chunk.message.thinking) {
+          eventHandler?.("reportStreamEvent", {
+            type: "textResponseChunk",
+            uuid: msgUUID,
+            content:
+              reasoningText.length === 0
+                ? `<think>${chunk.message.thinking}`
+                : chunk.message.thinking,
+          });
+          reasoningText += chunk.message.thinking;
+        }
+
         if (chunk.message.content) {
+          if (reasoningText.length > 0 && !textResponse) {
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content: "</think>",
+            });
+          }
           textResponse += chunk.message.content;
           eventHandler?.("reportStreamEvent", {
             type: "textResponseChunk",
@@ -387,6 +481,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
             content: `Tool Call: ${toolCalls[0].function.name}(${JSON.stringify(toolCalls[0].function.arguments)})`,
           });
         }
+      }
+
+      if (reasoningText.length > 0 && !textResponse) {
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: "</think>",
+        });
       }
 
       if (toolCalls && toolCalls.length > 0) {
@@ -408,6 +510,8 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         };
       }
 
+      if (reasoningText.trim().length > 0)
+        textResponse = `<think>${reasoningText}</think>${textResponse}`;
       return { textResponse, functionCall: null, cost: 0, uuid: msgUUID };
     }
 
@@ -536,13 +640,16 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    messages = OllamaAILLM.stripHistoryReasoning(messages);
     const useNative = await this.supportsNativeToolCalling();
 
     if (useNative) {
       this.resetUsage();
       await OllamaAILLM.contextWindows.ensure(this.model);
-      const formattedMessages = this.#formatMessagesForOllamaTools(messages);
       const tools = formatFunctionsToTools(functions);
+      const formattedMessages = this.#formatMessagesForOllamaTools(
+        this.#fitToolResults(messages, tools)
+      );
 
       const response = await this.client.chat({
         model: this.model,
@@ -579,8 +686,13 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         };
       }
 
+      const content = response.message?.content || "";
+      const reasoning = response.message?.thinking || "";
       return {
-        textResponse: response.message?.content || null,
+        textResponse:
+          (reasoning.trim().length > 0
+            ? `<think>${reasoning}</think>${content}`
+            : content) || null,
         cost: 0,
         usage: this.getUsage(),
       };

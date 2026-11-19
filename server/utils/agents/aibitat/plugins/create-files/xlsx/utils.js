@@ -109,14 +109,27 @@ function validateCSVData(data) {
  * @returns {string} Detected delimiter (comma, semicolon, tab, or pipe)
  */
 function detectDelimiter(csvString) {
-  const firstLine = csvString.split(/\r?\n/)[0] || "";
-  const delimiters = [",", ";", "\t", "|"];
+  const counts = new Map([
+    [",", 0],
+    [";", 0],
+    ["\t", 0],
+    ["|", 0],
+  ]);
+  let inQuotes = false;
+
+  for (const char of csvString) {
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (inQuotes) continue;
+    if (char === "\n" || char === "\r") break;
+    if (counts.has(char)) counts.set(char, counts.get(char) + 1);
+  }
+
   let bestDelimiter = ",";
   let maxCount = 0;
-
-  for (const delimiter of delimiters) {
-    const count = (firstLine.match(new RegExp(`\\${delimiter}`, "g")) || [])
-      .length;
+  for (const [delimiter, count] of counts) {
     if (count > maxCount) {
       maxCount = count;
       bestDelimiter = delimiter;

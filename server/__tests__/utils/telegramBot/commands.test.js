@@ -2,6 +2,7 @@
 const {
   BOT_COMMANDS,
   commandPattern,
+  isBotCommand,
 } = require("../../../utils/telegramBot/utils/commands");
 
 /**
@@ -82,5 +83,26 @@ describe("commandPattern", () => {
     expect(pattern.test("/new")).toBe(true);
     expect(pattern.test("/new")).toBe(true);
     expect(commandPattern("new")).not.toBe(pattern);
+  });
+});
+
+describe("isBotCommand", () => {
+  test.each(["/new", "/history 25", "/status@MyBot", "/reset\nnext line"])(
+    "%j is a bot command",
+    (text) => {
+      expect(isBotCommand(text)).toBe(true);
+    }
+  );
+
+  test.each([
+    "/tldr",
+    "/tldr this article",
+    "/new-idea",
+    "/unknown",
+    "hello",
+    "",
+    undefined,
+  ])("%j is sent to the chat", (text) => {
+    expect(isBotCommand(text)).toBe(false);
   });
 });

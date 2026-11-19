@@ -14,6 +14,8 @@ work on, check the [good first issue](https://github.com/mintplex-labs/anything-
 
 If there's an issue you are interested in working on, please leave a comment on the issue. This will help us avoid duplicate work. Additionally, if you have questions about the issue, please ask them in the issue comments. We are happy to provide guidance on how to approach the issue.
 
+**Do not open PRs for issues labeled `core-team-only`.** That label means the core team is building it, usually because the change touches core behavior or is already in progress. PRs for these issues will be closed without review, however complete they are.
+
 ## Before you start
 
 Keep in mind that we are a small team and have limited resources. We will do our best to review and merge your PRs, but please be patient. Ultimately, **we become the maintainer** of your changes. It is our responsibility to make sure that the changes are working as expected and are of high quality as well as being compatible with the rest of the project both for existing users and for future users & features.
@@ -43,6 +45,12 @@ The process is:
 3. Only after a maintainer has explicitly said the feature is open for contribution should you open a PR.
 
 **Feature PRs opened without this approval will be closed without review.** The issue stays open for discussion. Closing the PR is not a judgement on your code. It is how we keep the project's direction coherent and protect the small team's review time. If you have an immediate need for a feature that should just belong on a personal fork.
+
+## We do not accept dependency bump PRs
+
+Only the core team changes dependency versions. That includes `package.json` ranges, `yarn.lock` entries, Docker base images, and GitHub Actions versions. Every new release of a package we ship has to be vetted by us first, and a lockfile diff from outside the team is something we cannot safely take on trust.
+
+**PRs and issues whose purpose is to bump a dependency will be closed without review**, whatever CVE or scanner report they cite. If you think a dependency advisory affects AnythingLLM, open a [Discussion](https://github.com/Mintplex-Labs/anything-llm/discussions) and show the code path where AnythingLLM reaches the vulnerable code. If it is an exploitable vulnerability in AnythingLLM itself, follow the security reporting process above instead.
 
 ## Configuring Git
 

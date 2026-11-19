@@ -2,6 +2,8 @@ const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 
+const PUBLIC_USER_FIELDS = { select: { id: true, username: true, role: true } };
+
 const BrowserExtensionApiKey = {
   /**
    * Creates a new secret for a browser extension API key.
@@ -121,7 +123,7 @@ const BrowserExtensionApiKey = {
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
-        include: { user: true },
+        include: { user: PUBLIC_USER_FIELDS },
       });
       return apiKeys;
     } catch (error) {
@@ -154,7 +156,7 @@ const BrowserExtensionApiKey = {
           ...clause,
           user_id: user.id,
         },
-        include: { user: true },
+        include: { user: PUBLIC_USER_FIELDS },
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });

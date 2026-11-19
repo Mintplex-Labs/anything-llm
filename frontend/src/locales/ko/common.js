@@ -1236,10 +1236,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "문서 관리",
       "data-connectors": "데이터 커넥터",
-      "desktop-only":
-        "이 설정은 데스크톱 환경에서만 편집할 수 있습니다. 계속하려면 데스크톱에서 이 페이지에 접속해 주세요.",
-      dismiss: "닫기",
-      editing: "편집 중",
     },
     directory: {
       "my-documents": "내 문서",
@@ -1261,6 +1257,23 @@ const TRANSLATIONS = {
       "total-documents_other": "{{count}} 관련 문서",
       "search-results_one": "{{count}} 결과",
       "search-results_other": "{{count}} 결과",
+      "in-workspace": "사무실 내",
+      "upload-files": "파일 업로드",
+      "add-link": "링크 추가",
+      "selected-count_one": "{{count}} 선택됨",
+      "selected-count_other": "{{count}} 선택됨",
+      "move-to-folder": "폴더로 이동",
+      "ready-to-embed_one": "{{count}} 파일이 삽입 준비가 완료되었습니다.",
+      "ready-to-embed_other": "{{count}} 파일이 삽입 준비가 완료되었습니다.",
+      "add-to-queue": "큐에 추가",
+      staged: "삽입할 준비가 되었습니다",
+      pinned: "고정",
+      watching: "시청",
+      pin: "작업 공간에 추가",
+      unpin: "워크스페이스에서 제거",
+      watch: "변화를 주시거나, 변화를 주시도록 주의",
+      unwatch: "변화를 주시하는 것을 멈추세요",
+      "remove-from-workspace": "작업 공간에서 제거",
     },
     upload: {
       "processor-offline": "문서 처리기가 오프라인 상태입니다",
@@ -1325,6 +1338,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "채팅 기록을 불러오는 중...",
+    loading_chat_recalling: "우리의 대화를 불러오는 중...",
+    loading_chat_remembering: "우리가 나눈 이야기를 기억하는 중...",
     attachments_processing:
       "첨부 파일을 처리 중입니다. 잠시만 기다려 주세요...",
     send_message: "메시지 보내기",

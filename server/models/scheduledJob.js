@@ -43,13 +43,27 @@ const ScheduledJob = {
   MAX_ACTIVE: null,
 
   /**
-   * Parse a cron expression into a @breejs/later schedule, reading weekday 7
-   * as Sunday like cron does.
+   * Parse a cron expression into a @breejs/later schedule, matching cron's
+   * day-field rules and reading weekday 7 as Sunday.
    * @param {string} cronExpression
    * @returns {object}
    */
   parseCron: function (cronExpression) {
-    return later.parse.cron(sundayAsZero(cronExpression));
+    const cron = sundayAsZero(cronExpression);
+    const [min, hour, dom, month, dow] = String(cron).trim().split(/\s+/);
+
+    // Cron runs when either day field matches if both are set, but later
+    // requires both to match, so give each day field its own schedule.
+    // A field starting with "*" (like "*/2") counts as unset.
+    if (/^\*/.test(dom) || /^\*/.test(dow)) return later.parse.cron(cron);
+
+    return {
+      schedules: [
+        ...later.parse.cron(`${min} ${hour} ${dom} ${month} *`).schedules,
+        ...later.parse.cron(`${min} ${hour} * ${month} ${dow}`).schedules,
+      ],
+      exceptions: [],
+    };
   },
 
   /**
@@ -118,9 +132,12 @@ const ScheduledJob = {
         }
       }
 
-      // Recompute nextRunAt if schedule changed
-      if (updates.schedule) {
-        updates.nextRunAt = this.computeNextRunAt(updates.schedule);
+      // Recompute nextRunAt if the schedule changed, or when the job is turned
+      // back on, since the stored value is from before it was disabled.
+      if (updates.schedule || updates.enabled === true) {
+        const schedule =
+          updates.schedule || (await this.get({ id: Number(id) }))?.schedule;
+        if (schedule) updates.nextRunAt = this.computeNextRunAt(schedule);
       }
 
       updates.updatedAt = new Date();

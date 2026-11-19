@@ -1,4 +1,5 @@
 const path = require("path");
+const { spawn } = require("child_process");
 const filesystem = require("./lib.js");
 const { safeJsonParse } = require("../../../../http/index.js");
 
@@ -153,13 +154,15 @@ module.exports.FilesystemSearchFiles = {
                   `${this.caller}: Searching for "${pattern}"${patternNote} in ${allowedDirs.length} allowed director${allowedDirs.length === 1 ? "y" : "ies"}`
                 );
 
+                // Collect one past maxResults only to learn whether more exist.
+                const collectLimit = maxResults + 1;
                 for (const dir of allowedDirs) {
                   try {
-                    const { files } = searchFilesWithRipgrepGlob({
+                    const { files } = await searchFilesWithRipgrepGlob({
                       searchPath: dir,
                       patterns: effectivePatterns,
                       excludePatterns,
-                      maxResults: maxResults - allResults.length,
+                      maxResults: collectLimit - allResults.length,
                     });
 
                     for (const filePath of files) {
@@ -171,11 +174,14 @@ module.exports.FilesystemSearchFiles = {
                   } catch {
                     // Skip directories that fail (e.g., don't exist)
                   }
+
+                  if (allResults.length >= collectLimit) break;
                 }
 
+                const hasMore = allResults.length > maxResults;
                 const limitedResults = allResults.slice(0, maxResults);
                 this.super.introspect(
-                  `Found ${allResults.length} matching files${allResults.length > maxResults ? ` (showing first ${maxResults})` : ""}`
+                  `Found ${limitedResults.length}${hasMore ? "+" : ""} matching files${hasMore ? ` (showing first ${maxResults})` : ""}`
                 );
 
                 if (limitedResults.length === 0) return "No matches found";
@@ -188,7 +194,10 @@ module.exports.FilesystemSearchFiles = {
                   );
                 }
 
-                return limitedResults.join("\n");
+                return (
+                  limitedResults.join("\n") +
+                  (hasMore ? moreResultsHint(maxResults) : "")
+                );
               }
 
               // Content search mode using ripgrep across all allowed directories
@@ -199,15 +208,17 @@ module.exports.FilesystemSearchFiles = {
               const allResults = [];
               const seenKeys = new Set();
 
+              // Collect one past maxResults only to learn whether more exist.
+              const collectLimit = maxResults + 1;
               for (const dir of allowedDirs) {
                 try {
-                  const results = searchWithRipgrep({
+                  const results = await searchWithRipgrep({
                     searchPath: dir,
                     pattern,
                     filePattern,
                     excludePatterns,
                     caseSensitive,
-                    maxResults: maxResults - allResults.length,
+                    maxResults: collectLimit - allResults.length,
                   });
 
                   for (const result of results) {
@@ -218,18 +229,22 @@ module.exports.FilesystemSearchFiles = {
                     }
                   }
 
-                  if (allResults.length >= maxResults) break;
+                  if (allResults.length >= collectLimit) break;
                 } catch {
                   // Skip directories that fail
                 }
               }
 
+              const hasMore = allResults.length > maxResults;
+              const limitedResults = allResults.slice(0, maxResults);
               this.super.introspect(
-                `Found ${allResults.length} matches${allResults.length > maxResults ? ` (showing first ${maxResults})` : ""}`
+                `Found ${limitedResults.length}${hasMore ? "+" : ""} matches${hasMore ? ` (showing first ${maxResults})` : ""}`
               );
 
               if (includeFileContents) {
-                const uniqueFiles = [...new Set(allResults.map((r) => r.file))];
+                const uniqueFiles = [
+                  ...new Set(limitedResults.map((r) => r.file)),
+                ];
                 return await readMatchingFileContents.call(
                   this,
                   uniqueFiles,
@@ -237,7 +252,7 @@ module.exports.FilesystemSearchFiles = {
                 );
               }
 
-              return formatSearchResults(allResults, maxResults);
+              return formatSearchResults(limitedResults, hasMore, maxResults);
             } catch (e) {
               this.super.handlerProps.log(
                 `filesystem-search-files error: ${e.message}`
@@ -252,24 +267,87 @@ module.exports.FilesystemSearchFiles = {
   },
 };
 
+/** Cap on a single ripgrep run's stdout so a pathological query cannot balloon memory. */
+const RG_MAX_STDOUT_BYTES = 10 * 1024 * 1024;
+
+/**
+ * Runs ripgrep and hands each line of its stdout to `onLine`.
+ *
+ * Asynchronous on purpose: a search over a large allowed directory can take
+ * a long time, and a synchronous spawn would block the event loop for all of
+ * it, stalling every other request the server is handling.
+ * `onLine` returns true once it has collected enough results; ripgrep is
+ * then killed rather than left to finish walking the tree.
+ * @param {string[]} args
+ * @param {(line: string) => boolean|void} onLine
+ * @returns {Promise<void>} rejects if ripgrep is missing or exits with a real error
+ */
+function runRipgrep(args, onLine) {
+  let rgPath;
+  try {
+    ({ rgPath } = require("@vscode/ripgrep"));
+  } catch {
+    return Promise.reject(new Error("@vscode/ripgrep not installed"));
+  }
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(rgPath, args, { windowsHide: true });
+    let pending = "";
+    let bytes = 0;
+    let stderr = "";
+    let stopped = false;
+
+    const stop = () => {
+      stopped = true;
+      child.kill();
+    };
+    const emit = (line) => {
+      line = line.replace(/\r$/, "");
+      if (line && onLine(line) === true) stop();
+    };
+
+    child.stdout.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      if (stopped) return;
+      bytes += Buffer.byteLength(chunk);
+      if (bytes > RG_MAX_STDOUT_BYTES) return stop();
+      const lines = (pending + chunk).split("\n");
+      pending = lines.pop();
+      for (const line of lines) {
+        emit(line);
+        if (stopped) return;
+      }
+    });
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk) => {
+      if (stderr.length < 4096) stderr += chunk;
+    });
+    child.on("error", reject);
+    // Exit 0 = matches, 1 = no matches, >1 = a real error (eg. bad regex).
+    // A run we killed ourselves closes with a null code and is a success.
+    child.on("close", (code) => {
+      if (stopped) return resolve();
+      if (code > 1) {
+        return reject(
+          new Error(stderr.trim() || `ripgrep exited with code ${code}`)
+        );
+      }
+      if (pending) emit(pending);
+      resolve();
+    });
+  });
+}
+
 /**
  * Search for files by glob pattern using ripgrep (fast file listing).
- * @returns {{ files: string[], method: string }}
+ * @returns {Promise<{ files: string[], method: string }>}
  */
-function searchFilesWithRipgrepGlob({
+async function searchFilesWithRipgrepGlob({
   searchPath,
   patterns,
   excludePatterns = [],
   maxResults = 100,
 }) {
-  const { spawnSync } = require("child_process");
-  let rgPath;
-  try {
-    ({ rgPath } = require("@vscode/ripgrep"));
-  } catch {
-    throw new Error("@vscode/ripgrep not installed");
-  }
-
   // Build ripgrep arguments for file listing
   const args = [
     "--files", // List files instead of searching content
@@ -283,34 +361,20 @@ function searchFilesWithRipgrepGlob({
   // The "--" prevents searchPath from being parsed as an option if it starts with "-"
   // (defense against argument injection attacks)
   args.push("--", searchPath);
-  const result = spawnSync(rgPath, args, {
-    encoding: "utf-8",
-    maxBuffer: 10 * 1024 * 1024,
-  });
 
-  if (result.status > 1) {
-    throw new Error(
-      result.stderr || `ripgrep exited with code ${result.status}`
-    );
-  }
-
-  // unique files
   const files = new Set();
-  if (!result.stdout) return { files: Array.from(files), method: "ripgrep" };
-
-  const lines = result.stdout.trim().split("\n").filter(Boolean);
-  for (const line of lines) {
+  await runRipgrep(args, (line) => {
     files.add(line);
-    if (files.size >= maxResults) break;
-  }
-
+    return files.size >= maxResults;
+  });
   return { files: Array.from(files), method: "ripgrep" };
 }
 
 /**
- * Search file contents using @vscode/ripgrep binary directly via spawnSync.
+ * Search file contents using the @vscode/ripgrep binary.
+ * @returns {Promise<{ file: string, line: number, content: string }[]>}
  */
-function searchWithRipgrep({
+async function searchWithRipgrep({
   searchPath,
   pattern,
   filePattern,
@@ -318,14 +382,6 @@ function searchWithRipgrep({
   caseSensitive,
   maxResults,
 }) {
-  const { spawnSync } = require("child_process");
-  let rgPath;
-  try {
-    ({ rgPath } = require("@vscode/ripgrep"));
-  } catch {
-    throw new Error("@vscode/ripgrep not installed");
-  }
-
   // Build ripgrep arguments
   const args = [
     "--json", // JSON output for structured parsing
@@ -347,54 +403,51 @@ function searchWithRipgrep({
     throw new Error("search pattern must not start with '-'");
   }
   args.push("--", pattern, searchPath);
-  const result = spawnSync(rgPath, args, {
-    encoding: "utf-8",
-    maxBuffer: 10 * 1024 * 1024, // 10MB
-  });
 
-  // Exit code 1 means no matches (not an error)
-  if (result.status > 1) {
-    throw new Error(
-      result.stderr || `ripgrep exited with code ${result.status}`
-    );
-  }
-
+  // --json emits one JSON event per line; only "match" events are results.
   const results = [];
-  if (!result.stdout) return results;
-  const matches = safeJsonParse(result.stdout, []).filter(
-    (m) => m.type === "match" && m.data
-  );
-
-  for (const match of matches) {
+  await runRipgrep(args, (line) => {
+    const event = safeJsonParse(line, null);
+    if (event?.type !== "match" || !event.data) return false;
     results.push({
-      file: match.data.path?.text || match.data.path,
-      line: match.data.line_number,
-      content: (match.data.lines?.text || "").trim(),
+      file: event.data.path?.text || event.data.path,
+      line: event.data.line_number,
+      content: (event.data.lines?.text || "").trim(),
     });
-  }
-
+    return results.length >= maxResults;
+  });
   return results;
 }
 
 /**
- * Format search results for display.
+ * Tells the model its results were cut off at maxResults, so it can tell the
+ * search was too broad and refine it instead of treating the list as complete.
+ * @param {number} maxResults
+ * @returns {string}
  */
-function formatSearchResults(results, maxResults) {
+function moreResultsHint(maxResults) {
+  return (
+    `\n\n[Showing the first ${maxResults} results - more exist. ` +
+    `The search may be too broad; refine the pattern or narrow it with filePattern/excludePatterns to find what you need.]`
+  );
+}
+
+/**
+ * Format content search results for display.
+ * @param {{ file: string, line: number, content: string }[]} results - already limited to maxResults
+ * @param {boolean} hasMore - whether more matches exist beyond `results`
+ * @param {number} maxResults
+ */
+function formatSearchResults(results, hasMore, maxResults) {
   if (results.length === 0) {
     return "No matches found";
   }
 
   const formatted = results
-    .slice(0, maxResults)
     .map((r) => `${r.file}:${r.line}: ${r.content}`)
     .join("\n");
 
-  const suffix =
-    results.length > maxResults
-      ? `\n\n... and ${results.length - maxResults} more matches`
-      : "";
-
-  return formatted + suffix;
+  return formatted + (hasMore ? moreResultsHint(maxResults) : "");
 }
 
 /**

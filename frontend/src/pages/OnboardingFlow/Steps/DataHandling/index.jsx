@@ -3,6 +3,7 @@ import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProviderPrivacy from "@/components/ProviderPrivacy";
+import TelemetryToggle from "@/components/TelemetryToggle";
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <ProviderPrivacy />
+      <TelemetryToggle />
       <p className="text-theme-text-secondary text-sm font-medium py-1">
         {t("onboarding.data.settingsHint")}
       </p>

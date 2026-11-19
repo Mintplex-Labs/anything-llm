@@ -1578,10 +1578,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Dokumentumok",
       "data-connectors": "Adatösszekötők",
-      "desktop-only":
-        "Ezek a beállítások csak asztali eszközön szerkeszthetők. A folytatáshoz nyissa meg ezt az oldalt asztali gépen.",
-      dismiss: "Elvetés",
-      editing: "Szerkesztés",
     },
     directory: {
       "my-documents": "Saját dokumentumok",
@@ -1603,6 +1599,23 @@ const TRANSLATIONS = {
       deselect_all: "Kijelölés megszüntetése",
       remove_selected: "Kijelöltek eltávolítása",
       save_embed: "Mentés és beágyazás",
+      "in-workspace": "Munkaterületen",
+      "upload-files": "Fájlokat feltöltés",
+      "add-link": "Hozzon létre a hivatkozást",
+      "selected-count_one": "{{count}} kiválasztva",
+      "selected-count_other": "{{count}} kiválasztva",
+      "move-to-folder": "Helyezd a mappába",
+      "ready-to-embed_one": "{{count}} fájl, amely készen van beépítésre",
+      "ready-to-embed_other": "{{count}} fájlok készen állnak a beépítésre",
+      "add-to-queue": "Hozzáadás a sorhoz",
+      staged: "Kész a beépítéshez",
+      pinned: "Bemutatva",
+      watching: "Nézés",
+      pin: "Mentés a munkaterületre",
+      unpin: "Távolítsa el a munkaterületen található elemről",
+      watch: "Figyeljen a változásokra",
+      unwatch: "Hagyja abba, hogy figyeli a változásokat.",
+      "remove-from-workspace": "Távolítsa el a munkaterületről",
     },
     upload: {
       "processor-offline": "A dokumentumfeldolgozó nem érhető el",
@@ -1641,6 +1654,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Csevegési előzmények betöltése...",
+    loading_chat_recalling: "Betöltöm a beszélgetésünket...",
+    loading_chat_remembering: "Felidézem, miről beszélgettünk...",
     attachments_processing:
       "A mellékletek feldolgozása folyamatban. Kérjük, várjon...",
     generating_response: "Válasz készítése",

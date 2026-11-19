@@ -81,6 +81,14 @@ const MODELS_DEV = {
     ],
     "deepseek-toggle-only": [{ type: "toggle" }],
   },
+  // Accepted values confirmed against the live API.
+  mistral: {
+    "mistral-small-2603": [{ type: "effort", values: ["none", "high"] }],
+    "mistral-large-latest": [
+      { type: "effort", values: ["low", "medium", "high"] },
+    ],
+    "zai-glm-5-3": [{ type: "effort", values: ["low", "high", "max"] }],
+  },
   openrouter: {
     "openai/gpt-5.1": [
       { type: "effort", values: ["none", "low", "medium", "high"] },
@@ -106,7 +114,7 @@ function mockModelsDev(table = MODELS_DEV) {
   jest
     .spyOn(MODEL_PRICING, "getReasoningOptions")
     .mockImplementation((provider, model) =>
-      table === null ? null : (table[provider]?.[model] ?? [])
+      table === null ? null : table[provider]?.[model] ?? []
     );
 }
 
@@ -126,6 +134,9 @@ describe("modelsDevReasoningCapabilities", () => {
     ["gemini", "gemini-level-and-budget", ["low", "high"]],
     ["deepseek", "deepseek-flash", ["off", "on", "low", "high", "max"]],
     ["deepseek", "deepseek-toggle-only", ["off", "on"]],
+    ["mistral", "mistral-small-2603", ["off", "high"]],
+    ["mistral", "mistral-large-latest", ["low", "medium", "high"]],
+    ["mistral", "zai-glm-5-3", ["low", "high", "max"]],
     ["openrouter", "openai/gpt-5.1", ["off", "low", "medium", "high"]],
     ["openrouter", "qwen/qwen3-30b-a3b", ["off", "on"]],
     [
@@ -171,7 +182,7 @@ describe("modelsDevReasoningCapabilities", () => {
     });
   });
 
-  it("only maps none to off for OpenAI and OpenRouter", () => {
+  it("only maps none to off for OpenAI, OpenRouter and Mistral", () => {
     mockModelsDev({
       deepseek: { x: [{ type: "effort", values: ["none", "low"] }] },
     });
@@ -411,8 +422,10 @@ describe("reasoningParams", () => {
       null,
       { thinking: { type: "enabled" }, reasoning_effort: "max" },
     ],
-    ["mistral", "on", "mistral-large-4", { reasoning_effort: "high" }],
-    ["mistral", "off", "mistral-large-4", { reasoning_effort: "none" }],
+    ["mistral", "on", "mistral-small-2603", { reasoning_effort: "high" }],
+    ["mistral", "off", "mistral-small-2603", { reasoning_effort: "none" }],
+    ["mistral", "low", "mistral-large-4", { reasoning_effort: "low" }],
+    ["mistral", "max", "zai-glm-5-3", { reasoning_effort: "max" }],
   ])("%s %s (%s) -> %j", (provider, effort, model, expected) => {
     expect(reasoningParams(provider, effort, model)).toEqual(expected);
   });

@@ -1591,10 +1591,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Документи",
       "data-connectors": "Конектори за данни",
-      "desktop-only":
-        "Редактирането на тези настройки е достъпно само от настолно устройство. Моля, отворете тази страница от компютър.",
-      dismiss: "Затвори",
-      editing: "Редактиране",
     },
     directory: {
       "my-documents": "Моите документи",
@@ -1616,6 +1612,23 @@ const TRANSLATIONS = {
       deselect_all: "Отмени избора",
       remove_selected: "Премахни избраните",
       save_embed: "Запази и вгради",
+      "in-workspace": "В работната среда",
+      "upload-files": "Качете файлове",
+      "add-link": "Добавете линк",
+      "selected-count_one": "{{count}} е избран",
+      "selected-count_other": "{{count}} избрани",
+      "move-to-folder": "Преместете в папка",
+      "ready-to-embed_one": "{{count}} файл е готов за вграждане",
+      "ready-to-embed_other": "{{count}} файла са готови за вграждане",
+      "add-to-queue": "Добави към списъка за гледане",
+      staged: "Готов за вграждане",
+      pinned: "Отбелязано",
+      watching: "Гледане",
+      pin: "Запазете в работното пространство",
+      unpin: "Премахване от работната среда",
+      watch: "Бъдете внимателни към промените.",
+      unwatch: "Спрете да следите за промени.",
+      "remove-from-workspace": "Премахване от работната среда",
     },
     upload: {
       "processor-offline": "Обработчикът на документи е недостъпен",
@@ -1655,6 +1668,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Зареждане на историята на чата...",
+    loading_chat_recalling: "Възстановяване на нашия разговор...",
+    loading_chat_remembering: "Спомням си за какво говорихме...",
     attachments_processing:
       "Прикачените файлове се обработват. Моля, изчакайте...",
     generating_response: "Генериране на отговор",

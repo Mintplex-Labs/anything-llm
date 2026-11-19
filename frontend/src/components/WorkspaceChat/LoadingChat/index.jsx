@@ -1,60 +1,50 @@
+import { useEffect, useState } from "react";
+import { CircleNotch } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 import { isMobile } from "react-device-detect";
-import * as Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { SidebarMobileHeader } from "@/components/Sidebar";
+
+const MESSAGE_COUNT = 3;
+const ROTATE_MS = 3000;
 
 export default function LoadingChat() {
-  const highlightColor = "var(--theme-bg-primary)";
-  const baseColor = "var(--theme-bg-secondary)";
+  const { t } = useTranslation();
+  const messages = [
+    t("chat_window.loading_chat_history"),
+    t("chat_window.loading_chat_recalling"),
+    t("chat_window.loading_chat_remembering"),
+  ];
+  // Start on a random message so repeat loads don't always read the same,
+  // then rotate through the rest while loading continues.
+  const [index, setIndex] = useState(() =>
+    Math.floor(Math.random() * MESSAGE_COUNT)
+  );
+
+  useEffect(() => {
+    const timer = setInterval(
+      () => setIndex((i) => (i + 1) % MESSAGE_COUNT),
+      ROTATE_MS
+    );
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll no-scroll p-4"
-      style={{ height: "calc(100% - 32px)" }}
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full flex items-center justify-center"
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
     >
-      <Skeleton.default
-        height="100px"
-        width="100%"
-        highlightColor={highlightColor}
-        baseColor={baseColor}
-        count={1}
-        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex justify-start"
-      />
-      <Skeleton.default
-        height="100px"
-        width={isMobile ? "70%" : "45%"}
-        baseColor={baseColor}
-        highlightColor={highlightColor}
-        count={1}
-        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex justify-end"
-      />
-      <Skeleton.default
-        height="100px"
-        width={isMobile ? "55%" : "30%"}
-        baseColor={baseColor}
-        highlightColor={highlightColor}
-        count={1}
-        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex justify-start"
-      />
-      <Skeleton.default
-        height="100px"
-        width={isMobile ? "88%" : "25%"}
-        baseColor={baseColor}
-        highlightColor={highlightColor}
-        count={1}
-        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex justify-end"
-      />
-      <Skeleton.default
-        height="160px"
-        width="100%"
-        baseColor={baseColor}
-        highlightColor={highlightColor}
-        count={1}
-        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex justify-start"
-      />
+      {isMobile && <SidebarMobileHeader />}
+      <div
+        role="status"
+        className="animate-fade-in flex items-center gap-x-2 text-sm text-zinc-400 light:text-slate-500"
+      >
+        <CircleNotch size={18} weight="bold" className="animate-spin" />
+        {/* Screen readers hear one fixed message, not every rotation. */}
+        <span className="sr-only">{messages[0]}</span>
+        <span key={index} aria-hidden="true" className="animate-fade-in">
+          {messages[index]}
+        </span>
+      </div>
     </div>
   );
 }

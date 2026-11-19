@@ -366,6 +366,18 @@ const KEY_MAPPING = {
     envKey: "IMAGE_GEN_GEMINI_API_KEY",
     checks: [isNotEmpty],
   },
+  ImageGenerationMinimaxApiKey: {
+    envKey: "IMAGE_GEN_MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationMinimaxResolution: {
+    envKey: "IMAGE_GEN_MINIMAX_RESOLUTION",
+    checks: [],
+  },
+  ImageGenerationMinimaxPromptEnhancement: {
+    envKey: "IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT",
+    checks: [],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
@@ -1137,7 +1149,8 @@ function nonNegative(input = "") {
 
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
-  return Number(input);
+  if (!Number.isInteger(Number(input))) return "Value must be a whole number";
+  return null;
 }
 
 function validPort(input = "") {
@@ -1354,6 +1367,7 @@ function supportedImageGenerationProvider(input = "") {
     "localai",
     "llmman",
     "gemini",
+    "minimax",
   ];
   return supported.includes(input)
     ? null

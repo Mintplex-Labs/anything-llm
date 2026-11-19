@@ -1535,10 +1535,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Dokumen",
       "data-connectors": "Konektor Data",
-      "desktop-only":
-        "Mengedit pengaturan ini hanya tersedia di perangkat desktop. Silakan akses halaman ini di desktop Anda untuk melanjutkan.",
-      dismiss: "Abaikan",
-      editing: "Mengedit",
     },
     directory: {
       "my-documents": "Dokumen Saya",
@@ -1560,6 +1556,24 @@ const TRANSLATIONS = {
       save_embed: "Simpan dan Embed",
       "search-results_one": "{{count}} hasil",
       "search-results_other": "{{count}} hasil",
+      "in-workspace": "Di area kerja",
+      "upload-files": "Unggah berkas",
+      "add-link": "Tambahkan tautan",
+      "selected-count_one": "{{count}} telah dipilih",
+      "selected-count_other": "{{count}} telah dipilih",
+      "move-to-folder": "Pindahkan ke folder",
+      "ready-to-embed_one": "{{count}} sudah siap untuk dimasukkan.",
+      "ready-to-embed_other":
+        "File-file {{count}} sudah siap untuk dimasukkan.",
+      "add-to-queue": "Tambahkan ke antrian",
+      staged: "Siap untuk dipasang",
+      pinned: "Ditandai",
+      watching: "Menonton",
+      pin: "Simpan ke area kerja",
+      unpin: "Lepas dari area kerja",
+      watch: "Perhatikan perubahan",
+      unwatch: "Berhentilah mencari perubahan",
+      "remove-from-workspace": "Lepaskan dari area kerja",
     },
     upload: {
       "processor-offline": "Pemroses Dokumen Tidak Tersedia",
@@ -1625,6 +1639,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Memuat riwayat obrolan...",
+    loading_chat_recalling: "Memanggil kembali percakapan kita...",
+    loading_chat_remembering: "Mengingat apa yang kita bicarakan...",
     attachments_processing: "Lampiran sedang diproses. Harap tunggu...",
     send_message: "Kirim pesan",
     attach_file: "Lampirkan berkas ke obrolan ini",

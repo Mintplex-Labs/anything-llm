@@ -639,7 +639,13 @@ function workspaceEndpoints(app) {
           });
         }
 
-        await WorkspaceSuggestedMessages.saveAll(messages, slug);
+        const saved = await WorkspaceSuggestedMessages.saveAll(messages, slug);
+        if (!saved) {
+          return response.status(500).json({
+            success: false,
+            message: "Error saving the suggested messages.",
+          });
+        }
         return response.status(200).json({
           success: true,
           message: "Suggested messages saved successfully.",

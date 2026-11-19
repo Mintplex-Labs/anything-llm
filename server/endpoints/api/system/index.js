@@ -224,7 +224,7 @@ function apiSystemEndpoints(app) {
       #swagger.tags = ['System Settings']
       #swagger.description = 'Permanently remove documents from the system.'
       #swagger.requestBody = {
-        description: 'Array of document names to be removed permanently.',
+        description: 'Pass each document path as folder/filename.json, including the folder and file extension.',
         required: true,
         content: {
           "application/json": {
@@ -246,7 +246,7 @@ function apiSystemEndpoints(app) {
         }
       }
       #swagger.responses[200] = {
-        description: 'Documents removed successfully.',
+        description: 'Request processed. A 200 response does not confirm that each specified document existed or was removed.',
         content: {
           "application/json": {
             schema: {

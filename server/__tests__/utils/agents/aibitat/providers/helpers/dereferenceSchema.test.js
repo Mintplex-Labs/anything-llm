@@ -187,6 +187,39 @@ describe("dereferenceSchema", () => {
     expect(properties.inherited).toEqual({});
   });
 
+  it("keeps parameters named `definitions` or `$defs`", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        term: { type: "string" },
+        definitions: { type: "array", items: { type: "string" } },
+        $defs: { type: "string" },
+      },
+      patternProperties: {
+        definitions: { type: "string" },
+        $defs: { type: "number" },
+      },
+      required: ["term", "definitions"],
+    };
+
+    expect(dereferenceSchema(schema)).toEqual(schema);
+  });
+
+  it("inlines references in a parameter named `definitions`", () => {
+    const schema = {
+      type: "object",
+      properties: { definitions: { $ref: "#/$defs/Glossary" } },
+      $defs: { Glossary: { type: "array", items: { type: "string" } } },
+    };
+
+    expect(dereferenceSchema(schema)).toEqual({
+      type: "object",
+      properties: {
+        definitions: { type: "array", items: { type: "string" } },
+      },
+    });
+  });
+
   it("handles non-object inputs defensively", () => {
     expect(dereferenceSchema(null)).toBeNull();
     expect(dereferenceSchema(undefined)).toEqual({});

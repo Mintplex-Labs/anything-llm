@@ -6,6 +6,7 @@ const {
   sourceIdentifier,
   recentChatHistory,
   chatPrompt,
+  grepUserSlashCommands,
 } = require("../../chats");
 const { fillSourceWindow } = require("../../helpers/chat");
 const { AgentHandler } = require("../../agents");
@@ -67,6 +68,9 @@ async function streamResponse({
 
   await ctx.bot.sendChatAction(chatId, "typing");
 
+  // Telegram only runs in single-user mode, so the presets are the ones saved
+  // without a user. The prompt is stored as typed, like chats from the web UI.
+  const updatedMessage = await grepUserSlashCommands(message);
   const chatMode = workspace.chatMode || "chat";
   const messageLimit = workspace?.openAiHistory ?? 20;
   const { rawHistory, chatHistory } = await recentChatHistory({
@@ -78,7 +82,7 @@ async function streamResponse({
   if (
     historyIsAgentic(chatMode, chatHistory) ||
     (await AgentHandler.isAgentInvocation({
-      message,
+      message: updatedMessage,
       workspace,
       chatMode: workspace.chatMode ?? "automatic",
     }))
@@ -88,7 +92,7 @@ async function streamResponse({
       chatId,
       workspace,
       thread,
-      message,
+      updatedMessage,
       voiceResponse,
       attachments
     );
@@ -101,7 +105,7 @@ async function streamResponse({
   const { connector: LLMConnector, routingMetadata } =
     await resolveProviderConnector({
       workspace,
-      prompt: message,
+      prompt: updatedMessage,
       thread,
       attachments,
     });
@@ -120,7 +124,7 @@ async function streamResponse({
     error: searchError,
   } = await buildSearchContext({
     workspace,
-    message,
+    message: updatedMessage,
     VectorDb,
     LLMConnector,
     embeddingsCount,
@@ -138,7 +142,7 @@ async function streamResponse({
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: await chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
       attachments,

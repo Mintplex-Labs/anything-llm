@@ -65,6 +65,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "localai-imggen",
   "llmman-imggen",
   "gemini-imggen",
+  "minimax-imggen",
   // Embedding Engines
   "native-embedder",
   "cohere-embedder",
@@ -161,6 +162,18 @@ async function getCustomModels(
       return await getLlmmanImageModels(basePath, apiKey);
     case "gemini-imggen":
       return await getGeminiImageModels(apiKey);
+    case "minimax-imggen":
+      // MiniMax's /models endpoint does not list its image models.
+      return {
+        models: [
+          { id: "MiniMax-H3-Image", name: "MiniMax-H3-Image" },
+          {
+            id: "MiniMax-H3-Image-Highspeed",
+            name: "MiniMax-H3-Image-Highspeed",
+          },
+        ],
+        error: null,
+      };
     case "native-embedder":
       return await getNativeEmbedderModels();
     case "cohere-embedder":

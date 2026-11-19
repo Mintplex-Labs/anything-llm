@@ -41,6 +41,19 @@ function dereferenceSchema(schema = {}) {
     return node && typeof node === "object" ? node : null;
   };
 
+  // Keys of these maps are parameter names (which may be "definitions" or "$defs"),
+  // not schema keywords, so every key is kept and only the values are walked.
+  const NAME_MAPS = new Set(["properties", "patternProperties"]);
+  const walkNameMap = (map, seenRefs) =>
+    map && typeof map === "object" && !Array.isArray(map)
+      ? Object.fromEntries(
+          Object.entries(map).map(([name, value]) => [
+            name,
+            walk(value, seenRefs),
+          ])
+        )
+      : walk(map, seenRefs);
+
   const walk = (node, seenRefs) => {
     if (Array.isArray(node)) return node.map((item) => walk(item, seenRefs));
     if (!node || typeof node !== "object") return node;
@@ -63,7 +76,9 @@ function dereferenceSchema(schema = {}) {
     const output = {};
     for (const [key, value] of Object.entries(node)) {
       if (key === "$defs" || key === "definitions") continue;
-      output[key] = walk(value, seenRefs);
+      output[key] = NAME_MAPS.has(key)
+        ? walkNameMap(value, seenRefs)
+        : walk(value, seenRefs);
     }
     return output;
   };

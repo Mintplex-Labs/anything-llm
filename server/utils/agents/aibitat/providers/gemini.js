@@ -242,6 +242,7 @@ class GeminiProvider extends Provider {
         // ignore
       }
     }
+    this.providerLog("[Gemini API Error]", allProps);
   }
 
   #formatFunctions(functions) {

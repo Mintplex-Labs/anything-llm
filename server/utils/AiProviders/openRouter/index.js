@@ -63,6 +63,12 @@ class OpenRouterLLM {
     });
     this.model =
       modelPreference || process.env.OPENROUTER_MODEL_PREF || "openrouter/auto";
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -72,11 +78,6 @@ class OpenRouterLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.timeout = this.#parseTimeout();
     this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
     this.log("Initialized with model:", this.model);
   }
 

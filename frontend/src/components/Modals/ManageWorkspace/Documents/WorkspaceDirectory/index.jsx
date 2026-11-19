@@ -17,6 +17,7 @@ import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import { useEmbeddingProgress } from "@/EmbeddingProgressContext";
 import EmbeddingFileRow from "@/components/EmbeddingFileRow";
+import MobileWorkspaceDirectory from "./MobileWorkspaceDirectory";
 import {
   rowsBetween,
   isSelectAllShortcut,
@@ -35,6 +36,7 @@ function WorkspaceDirectory({
   hasChanges,
   saveChanges,
   movedItems,
+  variant = "default",
 }) {
   const { t } = useTranslation();
   const { embeddingProgressMap, removeQueuedFile } = useEmbeddingProgress();
@@ -116,11 +118,13 @@ function WorkspaceDirectory({
     selectAll();
   };
 
-  const removeSelectedItems = async () => {
+  const removeSelectedItems = () => removeItems(Object.keys(selectedItems));
+
+  const removeItems = async (itemIds) => {
     setLoading(true);
     setLoadingMessage("Removing selected files from workspace");
 
-    const itemsToRemove = Object.keys(selectedItems).map((itemId) => {
+    const itemsToRemove = itemIds.map((itemId) => {
       const folder = files.items.find((f) =>
         f.items.some((i) => i.id === itemId)
       );
@@ -147,6 +151,35 @@ function WorkspaceDirectory({
     setSelectedItems({});
     saveChanges(e);
   };
+
+  if (variant === "mobile")
+    return (
+      <>
+        <MobileWorkspaceDirectory
+          workspace={workspace}
+          orderedFiles={orderedFiles}
+          loading={loading}
+          loadingMessage={loadingMessage}
+          embeddingProgress={embeddingProgress}
+          onRemoveQueued={(filename) =>
+            removeQueuedFile(workspace.slug, filename)
+          }
+          hasChanges={hasChanges}
+          movedItems={movedItems}
+          selectedItems={selectedItems}
+          allSelected={
+            orderedFiles.length > 0 &&
+            orderedFiles.every(({ item }) => selectedItems[item.id])
+          }
+          onToggleItem={(item) => setItems([item], !selectedItems[item.id])}
+          onToggleSelectAll={toggleSelectAll}
+          onRemoveItems={removeItems}
+          onSave={handleSaveChanges}
+        />
+        <PinAlert />
+        <DocumentWatchAlert />
+      </>
+    );
 
   if (loading) {
     return (

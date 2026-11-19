@@ -23,13 +23,6 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
-  if (!process.env.AUTH_TOKEN) {
-    response.status(401).json({
-      error: "You need to set an AUTH_TOKEN environment variable.",
-    });
-    return;
-  }
-
   const auth = request.header("Authorization");
   const token = auth ? auth.split(" ")[1] : null;
 
@@ -53,7 +46,7 @@ async function validatedRequest(request, response, next) {
   // Since the blame of this comment we have been encrypting the `p` property of JWTs with the persistent
   // encryptionManager PEM's. This prevents us from storing the `p` unencrypted in the JWT itself, which could
   // be unsafe. As a consequence, existing JWTs with invalid `p` values that do not match the regex
-  // in ln:44 will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
+  // above will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
   // This kind of methodology only applies to single-user password mode.
   if (
     !bcrypt.compareSync(

@@ -767,8 +767,6 @@ class PGVector extends VectorDatabase {
         sources: this.curateSources(sources),
         message: false,
       };
-    } catch (err) {
-      return { error: err.message, success: false };
     } finally {
       if (connection) await connection.end();
     }

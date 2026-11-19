@@ -1521,10 +1521,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "दस्तावेज़",
       "data-connectors": "डेटा कनेक्टर",
-      "desktop-only":
-        "ये सेटिंग्स केवल डेस्कटॉप कंप्यूटर पर उपलब्ध हैं। जारी रखने के लिए कृपया अपने कंप्यूटर पर यह पेज खोलें।",
-      dismiss: "बंद करें",
-      editing: "संपादन",
     },
     directory: {
       "my-documents": "मेरे दस्तावेज़",
@@ -1546,6 +1542,23 @@ const TRANSLATIONS = {
       save_embed: "सहेजें और एम्बेड करें",
       "search-results_one": "{{count}} परिणाम",
       "search-results_other": "{{count}} परिणाम",
+      "in-workspace": "कार्यस्थल में",
+      "upload-files": "फ़ाइलें अपलोड करें",
+      "add-link": "लिंक जोड़ें",
+      "selected-count_one": "{{count}} का चयन किया गया",
+      "selected-count_other": "{{count}} का चयन किया गया",
+      "move-to-folder": "फ़ोल्डर में ले जाएं",
+      "ready-to-embed_one": "{{count}} फ़ाइल को एम्बेड करने के लिए तैयार",
+      "ready-to-embed_other": "{{count}} फ़ाइलें एम्बेड करने के लिए तैयार",
+      "add-to-queue": "कतार में जोड़ें",
+      staged: "तैयार",
+      pinned: "'Pinned'",
+      watching: "देखना",
+      pin: "कार्यक्षेत्र में पिन करें",
+      unpin: "कार्यक्षेत्र से हटाएँ",
+      watch: "परिवर्तनों पर ध्यान दें।",
+      unwatch: "परिवर्तनों की निगरानी करना बंद कर दें।",
+      "remove-from-workspace": "कार्यक्षेत्र से हटा दें",
     },
     upload: {
       "processor-offline": "अनुपलब्ध",
@@ -1611,6 +1624,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "चैट इतिहास लोड हो रहा है...",
+    loading_chat_recalling: "हमारी बातचीत वापस लाई जा रही है...",
+    loading_chat_remembering: "याद कर रहे हैं कि हमने किस बारे में बात की...",
     attachments_processing:
       "संलग्न फ़ाइलें संसाधित की जा रही हैं। कृपया प्रतीक्षा करें...",
     send_message: "संदेश भेजें",

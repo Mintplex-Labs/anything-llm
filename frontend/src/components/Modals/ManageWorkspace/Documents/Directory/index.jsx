@@ -3,6 +3,7 @@ import PreLoader from "@/components/Preloader";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import FolderRow from "./FolderRow";
+import MobileDirectory from "./MobileDirectory";
 import System from "@/models/system";
 import {
   CircleNotch,
@@ -53,12 +54,19 @@ function flattenRows(rows) {
   });
 }
 
+/**
+ * @param {Object} props
+ * @param {"default"|"mobile"} [props.variant="default"] - `mobile` renders the
+ * touch layout
+ */
 export default function Directory({
   picker,
   workspace,
   hiddenPaths,
+  embeddedCounts,
   setHighlightWorkspace,
   moveToWorkspace,
+  variant = "default",
 }) {
   const { t } = useTranslation();
   const [showFolderSelection, setShowFolderSelection] = useState(false);
@@ -362,6 +370,33 @@ export default function Directory({
     () => setContextMenu({ visible: false, x: 0, y: 0 }),
     []
   );
+
+  if (variant === "mobile")
+    return (
+      <>
+        <MobileDirectory
+          picker={picker}
+          workspace={workspace}
+          rows={rows}
+          embeddedCounts={embeddedCounts}
+          documentCount={searchResults ? searchResultCount : totalDocCount}
+          allSelected={allSelected}
+          uploadQueue={uploadQueue}
+          onSearch={handleSearch}
+          onSelectAll={selectAllVisible}
+          onMoveToWorkspace={moveToWorkspace}
+          onMoveToFolder={moveToFolder}
+          onDelete={deleteFiles}
+          onNewFolder={openFolderModal}
+        />
+        <Modal isOpen={isFolderModalOpen} onClose={closeFolderModal}>
+          <NewFolderModal
+            closeModal={closeFolderModal}
+            onCreated={handleFolderCreated}
+          />
+        </Modal>
+      </>
+    );
 
   return (
     <>

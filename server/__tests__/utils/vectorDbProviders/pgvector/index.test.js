@@ -76,3 +76,24 @@ describe("PGVector.sanitizeForJsonb", () => {
     expect(resultArr).toEqual(["", { c: "bad" }]);
   });
 });
+
+describe("PGVector.performSimilaritySearch", () => {
+  it("rejects with the original error and still closes the connection", async () => {
+    const pgvector = new PGVectorClass();
+    const client = { end: jest.fn() };
+    jest.spyOn(pgvector, "connect").mockResolvedValue(client);
+    jest.spyOn(pgvector, "namespaceExists").mockResolvedValue(true);
+    const LLMConnector = {
+      embedTextInput: jest.fn().mockRejectedValue(new Error("embedder down")),
+    };
+
+    await expect(
+      pgvector.performSimilaritySearch({
+        namespace: "workspace",
+        input: "hello",
+        LLMConnector,
+      })
+    ).rejects.toThrow("embedder down");
+    expect(client.end).toHaveBeenCalledTimes(1);
+  });
+});

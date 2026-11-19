@@ -2,6 +2,7 @@
 const {
   grepCommand,
   grepAllSlashCommands,
+  grepUserSlashCommands,
   isReservedCommand,
   chatPrompt,
 } = require("../../../utils/chats");
@@ -156,6 +157,45 @@ describe("grepAllSlashCommands", () => {
     ]);
     expect(await grepAllSlashCommands("/weather and /time")).toBe(
       "the weather and the time"
+    );
+  });
+});
+
+describe("grepUserSlashCommands", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it("expands only the given user's presets", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([
+      preset("/weather", "what is the weather?"),
+    ]);
+    expect(await grepUserSlashCommands("ok, /weather?", { id: 3 })).toBe(
+      "ok, what is the weather??"
+    );
+    expect(SlashCommandPresets.getUserPresets).toHaveBeenCalledWith(3);
+    expect(SlashCommandPresets.where).not.toHaveBeenCalled();
+  });
+
+  it("reads the unowned presets in single-user mode", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([]);
+    await grepUserSlashCommands("/weather");
+    expect(SlashCommandPresets.getUserPresets).toHaveBeenCalledWith(undefined);
+  });
+
+  it("leaves built-in commands and unknown commands as typed", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([
+      preset("/weather", "the weather"),
+    ]);
+    expect(await grepUserSlashCommands("/reset /img a cat /other")).toBe(
+      "/reset /img a cat /other"
+    );
+  });
+
+  it("does not expand a command that is part of a longer word", async () => {
+    SlashCommandPresets.getUserPresets.mockResolvedValue([
+      preset("/weather", "the weather"),
+    ]);
+    expect(await grepUserSlashCommands("/weatherman", { id: 1 })).toBe(
+      "/weatherman"
     );
   });
 });

@@ -261,6 +261,27 @@ class OllamaAILLM {
    * @param {{attachments: import("../../helpers").Attachment[]}} param0
    * @returns
    */
+  /**
+   * Removes the `<think>` reasoning saved inline with earlier assistant replies.
+   * Models that mark reasoning with their own tokens (ex: Gemma 4) copy replayed
+   * tags and write their answer inside a fake trace instead of their real one.
+   * An unclosed `<think>` is removed through the end of the message.
+   * @param {Array<{role: string, content: any}>} messages
+   * @returns {Array<{role: string, content: any}>}
+   */
+  static stripHistoryReasoning(messages = []) {
+    return messages.map((message) => {
+      if (message?.role !== "assistant" || typeof message.content !== "string")
+        return message;
+      return {
+        ...message,
+        content: message.content
+          .replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, "")
+          .trim(),
+      };
+    });
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
@@ -274,7 +295,11 @@ class OllamaAILLM {
     };
     return [
       prompt,
-      ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
+      ...formatChatHistory(
+        OllamaAILLM.stripHistoryReasoning(chatHistory),
+        this.#generateContent,
+        "spread"
+      ),
       {
         role: "user",
         ...this.#generateContent({ userPrompt, attachments }),

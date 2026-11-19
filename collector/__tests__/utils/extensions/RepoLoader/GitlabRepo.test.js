@@ -1050,7 +1050,7 @@ describe("GitLabRepoLoader issues and wikis", () => {
     expect(imported.discussions).toEqual(expectedDiscussions);
     expect(refreshed.discussions).toEqual(expectedDiscussions);
     const expectedActivity =
-      "## Activity\n\nbob at 2024-01-01T00:00:00Z:\nReproduced on main.,alice at 2024-01-02T00:00:00Z:\nFix incoming.\n\ncarol at 2024-01-03T00:00:00Z:\nVerified the fix.\n";
+      "## Activity\n\nbob at 2024-01-01T00:00:00Z:\nReproduced on main.\n\nalice at 2024-01-02T00:00:00Z:\nFix incoming.\n\ncarol at 2024-01-03T00:00:00Z:\nVerified the fix.\n";
     expect(issueToMarkdown(imported)).toContain(expectedActivity);
     expect(issueToMarkdown(refreshed)).toContain(expectedActivity);
   });
@@ -1435,5 +1435,22 @@ describe("issueToMarkdown", () => {
     expect(markdown).toContain(
       "## Activity\n\nbob at 2024-01-01T00:00:00Z:\nReproduced on main.\n\nalice at 2024-01-02T00:00:00Z:\nFix incoming."
     );
+  });
+
+  test("replies in a discussion thread are separated like other notes", () => {
+    const markdown = issueToMarkdown({
+      ...base,
+      discussions: [
+        [
+          "bob at 2024-01-01T00:00:00Z:\nReproduced on main.",
+          "alice at 2024-01-02T00:00:00Z:\nFix incoming.",
+        ],
+      ],
+    });
+
+    expect(markdown).toContain(
+      "## Activity\n\nbob at 2024-01-01T00:00:00Z:\nReproduced on main.\n\nalice at 2024-01-02T00:00:00Z:\nFix incoming."
+    );
+    expect(markdown).not.toContain("main.,alice");
   });
 });

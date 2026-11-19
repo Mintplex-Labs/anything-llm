@@ -35,6 +35,28 @@ describe("markdownToTelegram", () => {
       );
     });
 
+    test("converts ***bold italic*** and ___bold italic___ to nested tags", () => {
+      expect(markdownToTelegram("***Hello***")).toBe("<b><i>Hello</i></b>");
+      expect(markdownToTelegram("___Hello___")).toBe("<b><i>Hello</i></b>");
+    });
+
+    test("converts triple emphasis inside text", () => {
+      expect(markdownToTelegram("a ***b*** c")).toBe("a <b><i>b</i></b> c");
+      expect(markdownToTelegram("a ___b___ c")).toBe("a <b><i>b</i></b> c");
+    });
+
+    test("keeps triple emphasis literal inside inline code", () => {
+      expect(markdownToTelegram("`***Hello***` and `___Hello___`")).toBe(
+        "<code>***Hello***</code> and <code>___Hello___</code>"
+      );
+    });
+
+    test("keeps triple emphasis literal inside code blocks", () => {
+      expect(markdownToTelegram("```\n***Hello*** ___Hello___\n```")).toBe(
+        "<pre>***Hello*** ___Hello___</pre>"
+      );
+    });
+
     test("converts ~~strikethrough~~ to <s>", () => {
       expect(markdownToTelegram("this is ~~gone~~ text")).toBe(
         "this is <s>gone</s> text"
@@ -193,7 +215,9 @@ describe("markdownToTelegram", () => {
 
     test("keeps a ``` example inside a longer fence", () => {
       expect(
-        markdownToTelegram("````markdown\n```python\nx = 1\n```\n````\nAfter **bold**")
+        markdownToTelegram(
+          "````markdown\n```python\nx = 1\n```\n````\nAfter **bold**"
+        )
       ).toBe("<pre>```python\nx = 1\n```</pre>\nAfter <b>bold</b>");
     });
 
@@ -293,6 +317,83 @@ describe("markdownToTelegram", () => {
       expect(result).toContain("Name │ Age");
       expect(result).toContain("Bob");
       expect(result).not.toContain("| --- |");
+    });
+  });
+
+  describe("overlapping emphasis", () => {
+    // Telegram rejects any message whose tags overlap instead of nesting.
+    function isWellNested(html) {
+      const open = [];
+      for (const [, closing, name] of html.matchAll(/<(\/?)([a-z]+)[^>]*>/g)) {
+        if (!closing) open.push(name);
+        else if (open.pop() !== name) return false;
+      }
+      return open.length === 0;
+    }
+
+    test("splits bold that closes inside italic", () => {
+      expect(markdownToTelegram("***bold** italic*")).toBe(
+        "<b><i>bold</i></b><i> italic</i>"
+      );
+    });
+
+    test("nests italic that closes together with bold", () => {
+      expect(markdownToTelegram("**bold *italic***")).toBe(
+        "<b>bold <i>italic</i></b>"
+      );
+    });
+
+    test("splits overlapping strikethrough and bold", () => {
+      expect(markdownToTelegram("~~a **b~~ c**")).toBe(
+        "<s>a <b>b</b></s><b> c</b>"
+      );
+    });
+
+    test("reopens a link with its URL when bold closes inside it", () => {
+      expect(markdownToTelegram("**a [b** c](https://example.com)")).toBe(
+        '<b>a <a href="https://example.com">b</a></b><a href="https://example.com"> c</a>'
+      );
+    });
+
+    test("leaves already nested tags unchanged", () => {
+      expect(markdownToTelegram("**a *b* c**")).toBe("<b>a <i>b</i> c</b>");
+      expect(
+        markdownToTelegram("<b>a <i>b</i></b>", { escapeHtml: false })
+      ).toBe("<b>a <i>b</i></b>");
+    });
+
+    test("repairs overlapping raw HTML when escaping is off", () => {
+      expect(
+        markdownToTelegram("<b>a <i>b</b> c</i>", { escapeHtml: false })
+      ).toBe("<b>a <i>b</i></b><i> c</i>");
+    });
+
+    test("every combination of up to 4 markdown tokens is well nested", () => {
+      const tokens = [
+        "*",
+        "**",
+        "***",
+        "_",
+        "__",
+        "~~",
+        "`",
+        "[",
+        "](u)",
+        "a",
+        "\n",
+        "# ",
+      ];
+      const failures = [];
+      (function build(text, depth) {
+        if (depth > 0) {
+          const html = markdownToTelegram(text);
+          if (!isWellNested(html) || html.includes("\x00"))
+            failures.push([text, html]);
+        }
+        if (depth === 4) return;
+        for (const token of tokens) build(text + token, depth + 1);
+      })("", 0);
+      expect(failures).toEqual([]);
     });
   });
 

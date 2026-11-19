@@ -140,9 +140,33 @@ describe("EmbedConfig", () => {
         expected
       );
     });
+
+    it.each([
+      ["zero", 0, 0],
+      ["zero from the settings form", "0", 0],
+      ["positive integer", 10, 10],
+      ["numeric string", "5", 5],
+      ["fractional", "2.5", 2],
+      ["empty string", "", null],
+      ["null", null, null],
+      ["negative", -1, null],
+      ["non-numeric string", "abc", null],
+    ])("normalizes %s for message_limit", async (_label, input, expected) => {
+      await EmbedConfig.new({ workspace_id: 1, message_limit: input });
+      expect(stored(mockPrisma.embed_configs.create).message_limit).toBe(
+        expected
+      );
+    });
   });
 
   describe("update", () => {
+    it("keeps a message_limit of 0 when updating an embed", async () => {
+      await EmbedConfig.update(1, { message_limit: "0" });
+      expect(stored(mockPrisma.embed_configs.update)).toEqual({
+        message_limit: 0,
+      });
+    });
+
     it("throws when no embed id is given", async () => {
       await expect(EmbedConfig.update(null, { enabled: false })).rejects.toThrow(
         "No embed id provided for update"

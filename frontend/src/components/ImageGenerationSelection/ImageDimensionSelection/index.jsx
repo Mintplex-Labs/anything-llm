@@ -14,29 +14,49 @@ const PROVIDER_DIMENSIONS = {
     "4:5",
     "21:9",
   ],
+  "minimax-imggen": ["auto", "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"],
 };
+const ASPECT_RATIO_PROVIDERS = ["gemini-imggen", "minimax-imggen"];
 const DEFAULT_DIMENSIONS = ["512x512", "1024x1024"];
 
 const INPUT_CLASSES =
   "border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5";
 
-export default function ImageDimensionSelection({ provider, settings }) {
+/**
+ * The dimension the selector starts on: the saved setting when the provider
+ * supports it, otherwise the provider's first option.
+ * @param {string} provider
+ * @param {object} settings
+ * @returns {string}
+ */
+export function initialDimension(provider, settings) {
   const dimensions = PROVIDER_DIMENSIONS[provider] || DEFAULT_DIMENSIONS;
-  const defaultValue =
-    settings?.ImageGenerationDimensions &&
+  return settings?.ImageGenerationDimensions &&
     dimensions.includes(settings.ImageGenerationDimensions)
-      ? settings.ImageGenerationDimensions
-      : dimensions[0];
+    ? settings.ImageGenerationDimensions
+    : dimensions[0];
+}
+
+export default function ImageDimensionSelection({
+  provider,
+  settings,
+  onChange = null,
+}) {
+  const dimensions = PROVIDER_DIMENSIONS[provider] || DEFAULT_DIMENSIONS;
+  const defaultValue = initialDimension(provider, settings);
 
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        {provider === "gemini-imggen" ? "Aspect Ratio" : "Image Dimensions"}
+        {ASPECT_RATIO_PROVIDERS.includes(provider)
+          ? "Aspect Ratio"
+          : "Image Dimensions"}
       </label>
       <select
         name="ImageGenerationDimensions"
         className={INPUT_CLASSES}
         defaultValue={defaultValue}
+        onChange={(e) => onChange?.(e.target.value)}
       >
         {dimensions.map((dim) => (
           <option key={dim} value={dim}>

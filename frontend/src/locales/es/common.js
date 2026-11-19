@@ -1301,10 +1301,6 @@ const TRANSLATIONS = {
     manage: {
       documents: "Documentos",
       "data-connectors": "Conectores de datos",
-      "desktop-only":
-        "La edición de esta configuración solo está disponible en un dispositivo de escritorio. Accede a esta página en tu escritorio para continuar.",
-      dismiss: "Descartar",
-      editing: "Editando",
     },
     directory: {
       "my-documents": "Mis documentos",
@@ -1326,6 +1322,23 @@ const TRANSLATIONS = {
       "total-documents_other": "{{count}} documentos",
       "search-results_one": "{{count}} resultado",
       "search-results_other": "Resultados de {{count}}",
+      "in-workspace": "En el lugar de trabajo",
+      "upload-files": "Subir archivos",
+      "add-link": "Añadir enlace",
+      "selected-count_one": "{{count}} elegido",
+      "selected-count_other": "{{count}} elegido",
+      "move-to-folder": "Mover a la carpeta",
+      "ready-to-embed_one": "Archivo {{count}} listo para insertar",
+      "ready-to-embed_other": "Archivos {{count}} listos para insertar",
+      "add-to-queue": "Añadir a la cola",
+      staged: "Listo para insertar",
+      pinned: "Destacado",
+      watching: "Observar",
+      pin: "Guardar en el área de trabajo",
+      unpin: "Eliminar del área de trabajo",
+      watch: "Tenga en cuenta los cambios.",
+      unwatch: "Deja de estar atento a los cambios.",
+      "remove-from-workspace": "Retirar del área de trabajo",
     },
     upload: {
       "processor-offline": "Procesador de documentos no disponible",
@@ -1391,6 +1404,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Cargando historial del chat...",
+    loading_chat_recalling: "Recuperando nuestra conversación...",
+    loading_chat_remembering: "Recordando de qué hablamos...",
     attachments_processing:
       "Los archivos adjuntos se están procesando. Por favor, espera...",
     send_message: "Enviar un mensaje",

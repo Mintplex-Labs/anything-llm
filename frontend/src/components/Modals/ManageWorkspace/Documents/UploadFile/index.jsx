@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
 import { useDropzone } from "react-dropzone";
 import FileUploadProgress from "./FileUploadProgress";
+import MobileUploadFile from "./MobileUploadFile";
 import Workspace from "../../../../../models/workspace";
 import debounce from "lodash.debounce";
 import { getFilesFromUploadEvent } from "../../../../../utils/folderUpload";
@@ -36,12 +37,15 @@ function withProtocol(value = "") {
  * @param {() => Promise<void>} props.onUploadComplete called (coalesced) once a
  * burst of file uploads settles, so the picker can hydrate in place.
  * @param {() => Promise<void>} props.onLinkScraped called after a link scrape.
+ * @param {"default"|"mobile"} [props.variant="default"] - `mobile` swaps the
+ * drag-and-drop zone for touch-sized buttons
  */
 export default function UploadFile({
   workspace,
   queue,
   onUploadComplete,
   onLinkScraped,
+  variant = "default",
 }) {
   const { t } = useTranslation();
   const { ready, files, setFiles, enqueueDrop } = queue;
@@ -74,11 +78,26 @@ export default function UploadFile({
   );
   useEffect(() => () => syncPicker.cancel(), [syncPicker]);
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, inputRef } = useDropzone({
     onDrop: enqueueDrop,
     disabled: !ready,
     getFilesFromEvent: getFilesFromUploadEvent,
   });
+
+  if (variant === "mobile")
+    return (
+      <MobileUploadFile
+        ready={ready}
+        uploads={files}
+        setFiles={setFiles}
+        slug={workspace.slug}
+        openFilePicker={() => inputRef.current?.click()}
+        inputProps={getInputProps()}
+        fetchingUrl={fetchingUrl}
+        onSubmitLink={handleSendLink}
+        onSettled={syncPicker}
+      />
+    );
 
   return (
     <div>
