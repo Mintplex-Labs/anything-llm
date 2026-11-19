@@ -10,7 +10,10 @@ const {
 const {
   temperatureParam,
 } = require("../../agents/aibitat/providers/helpers/tooled");
-const { reasoningParams } = require("../../helpers/reasoningEffort");
+const {
+  reasoningParams,
+  modelsDevReasoningCapabilities,
+} = require("../../helpers/reasoningEffort");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -71,18 +74,17 @@ class MistralLLM {
 
   /**
    * Returns the capabilities of the model from Mistral's models endpoint, which
-   * also resolves model aliases. Reasoning models only toggle thinking on/off.
-   * @returns {Promise<{tools: boolean, reasoning: boolean, reasoningOptions: string[], imageGeneration: boolean, vision: boolean}>}
+   * also resolves model aliases. The endpoint only flags reasoning support, so
+   * the effort levels come from models.dev - see #reasoningCapabilities.
+   * @returns {Promise<{tools: boolean, reasoning: 'unknown'|boolean, reasoningOptions: string[], imageGeneration: boolean, vision: boolean}>}
    */
   async getModelCapabilities() {
     try {
-      const { capabilities = {} } = await this.openai.models.retrieve(
-        this.model
-      );
+      const card = await this.openai.models.retrieve(this.model);
+      const capabilities = card?.capabilities ?? {};
       return {
         tools: capabilities.function_calling === true,
-        reasoning: capabilities.reasoning === true,
-        reasoningOptions: capabilities.reasoning === true ? ["off", "on"] : [],
+        ...this.#reasoningCapabilities(card),
         imageGeneration: false,
         vision: capabilities.vision === true,
       };
@@ -96,6 +98,33 @@ class MistralLLM {
         vision: false,
       };
     }
+  }
+
+  /**
+   * The reasoning levels of a Mistral model card. Models differ in which
+   * `reasoning_effort` values they accept (eg: Large 4 rejects "none"), so the
+   * levels are read from models.dev under the model's own id or any of its
+   * aliases. A reasoning model models.dev does not list only gets on/off,
+   * which most Mistral reasoning models accept.
+   * @param {{id?: string, aliases?: string[], capabilities?: {reasoning?: boolean}}} card
+   * @returns {{reasoning: 'unknown'|boolean, reasoningOptions: string[]}}
+   */
+  #reasoningCapabilities(card) {
+    if (card?.capabilities?.reasoning !== true)
+      return { reasoning: false, reasoningOptions: [] };
+
+    const ids = [
+      ...new Set([
+        this.model,
+        card.id,
+        ...(Array.isArray(card.aliases) ? card.aliases : []),
+      ]),
+    ];
+    for (const id of ids) {
+      const capabilities = modelsDevReasoningCapabilities("mistral", id);
+      if (capabilities.reasoning !== false) return capabilities;
+    }
+    return { reasoning: true, reasoningOptions: ["off", "on"] };
   }
 
   /**

@@ -333,6 +333,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    messages = OllamaAILLM.stripHistoryReasoning(messages);
     const useNative = await this.supportsNativeToolCalling();
 
     if (useNative) {
@@ -357,6 +358,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
       this.watchTokenLimit(stream);
 
       let textResponse = "";
+      let reasoningText = "";
       let toolCalls = null;
 
       for await (const chunk of stream) {
@@ -370,7 +372,26 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
 
         if (!chunk?.message) continue;
 
+        if (chunk.message.thinking) {
+          eventHandler?.("reportStreamEvent", {
+            type: "textResponseChunk",
+            uuid: msgUUID,
+            content:
+              reasoningText.length === 0
+                ? `<think>${chunk.message.thinking}`
+                : chunk.message.thinking,
+          });
+          reasoningText += chunk.message.thinking;
+        }
+
         if (chunk.message.content) {
+          if (reasoningText.length > 0 && !textResponse) {
+            eventHandler?.("reportStreamEvent", {
+              type: "textResponseChunk",
+              uuid: msgUUID,
+              content: "</think>",
+            });
+          }
           textResponse += chunk.message.content;
           eventHandler?.("reportStreamEvent", {
             type: "textResponseChunk",
@@ -387,6 +408,14 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
             content: `Tool Call: ${toolCalls[0].function.name}(${JSON.stringify(toolCalls[0].function.arguments)})`,
           });
         }
+      }
+
+      if (reasoningText.length > 0 && !textResponse) {
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: "</think>",
+        });
       }
 
       if (toolCalls && toolCalls.length > 0) {
@@ -408,6 +437,8 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         };
       }
 
+      if (reasoningText.trim().length > 0)
+        textResponse = `<think>${reasoningText}</think>${textResponse}`;
       return { textResponse, functionCall: null, cost: 0, uuid: msgUUID };
     }
 
@@ -536,6 +567,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    messages = OllamaAILLM.stripHistoryReasoning(messages);
     const useNative = await this.supportsNativeToolCalling();
 
     if (useNative) {
@@ -579,8 +611,13 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         };
       }
 
+      const content = response.message?.content || "";
+      const reasoning = response.message?.thinking || "";
       return {
-        textResponse: response.message?.content || null,
+        textResponse:
+          (reasoning.trim().length > 0
+            ? `<think>${reasoning}</think>${content}`
+            : content) || null,
         cost: 0,
         usage: this.getUsage(),
       };
