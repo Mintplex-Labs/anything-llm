@@ -1389,6 +1389,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Įkeliama pokalbių istorija...",
+    loading_chat_recalling: "Atkuriu mūsų pokalbį...",
+    loading_chat_remembering: "Prisimenu, apie ką kalbėjome...",
     attachments_processing: "Priedai apdorojami. Palaukite...",
     send_message: "Rašyti žinutę",
     attach_file: "Pridėti failą prie šio pokalbio",

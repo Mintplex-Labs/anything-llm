@@ -1185,6 +1185,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "جارٍ تحميل سجل الدردشة...",
+    loading_chat_recalling: "جارٍ استرجاع محادثتنا...",
+    loading_chat_remembering: "أتذكّر ما تحدثنا عنه...",
     send_message: "أرسل رسالة",
     attach_file: "أرفق ملفًا بهذا الدردشة",
     text_size: "تغيير حجم النص.",

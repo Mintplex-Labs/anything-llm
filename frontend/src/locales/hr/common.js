@@ -1632,6 +1632,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Učitavanje povijesti razgovora...",
+    loading_chat_recalling: "Dohvaćam naš razgovor...",
+    loading_chat_remembering: "Prisjećam se o čemu smo razgovarali...",
     attachments_processing: "Privitci se obrađuju. Pričekajte...",
     send_message: "Pošalji poruku",
     attach_file: "Priložite datoteku ovom razgovoru",

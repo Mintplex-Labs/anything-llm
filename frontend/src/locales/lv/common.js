@@ -1367,6 +1367,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Ielādē tērzēšanas vēsturi...",
+    loading_chat_recalling: "Atjaunoju mūsu sarunu...",
+    loading_chat_remembering: "Atceros, par ko runājām...",
     send_message: "Sūtīt ziņojumu",
     attach_file: "Pievienot failu šim čatam",
     text_size: "Mainīt teksta izmēru.",

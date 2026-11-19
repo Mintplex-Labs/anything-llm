@@ -1208,6 +1208,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Sohbet geçmişi yükleniyor...",
+    loading_chat_recalling: "Sohbetimizi geri getiriyorum...",
+    loading_chat_remembering: "Ne konuştuğumuzu hatırlıyorum...",
     send_message: "Mesaj gönderin",
     attach_file: "Bu sohbete bir dosya ekleyin",
     text_size: "Metin boyutunu değiştirin.",

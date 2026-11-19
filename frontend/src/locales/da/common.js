@@ -1192,6 +1192,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Indlæser chathistorik...",
+    loading_chat_recalling: "Henter vores samtale...",
+    loading_chat_remembering: "Husker, hvad vi talte om...",
     send_message: "Send en besked",
     attach_file: "Vedhæft en fil til denne chat",
     text_size: "Ændr tekststørrelse.",

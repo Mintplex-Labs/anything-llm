@@ -1328,6 +1328,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "채팅 기록을 불러오는 중...",
+    loading_chat_recalling: "우리의 대화를 불러오는 중...",
+    loading_chat_remembering: "우리가 나눈 이야기를 기억하는 중...",
     attachments_processing:
       "첨부 파일을 처리 중입니다. 잠시만 기다려 주세요...",
     send_message: "메시지 보내기",

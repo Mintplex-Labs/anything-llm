@@ -1188,6 +1188,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "در حال بارگذاری تاریخچه گفتگو...",
+    loading_chat_recalling: "در حال بازیابی گفتگوی ما...",
+    loading_chat_remembering: "در حال به خاطر آوردن صحبت‌هایمان...",
     send_message: "یک پیام ارسال کنید",
     attach_file: "لطفاً یک فایل را به این چت پیوست کنید.",
     text_size: "تغییر اندازه متن.",

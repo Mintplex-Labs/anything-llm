@@ -22,17 +22,24 @@ import {
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { PROMPT_INPUT_ID } from "./ChatContainer/PromptInput";
 import { movePromptInputDraft } from "@/hooks/usePromptInputStorage";
+import useDelayedFlag from "@/hooks/useDelayedFlag";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
   const { threadSlug = null } = useParams();
   const navigate = useNavigate();
   // Stores { key, workspace, history } currently rendered. Lags the props so
-  // the previous chat stays mounted until the next one's history is ready,
-  // avoiding a skeleton/loader flash on workspace/thread switches.
+  // the previous chat stays mounted while the next one's history loads,
+  // avoiding a loader flash on fast workspace/thread switches. Slow
+  // switches show the loader after a short delay (see `showSwitchLoader`).
   const [loaded, setLoaded] = useState(null);
   const [dragging, setDragging] = useState(false);
   const pendingFilesRef = useRef([]);
+  // True while the rendered chat is not the one the route asks for.
+  const switching =
+    loading ||
+    (loaded !== null && loaded.key !== chatKey(workspace, threadSlug));
+  const showSwitchLoader = useDelayedFlag(switching);
 
   // When the thread becomes available and we have pending files, trigger upload
   useEffect(() => {
@@ -66,7 +73,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
-        setLoaded({ key: "none", workspace: null, history: [] });
+        setLoaded({ key: chatKey(null), workspace: null, history: [] });
         return false;
       }
 
@@ -77,7 +84,7 @@ export default function WorkspaceChat({ loading, workspace }) {
       if (cancelled) return;
 
       setLoaded({
-        key: `${workspace.slug}:${threadSlug ?? "default"}`,
+        key: chatKey(workspace, threadSlug),
         workspace,
         threadSlug,
         history: chatHistory,
@@ -91,7 +98,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   }, [workspace, loading, threadSlug]);
 
   const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
-  if (loaded === null) {
+  if (loaded === null || showSwitchLoader) {
     if (hasPendingMessage) {
       return (
         <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full" />
@@ -157,6 +164,12 @@ export default function WorkspaceChat({ loading, workspace }) {
       </DnDWrapper>
     </TTSProvider>
   );
+}
+
+// Identifies which chat is rendered: workspace plus thread, or "none".
+function chatKey(workspace, threadSlug = null) {
+  if (!workspace?.slug) return "none";
+  return `${workspace.slug}:${threadSlug ?? "default"}`;
 }
 
 function DnDWrapper({ children, loaded, opts }) {

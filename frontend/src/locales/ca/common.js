@@ -1475,6 +1475,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "S'està carregant l'historial del xat...",
+    loading_chat_recalling: "Recuperant la nostra conversa...",
+    loading_chat_remembering: "Recordant de què vam parlar...",
     attachments_processing:
       "Els adjunts s'estan processant. Si us plau, espera...",
     send_message: "Envia un missatge",

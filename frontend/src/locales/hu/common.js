@@ -1644,6 +1644,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Csevegési előzmények betöltése...",
+    loading_chat_recalling: "Betöltöm a beszélgetésünket...",
+    loading_chat_remembering: "Felidézem, miről beszélgettünk...",
     attachments_processing:
       "A mellékletek feldolgozása folyamatban. Kérjük, várjon...",
     generating_response: "Válasz készítése",

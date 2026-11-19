@@ -1176,6 +1176,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "チャット履歴を読み込み中...",
+    loading_chat_recalling: "会話を呼び出しています...",
+    loading_chat_remembering: "何を話したか思い出しています...",
     send_message: "メッセージを送信",
     attach_file: "このチャットにファイルを添付",
     text_size: "テキストサイズを変更",

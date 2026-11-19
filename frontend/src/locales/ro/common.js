@@ -591,6 +591,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Se încarcă istoricul conversației...",
+    loading_chat_recalling: "Reîncarc conversația noastră...",
+    loading_chat_remembering: "Îmi amintesc despre ce am vorbit...",
     attachments_processing:
       "Fișierele atașate se procesează. Te rugăm să aștepți...",
     send_message: "Trimite mesaj",

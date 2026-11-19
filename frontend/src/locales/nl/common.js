@@ -1204,6 +1204,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Chatgeschiedenis laden...",
+    loading_chat_recalling: "Ons gesprek ophalen...",
+    loading_chat_remembering: "Herinneren waar we het over hadden...",
     send_message: "Een bericht verzenden",
     attach_file: "Een bestand aan deze chat toevoegen",
     text_size: "Tekstgrootte wijzigen.",

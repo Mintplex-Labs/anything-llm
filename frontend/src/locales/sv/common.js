@@ -1636,6 +1636,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Laddar chatthistorik...",
+    loading_chat_recalling: "Hämtar vårt samtal...",
+    loading_chat_remembering: "Minns vad vi pratade om...",
     attachments_processing: "Bilagor bearbetas. Vänta …",
     generating_response: "Genererar svar",
     thought_in_progress: "Modellen tänker …",
