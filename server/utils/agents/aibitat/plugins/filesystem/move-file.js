@@ -75,6 +75,15 @@ module.exports.FilesystemMoveFile = {
                 }
               }
 
+              const destExists = await fs
+                .access(validDestPath)
+                .then(() => true)
+                .catch(() => false);
+
+              if (destExists) {
+                return `Error: Destination "${destination}" already exists. Please choose a different destination.`;
+              }
+
               await fs.rename(validSourcePath, validDestPath);
               this.super.introspect(
                 `Successfully moved ${source} to ${destination}`
