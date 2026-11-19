@@ -285,10 +285,12 @@ function htmlToMarkdown(html, baseUrl) {
       (sibling) => sibling !== mainArticle && sibling.tagName === "ARTICLE"
     );
 
-    // Keep sibling articles together. Otherwise prefer the article to avoid
-    // page chrome, such as the file tree next to a GitHub README.
+    // A list of sibling articles (e.g. GitHub Trending) is scoped to the
+    // element that holds them, so filters and dropdowns elsewhere in <main> are
+    // left out. Otherwise prefer the article to avoid page chrome, such as the
+    // file tree next to a GitHub README.
     const content = hasSiblingArticle
-      ? main
+      ? mainArticle.parentNode
       : root.querySelector("article") || main;
     if (content) root = content;
 
