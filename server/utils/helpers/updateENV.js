@@ -1149,7 +1149,8 @@ function nonNegative(input = "") {
 
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
-  return Number(input);
+  if (!Number.isInteger(Number(input))) return "Value must be a whole number";
+  return null;
 }
 
 function validPort(input = "") {
