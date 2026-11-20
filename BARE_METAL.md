@@ -12,7 +12,7 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 > You should aim for at least 2GB of RAM. Disk storage is proportional to however much data
 > you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
 
-- NodeJS v20.19+ (v24 recommended)
+- NodeJS v22.12+ (v24 recommended)
 - Yarn
 
 
