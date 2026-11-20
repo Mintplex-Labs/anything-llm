@@ -110,7 +110,7 @@ AnythingLLM は複数ユーザーもサポートしており、インスタン�
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Gitee AI](https://ai.gitee.com/)
 - [Moonshot AI](https://www.moonshot.ai/)
-- [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local)
+- [Microsoft Foundry Local](https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-local/)
 - [CometAPI (chat models)](https://www.cometapi.com/)
 - [llmman](https://github.com/llmmanorg/llmman)
 - [PrivateModeAI (chat models)](https://privatemode.ai/)
