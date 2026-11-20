@@ -291,11 +291,6 @@ const VECTOR_DB_PROVIDER_PRIVACY_MAP = {
     ],
     logo: ChromaLogo,
   },
-  chromacloud: {
-    name: "Chroma Cloud",
-    policyUrl: "https://www.trychroma.com/privacy",
-    logo: ChromaLogo,
-  },
   pinecone: {
     name: "Pinecone",
     policyUrl: "https://www.pinecone.io/privacy/",
