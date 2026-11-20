@@ -365,8 +365,6 @@ class AWSBedrockLLM {
     const completionTokens = response.usage?.output_tokens ?? 0;
 
     return {
-      // Models that think by default put a thinking block before the answer,
-      // so the reply is read from the text blocks rather than the first block.
       textResponse: response.content
         .filter((block) => block.type === "text")
         .map((block) => block.text)
