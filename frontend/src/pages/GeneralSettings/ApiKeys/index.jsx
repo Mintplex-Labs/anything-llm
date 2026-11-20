@@ -10,6 +10,7 @@ import NewApiKeyModal from "./NewApiKeyModal";
 import paths from "@/utils/paths";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
+import Workspace from "@/models/workspace";
 import Modal from "@/components/lib/Modal";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
@@ -20,12 +21,18 @@ export default function AdminApiKeys() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [apiKeys, setApiKeys] = useState([]);
+  const [workspaces, setWorkspaces] = useState([]);
 
   const fetchExistingKeys = async () => {
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
-    const { apiKeys: foundKeys } = await Model.getApiKeys();
+    const fetchWorkspaces = !!user ? Admin.workspaces : Workspace.all;
+    const [{ apiKeys: foundKeys }, foundWorkspaces] = await Promise.all([
+      Model.getApiKeys(),
+      fetchWorkspaces(),
+    ]);
     setApiKeys(foundKeys);
+    setWorkspaces(foundWorkspaces);
     setLoading(false);
   };
 
@@ -94,6 +101,9 @@ export default function AdminApiKeys() {
                       {t("api.table.key")}
                     </th>
                     <th scope="col" className="px-6 py-3">
+                      {t("api.table.scope")}
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       {t("api.table.by")}
                     </th>
                     <th scope="col" className="px-6 py-3">
@@ -107,7 +117,7 @@ export default function AdminApiKeys() {
                 <tbody>
                   {apiKeys.length === 0 ? (
                     <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
-                      <td colSpan="5" className="px-6 py-4 text-center">
+                      <td colSpan="6" className="px-6 py-4 text-center">
                         {t("api.empty")}
                       </td>
                     </tr>
@@ -117,6 +127,8 @@ export default function AdminApiKeys() {
                         key={apiKey.id}
                         apiKey={apiKey}
                         removeApiKey={removeApiKey}
+                        workspaces={workspaces}
+                        onUpdate={fetchExistingKeys}
                       />
                     ))
                   )}
@@ -129,6 +141,7 @@ export default function AdminApiKeys() {
           <NewApiKeyModal
             closeModal={closeModal}
             onSuccess={fetchExistingKeys}
+            workspaces={workspaces}
           />
         </Modal>
       </div>

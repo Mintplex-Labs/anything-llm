@@ -2,7 +2,7 @@ const { EmbedConfig } = require("../../../models/embedConfig");
 const { EmbedChats } = require("../../../models/embedChats");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { reqBody } = require("../../../utils/http");
-const { Workspace } = require("../../../models/workspace");
+const { ApiKey } = require("../../../models/apiKeys");
 
 function apiEmbedEndpoints(app) {
   if (!app) return;
@@ -55,7 +55,9 @@ function apiEmbedEndpoints(app) {
       }
     */
     try {
-      const embeds = await EmbedConfig.whereWithWorkspace();
+      const embeds = await EmbedConfig.whereWithWorkspace(
+        ApiKey.workspaceClause(response.locals.apiKey, "workspace_id")
+      );
       const filteredEmbeds = embeds.map((embed) => ({
         id: embed.id,
         uuid: embed.uuid,
@@ -260,21 +262,9 @@ function apiEmbedEndpoints(app) {
     */
     try {
       const data = reqBody(request);
-
-      if (!data.workspace_slug)
-        return response
-          .status(400)
-          .json({ error: "Workspace slug is required" });
-      const workspace = await Workspace.get({
-        slug: String(data.workspace_slug),
-      });
-
-      if (!workspace)
-        return response.status(404).json({ error: "Workspace not found" });
-
       const { embed, message: error } = await EmbedConfig.new({
         ...data,
-        workspace_id: workspace.id,
+        workspace_id: response.locals.workspace.id,
       });
 
       response.status(200).json({ embed, error });
@@ -338,13 +328,16 @@ function apiEmbedEndpoints(app) {
       }
     */
     try {
-      const { embedUuid } = request.params;
       const data = reqBody(request);
-
-      const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-      if (!embed) {
-        return response.status(404).json({ error: "Embed not found" });
-      }
+      const { apiKey, embed } = response.locals;
+      if (
+        "workspace_id" in data &&
+        !ApiKey.canAccessWorkspace(apiKey, data.workspace_id)
+      )
+        return response.status(403).json({
+          success: false,
+          error: "This api key is not permitted to access this workspace.",
+        });
 
       const { success, error } = await EmbedConfig.update(embed.id, data);
       response.status(200).json({ success, error });
@@ -390,11 +383,9 @@ function apiEmbedEndpoints(app) {
       }
     */
       try {
-        const { embedUuid } = request.params;
-        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-        if (!embed)
-          return response.status(404).json({ error: "Embed not found" });
-        const success = await EmbedConfig.delete({ id: embed.id });
+        const success = await EmbedConfig.delete({
+          id: response.locals.embed.id,
+        });
         response
           .status(200)
           .json({ success, error: success ? null : "Failed to delete embed" });

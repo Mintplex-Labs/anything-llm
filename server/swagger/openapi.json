@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "AnythingLLM Developer API",
-    "description": "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io."
+    "description": "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.\n\nAPI keys are either full access or hold one or more scopes: chat (chat with workspaces), workspace (update or delete workspaces and their documents, and every thread endpoint including thread chats), documents (the shared document store and uploads), openai (the OpenAI compatible endpoints, chat completions also needs chat), embeds, mcp, users (users, invites and workspace membership) and sso (issue login tokens). A scoped key can also be limited to specific workspaces. Any endpoint not covered by a scope needs a full access key, and a key used outside of its scopes receives a 403. A users key can create admins, so treat it as full access. GET /v1/auth returns the scopes and workspaces of the key."
   },
   "servers": [
     {
@@ -16,7 +16,7 @@
         "tags": [
           "Authentication"
         ],
-        "description": "Verify the attached Authentication header contains a valid API token.",
+        "description": "Verify the attached Authentication header contains a valid API token. Returns the scopes the key holds and the workspaces it is limited to. `workspaces` is null when the key can access every workspace.",
         "parameters": [],
         "responses": {
           "200": {
@@ -26,7 +26,18 @@
                 "schema": {
                   "type": "object",
                   "example": {
-                    "authenticated": true
+                    "authenticated": true,
+                    "scopes": [
+                      "chat",
+                      "documents"
+                    ],
+                    "workspaces": [
+                      {
+                        "id": 1,
+                        "name": "My workspace",
+                        "slug": "my-workspace"
+                      }
+                    ]
                   }
                 }
               }
@@ -2020,9 +2031,6 @@
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -2085,9 +2093,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden",
@@ -2197,9 +2202,6 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -2262,9 +2264,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden",
@@ -2974,9 +2973,6 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -3073,9 +3069,6 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -3122,9 +3115,6 @@
         "responses": {
           "200": {
             "description": "Thread deleted successfully"
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden",
@@ -3217,9 +3207,6 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -3293,9 +3280,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -3412,9 +3396,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Not Found"
           }
         },
         "requestBody": {
@@ -3551,9 +3532,6 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -3629,9 +3607,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden",
@@ -4105,9 +4080,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden",

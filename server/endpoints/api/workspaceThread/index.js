@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
 const { WorkspaceThread } = require("../../../models/workspaceThread");
-const { Workspace } = require("../../../models/workspace");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { reqBody, multiUserMode } = require("../../../utils/http");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
@@ -70,14 +69,8 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const wslug = request.params.slug;
         let { userId = null, name = null, slug = null } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(wslug) });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
+        const { workspace } = response.locals;
 
         // If the system is not multi-user and you pass in a userId
         // it needs to be nullified as no users exist. This can still fail validation
@@ -164,22 +157,8 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const { slug, threadSlug } = request.params;
         const { name } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-        if (!workspace) {
-          response.status(404).json({ message: "Workspace not found" });
-          return;
-        }
-
-        const thread = await WorkspaceThread.get({
-          slug: String(threadSlug),
-          workspace_id: workspace.id,
-        });
-        if (!thread) {
-          response.status(404).json({ message: "Thread not found" });
-          return;
-        }
+        const { thread } = response.locals;
 
         const { thread: updatedThread, message } = await WorkspaceThread.update(
           thread,
@@ -222,13 +201,8 @@ function apiWorkspaceThreadEndpoints(app) {
     }
     */
       try {
-        const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug: String(slug) });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
+        const { threadSlug } = request.params;
+        const { workspace } = response.locals;
 
         await WorkspaceThread.delete({
           slug: String(threadSlug),
@@ -291,21 +265,7 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug: String(slug) });
-        if (!workspace) {
-          response.status(404).json({ message: "Workspace not found" });
-          return;
-        }
-
-        const thread = await WorkspaceThread.get({
-          slug: String(threadSlug),
-          workspace_id: workspace.id,
-        });
-        if (!thread) {
-          response.status(404).json({ message: "Thread not found" });
-          return;
-        }
+        const { workspace, thread } = response.locals;
 
         const history = await WorkspaceChats.where(
           {
@@ -390,7 +350,6 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const { slug, threadSlug } = request.params;
         const {
           message,
           mode = null,
@@ -398,34 +357,7 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-        if (!workspace) {
-          response.status(404).json({
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `Workspace ${slug} not found.`,
-          });
-          return;
-        }
-
-        const thread = await WorkspaceThread.get({
-          slug: String(threadSlug),
-          workspace_id: workspace.id,
-        });
-        if (!thread) {
-          response.status(404).json({
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `Thread ${threadSlug} not found.`,
-          });
-          return;
-        }
+        const { workspace, thread } = response.locals;
 
         const resolvedMode = mode ?? workspace.chatMode;
         if (
@@ -579,7 +511,6 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const { slug, threadSlug } = request.params;
         const {
           message,
           mode = null,
@@ -587,32 +518,7 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-        if (!workspace) {
-          return response.status(404).json({
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `Workspace ${slug} not found.`,
-          });
-        }
-
-        const thread = await WorkspaceThread.get({
-          slug: String(threadSlug),
-          workspace_id: workspace.id,
-        });
-        if (!thread) {
-          return response.status(404).json({
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `Thread ${threadSlug} not found.`,
-          });
-        }
+        const { workspace, thread } = response.locals;
 
         const resolvedMode = mode ?? workspace.chatMode;
         if (

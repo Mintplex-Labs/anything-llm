@@ -17,6 +17,8 @@ const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
+const { ApiKey } = require("../../../models/apiKeys");
+const { WORKSPACE_LOOKUPS } = require("../../../utils/middleware/apiKeyScopes");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
 const createFilesLib = require("../../../utils/agents/aibitat/plugins/create-files/lib");
 const documentsPath =
@@ -31,7 +33,7 @@ const documentsPath =
  * @param {*} next
  * @returns
  */
-function validateWorkspaceSlugQuery(request, response, next) {
+async function validateWorkspaceSlugQuery(request, response, next) {
   const { addToWorkspaces = "" } = reqBody(request);
   if (!addToWorkspaces) return next();
   if (typeof addToWorkspaces !== "string") {
@@ -43,6 +45,23 @@ function validateWorkspaceSlugQuery(request, response, next) {
       })
       .end();
   }
+
+  const { apiKey } = response.locals;
+  if (ApiKey.workspaceIds(apiKey) === null) return next();
+
+  const workspaces = await WORKSPACE_LOOKUPS.addToWorkspaces(request);
+  const permitted =
+    !!workspaces &&
+    ApiKey.canAccessWorkspaces(
+      apiKey,
+      workspaces.map((workspace) => workspace.id)
+    );
+  if (!permitted)
+    return response.status(403).json({
+      success: false,
+      error:
+        "This api key is not permitted to access one or more workspaces in addToWorkspaces.",
+    });
   next();
 }
 

@@ -978,6 +978,17 @@ const TRANSLATIONS = {
     messages: {
       error: "Error: {{error}}",
     },
+    scopes: {
+      full: "Full access",
+      chat: "Chat",
+      workspace: "Workspaces",
+      documents: "Documents",
+      openai: "OpenAI compatible",
+      embeds: "Embeds",
+      mcp: "MCP servers",
+      users: "Users",
+      sso: "SSO",
+    },
     modal: {
       title: "Create new API key",
       cancel: "Cancel",
@@ -991,17 +1002,48 @@ const TRANSLATIONS = {
         helper:
           "Optional. Use a friendly name so you can identify this key later.",
       },
+      editTitle: "Edit API key scopes",
+      save: "Save",
+      scope: {
+        label: "Scopes",
+        helper: {
+          full: "Can access and manage everything on this instance.",
+          chat: "Chat with workspaces and read their chat history.",
+          workspace:
+            "Update or delete workspaces and their embedded documents. Includes every thread action, such as chatting in threads.",
+          documents:
+            "Upload, read, and organize documents in the shared document store.",
+          openai:
+            "Use the OpenAI compatible endpoints. Chat completions also needs Chat.",
+          embeds: "Manage chat embeds and read their chats.",
+          mcp: "Manage MCP servers and their tools.",
+          users: "Manage users, invites, and workspace membership.",
+          sso: "Issue login tokens for users.",
+        },
+        usersWarning:
+          "A key with the Users scope can create admins, so it is effectively a full access key.",
+      },
+      workspaces: {
+        label: "Limit to specific workspaces",
+        placeholder: "Select workspaces",
+        empty: "No workspaces found",
+        helper: "When not limited, the key's scopes apply to every workspace.",
+      },
     },
     row: {
       copy: "Copy API Key",
       copied: "Copied",
       unnamed: "--",
+      edit: "Edit scopes",
+      noScopes: "No scopes",
+      noWorkspaces: "No workspaces",
       deleteConfirm:
         "Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.",
     },
     table: {
       name: "Name",
       key: "API Key",
+      scope: "Scope",
       by: "Created By",
       created: "Created",
     },

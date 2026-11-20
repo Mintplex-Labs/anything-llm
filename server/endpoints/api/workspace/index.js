@@ -3,6 +3,7 @@ const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
+const { ApiKey } = require("../../../models/apiKeys");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const {
   getVectorDbClass,
@@ -142,7 +143,7 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const workspaces = await Workspace._findMany({
-        where: {},
+        where: ApiKey.workspaceClause(response.locals.apiKey),
         include: {
           threads: {
             select: {
@@ -247,12 +248,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get({ slug: String(slug) });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
+        const { workspace } = response.locals;
 
         const workspaceId = Number(workspace.id);
         await WorkspaceChats.delete({ workspaceId: workspaceId });
@@ -333,14 +329,8 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug: String(slug) });
-
-        if (!currWorkspace) {
-          response.sendStatus(400).end();
-          return;
-        }
+        const currWorkspace = response.locals.workspace;
 
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
@@ -418,18 +408,12 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug } = request.params;
         const {
           apiSessionId = null,
           limit = 100,
           orderBy = "asc",
         } = request.query;
-        const workspace = await Workspace.get({ slug: String(slug) });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
+        const { workspace } = response.locals;
 
         const validLimit = toBoundedInt(limit, 100, { min: 1 });
         const validOrderBy = ["asc", "desc"].includes(orderBy)
@@ -509,14 +493,8 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug: String(slug) });
-
-        if (!currWorkspace) {
-          response.sendStatus(400).end();
-          return;
-        }
+        const currWorkspace = response.locals.workspace;
 
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
@@ -577,10 +555,8 @@ function apiWorkspaceEndpoints(app) {
       }
       */
       try {
-        const { slug = null } = request.params;
         const { docPath, pinStatus = false } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-        if (!workspace) return response.sendStatus(404).end();
+        const { workspace } = response.locals;
 
         const document = await Document.get({
           workspaceId: workspace.id,
@@ -657,7 +633,6 @@ function apiWorkspaceEndpoints(app) {
    }
    */
       try {
-        const { slug } = request.params;
         const {
           message,
           mode = null,
@@ -665,19 +640,7 @@ function apiWorkspaceEndpoints(app) {
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-
-        if (!workspace) {
-          response.status(400).json({
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `Workspace ${slug} is not a valid workspace.`,
-          });
-          return;
-        }
+        const { workspace } = response.locals;
 
         const resolvedMode = mode ?? workspace.chatMode;
         if (
@@ -812,7 +775,6 @@ function apiWorkspaceEndpoints(app) {
    }
    */
       try {
-        const { slug } = request.params;
         const {
           message,
           mode = null,
@@ -820,19 +782,7 @@ function apiWorkspaceEndpoints(app) {
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-
-        if (!workspace) {
-          response.status(400).json({
-            id: uuidv4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `Workspace ${slug} is not a valid workspace.`,
-          });
-          return;
-        }
+        const { workspace } = response.locals;
 
         const resolvedMode = mode ?? workspace.chatMode;
         if (
@@ -954,14 +904,8 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug } = request.params;
         const { query, topN, scoreThreshold } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
-
-        if (!workspace)
-          return response.status(400).json({
-            message: `Workspace ${slug} is not a valid workspace.`,
-          });
+        const { workspace } = response.locals;
 
         if (!query?.length)
           return response.status(400).json({

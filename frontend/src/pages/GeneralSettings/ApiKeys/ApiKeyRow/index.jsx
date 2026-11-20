@@ -1,13 +1,23 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import Admin from "@/models/admin";
-import { Trash } from "@phosphor-icons/react";
+import { PencilSimple, Trash } from "@phosphor-icons/react";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import { useTranslation } from "react-i18next";
+import Modal from "@/components/lib/Modal";
+import { useModal } from "@/hooks/useModal";
+import EditApiKeyModal from "../EditApiKeyModal";
+import { FULL_ACCESS, getScopes, parseKeyScopes } from "../scopes";
 
-export default function ApiKeyRow({ apiKey, removeApiKey }) {
+export default function ApiKeyRow({
+  apiKey,
+  removeApiKey,
+  workspaces,
+  onUpdate,
+}) {
   const { t } = useTranslation();
+  const { isOpen, openModal, closeModal } = useModal();
   const [copied, setCopied] = useState(false);
   const handleDelete = async () => {
     if (!window.confirm(t("api.row.deleteConfirm"))) return false;
@@ -45,6 +55,9 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
             {apiKey.secret}
           </code>
         </td>
+        <td className="px-6 py-3 align-middle">
+          <ScopeLabel apiKey={apiKey} workspaces={workspaces} />
+        </td>
         <td className="px-6 py-3 text-left align-middle">
           {apiKey.createdBy?.username || "--"}
         </td>
@@ -61,6 +74,13 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
               {copied ? t("api.row.copied") : t("api.row.copy")}
             </button>
             <button
+              onClick={openModal}
+              aria-label={t("api.row.edit")}
+              className="border-none text-xs font-medium text-white/80 light:text-black/80 hover:light:text-blue-500 hover:text-blue-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-blue-50 hover:bg-opacity-10"
+            >
+              <PencilSimple className="h-5 w-5" />
+            </button>
+            <button
               onClick={handleDelete}
               className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
             >
@@ -69,6 +89,47 @@ export default function ApiKeyRow({ apiKey, removeApiKey }) {
           </div>
         </td>
       </tr>
+      <Modal isOpen={isOpen} onClose={closeModal}>
+        <EditApiKeyModal
+          apiKey={apiKey}
+          closeModal={closeModal}
+          onSuccess={onUpdate}
+          workspaces={workspaces}
+        />
+      </Modal>
     </>
   );
+}
+
+function ScopeLabel({ apiKey, workspaces }) {
+  const { t } = useTranslation();
+  const { scopes, workspaceIds } = parseKeyScopes(apiKey);
+  const labels = getScopes(t);
+  if (scopes.includes(FULL_ACCESS)) return labels[FULL_ACCESS].label;
+
+  return (
+    <div className="flex flex-col gap-y-0.5">
+      <span>
+        {scopes.map((scope) => labels[scope].label).join(", ") ||
+          t("api.row.noScopes")}
+      </span>
+      {workspaceIds !== null && (
+        <span className="text-theme-text-secondary">
+          {workspaceNames(workspaceIds, workspaces) ||
+            t("api.row.noWorkspaces")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Comma-separated names of the workspaces a key is limited to.
+ * @returns {string} empty when none of the key's workspaces still exist
+ */
+function workspaceNames(workspaceIds, workspaces = []) {
+  return workspaces
+    .filter((workspace) => workspaceIds.includes(workspace.id))
+    .map((workspace) => workspace.name)
+    .join(", ");
 }

@@ -13,23 +13,34 @@ import {
   ModalSecondaryButton,
   ModalInput,
 } from "@/components/lib/Modal";
+import ScopeFields from "../ScopeFields";
+import { FULL_ACCESS, scopePayload, validScopeSelection } from "../scopes";
 
-export default function NewApiKeyModal({ closeModal, onSuccess }) {
+export default function NewApiKeyModal({ closeModal, onSuccess, workspaces }) {
   const { t } = useTranslation();
   const [apiKey, setApiKey] = useState(null);
   const [name, setName] = useState("");
+  const [scopes, setScopes] = useState([FULL_ACCESS]);
+  const [limited, setLimited] = useState(false);
+  const [workspaceIds, setWorkspaceIds] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const validScopes = validScopeSelection(scopes, limited, workspaceIds);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
+    if (creating || !validScopes) return;
+    setCreating(true);
     const user = userFromStorage();
     const Model = !!user ? Admin : System;
 
     const { apiKey: newApiKey, error } = await Model.generateApiKey({
       name,
+      ...scopePayload(scopes, limited, workspaceIds),
     });
+    setCreating(false);
     if (!!newApiKey) {
       setApiKey(newApiKey);
       onSuccess();
@@ -70,6 +81,17 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
             onChange={(e) => setName(e.target.value)}
             placeholder={t("api.modal.name.placeholder")}
             hint={t("api.modal.name.helper")}
+          />
+        )}
+        {!apiKey && (
+          <ScopeFields
+            scopes={scopes}
+            onScopesChange={setScopes}
+            limited={limited}
+            onLimitedChange={setLimited}
+            workspaces={workspaces}
+            workspaceIds={workspaceIds}
+            onWorkspaceIdsChange={setWorkspaceIds}
           />
         )}
         {apiKey && (
@@ -116,7 +138,10 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
             <ModalSecondaryButton onClick={closeModal} type="button">
               {t("api.modal.cancel")}
             </ModalSecondaryButton>
-            <ModalPrimaryButton type="submit">
+            <ModalPrimaryButton
+              type="submit"
+              disabled={creating || !validScopes}
+            >
               {t("api.modal.create")}
             </ModalPrimaryButton>
           </>

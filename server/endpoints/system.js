@@ -1070,11 +1070,19 @@ function systemEndpoints(app) {
           return response.sendStatus(401).end();
         }
 
-        const { name = null } = reqBody(request);
-        const { apiKey, error } = await ApiKey.create(null, name);
+        const {
+          name = null,
+          scopes = null,
+          workspaceIds = null,
+        } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(null, name, {
+          scopes,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
         await EventLogs.logEvent(
           "api_key_created",
-          { name: apiKey?.name },
+          { name: apiKey?.name, scopes: ApiKey.scopesOf(apiKey) },
           response?.locals?.user?.id
         );
         return response.status(200).json({
@@ -1087,6 +1095,34 @@ function systemEndpoints(app) {
           apiKey: null,
           error: "Error generating api key.",
         });
+      }
+    }
+  );
+
+  app.post(
+    "/system/api-key/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (response.locals.multiUserMode) return response.sendStatus(401);
+        const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400);
+
+        const { scopes = null, workspaceIds = null } = reqBody(request);
+        const { apiKey, error } = await ApiKey.updateScopes(Number(id), {
+          scopes,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
+        await EventLogs.logEvent(
+          "api_key_updated",
+          { name: apiKey.name, scopes: ApiKey.scopesOf(apiKey) },
+          response?.locals?.user?.id
+        );
+        return response.status(200).json({ apiKey, error });
+      } catch (error) {
+        console.error(error);
+        response.sendStatus(500);
       }
     }
   );
