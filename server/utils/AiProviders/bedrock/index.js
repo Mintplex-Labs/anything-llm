@@ -365,7 +365,10 @@ class AWSBedrockLLM {
     const completionTokens = response.usage?.output_tokens ?? 0;
 
     return {
-      textResponse: response.content[0]?.text ?? null,
+      textResponse: response.content
+        .filter((block) => block.type === "text")
+        .map((block) => block.text)
+        .join(""),
       metrics: this.#buildMetrics(
         {
           prompt_tokens: promptTokens,
