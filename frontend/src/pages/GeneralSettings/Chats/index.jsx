@@ -12,6 +12,7 @@ import { CaretDown, Download, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
 import { CanViewChatHistory } from "@/components/CanViewChatHistory";
+import useCurrency from "@/hooks/useCurrency";
 
 const exportOptions = {
   csv: {
@@ -58,6 +59,7 @@ export default function WorkspaceChats() {
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
   const { t } = useTranslation();
+  const { formatCost } = useCurrency();
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "workspace");
@@ -184,6 +186,7 @@ export default function WorkspaceChats() {
                 offset={offset}
                 setOffset={setOffset}
                 canNext={canNext}
+                formatCost={formatCost}
                 t={t}
               />
             </div>
@@ -201,6 +204,7 @@ function ChatsContainer({
   offset,
   setOffset,
   canNext,
+  formatCost,
   t,
 }) {
   const multiUserMode = useMultiUserMode();
@@ -247,10 +251,16 @@ function ChatsContainer({
               {t("recorded.table.workspace")}
             </th>
             <th scope="col" className="px-6 py-3">
+              {t("recorded.table.model")}
+            </th>
+            <th scope="col" className="px-6 py-3">
               {t("recorded.table.prompt")}
             </th>
             <th scope="col" className="px-6 py-3">
               {t("recorded.table.response")}
+            </th>
+            <th scope="col" className="px-6 py-3">
+              {t("recorded.table.cost")}
             </th>
             <th scope="col" className="px-6 py-3">
               {t("recorded.table.at")}
@@ -263,7 +273,12 @@ function ChatsContainer({
         <tbody>
           {!!chats &&
             chats.map((chat) => (
-              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
+              <ChatRow
+                key={chat.id}
+                chat={chat}
+                onDelete={handleDeleteChat}
+                formatCost={formatCost}
+              />
             ))}
         </tbody>
       </table>

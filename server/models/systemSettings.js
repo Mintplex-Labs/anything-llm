@@ -91,6 +91,7 @@ const SystemSettings = {
     "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "default_system_prompt",
+    "display_currency",
 
     // Meta page customization
     "meta_page_title",
@@ -452,6 +453,12 @@ const SystemSettings = {
       if (!apiKey) return null;
       return String(apiKey);
     },
+    display_currency: (update) => {
+      const {
+        isSupportedCurrency,
+      } = require("../utils/helpers/currencyExchange");
+      return isSupportedCurrency(update) ? update : null;
+    },
     default_system_prompt: (prompt) => {
       if (typeof prompt !== "string" || !prompt) return null;
       if (prompt.trim() === SystemSettings.saneDefaultSystemPrompt)
@@ -481,6 +488,8 @@ const SystemSettings = {
       MemoryEnabled: await this.memoriesEnabled(),
       MemoryAutoExtraction: await this.memoryAutoExtractionSetting(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
+      DisplayCurrency:
+        (await this.get({ label: "display_currency" }))?.value || null,
 
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs

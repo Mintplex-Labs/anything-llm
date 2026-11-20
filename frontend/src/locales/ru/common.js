@@ -113,6 +113,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Запланированные задачи",
     "model-router": "Примерный маршрутизатор",
     "image-generation": "Генерация изображений",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -816,6 +817,11 @@ const TRANSLATIONS = {
       prompt: "Подсказка",
       response: "Ответ",
       at: "Отправлено в",
+      cost: null,
+      "cost-breakdown": null,
+      "cost-unknown": null,
+      "cost-unknown-hint": null,
+      model: null,
     },
   },
   api: {
@@ -1551,6 +1557,13 @@ const TRANSLATIONS = {
           "Все пользователи этого экземпляра используют стандартную палитру и не могут её изменить.",
         "save-failed": "Не удалось сохранить цветовые палитры: {{error}}",
       },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+        "rates-as-of": null,
+      },
     },
   },
   "main-page": {
@@ -2148,6 +2161,39 @@ const TRANSLATIONS = {
       description:
         "Это может занять некоторое время. Как только информация будет готова, она появится здесь.",
       aborted: "Генерация изображения была прервана.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

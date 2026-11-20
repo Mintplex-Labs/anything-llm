@@ -7,6 +7,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { normalizeTokenUsage } = require("../../helpers/modelPricing/usage");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
@@ -194,8 +195,7 @@ class OpenAiLLM {
     return {
       textResponse: result.output.output_text,
       metrics: {
-        prompt_tokens: usage.input_tokens || 0,
-        completion_tokens: usage.output_tokens || 0,
+        ...normalizeTokenUsage(usage),
         total_tokens: usage.total_tokens || 0,
         outputTps: usage.output_tokens
           ? usage.output_tokens / result.duration
@@ -307,8 +307,7 @@ class OpenAiLLM {
               hasUsageMetrics = true;
               usage = {
                 ...usage,
-                prompt_tokens: res.usage?.input_tokens || 0,
-                completion_tokens: res.usage?.output_tokens || 0,
+                ...normalizeTokenUsage(res.usage),
                 total_tokens: res.usage?.total_tokens || 0,
               };
             }

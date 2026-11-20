@@ -2,6 +2,8 @@ const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { isAbortError } = require("../abortSignals");
 const { safeJsonParse } = require("../../http");
+const { convertResponseCosts } = require("../currencyExchange");
+const { tokenDetails } = require("../modelPricing/usage");
 
 /**
  * Extract reasoning content from a message or delta, checking all known field names.
@@ -86,6 +88,9 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
+
+          // Cached and reasoning counts are priced at their own rates.
+          Object.assign(usage, tokenDetails(chunk.usage));
 
           // Cerebras sends time_info next to usage on the final chunk.
           // Its completion_time is used as the real duration of the completion.
@@ -356,7 +361,10 @@ function writeResponseChunk(response, data) {
   // Writing then is a no-op at best and an ERR_STREAM_WRITE_AFTER_END at worst,
   // so chunks queued after the socket closed are dropped instead.
   if (response.writableEnded || response.destroyed) return;
-  response.write(`data: ${safeJSONStringify(data)}\n\n`);
+  // Set by the costCurrency middleware on developer API chat routes.
+  const currency = response.locals?.costCurrency;
+  const payload = currency ? convertResponseCosts(data, currency) : data;
+  response.write(`data: ${safeJSONStringify(payload)}\n\n`);
   return;
 }
 

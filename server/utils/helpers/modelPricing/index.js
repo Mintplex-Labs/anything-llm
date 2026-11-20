@@ -1,6 +1,11 @@
 const path = require("path");
 const fs = require("fs");
 const { toNonNegativeNumber } = require("../numbers");
+const { normalizeTokenUsage } = require("./usage");
+const {
+  CURRENCY_EXCHANGE,
+  isSupportedCurrency,
+} = require("../currencyExchange");
 
 /**
  * @typedef {Object} ModelCost - USD per 1,000,000 tokens (models.dev conventions)
@@ -14,11 +19,38 @@ const { toNonNegativeNumber } = require("../numbers");
  */
 
 /**
- * @typedef {Object} CostBreakdown
- * @property {number} inputCost - USD cost of the prompt tokens
- * @property {number} outputCost - USD cost of the completion tokens
- * @property {number} totalCost - USD sum of input and output costs
+ * @typedef {Object} PricingOverride - admin-defined price per 1,000,000 tokens
+ * @property {string} provider - AnythingLLM provider slug
+ * @property {string|null} model - model id, null applies to every model of the provider
+ * @property {number} input - cost per 1M prompt tokens, in `currency`
+ * @property {number} output - cost per 1M completion tokens, in `currency`
+ * @property {string} currency - currency the admin entered the price in. The price is kept in
+ *   this currency and only converted to USD when a completion is costed.
  */
+
+/**
+ * @typedef {Object} TokenRates - USD per 1,000,000 tokens
+ * @property {number} input
+ * @property {number} output
+ * @property {number} cache_read - cached prompt tokens read
+ * @property {number} cache_write - prompt tokens written to cache
+ * @property {number} reasoning - reasoning tokens
+ */
+
+/**
+ * @typedef {Object} CostBreakdown
+ * @property {number} inputCost - USD cost of the prompt tokens (cached ones at their own rates)
+ * @property {number} outputCost - USD cost of the completion tokens (reasoning ones at their own rate)
+ * @property {number} totalCost - USD sum of input and output costs
+ * @property {false} [costKnown] - only present, as false, when no price is known for the model.
+ *   The costs are then zero and callers can tell "unknown" apart from "free".
+ */
+
+/**
+ * Thrown when an admin submits a pricing override that cannot be saved.
+ * The message is safe to show to the admin.
+ */
+class InvalidPricingOverrideError extends Error {}
 
 const FREE_PROVIDERS = [
   "ollama",
@@ -34,7 +66,7 @@ const FREE_PROVIDERS = [
 
 /**
  * Providers explicitly excluded from both FREE_PROVIDERS and PROVIDER_ID_MAP.
- * These degrade to null (cost fields omitted) — not forgotten, just unsupported:
+ * These record zero cost unless an admin pricing override exists — not forgotten, just unsupported:
  *  - generic-openai, litellm: proxies to arbitrary backends, no way to determine cost
  *  - apipie, cometapi, ppio, sambanova, giteeai, privatemode: cloud aggregators with costs but no models.dev listing
  *  - nvidia-nim: self-hosted NIM, model set is user-defined and unaccounted for
@@ -66,9 +98,11 @@ const PROVIDER_ID_MAP = {
   cerebras: "cerebras",
 };
 
+const MAX_OVERRIDES = 500;
 const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24 * 3; // 3 days
 const REMOTE_URL = "https://models.dev/api.json";
 const FETCH_TIMEOUT_MS = 5000;
+const EXCHANGE_REFRESH_MS = 1000 * 60 * 60; // 1 hour
 
 function cacheDir() {
   return path.resolve(
@@ -92,6 +126,158 @@ const CACHE_FILES = {
     return path.resolve(cacheDir(), "model-reasoning.json");
   },
 };
+
+// Overrides are saved to a file and indexed in memory when the process boots,
+// so cost lookups stay synchronous (getCostBreakdown runs inside sync usage
+// accounting) and touch no disk. Worker threads, like scheduled jobs, boot per
+// run and so read the prices the admin last saved in the main process.
+function overridesFile() {
+  return path.resolve(cacheDir(), "overrides.json");
+}
+
+/**
+ * Lookup key for an override. Model ids match case-insensitively and a null
+ * model is the provider-wide override.
+ * @param {string} provider
+ * @param {string|null} model
+ * @returns {string}
+ */
+function overrideKey(provider, model) {
+  return JSON.stringify([provider, model?.toLowerCase() ?? null]);
+}
+
+/** @returns {CostBreakdown} zero cost flagged as not known */
+function unknownCost() {
+  return { inputCost: 0, outputCost: 0, totalCost: 0, costKnown: false };
+}
+
+/** Fixes a USD amount to the 10 decimals costs are stored with. */
+function roundCost(amount) {
+  return parseFloat(amount.toFixed(10));
+}
+
+const RATE_KEYS = ["input", "output", "cache_read", "cache_write", "reasoning"];
+
+/**
+ * Fills the cached and reasoning rates a price does not list with the rate
+ * providers bill them at by default.
+ * @param {{input: number, output: number, cache_read?: number, cache_write?: number, reasoning?: number}} rates
+ * @returns {TokenRates}
+ */
+function completeRates(rates) {
+  const rate = (value, fallback) =>
+    typeof value === "number" ? value : fallback;
+  return {
+    input: rates.input,
+    output: rates.output,
+    cache_read: rate(rates.cache_read, rates.input),
+    cache_write: rate(rates.cache_write, rates.input),
+    reasoning: rate(rates.reasoning, rates.output),
+  };
+}
+
+/**
+ * A price must be a finite, non-negative number (or numeric string). Anything
+ * else is rejected rather than coerced to 0, since a $0 override would hide
+ * the models.dev price for that model.
+ * @param {unknown} value
+ * @returns {number|null}
+ */
+function parsePrice(value) {
+  if (typeof value === "string" && !value.trim()) return null;
+  if (typeof value !== "number" && typeof value !== "string") return null;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+/**
+ * Reads the currency of an override entry. An entry without one is in USD.
+ * @param {unknown} currency
+ * @returns {string|null} null when the currency is not supported
+ */
+function parseOverrideCurrency(currency) {
+  if (currency === undefined || currency === null) return "USD";
+  if (typeof currency !== "string") return null;
+  const code = currency.trim().toUpperCase();
+  return isSupportedCurrency(code) ? code : null;
+}
+
+/**
+ * Reads one override entry.
+ * @param {unknown} entry
+ * @returns {{override?: PricingOverride, error?: string}} the parsed override, or why it is invalid
+ */
+function parseOverride(entry) {
+  if (!entry || typeof entry !== "object")
+    return { error: "A model price must be an object." };
+  const provider =
+    typeof entry.provider === "string" ? entry.provider.trim() : "";
+  if (!provider) return { error: "A model price is missing its provider." };
+  const model =
+    typeof entry.model === "string" && entry.model.trim()
+      ? entry.model.trim()
+      : null;
+  const name = `${provider} / ${model ?? "all models"}`;
+
+  const input = parsePrice(entry.input);
+  const output = parsePrice(entry.output);
+  if (input === null || output === null)
+    return {
+      error: `The input and output price for ${name} must be numbers of zero or more.`,
+    };
+
+  const currency = parseOverrideCurrency(entry.currency);
+  if (!currency) return { error: `The currency for ${name} is not supported.` };
+
+  return { override: { provider, model, input, output, currency } };
+}
+
+/**
+ * Lenient read used for the saved file: malformed entries are dropped and
+ * duplicates of a provider + model keep the last one, so a hand-edited or
+ * partly corrupt file still loads what it can.
+ * @param {unknown} overrides
+ * @returns {PricingOverride[]}
+ */
+function sanitizeOverrides(overrides) {
+  if (!Array.isArray(overrides)) return [];
+  const byKey = new Map();
+  for (const entry of overrides) {
+    const { override } = parseOverride(entry);
+    if (override)
+      byKey.set(overrideKey(override.provider, override.model), override);
+  }
+  return Array.from(byKey.values());
+}
+
+/**
+ * Strict read used when an admin saves: the first invalid or duplicate entry
+ * rejects the whole save, so nothing is silently dropped.
+ * @param {unknown} overrides
+ * @returns {PricingOverride[]}
+ * @throws {InvalidPricingOverrideError}
+ */
+function validateOverrides(overrides) {
+  if (!Array.isArray(overrides))
+    throw new InvalidPricingOverrideError("Model prices must be a list.");
+  if (overrides.length > MAX_OVERRIDES)
+    throw new InvalidPricingOverrideError(
+      `Cannot save more than ${MAX_OVERRIDES} model prices.`
+    );
+
+  const byKey = new Map();
+  for (const entry of overrides) {
+    const { override, error } = parseOverride(entry);
+    if (error) throw new InvalidPricingOverrideError(error);
+    const key = overrideKey(override.provider, override.model);
+    if (byKey.has(key))
+      throw new InvalidPricingOverrideError(
+        `A price for ${override.provider} / ${override.model ?? "all models"} already exists.`
+      );
+    byKey.set(key, override);
+  }
+  return Array.from(byKey.values());
+}
 
 /**
  * Extracts only cost data from the full models.dev API response.
@@ -168,6 +354,12 @@ class ModelPricing {
   #lowercaseIndexes = {};
   /** @type {Record<string, Record<string, string>>} - lazy bedrock normalization index per provider */
   #normalizedIndexes = {};
+  /** @type {PricingOverride[]} - admin overrides, in saved order */
+  #overrides = [];
+  /** @type {Map<string, PricingOverride>} - the same overrides keyed by {@link overrideKey} */
+  #overrideIndex = new Map();
+  /** @type {number} - epoch ms an exchange rate refresh was last asked for */
+  #exchangeRefreshAskedAt = 0;
 
   constructor() {
     if (ModelPricing.instance) return ModelPricing.instance;
@@ -177,6 +369,7 @@ class ModelPricing {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     this.#loadFromDisk();
+    this.#loadOverrides();
     if (this.#isCacheStale() || !this.#pricing || !this.#reasoning) {
       this.bootRefresh = this.#refresh()
         .then(() => {
@@ -317,44 +510,148 @@ class ModelPricing {
     return null;
   }
 
+  /**
+   * The rates of a models.dev cost entry for a prompt of the given size. A
+   * long-context tier replaces each base rate it lists.
+   * @returns {TokenRates|null} null when the entry has no usable input/output rate
+   */
   #resolveRates(cost, promptTokens) {
-    let input = typeof cost.input === "number" ? cost.input : null;
-    let output = typeof cost.output === "number" ? cost.output : null;
-
+    let tier = null;
     if (Array.isArray(cost.tiers)) {
-      const applicable = cost.tiers
+      tier = cost.tiers
         .filter(
           (t) => t?.tier?.type === "context" && promptTokens > t.tier.size
         )
         .sort((a, b) => a.tier.size - b.tier.size)
         .pop();
-      if (applicable) {
-        input = applicable.input ?? input;
-        output = applicable.output ?? output;
-      }
     } else if (cost.context_over_200k && promptTokens > 200_000) {
-      input = cost.context_over_200k.input ?? input;
-      output = cost.context_over_200k.output ?? output;
+      tier = cost.context_over_200k;
     }
 
-    if (typeof input !== "number" || typeof output !== "number") return null;
-    return { input, output };
+    const rates = {};
+    for (const key of RATE_KEYS) rates[key] = tier?.[key] ?? cost[key];
+    if (typeof rates.input !== "number" || typeof rates.output !== "number")
+      return null;
+    return completeRates(rates);
+  }
+
+  /** Reads the saved overrides into memory. A missing or corrupt file means none. */
+  #loadOverrides() {
+    let overrides = [];
+    try {
+      if (fs.existsSync(overridesFile()))
+        overrides = sanitizeOverrides(
+          JSON.parse(fs.readFileSync(overridesFile(), "utf8"))
+        );
+    } catch (error) {
+      log("Failed to read model pricing overrides", error?.message);
+    }
+    this.#indexOverrides(overrides);
+  }
+
+  /** @param {PricingOverride[]} overrides - already sanitized */
+  #indexOverrides(overrides) {
+    this.#overrides = overrides;
+    this.#overrideIndex = new Map(
+      overrides.map((o) => [overrideKey(o.provider, o.model), o])
+    );
   }
 
   /**
-   * @param {string|null} providerSlug - AnythingLLM provider slug
-   * @param {string|null} model - model id used for the completion
-   * @param {{prompt_tokens?: number, completion_tokens?: number}} usage
-   * @returns {CostBreakdown|null} null means "unknown" - callers should omit cost fields, not show zero
+   * Admin pricing overrides.
+   * @returns {PricingOverride[]} copies, safe for callers to mutate
    */
-  getCostBreakdown(providerSlug = null, model = null, usage = {}) {
-    if (!providerSlug) return null;
+  getOverrides() {
+    return this.#overrides.map((o) => ({ ...o }));
+  }
+
+  /**
+   * Replaces the admin pricing overrides. Nothing is saved unless every entry
+   * is valid.
+   * @param {unknown} overrides - list of {@link PricingOverride}
+   * @returns {PricingOverride[]} the overrides that were saved
+   * @throws {InvalidPricingOverrideError} when an entry is malformed, a provider + model is
+   *   listed twice, or more than MAX_OVERRIDES entries are given
+   */
+  setOverrides(overrides = []) {
+    const sanitized = validateOverrides(overrides);
+    // Write then rename so a worker thread reading mid-save never sees a
+    // truncated file (which it would read as "no overrides").
+    const tmpFile = `${overridesFile()}.${process.pid}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(sanitized));
+    fs.renameSync(tmpFile, overridesFile());
+    this.#indexOverrides(sanitized);
+    return sanitized.map((o) => ({ ...o }));
+  }
+
+  /**
+   * An exact (case-insensitive) model override wins over a provider-wide one.
+   * @returns {PricingOverride|null}
+   */
+  #findOverride(providerSlug, model) {
+    if (!this.#overrideIndex.size) return null;
+    const modelId = typeof model === "string" && model ? model : null;
+    return (
+      (modelId &&
+        this.#overrideIndex.get(overrideKey(providerSlug, modelId))) ||
+      this.#overrideIndex.get(overrideKey(providerSlug, null)) ||
+      null
+    );
+  }
+
+  /**
+   * The USD rates of an override. A price entered in another currency is
+   * converted with the exchange rate loaded right now, and is unknown while
+   * no rate for its currency has ever been fetched.
+   * @param {PricingOverride} override
+   * @returns {TokenRates|null}
+   */
+  #overrideRates(override) {
+    if (override.currency === "USD") return completeRates(override);
+
+    // The cost lookup is synchronous, so it uses the loaded rate and only
+    // asks for a refresh (at most hourly) to keep that rate current.
+    if (Date.now() - this.#exchangeRefreshAskedAt > EXCHANGE_REFRESH_MS) {
+      this.#exchangeRefreshAskedAt = Date.now();
+      CURRENCY_EXCHANGE.getRates().catch(() => {});
+    }
+    const unitsPerUsd = CURRENCY_EXCHANGE.cachedRate(override.currency);
+    if (!unitsPerUsd) return null;
+    return completeRates({
+      input: override.input / unitsPerUsd,
+      output: override.output / unitsPerUsd,
+    });
+  }
+
+  /**
+   * Per-1M-token USD rates for a completion: admin override first, then free
+   * local providers, then models.dev. Null means the rates are unknown.
+   * @returns {TokenRates|null}
+   */
+  #findRates(providerSlug, model, promptTokens) {
+    if (!providerSlug || typeof providerSlug !== "string") return null;
+    const override = this.#findOverride(providerSlug, model);
+    if (override) return this.#overrideRates(override);
     if (FREE_PROVIDERS.includes(providerSlug))
-      return { inputCost: 0, outputCost: 0, totalCost: 0 };
+      return completeRates({ input: 0, output: 0 });
+    return this.getListedRates(providerSlug, model, promptTokens);
+  }
+
+  /**
+   * Per-1M-token USD rates models.dev lists for a model, ignoring admin overrides.
+   * @param {string|null} providerSlug - AnythingLLM provider slug
+   * @param {string|null} model - model id
+   * @param {number} [promptTokens] - selects long-context tier rates when large enough
+   * @returns {TokenRates|null} null when the price is unknown
+   */
+  getListedRates(providerSlug = null, model = null, promptTokens = 0) {
+    if (typeof providerSlug !== "string" || typeof model !== "string")
+      return null;
+    if (FREE_PROVIDERS.includes(providerSlug)) return null;
+    if (!Object.hasOwn(PROVIDER_ID_MAP, providerSlug)) return null;
 
     const providerId = PROVIDER_ID_MAP[providerSlug];
-    if (!providerId || !model || typeof model !== "string" || !this.#pricing)
-      return null;
+    if (!model || !this.#pricing) return null;
 
     const cost = this.#findModelEntry(
       "pricing",
@@ -363,20 +660,51 @@ class ModelPricing {
       model
     );
     if (!cost) return null;
+    return this.#resolveRates(cost, promptTokens);
+  }
 
+  /**
+   * @param {string|null} providerSlug - AnythingLLM provider slug
+   * @param {string|null} model - model id used for the completion
+   * @param {import("./usage").TokenUsage} usage - `prompt_tokens` and `completion_tokens` are totals;
+   *   the cached and reasoning counts inside them are billed at their own rates
+   * @returns {CostBreakdown} unknown pricing is zero cost with `costKnown: false`
+   */
+  getCostBreakdown(providerSlug = null, model = null, usage = {}) {
     const promptTokens = toNonNegativeNumber(usage?.prompt_tokens);
     const completionTokens = toNonNegativeNumber(usage?.completion_tokens);
-    const rates = this.#resolveRates(cost, promptTokens);
-    if (!rates) return null;
+    const rates = this.#findRates(providerSlug, model, promptTokens);
+    if (!rates) return unknownCost();
 
-    const inputCost = parseFloat(
-      ((promptTokens / 1_000_000) * rates.input).toFixed(10)
+    const cacheRead = Math.min(
+      toNonNegativeNumber(usage?.cache_read_tokens),
+      promptTokens
     );
-    const outputCost = parseFloat(
-      ((completionTokens / 1_000_000) * rates.output).toFixed(10)
+    const cacheWrite = Math.min(
+      toNonNegativeNumber(usage?.cache_write_tokens),
+      promptTokens - cacheRead
     );
-    const totalCost = parseFloat((inputCost + outputCost).toFixed(10));
-    return { inputCost, outputCost, totalCost };
+    const reasoning = Math.min(
+      toNonNegativeNumber(usage?.reasoning_tokens),
+      completionTokens
+    );
+
+    const inputCost = roundCost(
+      ((promptTokens - cacheRead - cacheWrite) * rates.input +
+        cacheRead * rates.cache_read +
+        cacheWrite * rates.cache_write) /
+        1_000_000
+    );
+    const outputCost = roundCost(
+      ((completionTokens - reasoning) * rates.output +
+        reasoning * rates.reasoning) /
+        1_000_000
+    );
+    return {
+      inputCost,
+      outputCost,
+      totalCost: roundCost(inputCost + outputCost),
+    };
   }
 
   /**
@@ -404,8 +732,9 @@ const MODEL_PRICING = new ModelPricing();
 
 /**
  * Enriches a metrics object with inputCost, outputCost, and totalCost (USD).
- * Returns the original metrics unchanged when pricing is unavailable.
- * @param {Object} metrics - must contain `prompt_tokens` and `completion_tokens`
+ * Unknown pricing is recorded as zero cost with `costKnown: false`.
+ * @param {Object} metrics - must contain `prompt_tokens` and `completion_tokens`, and may carry the
+ *   `cache_read_tokens`, `cache_write_tokens` and `reasoning_tokens` counts inside them
  * @param {Object} opts
  * @param {string|null} opts.provider - AnythingLLM provider slug
  * @param {string|null} opts.model - model id (falls back to `metrics.model`)
@@ -424,9 +753,12 @@ function addCostToMetrics(
     {
       prompt_tokens: metrics.prompt_tokens,
       completion_tokens: metrics.completion_tokens,
+      cache_read_tokens: metrics.cache_read_tokens,
+      cache_write_tokens: metrics.cache_write_tokens,
+      reasoning_tokens: metrics.reasoning_tokens,
     }
   );
-  return breakdown ? { ...metrics, ...breakdown } : metrics;
+  return { ...metrics, ...breakdown };
 }
 
 /**
@@ -455,6 +787,8 @@ function addChatCostToMetrics(
 module.exports = {
   ModelPricing,
   MODEL_PRICING,
+  InvalidPricingOverrideError,
+  normalizeTokenUsage,
   addCostToMetrics,
   addChatCostToMetrics,
   FREE_PROVIDERS,

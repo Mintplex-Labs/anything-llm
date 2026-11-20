@@ -165,6 +165,9 @@ export default {
     modelRouterRules: (id) => {
       return `/settings/model-routers/${id}`;
     },
+    modelPricing: () => {
+      return "/settings/model-pricing";
+    },
     systemPromptVariables: () => "/settings/system-prompt-variables",
     logs: () => {
       return "/settings/event-logs";
