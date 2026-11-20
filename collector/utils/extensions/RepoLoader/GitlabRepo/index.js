@@ -292,7 +292,7 @@ function issueToMarkdown(issue) {
       if (!value || value?.length < 1) {
         return null;
       }
-      let result = `- ${name.replace("_", " ")}:`;
+      let result = `- ${name.replace(/_/g, " ")}:`;
 
       if (!Array.isArray(value)) {
         result += ` ${value}`;

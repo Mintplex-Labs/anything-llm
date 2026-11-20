@@ -1419,8 +1419,15 @@ describe("issueToMarkdown", () => {
 
     expect(markdown).toContain("- milestone: v1.0 (3)");
     expect(markdown).toContain("- time estimate: 1h");
-    expect(markdown).toContain("- total time_spent: 30m");
+    expect(markdown).toContain("- total time spent: 30m");
     expect(markdown).not.toContain("3600");
+  });
+
+  test("every underscore in a metadata key becomes a space", () => {
+    const markdown = issueToMarkdown({ ...base, merge_request_count: 2 });
+
+    expect(markdown).toContain("- merge request count: 2");
+    expect(markdown).not.toContain("request_count");
   });
 
   test("discussions are rendered under an Activity heading", () => {
