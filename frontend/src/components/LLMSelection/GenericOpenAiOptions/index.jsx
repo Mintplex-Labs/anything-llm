@@ -1,7 +1,242 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
+import GenericOpenAiConnections from "@/models/genericOpenAiConnections";
+import showToast from "@/utils/toast";
+import { LLM_PREFERENCE_CHANGED_EVENT } from "@/pages/GeneralSettings/LLMPreference";
+
+const MANUAL_CONNECTION_VALUE = "__manual__";
 
 export default function GenericOpenAiOptions({ settings }) {
+  const { t } = useTranslation();
+  const [localSettings, setLocalSettings] = useState(settings);
+  const [connections, setConnections] = useState(
+    settings?.GenericOpenAiSavedConnections || []
+  );
+  const [selectedConnectionId, setSelectedConnectionId] = useState(
+    settings?.GenericOpenAiActiveConnectionId || MANUAL_CONNECTION_VALUE
+  );
+  const [formKey, setFormKey] = useState(0);
+  const [loadingConnections, setLoadingConnections] = useState(false);
+  const [applyingConnection, setApplyingConnection] = useState(false);
+  const formRef = useRef(null);
+
+  const refreshConnections = async () => {
+    setLoadingConnections(true);
+    const result = await GenericOpenAiConnections.list();
+    if (result.success) {
+      setConnections(result.connections || []);
+      setSelectedConnectionId(
+        result.activeConnectionId || MANUAL_CONNECTION_VALUE
+      );
+    }
+    setLoadingConnections(false);
+    return result;
+  };
+
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
+
+  useEffect(() => {
+    refreshConnections();
+  }, []);
+
+  const reloadSettings = async () => {
+    const updatedSettings = await System.keys();
+    if (!updatedSettings) return null;
+    setLocalSettings(updatedSettings);
+    setConnections(updatedSettings.GenericOpenAiSavedConnections || []);
+    setSelectedConnectionId(
+      updatedSettings.GenericOpenAiActiveConnectionId || MANUAL_CONNECTION_VALUE
+    );
+    setFormKey((key) => key + 1);
+    window.dispatchEvent(new Event(LLM_PREFERENCE_CHANGED_EVENT));
+    return updatedSettings;
+  };
+
+  const readFormValues = () => {
+    const container = formRef.current;
+    if (!container) return null;
+    const getValue = (name) =>
+      container.querySelector(`[name="${name}"]`)?.value ?? "";
+    return {
+      basePath: String(getValue("GenericOpenAiBasePath")).trim(),
+      apiKey: String(getValue("GenericOpenAiKey")).trim(),
+      modelPref: String(getValue("GenericOpenAiModelPref")).trim(),
+      tokenLimit: Number(getValue("GenericOpenAiTokenLimit")),
+      maxTokens: Number(getValue("GenericOpenAiMaxTokens")),
+    };
+  };
+
+  const handleConnectionSelect = async (event) => {
+    const value = event.target.value;
+    setSelectedConnectionId(value);
+
+    if (value === MANUAL_CONNECTION_VALUE) return;
+
+    setApplyingConnection(true);
+    const result = await GenericOpenAiConnections.activate(value);
+    setApplyingConnection(false);
+
+    if (!result.success) {
+      showToast(
+        t("llm.providers.generic_openai.saved_connection_apply_failed", {
+          error: result.error || "Unknown error",
+        }),
+        "error"
+      );
+      return;
+    }
+
+    await reloadSettings();
+    showToast(
+      t("llm.providers.generic_openai.saved_connection_applied"),
+      "success"
+    );
+  };
+
+  const handleSaveConnection = async () => {
+    const values = readFormValues();
+    if (!values) return;
+
+    const defaultName =
+      connections.find((c) => c.id === selectedConnectionId)?.name ||
+      values.modelPref ||
+      values.basePath;
+
+    const name = window.prompt(
+      t("llm.providers.generic_openai.saved_connection_name_prompt"),
+      defaultName
+    );
+    if (!name?.trim()) return;
+
+    const payload = {
+      ...values,
+      name: name.trim(),
+      id:
+        selectedConnectionId !== MANUAL_CONNECTION_VALUE
+          ? selectedConnectionId
+          : undefined,
+    };
+
+    if (
+      payload.apiKey &&
+      payload.apiKey.length > 0 &&
+      payload.apiKey === "*".repeat(20)
+    ) {
+      delete payload.apiKey;
+    }
+
+    const result = await GenericOpenAiConnections.save(payload);
+    if (!result.success) {
+      showToast(
+        t("llm.providers.generic_openai.saved_connection_save_failed", {
+          error: result.error || "Unknown error",
+        }),
+        "error"
+      );
+      return;
+    }
+
+    setConnections(result.connections || []);
+    setSelectedConnectionId(
+      result.activeConnectionId || MANUAL_CONNECTION_VALUE
+    );
+    await reloadSettings();
+    showToast(
+      t("llm.providers.generic_openai.saved_connection_saved"),
+      "success"
+    );
+  };
+
+  const handleDeleteConnection = async () => {
+    if (selectedConnectionId === MANUAL_CONNECTION_VALUE) return;
+    if (
+      !window.confirm(
+        t("llm.providers.generic_openai.saved_connection_delete_confirm")
+      )
+    ) {
+      return;
+    }
+
+    const result = await GenericOpenAiConnections.delete(selectedConnectionId);
+    if (!result.success) {
+      showToast(
+        t("llm.providers.generic_openai.saved_connection_delete_failed", {
+          error: result.error || "Unknown error",
+        }),
+        "error"
+      );
+      return;
+    }
+
+    setConnections(result.connections || []);
+    setSelectedConnectionId(MANUAL_CONNECTION_VALUE);
+    showToast(
+      t("llm.providers.generic_openai.saved_connection_deleted"),
+      "success"
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-y-7">
+      <div className="flex flex-col gap-y-3">
+        <p className="text-white text-sm font-semibold">
+          {t("llm.providers.generic_openai.saved_connections_label")}
+        </p>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-col w-60 min-w-[240px]">
+            <label className="text-white text-sm font-semibold block mb-3">
+              {t("llm.providers.generic_openai.saved_connection_select")}
+            </label>
+            <select
+              value={selectedConnectionId}
+              onChange={handleConnectionSelect}
+              disabled={loadingConnections || applyingConnection}
+              className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            >
+              <option value={MANUAL_CONNECTION_VALUE}>
+                {t("llm.providers.generic_openai.saved_connection_manual")}
+              </option>
+              {connections.map((connection) => (
+                <option key={connection.id} value={connection.id}>
+                  {connection.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            onClick={handleSaveConnection}
+            className="text-sm font-semibold text-white bg-theme-settings-input-bg hover:bg-theme-bg-primary rounded-lg px-4 py-2.5 h-[42px]"
+          >
+            {t("llm.providers.generic_openai.saved_connection_save")}
+          </button>
+          <button
+            type="button"
+            onClick={handleDeleteConnection}
+            disabled={selectedConnectionId === MANUAL_CONNECTION_VALUE}
+            className="text-sm font-semibold text-white bg-theme-settings-input-bg hover:bg-theme-bg-primary disabled:opacity-40 rounded-lg px-4 py-2.5 h-[42px]"
+          >
+            {t("llm.providers.generic_openai.saved_connection_delete")}
+          </button>
+        </div>
+        <p className="text-xs text-white text-opacity-60 max-w-2xl">
+          {t("llm.providers.generic_openai.saved_connections_help")}
+        </p>
+      </div>
+
+      <GenericOpenAiForm
+        key={formKey}
+        settings={localSettings}
+        formRef={formRef}
+      />
+    </div>
+  );
+}
+
+function GenericOpenAiForm({ settings, formRef }) {
   const [genericOpenAiBasePath, setGenericOpenAiBasePath] = useState(
     settings?.GenericOpenAiBasePath
   );
@@ -13,7 +248,7 @@ export default function GenericOpenAiOptions({ settings }) {
   );
 
   return (
-    <div className="flex flex-col gap-y-7">
+    <div ref={formRef} className="flex flex-col gap-y-7">
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
@@ -147,7 +382,6 @@ function GenericOpenAiModelSelection({
     );
   }
 
-  // If no models are found, just show a free-form input field for the model name
   if (customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
@@ -179,16 +413,13 @@ function GenericOpenAiModelSelection({
         name="GenericOpenAiModelPref"
         required={true}
         className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        defaultValue={settings?.GenericOpenAiModelPref}
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">
             {customModels.map((model) => {
               return (
-                <option
-                  key={model.id}
-                  value={model.id}
-                  selected={settings.GenericOpenAiModelPref === model.id}
-                >
+                <option key={model.id} value={model.id}>
                   {model.id}
                 </option>
               );
