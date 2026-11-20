@@ -303,6 +303,39 @@ const WorkspaceChats = {
       return false;
     }
   },
+
+  /**
+   * Records the cached TTS audio file on the chat's response. The response is
+   * read fresh so an edit made while the audio was generating is kept, and
+   * lastUpdatedAt is left alone since the message itself did not change.
+   * @param {number} id
+   * @param {{key: string, filename: string}} ttsAudio
+   * @returns {Promise<boolean>}
+   */
+  setTTSAudio: async function (id = null, ttsAudio = {}) {
+    try {
+      const chat = await prisma.workspace_chats.findUnique({
+        where: { id: Number(id) },
+      });
+      if (!chat) return false;
+      await prisma.workspace_chats.update({
+        where: { id: chat.id },
+        data: {
+          response: JSON.stringify({
+            ...JSON.parse(chat.response),
+            ttsAudio: {
+              key: String(ttsAudio.key),
+              filename: String(ttsAudio.filename),
+            },
+          }),
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
   markMemoryProcessed: async function (ids = []) {
     if (!Array.isArray(ids) || ids.length === 0) return;
     try {
