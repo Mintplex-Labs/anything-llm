@@ -6,6 +6,7 @@ const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 const { extractTextContent } = require("../../endpoints/api/openai/helpers");
 
 const { PassThrough } = require("stream");
@@ -589,7 +590,20 @@ function formatJSON(
   return data;
 }
 
+const openAiCompatibleTrace = ({ workspace, prompt }) => ({
+  input: prompt,
+  workspace,
+});
+
 module.exports.OpenAICompatibleChat = {
-  chatSync,
-  streamChat,
+  chatSync: Observability.traced(
+    "openai-compatible-chat",
+    chatSync,
+    openAiCompatibleTrace
+  ),
+  streamChat: Observability.traced(
+    "openai-compatible-chat",
+    streamChat,
+    openAiCompatibleTrace
+  ),
 };
