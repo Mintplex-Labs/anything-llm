@@ -221,7 +221,12 @@ class PaperlessNgxLoader {
       pageContent: doc.content || "",
       metadata: {
         id: doc.id,
-        title: doc.original_file_name,
+        // Paperless-ngx has no original file name for some documents (it sends
+        // null), and its title can be blank.
+        title:
+          doc.original_file_name ||
+          doc.title ||
+          `Paperless-ngx document ${doc.id}`,
         created: doc.created,
         modified: doc.modified,
         added: doc.added,
