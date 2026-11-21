@@ -99,8 +99,8 @@ function passesEmbedAccessControl(request, response) {
   return true;
 }
 
-// Access control for the embed history routes (read/invalidate) where the
-// sessionId is a URL param and there is no message body.
+// Access control for the embed history routes (read/invalidate/feedback) where
+// the sessionId is a URL param instead of part of a message body.
 function canAccessHistory(request, response, next) {
   if (!passesEmbedAccessControl(request, response)) return;
 

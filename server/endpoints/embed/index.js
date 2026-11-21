@@ -1,7 +1,10 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, multiUserMode } = require("../../utils/http");
 const { Telemetry } = require("../../models/telemetry");
-const { streamChatWithForEmbed } = require("../../utils/chats/embed");
+const {
+  streamChatWithForEmbed,
+  invalidateActiveReplies,
+} = require("../../utils/chats/embed");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   validEmbedConfig,
@@ -90,6 +93,31 @@ function embeddedEndpoints(app) {
     }
   );
 
+  app.post(
+    "/embed/:embedId/:sessionId/chat-feedback/:chatId",
+    [validEmbedConfig, canAccessHistory],
+    async (request, response) => {
+      try {
+        const { sessionId, chatId } = request.params;
+        const embed = response.locals.embedConfig;
+        const chat = await EmbedChats.get({
+          id: Number(chatId),
+          embed_id: embed.id,
+          session_id: String(sessionId),
+          include: true,
+        });
+        if (!chat) return response.status(404).json({ success: false });
+
+        const { feedback = null } = reqBody(request);
+        const success = await EmbedChats.updateFeedbackScore(chat.id, feedback);
+        return response.status(success ? 200 : 500).json({ success });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
+      }
+    }
+  );
+
   app.delete(
     "/embed/:embedId/:sessionId",
     [validEmbedConfig, canAccessHistory],
@@ -98,6 +126,7 @@ function embeddedEndpoints(app) {
         const { sessionId } = request.params;
         const embed = response.locals.embedConfig;
 
+        invalidateActiveReplies(embed.id, sessionId);
         await EmbedChats.markHistoryInvalid(embed.id, sessionId);
         response.status(200).end();
       } catch (e) {

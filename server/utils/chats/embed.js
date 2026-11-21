@@ -10,6 +10,24 @@ const {
 const { DocumentManager } = require("../DocumentManager");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
+// Replies that are still streaming. A reply is only stored once its stream ends,
+// which can be after the visitor reset the session it belongs to.
+const activeReplies = new Set();
+
+/**
+ * Flags the replies still streaming for a session so they are stored as
+ * invalidated history instead of reappearing after a reset.
+ * @param {number} embedId
+ * @param {string} sessionId
+ */
+function invalidateActiveReplies(embedId, sessionId) {
+  for (const reply of activeReplies) {
+    if (reply.embedId !== Number(embedId)) continue;
+    if (reply.sessionId !== String(sessionId)) continue;
+    reply.include = false;
+  }
+}
+
 async function streamChatWithForEmbed(
   response,
   /** @type {import("@prisma/client").embed_configs & {workspace?: import("@prisma/client").workspaces}} */
@@ -62,6 +80,14 @@ async function streamChatWithForEmbed(
   // Stopping the generation (or closing the tab) should stop the provider
   // generating too, not just stop us reading the response.
   abortConnectorOnClientDisconnect(response, LLMConnector);
+
+  const reply = {
+    embedId: embed.id,
+    sessionId: String(sessionId),
+    include: true,
+  };
+  activeReplies.add(reply);
+  response.on("close", () => activeReplies.delete(reply));
 
   const VectorDb = getVectorDbClass();
 
@@ -229,7 +255,7 @@ async function streamChatWithForEmbed(
   }
 
   if (completeText?.length > 0) {
-    await EmbedChats.new({
+    const { chat } = await EmbedChats.new({
       embedId: embed.id,
       prompt: message,
       response: { text: completeText, type: chatMode, sources, metrics },
@@ -240,7 +266,16 @@ async function streamChatWithForEmbed(
           }
         : { username: !!username ? String(username) : null },
       sessionId,
+      include: reply.include,
     });
+    if (chat && reply.include)
+      writeResponseChunk(response, {
+        uuid,
+        type: "finalizeResponseStream",
+        close: true,
+        error: false,
+        chatId: chat.id,
+      });
   }
   return;
 }
@@ -321,4 +356,5 @@ async function resolveLLMConnectorForEmbed({
 
 module.exports = {
   streamChatWithForEmbed,
+  invalidateActiveReplies,
 };
