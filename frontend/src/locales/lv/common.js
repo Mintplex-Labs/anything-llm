@@ -782,6 +782,8 @@ const TRANSLATIONS = {
         title: "Izveidot attēlus",
         description:
           "Ļauj aģentam ģenerēt attēlus no sarunas, vai rediģēt attēlus, kas pievienoti sarunai, izmantojot konfigurētu attēlu ģenerēšanas pakalpojumu.",
+        noProvider:
+          "Nav iestatīts attēlu ģenerēšanas nodrošinātājs, tāpēc šī prasme neizdosies, kad aģents to izmantos. Vispirms <a>iestatiet nodrošinātāju</a>.",
       },
     },
     mcp: {

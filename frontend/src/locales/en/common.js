@@ -377,6 +377,8 @@ const TRANSLATIONS = {
         title: "Generate images",
         description:
           "Allow the agent to generate images from chat, or edit images attached to the conversation, using your configured image generation provider.",
+        noProvider:
+          "No image generation provider is set up, so this skill will fail when the agent uses it. <a>Set up a provider</a> first.",
       },
       web: {
         title: "Web Search",

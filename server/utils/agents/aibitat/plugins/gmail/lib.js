@@ -6,8 +6,11 @@ const { SystemSettings } = require("../../../../../models/systemSettings");
 const { CollectorApi } = require("../../../../collectorApi");
 const { humanFileSize } = require("../../../../helpers");
 const { safeJsonParse } = require("../../../../http");
+const { isDocker, isCloud } = require("../../../../helpers/runtime");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for all attachments combined
+// Attaching reads arbitrary paths from the host, so it is off wherever the host is not the user's own machine.
+const ATTACHMENTS_ENABLED = !isDocker() && !isCloud();
 
 /**
  * Validates and prepares a file attachment for email.
@@ -16,10 +19,10 @@ const MAX_TOTAL_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for all attach
  * @returns {{success: boolean, attachment?: object, error?: string, fileInfo?: object}}
  */
 function prepareAttachment(filePath) {
-  if (process.env.ANYTHING_LLM_RUNTIME === "docker") {
+  if (!ATTACHMENTS_ENABLED) {
     return {
       success: false,
-      error: "File attachments are not supported in Docker environments.",
+      error: "File attachments are not supported on this deployment.",
     };
   }
 
@@ -592,3 +595,4 @@ module.exports.prepareAttachment = prepareAttachment;
 module.exports.parseAttachment = parseAttachment;
 module.exports.handleAttachments = handleAttachments;
 module.exports.MAX_TOTAL_ATTACHMENT_SIZE = MAX_TOTAL_ATTACHMENT_SIZE;
+module.exports.ATTACHMENTS_ENABLED = ATTACHMENTS_ENABLED;

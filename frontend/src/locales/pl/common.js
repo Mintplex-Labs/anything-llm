@@ -790,6 +790,8 @@ const TRANSLATIONS = {
         title: "Generuj obrazy",
         description:
           "Pozwól przedstawicielowi generować obrazy na podstawie rozmowy lub edytować dołączone obrazy, korzystając z wybranego dostawcy usług generowania obrazów.",
+        noProvider:
+          "Nie skonfigurowano dostawcy generowania obrazów, więc ta umiejętność zakończy się błędem, gdy agent jej użyje. Najpierw <a>skonfiguruj dostawcę</a>.",
       },
     },
     mcp: {

@@ -1,5 +1,9 @@
 const outlookLib = require("../lib.js");
-const { prepareAttachmentsWithValidation, handleSkillError } = outlookLib;
+const {
+  prepareAttachmentsWithValidation,
+  handleSkillError,
+  ATTACHMENTS_ENABLED,
+} = outlookLib;
 const { applyEmailEdits } = require("../../../../../helpers/agents");
 
 module.exports.OutlookSendEmail = {
@@ -85,12 +89,14 @@ module.exports.OutlookSendEmail = {
                   "Whether the body is HTML content. Defaults to false.",
                 default: false,
               },
-              attachments: {
-                type: "array",
-                items: { type: "string" },
-                description:
-                  "Array of absolute file paths to attach to the email.",
-              },
+              ...(ATTACHMENTS_ENABLED && {
+                attachments: {
+                  type: "array",
+                  items: { type: "string" },
+                  description:
+                    "Array of absolute file paths to attach to the email.",
+                },
+              }),
             },
             required: ["body"],
             additionalProperties: false,

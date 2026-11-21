@@ -69,6 +69,7 @@ export default function AdminAgents() {
     useState(false);
   const [createFilesAgentAvailable, setCreateFilesAgentAvailable] =
     useState(false);
+  const [showCustomSkillsAndMcp, setShowCustomSkillsAndMcp] = useState(false);
 
   const defaultSkills = getDefaultSkills(t);
   const allConfigurableSkills = getConfigurableSkills(t, {
@@ -118,6 +119,7 @@ export default function AdminAgents() {
         flowsRes,
         fsAgentAvailable,
         createFilesAvailable,
+        customSkillsAndMcpAvailable,
       ] = await Promise.all([
         System.keys(),
         Admin.systemPreferencesByFields([
@@ -129,6 +131,7 @@ export default function AdminAgents() {
         AgentFlows.listFlows(),
         System.isFileSystemAgentAvailable(),
         System.isCreateFilesAgentAvailable(),
+        System.isCustomSkillsAndMcpAvailable(),
       ]);
 
       const { flows = [] } = flowsRes;
@@ -142,6 +145,7 @@ export default function AdminAgents() {
       setAgentFlows(flows);
       setFileSystemAgentAvailable(fsAgentAvailable);
       setCreateFilesAgentAvailable(createFilesAvailable);
+      setShowCustomSkillsAndMcp(customSkillsAndMcpAvailable);
       setLoading(false);
     }
     fetchSettings();
@@ -414,15 +418,19 @@ export default function AdminAgents() {
               </>
             )}
 
-            <div className="text-theme-text-primary flex items-center gap-x-2">
-              <Plug size={24} />
-              <p className="text-lg font-medium">Custom Skills</p>
-            </div>
-            <ImportedSkillList
-              skills={importedSkills}
-              selectedSkill={selectedSkill}
-              handleClick={handleSkillClick}
-            />
+            {showCustomSkillsAndMcp && (
+              <>
+                <div className="text-theme-text-primary flex items-center gap-x-2">
+                  <Plug size={24} />
+                  <p className="text-lg font-medium">Custom Skills</p>
+                </div>
+                <ImportedSkillList
+                  skills={importedSkills}
+                  selectedSkill={selectedSkill}
+                  handleClick={handleSkillClick}
+                />
+              </>
+            )}
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
               <FlowArrow size={24} />
@@ -440,21 +448,23 @@ export default function AdminAgents() {
               id="active_agent_flows"
               value={activeFlowIds.join(",")}
             />
-            <MCPServerHeader
-              setMcpServers={setMcpServers}
-              setSelectedMcpServer={setSelectedMcpServer}
-            >
-              {({ loadingMcpServers }) => {
-                return (
-                  <MCPServersList
-                    isLoading={loadingMcpServers}
-                    servers={mcpServers}
-                    selectedServer={selectedMcpServer}
-                    handleClick={handleMCPClick}
-                  />
-                );
-              }}
-            </MCPServerHeader>
+            {showCustomSkillsAndMcp && (
+              <MCPServerHeader
+                setMcpServers={setMcpServers}
+                setSelectedMcpServer={setSelectedMcpServer}
+              >
+                {({ loadingMcpServers }) => {
+                  return (
+                    <MCPServersList
+                      isLoading={loadingMcpServers}
+                      servers={mcpServers}
+                      selectedServer={selectedMcpServer}
+                      handleClick={handleMCPClick}
+                    />
+                  );
+                }}
+              </MCPServerHeader>
+            )}
           </div>
 
           {/* Selected agent skill modal */}
@@ -642,15 +652,19 @@ export default function AdminAgents() {
                 </>
               )}
 
-              <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
-                <Plug size={24} />
-                <p className="text-lg font-medium">Custom Skills</p>
-              </div>
-              <ImportedSkillList
-                skills={importedSkills}
-                selectedSkill={selectedSkill}
-                handleClick={handleSkillClick}
-              />
+              {showCustomSkillsAndMcp && (
+                <>
+                  <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
+                    <Plug size={24} />
+                    <p className="text-lg font-medium">Custom Skills</p>
+                  </div>
+                  <ImportedSkillList
+                    skills={importedSkills}
+                    selectedSkill={selectedSkill}
+                    handleClick={handleSkillClick}
+                  />
+                </>
+              )}
 
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
                 <div className="flex items-center gap-x-2">
@@ -682,21 +696,23 @@ export default function AdminAgents() {
                 activeFlowIds={activeFlowIds}
               />
 
-              <MCPServerHeader
-                setMcpServers={setMcpServers}
-                setSelectedMcpServer={setSelectedMcpServer}
-              >
-                {({ loadingMcpServers }) => {
-                  return (
-                    <MCPServersList
-                      isLoading={loadingMcpServers}
-                      servers={mcpServers}
-                      selectedServer={selectedMcpServer}
-                      handleClick={handleMCPClick}
-                    />
-                  );
-                }}
-              </MCPServerHeader>
+              {showCustomSkillsAndMcp && (
+                <MCPServerHeader
+                  setMcpServers={setMcpServers}
+                  setSelectedMcpServer={setSelectedMcpServer}
+                >
+                  {({ loadingMcpServers }) => {
+                    return (
+                      <MCPServersList
+                        isLoading={loadingMcpServers}
+                        servers={mcpServers}
+                        selectedServer={selectedMcpServer}
+                        handleClick={handleMCPClick}
+                      />
+                    );
+                  }}
+                </MCPServerHeader>
+              )}
             </div>
           </div>
         </div>

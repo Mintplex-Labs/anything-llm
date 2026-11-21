@@ -799,6 +799,8 @@ const TRANSLATIONS = {
         title: "Generar imatges",
         description:
           "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
+        noProvider:
+          "No hi ha cap proveïdor de generació d'imatges configurat, de manera que aquesta habilitat fallarà quan l'agent la utilitzi. <a>Configura un proveïdor</a> primer.",
       },
     },
     mcp: {

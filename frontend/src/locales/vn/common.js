@@ -740,6 +740,8 @@ const TRANSLATIONS = {
         title: "Tạo hình ảnh",
         description:
           "Cho phép đại lý tạo ảnh từ cuộc trò chuyện hoặc chỉnh sửa ảnh đính kèm trong cuộc trò chuyện bằng cách sử dụng nhà cung cấp dịch vụ tạo ảnh đã được cấu hình.",
+        noProvider:
+          "Chưa thiết lập nhà cung cấp tạo hình ảnh, vì vậy kỹ năng này sẽ lỗi khi tác tử sử dụng. Hãy <a>thiết lập nhà cung cấp</a> trước.",
       },
     },
     mcp: {

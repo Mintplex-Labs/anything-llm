@@ -784,6 +784,8 @@ const TRANSLATIONS = {
         title: "Sukurti vaizdus",
         description:
           "Leiskite agentui generuoti vaizdus iš pokalbio arba redaguoti pokalbio metu pridedamus vaizdus, naudodami jūsų konfiguruotą vaizdų generavimo paslaugą.",
+        noProvider:
+          "Nenustatytas joks vaizdų generavimo teikėjas, todėl šis įgūdis nepavyks, kai agentas jį naudos. Pirmiausia <a>nustatykite teikėją</a>.",
       },
     },
     mcp: {

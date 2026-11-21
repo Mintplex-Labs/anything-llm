@@ -800,6 +800,8 @@ const TRANSLATIONS = {
         title: "Generar imágenes",
         description:
           "Permita que el agente genere imágenes a partir de la conversación, o edite las imágenes adjuntas a la misma, utilizando el proveedor de generación de imágenes que haya configurado.",
+        noProvider:
+          "No hay ningún proveedor de generación de imágenes configurado, por lo que esta habilidad fallará cuando el agente la use. <a>Configura un proveedor</a> primero.",
       },
     },
     mcp: {

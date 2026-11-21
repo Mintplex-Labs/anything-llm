@@ -784,6 +784,8 @@ const TRANSLATIONS = {
         title: "Generiranje slika",
         description:
           "Omogućite agentu da generira slike iz razgovora ili da uređuje slike priložene razgovoru, koristeći vaš konfiguriranog pružatelja usluga za generiranje slika.",
+        noProvider:
+          "Nije postavljen pružatelj usluge generiranja slika, pa će ova vještina zakazati kada je agent upotrijebi. Najprije <a>postavite pružatelja</a>.",
       },
     },
     mcp: {

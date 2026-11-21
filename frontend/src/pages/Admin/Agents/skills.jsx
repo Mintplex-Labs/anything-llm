@@ -1,6 +1,7 @@
 import AgentWebSearchSelection from "./WebSearchSelection";
 import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkillPanel from "./GenericSkillPanel";
+import GenerateImageSkillPanel from "./GenerateImageSkillPanel";
 import DefaultSkillPanel from "./DefaultSkillPanel";
 import FileSystemSkillPanel from "./FileSystemSkillPanel";
 import CreateFileSkillPanel from "./CreateFileSkillPanel";
@@ -113,7 +114,7 @@ export const getConfigurableSkills = (
     "generate-image": {
       title: t("agent.skill.generateImage.title"),
       description: t("agent.skill.generateImage.description"),
-      component: GenericSkillPanel,
+      component: GenerateImageSkillPanel,
       skill: "generate-image",
       icon: ImageSquare,
       image: GenerateImageImage,

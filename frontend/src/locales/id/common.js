@@ -778,6 +778,8 @@ const TRANSLATIONS = {
         title: "Menghasilkan gambar",
         description:
           "Izinkan agen untuk menghasilkan gambar dari percakapan, atau mengedit gambar yang terlampir dalam percakapan, menggunakan penyedia pembuatan gambar yang telah Anda konfigurasi.",
+        noProvider:
+          "Belum ada penyedia pembuatan gambar yang disiapkan, sehingga keterampilan ini akan gagal saat digunakan oleh agen. <a>Siapkan penyedia</a> terlebih dahulu.",
       },
     },
     mcp: {

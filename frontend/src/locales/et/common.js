@@ -764,6 +764,8 @@ const TRANSLATIONS = {
         title: "Loo pildid",
         description:
           "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
+        noProvider:
+          "Pildiloome teenusepakkujat pole seadistatud, seega see oskus ebaõnnestub, kui agent seda kasutab. <a>Seadista esmalt teenusepakkuja</a>.",
       },
     },
     mcp: {

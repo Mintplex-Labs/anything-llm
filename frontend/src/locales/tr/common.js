@@ -753,6 +753,8 @@ const TRANSLATIONS = {
         title: "Görseller oluştur",
         description:
           "Ajanın, yapılandırılmış görsel üretim sağlayıcınızla sohbetten görsel oluşturmasına veya ekli görselleri düzenlemesine izin verin.",
+        noProvider:
+          "Yapılandırılmış bir görsel oluşturma sağlayıcısı yok, bu nedenle ajan bu beceriyi kullandığında başarısız olacak. Önce <a>bir sağlayıcı yapılandırın</a>.",
       },
     },
     mcp: {

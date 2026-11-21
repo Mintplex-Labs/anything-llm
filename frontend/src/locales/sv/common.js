@@ -775,6 +775,8 @@ const TRANSLATIONS = {
         title: "Generera bilder",
         description:
           "Låt agenten generera bilder från chattet, eller redigera befintliga bilder som är kopplade till samtalet, med hjälp av den bildgenereringsleverantör som du har konfigurerat.",
+        noProvider:
+          "Ingen leverantör för bildgenerering är konfigurerad, så den här färdigheten misslyckas när agenten använder den. <a>Konfigurera en leverantör</a> först.",
       },
     },
     mcp: {

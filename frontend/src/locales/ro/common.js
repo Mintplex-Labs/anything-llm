@@ -1389,6 +1389,8 @@ const TRANSLATIONS = {
         title: "Generați imagini",
         description:
           "Permiteți agenților să genereze imagini din conversații sau să editeze imaginile atașate la acestea, folosind furnizorul de generare de imagini configurat de dumneavoastră.",
+        noProvider:
+          "Nu este configurat niciun furnizor de generare a imaginilor, așa că această abilitate va eșua când agentul o folosește. <a>Configurați mai întâi un furnizor</a>.",
       },
     },
     mcp: {

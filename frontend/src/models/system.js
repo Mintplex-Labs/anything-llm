@@ -892,7 +892,6 @@ const System = {
 
   /**
    * Checks if the create-files-agent skill is available.
-   * The create-files-agent skill is only available when running in a Docker container.
    * @returns {Promise<boolean>}
    */
   isCreateFilesAgentAvailable: async function () {
@@ -915,6 +914,23 @@ const System = {
       method: "GET",
       headers: baseHeaders(),
     })
+      .then((res) => res.json())
+      .then((res) => res?.available ?? false)
+      .catch(() => false);
+  },
+
+  /**
+   * Checks if custom (imported) agent skills and MCP servers should be shown.
+   * @returns {Promise<boolean>}
+   */
+  isCustomSkillsAndMcpAvailable: async function () {
+    return fetch(
+      `${API_BASE}/agent-skills/custom-skills-and-mcp/is-available`,
+      {
+        method: "GET",
+        headers: baseHeaders(),
+      }
+    )
       .then((res) => res.json())
       .then((res) => res?.available ?? false)
       .catch(() => false);

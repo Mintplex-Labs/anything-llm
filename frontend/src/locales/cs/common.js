@@ -784,6 +784,8 @@ const TRANSLATIONS = {
         title: "Generovat obrázky",
         description:
           "Nechte, aby agent generoval obrázky z chatu nebo upravoval obrázky přiložené ke konverzaci pomocí vašeho nakonfigurovaného poskytovatele pro generování obrázků.",
+        noProvider:
+          "Není nastaven žádný poskytovatel generování obrázků, takže tato dovednost selže, když ji agent použije. Nejprve <a>nastavte poskytovatele</a>.",
       },
     },
     mcp: {

@@ -791,6 +791,8 @@ const TRANSLATIONS = {
         title: "Bilder generieren",
         description:
           "Ermöglichen Sie dem Agenten, Bilder aus dem Chat zu generieren oder Bilder zu bearbeiten, die an das Gespräch angehängt sind, unter Verwendung Ihres konfigurierten Bildgenerierungsdienstes.",
+        noProvider:
+          "Es ist kein Anbieter für Bildgenerierung eingerichtet, daher schlägt diese Fähigkeit fehl, wenn der Agent sie verwendet. <a>Richten Sie zuerst einen Anbieter ein</a>.",
       },
     },
     "performance-warning":
