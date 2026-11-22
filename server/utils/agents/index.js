@@ -8,6 +8,7 @@ const { User } = require("../../models/user");
 const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
+const { DEFAULT_GEMINI_MODEL } = require("../AiProviders/gemini/defaultModels");
 const {
   USER_AGENT,
   WORKSPACE_AGENT,
@@ -385,7 +386,7 @@ class AgentHandler {
       case "ppio":
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       case "gemini":
-        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
+        return process.env.GEMINI_LLM_MODEL_PREF ?? DEFAULT_GEMINI_MODEL;
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":

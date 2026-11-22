@@ -11,6 +11,9 @@ const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
 const {
+  DEFAULT_GEMINI_MODEL,
+} = require("../utils/AiProviders/gemini/defaultModels");
+const {
   ConnectionStringParser,
 } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
 
@@ -922,7 +925,7 @@ const SystemSettings = {
       // Gemini Keys
       GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
       GeminiLLMModelPref:
-        process.env.GEMINI_LLM_MODEL_PREF || "gemini-2.0-flash-lite",
+        process.env.GEMINI_LLM_MODEL_PREF || DEFAULT_GEMINI_MODEL,
       GeminiSafetySetting:
         process.env.GEMINI_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
 

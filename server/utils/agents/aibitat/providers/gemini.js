@@ -5,6 +5,9 @@ const { temperatureParam } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { safeJsonParse } = require("../../../http");
 const { v4 } = require("uuid");
+const {
+  DEFAULT_GEMINI_MODEL,
+} = require("../../../AiProviders/gemini/defaultModels");
 
 /**
  * The agent provider for the Gemini provider.
@@ -14,7 +17,7 @@ class GeminiProvider extends Provider {
   model;
 
   constructor(config = {}) {
-    const { model = "gemini-2.0-flash-lite", reasoningEffort = null } = config;
+    const { model = DEFAULT_GEMINI_MODEL, reasoningEffort = null } = config;
     super();
     this.providerTag = "gemini";
     this.className = "GeminiProvider";

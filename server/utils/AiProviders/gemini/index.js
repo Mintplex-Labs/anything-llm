@@ -9,7 +9,11 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
-const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
+const {
+  DEFAULT_GEMINI_MODEL,
+  defaultGeminiModels,
+  v1BetaModels,
+} = require("./defaultModels");
 const { safeJsonParse } = require("../../http");
 const {
   temperatureParam,
@@ -50,7 +54,7 @@ class GeminiLLM {
     this.model =
       modelPreference ||
       process.env.GEMINI_LLM_MODEL_PREF ||
-      "gemini-2.0-flash-lite";
+      DEFAULT_GEMINI_MODEL;
 
     const isExperimental = this.isExperimentalModel(this.model);
     this.openai = new OpenAIApi({

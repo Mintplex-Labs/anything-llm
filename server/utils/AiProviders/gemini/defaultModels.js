@@ -40,6 +40,9 @@ const v1BetaModels = [
   // %EOC_V1BETA_MODELS%
 ];
 
+// Used when no Gemini model is configured. Must be a model Gemini still serves.
+const DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite";
+
 const defaultGeminiModels = () => [
   ...stableModels.map((model) => ({
     id: model,
@@ -56,6 +59,7 @@ const defaultGeminiModels = () => [
 ];
 
 module.exports = {
+  DEFAULT_GEMINI_MODEL,
   defaultGeminiModels,
   v1BetaModels,
 };
