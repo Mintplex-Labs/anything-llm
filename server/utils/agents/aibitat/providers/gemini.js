@@ -14,7 +14,7 @@ class GeminiProvider extends Provider {
   model;
 
   constructor(config = {}) {
-    const { model = "gemini-2.0-flash-lite", reasoningEffort = null } = config;
+    const { model = "gemini-3.1-flash-lite", reasoningEffort = null } = config;
     super();
     this.providerTag = "gemini";
     this.className = "GeminiProvider";
