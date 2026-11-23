@@ -119,16 +119,17 @@ class LanceDb extends VectorDatabase {
      * We want to give the reranker a larger number of results to work with.
      *
      * However, we cannot make this boundless as reranking is expensive and time consuming.
-     * So we limit the number of results to a maximum of 50 and a minimum of 10.
+     * So we fetch 10% of the namespace, at least 10 and at least topN (so rerank mode can return
+     * as many chunks as plain search), but never more than 50.
      * This is a good balance between the number of results to rerank and the cost of reranking
      * and ensures workspaces with 10K embeddings will still rerank within a reasonable timeframe on base level hardware.
      *
      * Benchmarks:
      * On Intel Mac: 2.6 GHz 6-Core Intel Core i7 - 20 docs reranked in ~5.2 sec
      */
-    const searchLimit = Math.max(
-      10,
-      Math.min(50, Math.ceil(totalEmbeddings * 0.1))
+    const searchLimit = Math.min(
+      50,
+      Math.max(10, topN, Math.ceil(totalEmbeddings * 0.1))
     );
     const vectorSearchResults = await collection
       .vectorSearch(queryVector)
