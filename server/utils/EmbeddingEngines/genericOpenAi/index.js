@@ -138,6 +138,7 @@ class GenericOpenAiEmbedder {
           .create({
             model: this.model,
             input: chunk,
+            encoding_format: "float",
           })
           .then((result) => resolve({ data: result?.data, error: null }))
           .catch((e) => {
