@@ -82,6 +82,7 @@ export default function UploadFile({
     onDrop: enqueueDrop,
     disabled: !ready,
     getFilesFromEvent: getFilesFromUploadEvent,
+    useFsAccessApi: false,
   });
 
   if (variant === "mobile")
