@@ -134,10 +134,14 @@ class GenericOpenAiEmbedder {
     const allResults = [];
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       const { data = [], error = null } = await new Promise((resolve) => {
+        // Pin "float": some OpenAI-compatible services ignore encoding_format and
+        // return plain float arrays, which the SDK's default base64 decode would
+        // silently corrupt. Same rationale as the LocalAI embedder.
         this.openai.embeddings
           .create({
             model: this.model,
             input: chunk,
+            encoding_format: "float",
           })
           .then((result) => resolve({ data: result?.data, error: null }))
           .catch((e) => {
