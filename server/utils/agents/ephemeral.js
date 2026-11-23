@@ -270,6 +270,42 @@ class EphemeralAgentHandler extends AgentHandler {
     this._modelRouter = router;
   }
 
+  /**
+   * Expand multi-stage parent plugins (whose `.plugin` is an array of child
+   * plugins, such as `sql-agent`) into `${parent}#${child}` identifiers so
+   * `#attachPlugins` and `AIbitat` can attach and expose every child tool.
+   * Mirrors the expansion performed by `agentSkillsFromSystemSettings()`.
+   * @param {string[]} toolOverrides
+   * @returns {string[]}
+   */
+  #expandToolOverrides(toolOverrides = []) {
+    const expanded = [];
+    const seen = new Set();
+    const pushUnique = (id) => {
+      if (seen.has(id)) return;
+      seen.add(id);
+      expanded.push(id);
+    };
+
+    for (const name of toolOverrides) {
+      if (
+        typeof name === "string" &&
+        !name.includes("#") &&
+        !name.startsWith("@@") &&
+        Object.prototype.hasOwnProperty.call(AgentPlugins, name) &&
+        Array.isArray(AgentPlugins[name]?.plugin)
+      ) {
+        for (const subPlugin of AgentPlugins[name].plugin) {
+          pushUnique(`${AgentPlugins[name].name}#${subPlugin.name}`);
+        }
+        continue;
+      }
+      pushUnique(name);
+    }
+
+    return expanded;
+  }
+
   async #attachPlugins(args) {
     for (const name of this.#funcsToLoad) {
       // Load child plugin
@@ -598,9 +634,10 @@ class EphemeralAgentHandler extends AgentHandler {
 
     // Override tools if specified (e.g., for scheduled jobs with per-job tool selection)
     if (args.toolOverrides) {
-      this.#funcsToLoad = args.toolOverrides;
+      const expandedTools = this.#expandToolOverrides(args.toolOverrides);
+      this.#funcsToLoad = expandedTools;
       const agentDef = this.aibitat.agents.get("@agent");
-      if (agentDef) agentDef.functions = args.toolOverrides;
+      if (agentDef) agentDef.functions = [...expandedTools];
     }
 
     // Attach all required plugins for functions to operate.
