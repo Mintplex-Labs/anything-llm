@@ -279,31 +279,13 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {string[]}
    */
   #expandToolOverrides(toolOverrides = []) {
-    const expanded = [];
-    const seen = new Set();
-    const pushUnique = (id) => {
-      if (seen.has(id)) return;
-      seen.add(id);
-      expanded.push(id);
-    };
-
-    for (const name of toolOverrides) {
-      if (
-        typeof name === "string" &&
-        !name.includes("#") &&
-        !name.startsWith("@@") &&
-        Object.prototype.hasOwnProperty.call(AgentPlugins, name) &&
-        Array.isArray(AgentPlugins[name]?.plugin)
-      ) {
-        for (const subPlugin of AgentPlugins[name].plugin) {
-          pushUnique(`${AgentPlugins[name].name}#${subPlugin.name}`);
-        }
-        continue;
-      }
-      pushUnique(name);
-    }
-
-    return expanded;
+    const expanded = toolOverrides.flatMap((name) => {
+      if (!AgentPlugins.hasOwnProperty(name)) return [name];
+      const { name: parent, plugin } = AgentPlugins[name];
+      if (!Array.isArray(plugin)) return [name];
+      return plugin.map((child) => `${parent}#${child.name}`);
+    });
+    return [...new Set(expanded)];
   }
 
   async #attachPlugins(args) {
