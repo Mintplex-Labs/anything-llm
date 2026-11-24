@@ -157,6 +157,22 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           message.finish_reason !== "" &&
           message.finish_reason !== null
         ) {
+          // A stream can end right after reasoning (a reasoning-only answer,
+          // or max_tokens hit mid-reasoning) without any content token arriving
+          // after it. Flush any pending reasoning here, or it is lost from the
+          // saved response and the client never receives the closing tag.
+          if (reasoningText) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `</think>`,
+              close: false,
+              error: false,
+            });
+            fullText += `${reasoningText}</think>`;
+            reasoningText = "";
+          }
           writeResponseChunk(response, {
             uuid,
             sources,

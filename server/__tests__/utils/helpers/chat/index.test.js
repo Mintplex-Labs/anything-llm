@@ -639,3 +639,95 @@ describe("messageStringCompressor", () => {
     expect(result).toContain("user: USER TURN 1: short");
   });
 });
+
+describe("handleDefaultStreamResponseV2", () => {
+  const {
+    handleDefaultStreamResponseV2,
+  } = require("../../../../utils/helpers/chat/responses");
+
+  // Fake express response: collects the SSE chunks the handler writes.
+  function fakeResponse() {
+    const written = [];
+    return {
+      written,
+      writableEnded: false,
+      destroyed: false,
+      on() {},
+      removeListener() {},
+      write(chunk) {
+        written.push(chunk);
+      },
+    };
+  }
+
+  // Parse the `data: {...}` SSE lines the handler wrote into plain objects.
+  function writtenChunks(response) {
+    return response.written.map((line) =>
+      JSON.parse(line.replace(/^data: /, "").trim())
+    );
+  }
+
+  // Fake provider stream: an async iterable with the endMeasurement hook the
+  // handler calls when the stream ends.
+  async function* streamOf(chunks) {
+    for (const chunk of chunks) yield chunk;
+  }
+  function makeStream(chunks) {
+    const stream = streamOf(chunks);
+    stream.endMeasurement = jest.fn();
+    return stream;
+  }
+
+  const reasoningChunk = (reasoning_content) => ({
+    choices: [{ delta: { reasoning_content }, finish_reason: null }],
+  });
+  const contentChunk = (content) => ({
+    choices: [{ delta: { content }, finish_reason: null }],
+  });
+  const finishChunk = (finish_reason = "stop") => ({
+    choices: [{ delta: {}, finish_reason }],
+  });
+
+  it("keeps reasoning when the stream ends right after reasoning (no content token)", async () => {
+    const response = fakeResponse();
+    const fullText = await handleDefaultStreamResponseV2(
+      response,
+      makeStream([reasoningChunk("I need to think"), finishChunk()]),
+      { uuid: "test-uuid", sources: [] }
+    );
+
+    expect(fullText).toBe("<think>I need to think</think>");
+    const chunks = writtenChunks(response);
+    expect(chunks.map((c) => c.textResponse)).toContain("</think>");
+    expect(chunks[chunks.length - 1].close).toBe(true);
+  });
+
+  it("still flushes reasoning before a content token (unchanged behaviour)", async () => {
+    const response = fakeResponse();
+    const fullText = await handleDefaultStreamResponseV2(
+      response,
+      makeStream([
+        reasoningChunk("I need to think"),
+        contentChunk("Hello"),
+        finishChunk(),
+      ]),
+      { uuid: "test-uuid", sources: [] }
+    );
+
+    expect(fullText).toBe("<think>I need to think</think>Hello");
+  });
+
+  it("leaves a reasoning-free stream untouched", async () => {
+    const response = fakeResponse();
+    const fullText = await handleDefaultStreamResponseV2(
+      response,
+      makeStream([contentChunk("Hello"), finishChunk()]),
+      { uuid: "test-uuid", sources: [] }
+    );
+
+    expect(fullText).toBe("Hello");
+    expect(writtenChunks(response).map((c) => c.textResponse)).not.toContain(
+      "</think>"
+    );
+  });
+});
