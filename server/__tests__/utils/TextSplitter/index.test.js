@@ -152,4 +152,29 @@ describe("TextSplitter", () => {
     expect(chunks.map((chunk) => chunk.slice(header.length))).toEqual(headerless);
     expect(chunks.every((chunk) => chunk.startsWith(header))).toBe(true);
   });
+
+  test("strips only the leading protocol from chunkSource URLs", () => {
+    const buildSource = (chunkSource) =>
+      TextSplitter.buildHeaderMeta({ title: "Example", chunkSource }).source ?? null;
+
+    expect(buildSource("link://https://example.com")).toBe("https://example.com");
+    expect(buildSource("youtube://https://youtube.com/watch?v=1")).toBe(
+      "https://youtube.com/watch?v=1"
+    );
+    expect(buildSource("link://https://example.com/?next=link://second")).toBe(
+      "https://example.com/?next=link://second"
+    );
+    expect(
+      buildSource("youtube://https://youtube.com/watch?v=1&next=link://second")
+    ).toBe("https://youtube.com/watch?v=1&next=link://second");
+  });
+
+  test("does not add a source when chunkSource only contains the protocol", () => {
+    expect(
+      TextSplitter.buildHeaderMeta({ chunkSource: "link://" }).source
+    ).toBeUndefined();
+    expect(
+      TextSplitter.buildHeaderMeta({ chunkSource: "youtube://" }).source
+    ).toBeUndefined();
+  });
 });

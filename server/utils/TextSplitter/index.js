@@ -93,12 +93,13 @@ class TextSplitter {
           )
             return null;
 
-          // We know a prefix is present, so we can split on it and return the rest.
+          // We know a prefix is present, so we strip the matching one and return the rest.
           // If nothing is found, return null and it will not be added to the metadata.
           let source = null;
           for (const prefix of validPrefixes) {
-            source = metadata.chunkSource.split(prefix)?.[1] || null;
-            if (source) break;
+            if (!metadata.chunkSource.startsWith(prefix)) continue;
+            source = metadata.chunkSource.slice(prefix.length) || null;
+            break;
           }
 
           return source;
