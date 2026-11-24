@@ -649,6 +649,13 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
   return elements;
 }
 
+/**
+ * Splits a blockquote into the nodes that should each become one quoted Word paragraph:
+ * every direct <p>, plus a fragment for any loose content between them.
+ * A blockquote with no direct <p> is yielded whole.
+ * @param {Element} quote - The blockquote DOM element
+ * @returns {Generator<Element|DocumentFragment>}
+ */
 function* quoteParagraphs(quote) {
   if (!Array.from(quote.children).some((node) => node.tagName === "P")) {
     yield quote;
