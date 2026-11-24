@@ -192,6 +192,9 @@ export default function EmbedChatsView() {
                 {t("embed-chats.table.response")}
               </th>
               <th scope="col" className="px-6 py-3">
+                {t("embed-chats.table.feedback")}
+              </th>
+              <th scope="col" className="px-6 py-3">
                 {t("embed-chats.table.at")}
               </th>
               <th scope="col" className="px-6 py-3 rounded-tr-lg">

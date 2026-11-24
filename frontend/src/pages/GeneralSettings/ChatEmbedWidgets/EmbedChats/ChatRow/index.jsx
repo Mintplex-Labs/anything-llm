@@ -6,6 +6,7 @@ import paths from "@/utils/paths";
 import Embed from "@/models/embed";
 import MarkdownRenderer from "../MarkdownRenderer";
 import { safeJsonParse } from "@/utils/request";
+import { ThumbsUp } from "@phosphor-icons/react";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -68,6 +69,9 @@ export default function ChatRow({ chat, onDelete }) {
         >
           {truncate(safeJsonParse(chat.response, {})?.text, 40)}
         </td>
+        <td className="px-6">
+          <FeedbackScore score={chat.feedbackScore} />
+        </td>
         <td className="px-6">{moment(chat.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
@@ -110,6 +114,11 @@ export default function ChatRow({ chat, onDelete }) {
       </Modal>
     </>
   );
+}
+
+function FeedbackScore({ score }) {
+  if (score !== true) return "--";
+  return <ThumbsUp size={16} weight="fill" aria-label="Good response" />;
 }
 
 const TextPreview = ({ text, closeModal }) => {
