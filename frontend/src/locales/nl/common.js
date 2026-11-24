@@ -948,6 +948,7 @@ const TRANSLATIONS = {
       message: "Bericht",
       response: "Reactie",
       at: "Verzonden Om",
+      feedback: "Feedback",
     },
   },
   event: {

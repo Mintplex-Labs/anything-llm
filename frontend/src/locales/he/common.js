@@ -1070,6 +1070,7 @@ const TRANSLATIONS = {
       message: "הודעה",
       response: "תגובה",
       at: "נשלח ב",
+      feedback: "משוב",
     },
   },
   event: {

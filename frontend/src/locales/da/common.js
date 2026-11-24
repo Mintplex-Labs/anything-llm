@@ -938,6 +938,7 @@ const TRANSLATIONS = {
       message: "Besked",
       response: "Svar",
       at: "Sendt kl.",
+      feedback: "Tilbagemelding",
     },
   },
   event: {

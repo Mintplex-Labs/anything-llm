@@ -887,6 +887,7 @@ const TRANSLATIONS = {
       message: "訊息",
       response: "回應",
       at: "傳送時間",
+      feedback: "回饋",
     },
   },
   event: {

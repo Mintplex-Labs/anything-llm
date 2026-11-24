@@ -953,6 +953,7 @@ const TRANSLATIONS = {
       message: "Сообщение",
       response: "Ответ",
       at: "Отправлено в",
+      feedback: "Отзывы",
     },
   },
   event: {

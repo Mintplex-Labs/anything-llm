@@ -955,6 +955,7 @@ const TRANSLATIONS = {
       message: "Mesaj",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
+      feedback: "Geri bildirim",
     },
   },
   event: {

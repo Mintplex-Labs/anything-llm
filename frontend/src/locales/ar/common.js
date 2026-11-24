@@ -934,6 +934,7 @@ const TRANSLATIONS = {
       message: "رسالة",
       response: "استجابة",
       at: "أرسلت في",
+      feedback: "تعليقات",
     },
   },
   event: {

@@ -1314,6 +1314,7 @@ const TRANSLATIONS = {
       message: "Съобщение",
       response: "Отговор",
       at: "Изпратено на",
+      feedback: "Обратна връзка",
     },
   },
   telegram: {

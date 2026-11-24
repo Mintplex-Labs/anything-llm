@@ -1112,6 +1112,7 @@ const TRANSLATIONS = {
       message: "Ziņojums",
       response: "Atbilde",
       at: "Nosūtīts",
+      feedback: "Atsauksmes",
     },
   },
   event: {

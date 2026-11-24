@@ -1077,6 +1077,7 @@ const TRANSLATIONS = {
       message: "메시지",
       response: "응답",
       at: "보낸 시각",
+      feedback: "피드백",
     },
   },
   event: {

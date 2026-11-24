@@ -1135,6 +1135,7 @@ const TRANSLATIONS = {
       message: "Missatge",
       response: "Resposta",
       at: "Enviat el",
+      feedback: "Comentaris",
     },
   },
   telegram: {

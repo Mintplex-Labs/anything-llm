@@ -1107,6 +1107,7 @@ const TRANSLATIONS = {
       message: "Mensagem",
       response: "Resposta",
       at: "Enviado Em",
+      feedback: "Feedback",
     },
   },
   event: {

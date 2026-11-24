@@ -1298,6 +1298,7 @@ const TRANSLATIONS = {
       message: "Meddelande",
       response: "Svar",
       at: "Skickat den",
+      feedback: "Återkoppling",
     },
   },
   telegram: {
