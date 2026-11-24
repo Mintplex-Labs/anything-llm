@@ -764,6 +764,8 @@ const TRANSLATIONS = {
         title: "Loo pildid",
         description:
           "Lase esindajal luua pilte vestluse põhjal või muuta dialoogi külge lisatud pilte, kasutades teie konfigureeritud piltide genereerimisteenust.",
+        noProvider:
+          "Pildiloome teenusepakkujat pole seadistatud, seega see oskus ebaõnnestub, kui agent seda kasutab. <a>Seadista esmalt teenusepakkuja</a>.",
       },
     },
     mcp: {
@@ -1331,6 +1333,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Vestluse ajaloo laadimine...",
+    loading_chat_recalling: "Taastan meie vestlust...",
+    loading_chat_remembering: "Meenutan, millest me rääkisime...",
     attachments_processing: "Manused töötlevad. Palun oota…",
     send_message: "Saada sõnum",
     attach_file: "Lisa fail vestlusele",

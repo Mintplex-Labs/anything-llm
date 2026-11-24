@@ -377,6 +377,8 @@ const TRANSLATIONS = {
         title: "Generate images",
         description:
           "Allow the agent to generate images from chat, or edit images attached to the conversation, using your configured image generation provider.",
+        noProvider:
+          "No image generation provider is set up, so this skill will fail when the agent uses it. <a>Set up a provider</a> first.",
       },
       web: {
         title: "Web Search",
@@ -1634,6 +1636,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Loading chat history...",
+    loading_chat_recalling: "Recalling our conversation...",
+    loading_chat_remembering: "Remembering what we talked about...",
     attachments_processing: "Attachments are processing. Please wait...",
     generating_response: "Generating response",
     thought_in_progress: "Model is Thinking...",

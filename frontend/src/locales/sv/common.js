@@ -775,6 +775,8 @@ const TRANSLATIONS = {
         title: "Generera bilder",
         description:
           "Låt agenten generera bilder från chattet, eller redigera befintliga bilder som är kopplade till samtalet, med hjälp av den bildgenereringsleverantör som du har konfigurerat.",
+        noProvider:
+          "Ingen leverantör för bildgenerering är konfigurerad, så den här färdigheten misslyckas när agenten använder den. <a>Konfigurera en leverantör</a> först.",
       },
     },
     mcp: {
@@ -1637,6 +1639,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Laddar chatthistorik...",
+    loading_chat_recalling: "Hämtar vårt samtal...",
+    loading_chat_remembering: "Minns vad vi pratade om...",
     attachments_processing: "Bilagor bearbetas. Vänta …",
     generating_response: "Genererar svar",
     thought_in_progress: "Modellen tänker …",

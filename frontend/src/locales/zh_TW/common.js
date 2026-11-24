@@ -695,6 +695,8 @@ const TRANSLATIONS = {
         title: "產生圖像",
         description:
           "讓代理能夠根據聊天內容生成圖片，或編輯與對話相關聯的圖片，並使用您已設定的圖片產生服務。",
+        noProvider:
+          "尚未設定圖像生成供應商，因此代理使用此技能時將會失敗。請先<a>設定供應商</a>。",
       },
     },
     mcp: {
@@ -1121,6 +1123,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "正在載入聊天記錄...",
+    loading_chat_recalling: "正在回顧我們的對話...",
+    loading_chat_remembering: "正在回想我們聊過的內容...",
     send_message: "傳送訊息",
     attach_file: "將檔案附加到這段對話",
     text_size: "調整文字大小。",

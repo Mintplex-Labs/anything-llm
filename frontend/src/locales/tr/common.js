@@ -753,6 +753,8 @@ const TRANSLATIONS = {
         title: "Görseller oluştur",
         description:
           "Ajanın, yapılandırılmış görsel üretim sağlayıcınızla sohbetten görsel oluşturmasına veya ekli görselleri düzenlemesine izin verin.",
+        noProvider:
+          "Yapılandırılmış bir görsel oluşturma sağlayıcısı yok, bu nedenle ajan bu beceriyi kullandığında başarısız olacak. Önce <a>bir sağlayıcı yapılandırın</a>.",
       },
     },
     mcp: {
@@ -1209,6 +1211,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Sohbet geçmişi yükleniyor...",
+    loading_chat_recalling: "Sohbetimizi geri getiriyorum...",
+    loading_chat_remembering: "Ne konuştuğumuzu hatırlıyorum...",
     send_message: "Mesaj gönderin",
     attach_file: "Bu sohbete bir dosya ekleyin",
     text_size: "Metin boyutunu değiştirin.",

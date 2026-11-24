@@ -248,8 +248,10 @@ const SystemPromptVariables = {
       const allVariables = await this.getAll(userId);
       const resolved = new Map();
 
-      // Find all variable patterns in the string
-      const matches = str.match(/\{([^}]+)\}/g) || [];
+      // Find all variable patterns in the string. A placeholder holds no
+      // brace, so one written inside other braces ({"name": "{user.name}"})
+      // is matched on its own instead of from the outer opening brace.
+      const matches = str.match(/\{([^{}]+)\}/g) || [];
 
       // Process each match
       for (const match of new Set(matches)) {
@@ -341,7 +343,7 @@ const SystemPromptVariables = {
         }
       }
       return str.replace(
-        /\{([^}]+)\}/g,
+        /\{([^{}]+)\}/g,
         (match) => resolved.get(match) ?? match
       );
     } catch (error) {

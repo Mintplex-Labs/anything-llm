@@ -378,6 +378,8 @@ const TRANSLATIONS = {
         title: "Képek készítése",
         description:
           "Lehetővé teszi, hogy az ügynök képeket készítsen a csevegésből, vagy szerkessze a beszélgetéshez csatolt képeket a beállított képgeneráló szolgáltatóval.",
+        noProvider:
+          "Nincs beállítva képgeneráló szolgáltató, ezért ez a képesség hibát ad, amikor az ügynök használja. Először <a>állítson be egy szolgáltatót</a>.",
       },
       web: {
         title: "Webes keresés",
@@ -1645,6 +1647,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Csevegési előzmények betöltése...",
+    loading_chat_recalling: "Betöltöm a beszélgetésünket...",
+    loading_chat_remembering: "Felidézem, miről beszélgettünk...",
     attachments_processing:
       "A mellékletek feldolgozása folyamatban. Kérjük, várjon...",
     generating_response: "Válasz készítése",

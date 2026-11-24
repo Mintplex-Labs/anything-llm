@@ -784,6 +784,8 @@ const TRANSLATIONS = {
         title: "Generiranje slika",
         description:
           "Omogućite agentu da generira slike iz razgovora ili da uređuje slike priložene razgovoru, koristeći vaš konfiguriranog pružatelja usluga za generiranje slika.",
+        noProvider:
+          "Nije postavljen pružatelj usluge generiranja slika, pa će ova vještina zakazati kada je agent upotrijebi. Najprije <a>postavite pružatelja</a>.",
       },
     },
     mcp: {
@@ -1633,6 +1635,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Učitavanje povijesti razgovora...",
+    loading_chat_recalling: "Dohvaćam naš razgovor...",
+    loading_chat_remembering: "Prisjećam se o čemu smo razgovarali...",
     attachments_processing: "Privitci se obrađuju. Pričekajte...",
     send_message: "Pošalji poruku",
     attach_file: "Priložite datoteku ovom razgovoru",

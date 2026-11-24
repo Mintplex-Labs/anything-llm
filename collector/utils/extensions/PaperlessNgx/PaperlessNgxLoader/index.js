@@ -1,6 +1,12 @@
 const { htmlToText } = require("html-to-text");
 const pdf = require("pdf-parse");
 
+function documentTitle(doc) {
+  return (
+    doc.original_file_name || doc.title || `Paperless-ngx document ${doc.id}`
+  );
+}
+
 class PaperlessNgxLoader {
   maxConcurrentDownloads = 5;
   downloadTimeoutMs = 120_000;
@@ -221,7 +227,7 @@ class PaperlessNgxLoader {
       pageContent: doc.content || "",
       metadata: {
         id: doc.id,
-        title: doc.original_file_name,
+        title: documentTitle(doc),
         created: doc.created,
         modified: doc.modified,
         added: doc.added,

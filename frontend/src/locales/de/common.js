@@ -791,6 +791,8 @@ const TRANSLATIONS = {
         title: "Bilder generieren",
         description:
           "Ermöglichen Sie dem Agenten, Bilder aus dem Chat zu generieren oder Bilder zu bearbeiten, die an das Gespräch angehängt sind, unter Verwendung Ihres konfigurierten Bildgenerierungsdienstes.",
+        noProvider:
+          "Es ist kein Anbieter für Bildgenerierung eingerichtet, daher schlägt diese Fähigkeit fehl, wenn der Agent sie verwendet. <a>Richten Sie zuerst einen Anbieter ein</a>.",
       },
     },
     "performance-warning":
@@ -1385,6 +1387,10 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Chatverlauf wird geladen...",
+    loading_chat_recalling: "Unser Gespräch wird abgerufen...",
+    loading_chat_remembering:
+      "Ich erinnere mich, worüber wir gesprochen haben...",
     attachments_processing: "Anhänge werden verarbeitet. Bitte warten...",
     send_message: "Schreibe eine Nachricht",
     attach_file: "Füge eine Datei zum Chat hinzu",

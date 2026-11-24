@@ -1,5 +1,9 @@
 const gmailLib = require("../lib.js");
-const { prepareAttachment, MAX_TOTAL_ATTACHMENT_SIZE } = require("../lib.js");
+const {
+  prepareAttachment,
+  MAX_TOTAL_ATTACHMENT_SIZE,
+  ATTACHMENTS_ENABLED,
+} = require("../lib.js");
 const { humanFileSize } = require("../../../../../helpers");
 const { applyEmailEdits } = require("../../../../../helpers/agents");
 
@@ -34,14 +38,18 @@ module.exports.GmailReplyToThread = {
                 replyAll: true,
               }),
             },
-            {
-              prompt: "Reply with an attachment",
-              call: JSON.stringify({
-                threadId: "18abc123def",
-                body: "Please find the requested document attached.",
-                attachments: ["/Users/me/Documents/document.pdf"],
-              }),
-            },
+            ...(ATTACHMENTS_ENABLED
+              ? [
+                  {
+                    prompt: "Reply with an attachment",
+                    call: JSON.stringify({
+                      threadId: "18abc123def",
+                      body: "Please find the requested document attached.",
+                      attachments: ["/Users/me/Documents/document.pdf"],
+                    }),
+                  },
+                ]
+              : []),
           ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
@@ -74,12 +82,14 @@ module.exports.GmailReplyToThread = {
                 type: "string",
                 description: "HTML version of the reply body. Optional.",
               },
-              attachments: {
-                type: "array",
-                items: { type: "string" },
-                description:
-                  "Array of absolute file paths to attach to the reply.",
-              },
+              ...(ATTACHMENTS_ENABLED && {
+                attachments: {
+                  type: "array",
+                  items: { type: "string" },
+                  description:
+                    "Array of absolute file paths to attach to the reply.",
+                },
+              }),
             },
             required: ["threadId", "body"],
             additionalProperties: false,

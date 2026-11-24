@@ -784,6 +784,8 @@ const TRANSLATIONS = {
         title: "Generovat obrázky",
         description:
           "Nechte, aby agent generoval obrázky z chatu nebo upravoval obrázky přiložené ke konverzaci pomocí vašeho nakonfigurovaného poskytovatele pro generování obrázků.",
+        noProvider:
+          "Není nastaven žádný poskytovatel generování obrázků, takže tato dovednost selže, když ji agent použije. Nejprve <a>nastavte poskytovatele</a>.",
       },
     },
     mcp: {
@@ -1386,6 +1388,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Načítání historie chatu...",
+    loading_chat_recalling: "Obnovuji náš rozhovor...",
+    loading_chat_remembering: "Vzpomínám, o čem jsme mluvili...",
     attachments_processing: "Přílohy se zpracovávají. Prosím čekejte...",
     send_message: "Odeslat zprávu",
     attach_file: "Přiložit soubor k tomuto chatu",

@@ -1468,8 +1468,14 @@ async function downloadEmbeddingModelIfRequired(key, prevValue, nextValue) {
  * @returns {string} - An error message if the connection string is invalid, otherwise null.
  */
 async function looksLikePostgresConnectionString(connectionString = null) {
-  if (!connectionString || !connectionString.startsWith("postgresql://"))
-    return "Invalid Postgres connection string. Must start with postgresql://";
+  // node-postgres accepts both URI schemes that libpq documents.
+  if (
+    !connectionString ||
+    !["postgresql://", "postgres://"].some((scheme) =>
+      connectionString.startsWith(scheme)
+    )
+  )
+    return "Invalid Postgres connection string. Must start with postgresql:// or postgres://";
   if (connectionString.includes(" "))
     return "Invalid Postgres connection string. Must not contain spaces.";
   return null;

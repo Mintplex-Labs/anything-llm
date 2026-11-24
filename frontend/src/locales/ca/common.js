@@ -799,6 +799,8 @@ const TRANSLATIONS = {
         title: "Generar imatges",
         description:
           "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
+        noProvider:
+          "No hi ha cap proveïdor de generació d'imatges configurat, de manera que aquesta habilitat fallarà quan l'agent la utilitzi. <a>Configura un proveïdor</a> primer.",
       },
     },
     mcp: {
@@ -1476,6 +1478,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "S'està carregant l'historial del xat...",
+    loading_chat_recalling: "Recuperant la nostra conversa...",
+    loading_chat_remembering: "Recordant de què vam parlar...",
     attachments_processing:
       "Els adjunts s'estan processant. Si us plau, espera...",
     send_message: "Envia un missatge",

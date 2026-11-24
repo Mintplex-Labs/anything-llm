@@ -737,6 +737,8 @@ const TRANSLATIONS = {
         title: "Generer billeder",
         description:
           "Lad agenten generere billeder fra chat, eller redigere de vedhæftede billeder i samtalen, ved hjælp af den leverandør, du har konfigureret til billedgenerering.",
+        noProvider:
+          "Der er ikke konfigureret en udbyder af billedgenerering, så denne færdighed vil fejle, når agenten bruger den. <a>Konfigurer en udbyder</a> først.",
       },
     },
     mcp: {
@@ -1193,6 +1195,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Indlæser chathistorik...",
+    loading_chat_recalling: "Henter vores samtale...",
+    loading_chat_remembering: "Husker, hvad vi talte om...",
     send_message: "Send en besked",
     attach_file: "Vedhæft en fil til denne chat",
     text_size: "Ændr tekststørrelse.",

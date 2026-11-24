@@ -731,6 +731,8 @@ const TRANSLATIONS = {
         title: "生成图像",
         description:
           "允许代理使用您配置的图像生成提供商，从聊天内容中生成图片，或编辑与对话相关的图片。",
+        noProvider:
+          "尚未设置图像生成提供商，因此代理使用此技能时将会失败。请先<a>设置提供商</a>。",
       },
     },
     mcp: {
@@ -1272,6 +1274,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "正在加载聊天记录...",
+    loading_chat_recalling: "正在回顾我们的对话...",
+    loading_chat_remembering: "正在回想我们聊过的内容...",
     send_message: "发送消息",
     attach_file: "向此对话附加文件",
     text_size: "更改文字大小。",

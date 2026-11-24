@@ -52,11 +52,12 @@ class CreateFilesManager {
 
   /**
    * Checks if file creation tools are available.
+   * Files are only ever written to storage/generated-files with server-generated
+   * names, so this is safe on every runtime (unlike the filesystem skill).
    * @returns {boolean} True if tools are available
    */
   isToolAvailable() {
-    if (process.env.NODE_ENV === "development") return true;
-    return process.env.ANYTHING_LLM_RUNTIME === "docker";
+    return true;
   }
 
   /**

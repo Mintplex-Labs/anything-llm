@@ -790,6 +790,8 @@ const TRANSLATIONS = {
         title: "Generuj obrazy",
         description:
           "Pozwól przedstawicielowi generować obrazy na podstawie rozmowy lub edytować dołączone obrazy, korzystając z wybranego dostawcy usług generowania obrazów.",
+        noProvider:
+          "Nie skonfigurowano dostawcy generowania obrazów, więc ta umiejętność zakończy się błędem, gdy agent jej użyje. Najpierw <a>skonfiguruj dostawcę</a>.",
       },
     },
     mcp: {
@@ -1376,6 +1378,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Ładowanie historii czatu...",
+    loading_chat_recalling: "Odtwarzam naszą rozmowę...",
+    loading_chat_remembering: "Przypominam sobie, o czym rozmawialiśmy...",
     attachments_processing: "Załączniki są przetwarzane. Proszę czekać...",
     send_message: "Wyślij wiadomość",
     attach_file: "Dołącz plik do tego czatu",

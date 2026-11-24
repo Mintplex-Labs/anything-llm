@@ -12,6 +12,7 @@ const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 const { patchShellEnvironmentPath } = require("../../helpers/shell");
+const { isCloud } = require("../../helpers/runtime");
 const {
   forwardIdentityFields,
   identityFetch,
@@ -570,6 +571,7 @@ class MCPHypervisor {
    * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
    */
   async bootMCPServers() {
+    if (isCloud()) return this.mcpLoadingResults; // MCP servers are not offered on cloud
     if (this.#booted) return this.mcpLoadingResults;
     this.#bootPromise ??= this.#bootConfiguredMCPServers().finally(() => {
       this.#bootPromise = null;

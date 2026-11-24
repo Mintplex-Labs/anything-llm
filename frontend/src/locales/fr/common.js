@@ -761,6 +761,8 @@ const TRANSLATIONS = {
         title: "Générer des images",
         description:
           "Permettez à l'agent de générer des images à partir du contenu de la conversation, ou d'éditer les images jointes à la conversation, en utilisant le fournisseur de génération d'images que vous avez configuré.",
+        noProvider:
+          "Aucun fournisseur de génération d'images n'est configuré : cette compétence échouera lorsque l'agent l'utilisera. <a>Configurez d'abord un fournisseur</a>.",
       },
     },
     mcp: {
@@ -1220,6 +1222,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Chargement de l'historique du chat...",
+    loading_chat_recalling: "Je retrouve notre conversation...",
+    loading_chat_remembering: "Je me souviens de ce dont nous avons parlé...",
     send_message: "Envoyer un message",
     attach_file: "Joindre un fichier",
     text_size: "Modifier la taille du texte",

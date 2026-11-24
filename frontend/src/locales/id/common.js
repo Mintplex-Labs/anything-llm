@@ -778,6 +778,8 @@ const TRANSLATIONS = {
         title: "Menghasilkan gambar",
         description:
           "Izinkan agen untuk menghasilkan gambar dari percakapan, atau mengedit gambar yang terlampir dalam percakapan, menggunakan penyedia pembuatan gambar yang telah Anda konfigurasi.",
+        noProvider:
+          "Belum ada penyedia pembuatan gambar yang disiapkan, sehingga keterampilan ini akan gagal saat digunakan oleh agen. <a>Siapkan penyedia</a> terlebih dahulu.",
       },
     },
     mcp: {
@@ -1630,6 +1632,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Memuat riwayat obrolan...",
+    loading_chat_recalling: "Memanggil kembali percakapan kita...",
+    loading_chat_remembering: "Mengingat apa yang kita bicarakan...",
     attachments_processing: "Lampiran sedang diproses. Harap tunggu...",
     send_message: "Kirim pesan",
     attach_file: "Lampirkan berkas ke obrolan ini",

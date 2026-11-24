@@ -190,4 +190,24 @@ describe("SystemPromptVariables.expandSystemPromptVariables", () => {
     );
     expect(out).toBe("{unknownvariable} {unknownvariable}");
   });
+
+  it("expands placeholders written inside other braces", async () => {
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      'Reply as JSON: {"user": "{user.name}", "workspace": "{workspace.name}"}',
+      mockUser.id,
+      mockWorkspace.id
+    );
+    expect(out).toBe(
+      `Reply as JSON: {"user": "${mockUser.username}", "workspace": "${mockWorkspace.name}"}`
+    );
+  });
+
+  it("expands a placeholder that follows an unclosed brace", async () => {
+    const out = await SystemPromptVariables.expandSystemPromptVariables(
+      "Never output a lone { character. You run in {mystaticvariable}"
+    );
+    expect(out).toBe(
+      `Never output a lone { character. You run in ${mockSystemPromptVariables[0].value}`
+    );
+  });
 });

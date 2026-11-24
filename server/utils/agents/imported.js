@@ -3,6 +3,7 @@ const path = require("path");
 const { safeJsonParse } = require("../http");
 const { isWithin, normalizePath } = require("../files");
 const { CollectorApi } = require("../collectorApi");
+const { isCloud } = require("../helpers/runtime");
 const pluginsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../storage/plugins/agent-skills")
@@ -65,6 +66,7 @@ class ImportedPlugin {
    */
   static activeImportedPlugins() {
     const plugins = [];
+    if (isCloud()) return plugins; // custom skills are not offered on cloud
     this.checkPluginFolderExists();
     const folders = fs.readdirSync(path.resolve(pluginsPath));
     for (const folder of folders) {

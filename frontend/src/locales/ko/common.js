@@ -754,6 +754,8 @@ const TRANSLATIONS = {
         title: "이미지 생성",
         description:
           "에이전트가 채팅에서 이미지를 생성하거나, 구성된 이미지 생성 제공업체를 사용하여 대화에 첨부된 이미지를 편집할 수 있도록 합니다.",
+        noProvider:
+          "이미지 생성 제공자가 설정되어 있지 않아 에이전트가 이 스킬을 사용하면 실패합니다. 먼저 <a>제공자를 설정</a>하세요.",
       },
     },
     mcp: {
@@ -1329,6 +1331,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "채팅 기록을 불러오는 중...",
+    loading_chat_recalling: "우리의 대화를 불러오는 중...",
+    loading_chat_remembering: "우리가 나눈 이야기를 기억하는 중...",
     attachments_processing:
       "첨부 파일을 처리 중입니다. 잠시만 기다려 주세요...",
     send_message: "메시지 보내기",

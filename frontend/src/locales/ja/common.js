@@ -726,6 +726,8 @@ const TRANSLATIONS = {
         title: "画像を生成する",
         description:
           "エージェントが、設定した画像生成プロバイダーを使用して、チャットから画像を生成したり、会話に添付された画像を編集できるようにする。",
+        noProvider:
+          "画像生成プロバイダーが設定されていないため、エージェントがこのスキルを使用すると失敗します。まず<a>プロバイダーを設定</a>してください。",
       },
     },
     mcp: {
@@ -1177,6 +1179,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "チャット履歴を読み込み中...",
+    loading_chat_recalling: "会話を呼び出しています...",
+    loading_chat_remembering: "何を話したか思い出しています...",
     send_message: "メッセージを送信",
     attach_file: "このチャットにファイルを添付",
     text_size: "テキストサイズを変更",
@@ -1185,17 +1190,16 @@ const TRANSLATIONS = {
     attachments_processing:
       "添付ファイルの処理中です。しばらくお待ちください。",
     tts_speak_message: "TTS Speak メッセージ",
-    copy: "以下に翻訳を示します。",
-    regenerate: "再生",
-    regenerate_response: "申し訳ありませんが、その質問にはお答えできません。",
+    copy: "コピー",
+    regenerate: "再生成",
+    regenerate_response: "応答を再生成",
     good_response: "良い反応",
-    more_actions:
-      "さらに詳細な情報が必要な場合は、お気軽にお問い合わせください。",
+    more_actions: "その他の操作",
     fork: "フォーク",
     delete: "削除",
     cancel: "キャンセル",
-    edit_prompt: "編集のヒント",
-    edit_response: "編集内容を保存します。",
+    edit_prompt: "プロンプトを編集",
+    edit_response: "応答を編集",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",
@@ -1224,14 +1228,14 @@ const TRANSLATIONS = {
     edit_info_user:
       "「送信」はAIの応答を再生成します。「保存」は、あなたのメッセージのみを更新します。",
     edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
-    see_less: "詳細を見る",
+    see_less: "表示を減らす",
     see_more: "詳細を見る",
     tools: "道具",
     text_size_label: "文字サイズ",
     select_model: "モデルを選択",
     sources: "出典",
     document: "文書",
-    similarity_match: "試合",
+    similarity_match: "一致",
     source_count_one: "{{count}} 参照",
     source_count_other: "{{count}} への参照",
     add_new: "新しいものを追加する",
@@ -1346,7 +1350,7 @@ const TRANSLATIONS = {
       "マイクへのアクセスができません。「許可を付与して、再度お試しください。」",
     stt_transcription_failed: "文字起こしに失敗しました: {{error}}",
     export: "チャットを以下のような形式でエクスポートする：",
-    exporting: "輸出…",
+    exporting: "エクスポート中…",
     preset_img_description: "テキストプロンプトから画像を生成する。",
     generating_response: "応答を生成する",
     response_failed: "メッセージへの返信ができませんでした。",

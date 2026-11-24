@@ -746,6 +746,8 @@ const TRANSLATIONS = {
         title: "Afbeeldingen genereren",
         description:
           "Laat de agent afbeeldingen genereren op basis van de chat, of bestaande afbeeldingen in het gesprek bewerken, met behulp van uw geconfigureerde dienst voor het genereren van afbeeldingen.",
+        noProvider:
+          "Er is geen provider voor beeldgeneratie ingesteld, dus deze vaardigheid mislukt wanneer de agent hem gebruikt. <a>Stel eerst een provider in</a>.",
       },
     },
     mcp: {
@@ -1205,6 +1207,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Chatgeschiedenis laden...",
+    loading_chat_recalling: "Ons gesprek ophalen...",
+    loading_chat_remembering: "Herinneren waar we het over hadden...",
     send_message: "Een bericht verzenden",
     attach_file: "Een bestand aan deze chat toevoegen",
     text_size: "Tekstgrootte wijzigen.",

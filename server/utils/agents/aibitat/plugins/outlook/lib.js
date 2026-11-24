@@ -6,8 +6,11 @@ const { SystemSettings } = require("../../../../../models/systemSettings");
 const { CollectorApi } = require("../../../../collectorApi");
 const { humanFileSize } = require("../../../../helpers");
 const { safeJsonParse } = require("../../../../http");
+const { isDocker, isCloud } = require("../../../../helpers/runtime");
 
 const MAX_TOTAL_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB limit for Outlook
+// Attaching reads arbitrary paths from the host, so it is off wherever the host is not the user's own machine.
+const ATTACHMENTS_ENABLED = !isDocker() && !isCloud();
 // readThread keeps only the newest messages of a thread, fetched a page at a
 // time since each message carries its body and expanded attachments.
 const MAX_THREAD_MESSAGES = 50;
@@ -39,15 +42,19 @@ function needsFullBody(msg) {
 }
 
 /**
- * Parses a comma-separated email string into Graph API recipient format.
- * @param {string} emailString - Comma-separated email addresses
+ * Parses an email string into Graph API recipient format. Addresses can be
+ * separated by commas or by semicolons (the separator Outlook itself uses).
+ * Empty entries, e.g. from a trailing separator, are dropped.
+ * @param {string} emailString - Comma or semicolon separated email addresses
  * @returns {Array<{emailAddress: {address: string}}>}
  */
 function parseEmailRecipients(emailString) {
   if (!emailString) return [];
-  return emailString.split(",").map((email) => ({
-    emailAddress: { address: email.trim() },
-  }));
+  return emailString
+    .split(/[,;]/)
+    .map((email) => email.trim())
+    .filter(Boolean)
+    .map((address) => ({ emailAddress: { address } }));
 }
 
 /**
@@ -253,10 +260,10 @@ async function prepareAttachmentsWithValidation(
  * @returns {{success: boolean, attachment?: object, error?: string, fileInfo?: object}}
  */
 function prepareAttachment(filePath) {
-  if (process.env.ANYTHING_LLM_RUNTIME === "docker") {
+  if (!ATTACHMENTS_ENABLED) {
     return {
       success: false,
-      error: "File attachments are not supported in Docker environments.",
+      error: "File attachments are not supported on this deployment.",
     };
   }
 
@@ -1541,6 +1548,7 @@ module.exports.handleAttachments = handleAttachments;
 module.exports.isParseableMimeType = isParseableMimeType;
 module.exports.PARSEABLE_ATTACHMENT_MIMES = PARSEABLE_ATTACHMENT_MIMES;
 module.exports.MAX_TOTAL_ATTACHMENT_SIZE = MAX_TOTAL_ATTACHMENT_SIZE;
+module.exports.ATTACHMENTS_ENABLED = ATTACHMENTS_ENABLED;
 module.exports.AUTH_TYPES = AUTH_TYPES;
 module.exports.formatMessageSummary = formatMessageSummary;
 module.exports.mapGraphMessage = mapGraphMessage;

@@ -549,22 +549,29 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
         elements.push(await processTable(child, docx, log, colors));
         elements.push(new Paragraph({ children: [] }));
       } else if (tagName === "blockquote") {
-        const inlineChildren = await processInlineElements(
-          child,
-          docx,
-          { italics: true, color: "666666" },
-          log
-        );
-        elements.push(
-          new Paragraph({
-            children: inlineChildren,
-            indent: { left: 720 },
-            border: {
-              left: { style: "single", size: 24, color: colors.accent },
-            },
-            spacing: { before: 200, after: 200 },
-          })
-        );
+        for (const block of quoteParagraphs(child)) {
+          const inlineChildren = await processInlineElements(
+            block,
+            docx,
+            { italics: true, color: "666666" },
+            log
+          );
+          if (
+            block.nodeType === block.DOCUMENT_FRAGMENT_NODE &&
+            !inlineChildren.length
+          )
+            continue;
+          elements.push(
+            new Paragraph({
+              children: inlineChildren,
+              indent: { left: 720 },
+              border: {
+                left: { style: "single", size: 24, color: colors.accent },
+              },
+              spacing: { before: 200, after: 200 },
+            })
+          );
+        }
       } else if (tagName === "pre") {
         const codeElement = child.querySelector("code");
         const codeText = codeElement
@@ -640,6 +647,33 @@ async function htmlToDocxElements(html, libs, log, theme = null) {
   }
 
   return elements;
+}
+
+/**
+ * Splits a blockquote into the nodes that should each become one quoted Word paragraph:
+ * every direct <p>, plus a fragment for any loose content between them.
+ * A blockquote with no direct <p> is yielded whole.
+ * @param {Element} quote - The blockquote DOM element
+ * @returns {Generator<Element|DocumentFragment>}
+ */
+function* quoteParagraphs(quote) {
+  if (!Array.from(quote.children).some((node) => node.tagName === "P")) {
+    yield quote;
+    return;
+  }
+  let inline = quote.ownerDocument.createDocumentFragment();
+  const hasContent = () =>
+    inline.textContent.trim() || inline.querySelector("br, img");
+  for (const node of Array.from(quote.childNodes)) {
+    if (node.nodeName === "P") {
+      if (hasContent()) yield inline;
+      yield node;
+      inline = quote.ownerDocument.createDocumentFragment();
+    } else {
+      inline.append(node);
+    }
+  }
+  if (hasContent()) yield inline;
 }
 
 /**

@@ -787,6 +787,8 @@ const TRANSLATIONS = {
         title: "Gerar imagens",
         description:
           "Permita que o agente gere imagens a partir do chat, ou edite as imagens anexadas à conversa, utilizando o provedor de geração de imagens configurado.",
+        noProvider:
+          "Nenhum provedor de geração de imagens está configurado, então esta habilidade falhará quando o agente usá-la. <a>Configure um provedor</a> primeiro.",
       },
     },
     mcp: {
@@ -1360,6 +1362,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Carregando histórico do chat...",
+    loading_chat_recalling: "Recuperando nossa conversa...",
+    loading_chat_remembering: "Lembrando do que conversamos...",
     attachments_processing: "Anexos em processamento. Aguarde...",
     send_message: "Enviar mensagem",
     attach_file: "Anexar arquivo ao chat",

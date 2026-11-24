@@ -5,6 +5,15 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
+const { isCloud } = require("../utils/helpers/runtime");
+
+/**
+ * Custom (imported) agent skills and MCP servers are not offered on cloud.
+ * @returns {boolean}
+ */
+function isCustomSkillsAndMcpAvailable() {
+  return !isCloud();
+}
 
 function agentSkillWhitelistEndpoints(app) {
   if (!app) return;
@@ -53,6 +62,23 @@ function agentSkillWhitelistEndpoints(app) {
         return response
           .status(200)
           .json({ available: !!process.env.IMAGE_GEN_PROVIDER });
+      } catch (e) {
+        console.error(e);
+        return response
+          .status(500)
+          .json({ available: false, error: e.message });
+      }
+    }
+  );
+
+  app.get(
+    "/agent-skills/custom-skills-and-mcp/is-available",
+    [validatedRequest],
+    async (_request, response) => {
+      try {
+        return response
+          .status(200)
+          .json({ available: isCustomSkillsAndMcpAvailable() });
       } catch (e) {
         console.error(e);
         return response

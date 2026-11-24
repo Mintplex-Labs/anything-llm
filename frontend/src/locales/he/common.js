@@ -751,6 +751,8 @@ const TRANSLATIONS = {
         title: "יצירת תמונות",
         description:
           "אפשר לסוכן ליצור תמונות מתוך השיחה, או לערוך תמונות המצורפות לשיחה, תוך שימוש בספק יצירת התמונות שהגדרת.",
+        noProvider:
+          "לא הוגדר ספק ליצירת תמונות, ולכן מיומנות זו תיכשל כאשר הסוכן ישתמש בה. <a>הגדירו ספק</a> תחילה.",
       },
     },
     mcp: {
@@ -1316,6 +1318,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "טוען היסטוריית צ'אט...",
+    loading_chat_recalling: "משחזר את השיחה שלנו...",
+    loading_chat_remembering: "נזכר במה שדיברנו עליו...",
     attachments_processing: "קבצים מצורפים בעיבוד. אנא המתן...",
     send_message: "שלח הודעה",
     attach_file: "צרף קובץ לצ'אט זה",

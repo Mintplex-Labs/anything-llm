@@ -10,6 +10,7 @@ export default function GenericSkillPanel({
   disabled = false,
   image,
   icon,
+  children = null,
 }) {
   return (
     <div className="p-2">
@@ -36,6 +37,7 @@ export default function GenericSkillPanel({
             onChange={() => toggleSkill(skill)}
           />
         </div>
+        {children}
         <img src={image} alt={title} className="w-full rounded-md" />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           {description}

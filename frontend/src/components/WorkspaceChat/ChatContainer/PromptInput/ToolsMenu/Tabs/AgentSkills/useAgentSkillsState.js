@@ -26,6 +26,7 @@ export default function useAgentSkillsState(defaultSkills) {
   const [mcpServers, setMcpServers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mcpLoading, setMcpLoading] = useState(true);
+  const [showCustomSkillsAndMcp, setShowCustomSkillsAndMcp] = useState(false);
 
   // Sub-skill preferences (managed by dedicated hook)
   const subSkillPrefs = useSubSkillPreferences();
@@ -33,7 +34,11 @@ export default function useAgentSkillsState(defaultSkills) {
   // Fetch all skill settings on mount
   useEffect(() => {
     fetchSkillSettings();
-    fetchMcpServers();
+    System.isCustomSkillsAndMcpAvailable().then((available) => {
+      setShowCustomSkillsAndMcp(available);
+      if (available) fetchMcpServers();
+      else setMcpLoading(false);
+    });
   }, []);
 
   async function fetchSkillSettings() {
@@ -185,7 +190,7 @@ export default function useAgentSkillsState(defaultSkills) {
     isMultiUser,
     disabledDefaults,
     enabledConfigurable,
-    importedSkills,
+    importedSkills: showCustomSkillsAndMcp ? importedSkills : [],
     flows,
     mcpServers,
     loading,

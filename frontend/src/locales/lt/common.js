@@ -784,6 +784,8 @@ const TRANSLATIONS = {
         title: "Sukurti vaizdus",
         description:
           "Leiskite agentui generuoti vaizdus iš pokalbio arba redaguoti pokalbio metu pridedamus vaizdus, naudodami jūsų konfiguruotą vaizdų generavimo paslaugą.",
+        noProvider:
+          "Nenustatytas joks vaizdų generavimo teikėjas, todėl šis įgūdis nepavyks, kai agentas jį naudos. Pirmiausia <a>nustatykite teikėją</a>.",
       },
     },
     mcp: {
@@ -1390,6 +1392,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Įkeliama pokalbių istorija...",
+    loading_chat_recalling: "Atkuriu mūsų pokalbį...",
+    loading_chat_remembering: "Prisimenu, apie ką kalbėjome...",
     attachments_processing: "Priedai apdorojami. Palaukite...",
     send_message: "Rašyti žinutę",
     attach_file: "Pridėti failą prie šio pokalbio",

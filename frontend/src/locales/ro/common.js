@@ -592,6 +592,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
+    loading_chat_history: "Se încarcă istoricul conversației...",
+    loading_chat_recalling: "Reîncarc conversația noastră...",
+    loading_chat_remembering: "Îmi amintesc despre ce am vorbit...",
     attachments_processing:
       "Fișierele atașate se procesează. Te rugăm să aștepți...",
     send_message: "Trimite mesaj",
@@ -1387,6 +1390,8 @@ const TRANSLATIONS = {
         title: "Generați imagini",
         description:
           "Permiteți agenților să genereze imagini din conversații sau să editeze imaginile atașate la acestea, folosind furnizorul de generare de imagini configurat de dumneavoastră.",
+        noProvider:
+          "Nu este configurat niciun furnizor de generare a imaginilor, așa că această abilitate va eșua când agentul o folosește. <a>Configurați mai întâi un furnizor</a>.",
       },
     },
     mcp: {
