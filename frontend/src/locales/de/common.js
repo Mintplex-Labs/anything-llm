@@ -1128,6 +1128,7 @@ const TRANSLATIONS = {
       message: "Nachricht",
       response: "Antwort",
       at: "Gesendet am",
+      feedback: "Rückmeldung",
     },
   },
   event: {

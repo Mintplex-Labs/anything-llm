@@ -942,6 +942,7 @@ const TRANSLATIONS = {
       message: "Tin nhắn",
       response: "Phản hồi",
       at: "Gửi lúc",
+      feedback: "Phản hồi",
     },
   },
   event: {

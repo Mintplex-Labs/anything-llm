@@ -1115,6 +1115,7 @@ const TRANSLATIONS = {
       message: "Žinutė",
       response: "Atsakymas",
       at: "Išsiųsta",
+      feedback: "Atsiliepimai",
     },
   },
   security: {

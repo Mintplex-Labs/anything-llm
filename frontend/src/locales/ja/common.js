@@ -927,6 +927,7 @@ const TRANSLATIONS = {
       message: "メッセージ",
       response: "応答",
       at: "送信日時",
+      feedback: "フィードバック",
     },
   },
   event: {

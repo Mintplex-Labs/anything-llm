@@ -935,6 +935,7 @@ const TRANSLATIONS = {
       message: "پیام",
       response: "پاسخ",
       at: "زمان ارسال",
+      feedback: "بازخورد",
     },
   },
   event: {

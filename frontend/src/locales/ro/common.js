@@ -331,6 +331,7 @@ const TRANSLATIONS = {
       message: "Mesaj",
       response: "Răspuns",
       at: "Trimis la",
+      feedback: "Feedback",
     },
   },
   event: {

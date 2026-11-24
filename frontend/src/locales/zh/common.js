@@ -1037,6 +1037,7 @@ const TRANSLATIONS = {
       message: "消息",
       response: "响应",
       at: "发送时间",
+      feedback: "反馈",
     },
   },
   event: {

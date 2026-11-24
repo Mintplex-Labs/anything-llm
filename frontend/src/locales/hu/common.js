@@ -1305,6 +1305,7 @@ const TRANSLATIONS = {
       message: "Üzenet",
       response: "Válasz",
       at: "Küldés ideje",
+      feedback: "Vélemény",
     },
   },
   telegram: {

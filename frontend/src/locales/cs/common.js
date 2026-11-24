@@ -1112,6 +1112,7 @@ const TRANSLATIONS = {
       message: "Zpráva",
       response: "Odpověď",
       at: "Odesláno v",
+      feedback: "Zpětná vazba",
     },
   },
   security: {

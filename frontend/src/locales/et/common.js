@@ -1086,6 +1086,7 @@ const TRANSLATIONS = {
       message: "Sõnum",
       response: "Vastus",
       at: "Saadetud",
+      feedback: "Tagasiside",
     },
   },
   event: {

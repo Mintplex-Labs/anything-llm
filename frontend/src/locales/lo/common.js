@@ -1233,6 +1233,7 @@ const TRANSLATIONS = {
       message: "ຂໍ້ຄວາມ",
       response: "ຄຳຕອບ",
       at: "ສົ່ງເມື່ອ",
+      feedback: "ຄຳຕິຊົມ",
     },
   },
   telegram: {

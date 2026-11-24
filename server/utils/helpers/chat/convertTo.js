@@ -94,6 +94,7 @@ async function prepareChatsForExport(format = "jsonl", chatType = "workspace") {
           workspace: chat.embed_config
             ? chat.embed_config.workspace.name
             : "unknown workspace",
+          rating: chat.feedbackScore ? "GOOD" : "--",
         };
       }
 

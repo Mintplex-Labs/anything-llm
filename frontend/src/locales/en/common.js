@@ -1296,6 +1296,7 @@ const TRANSLATIONS = {
       sender: "Sender",
       message: "Message",
       response: "Response",
+      feedback: "Feedback",
       at: "Sent At",
     },
   },

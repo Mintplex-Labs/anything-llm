@@ -1295,6 +1295,7 @@ const TRANSLATIONS = {
       message: "Poruka",
       response: "Odgovor",
       at: "Poslano u",
+      feedback: "Povratne informacije",
     },
   },
   telegram: {

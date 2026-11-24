@@ -1290,6 +1290,7 @@ const TRANSLATIONS = {
       message: "Pesan",
       response: "Respons",
       at: "Dikirim Pada",
+      feedback: "Umpan balik",
     },
   },
   telegram: {

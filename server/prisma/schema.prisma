@@ -262,6 +262,7 @@ model embed_chats {
   connection_information String?
   embed_id               Int
   usersId                Int?
+  feedbackScore          Boolean?
   createdAt              DateTime      @default(now())
   embed_config           embed_configs @relation(fields: [embed_id], references: [id], onDelete: Cascade)
   users                  users?        @relation(fields: [usersId], references: [id])

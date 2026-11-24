@@ -1279,6 +1279,7 @@ const TRANSLATIONS = {
       message: "संदेश",
       response: "उत्तर",
       at: "भेजा गया समय",
+      feedback: "प्रतिक्रिया",
     },
   },
   telegram: {
