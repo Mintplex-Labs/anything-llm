@@ -27,6 +27,19 @@ describe("messageToSpeech", () => {
     ["Before\n```js\nconst x = 1;\n```\nAfter", "Before After"],
     ["# Title\n- one\n- two", "Title one two"],
     ["See [the docs](https://example.com) 🎉", "See the docs"],
+    [
+      "Use it when x < 5 and y > 3, otherwise skip.",
+      "Use it when x < 5 and y > 3, otherwise skip.",
+    ],
+    [
+      "Temperatures <0 are invalid; values >100 too.",
+      "Temperatures <0 are invalid; values >100 too.",
+    ],
+    [
+      'A <b>bold</b> word<br/>and a <span class="x">span</span>',
+      "A bold word and a span",
+    ],
+    ["Done.<!-- internal note -->", "Done."],
     [undefined, ""],
   ])("%j", (input, expected) => {
     expect(messageToSpeech(input)).toBe(expected);

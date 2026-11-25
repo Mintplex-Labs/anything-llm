@@ -95,8 +95,11 @@ export default function messageToSpeech(message = "") {
   text = text.replace(/^\s*\|?\s*[:\-\s|]+\|[:\-\s|]+\s*$/gm, "");
   text = text.replace(/\|/g, ", ");
 
-  // HTML tags: strip but keep their text content.
-  text = text.replace(/<\/?[^>]+>/g, " ");
+  /*
+   * HTML tags and comments: strip but keep their text content. A tag starts
+   * with a letter, so "x < 5 and y > 3" is read whole.
+   */
+  text = text.replace(/<(?:\/?[a-z]|!)[^>]*>/gi, " ");
 
   /*
    * Emoji: TTS engines read these out by name ("smiling face with smiling
