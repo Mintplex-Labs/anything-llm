@@ -289,10 +289,12 @@ class AstraDB extends VectorDatabase {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     namespace = sanitizeNamespace(namespace);
-    if (!(await this.namespaceExists(client, namespace)))
-      throw new Error(
-        "Invalid namespace - has it been collected and populated yet?"
+    if (!(await this.namespaceExists(client, namespace))) {
+      this.logger(
+        `deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
       );
+      return;
+    }
     const collection = await client.collection(namespace);
 
     const knownDocuments = await DocumentVectors.where({ docId });
