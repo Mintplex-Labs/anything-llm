@@ -26,6 +26,7 @@ jest.mock("../../../models/systemSettings", () => ({
 }));
 jest.mock("../../../models/apiKeys", () => ({
   ApiKey: {
+    ...jest.requireActual("../../../models/apiKeys").ApiKey,
     get: jest.fn(async ({ secret }) =>
       secret === "valid-key" ? { id: 1, secret } : null
     ),

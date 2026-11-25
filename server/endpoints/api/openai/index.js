@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { Workspace } = require("../../../models/workspace");
+const { ApiKey } = require("../../../models/apiKeys");
 const { getEmbeddingEngineSelection } = require("../../../utils/helpers");
 const { reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -54,7 +55,9 @@ function apiOpenAICompatibleEndpoints(app) {
     */
     try {
       const data = [];
-      const workspaces = await Workspace.where();
+      const workspaces = await Workspace.where(
+        ApiKey.workspaceClause(response.locals.apiKey)
+      );
       for (const workspace of workspaces) {
         data.push({
           id: workspace.slug,
@@ -106,14 +109,8 @@ function apiOpenAICompatibleEndpoints(app) {
       }
       */
       try {
-        const {
-          model,
-          messages = [],
-          temperature,
-          stream = false,
-        } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(model) });
-        if (!workspace) return response.status(401).end();
+        const { messages = [], temperature, stream = false } = reqBody(request);
+        const { workspace } = response.locals;
 
         const userMessage = messages.pop();
         if (userMessage?.role !== "user") {
@@ -402,7 +399,9 @@ function apiOpenAICompatibleEndpoints(app) {
 
         const data = [];
         const VectorDBProvider = process.env.VECTOR_DB || "lancedb";
-        const workspaces = await Workspace.where();
+        const workspaces = await Workspace.where(
+          ApiKey.workspaceClause(response.locals.apiKey)
+        );
 
         for (const workspace of workspaces) {
           data.push({

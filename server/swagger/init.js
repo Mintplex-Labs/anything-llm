@@ -7,7 +7,7 @@ const doc = {
     version: "1.0.0",
     title: "AnythingLLM Developer API",
     description:
-      "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.",
+      "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.\n\nAPI keys are either full access or hold one or more scopes: chat (chat with workspaces), workspace (update or delete workspaces and their documents, and every thread endpoint including thread chats), documents (the shared document store and uploads), openai (the OpenAI compatible endpoints, chat completions also needs chat), embeds, mcp, users (users, invites and workspace membership) and sso (issue login tokens). A scoped key can also be limited to specific workspaces. Any endpoint not covered by a scope needs a full access key, and a key used outside of its scopes receives a 403. A users key can create admins, so treat it as full access. GET /v1/auth returns the scopes and workspaces of the key.",
   },
   // Swagger-autogen does not allow us to use relative paths as these will resolve to
   // http:///api in the openapi.json file, so we need to monkey-patch this post-generation.

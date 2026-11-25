@@ -101,12 +101,9 @@ function apiUserManagementEndpoints(app) {
     }
       */
       try {
-        const { id: userId } = request.params;
-        const user = await User.get({ id: Number(userId) });
-        if (!user)
-          return response.status(404).json({ error: "User not found" });
-
-        const { token, error } = await TemporaryAuthToken.issue(userId);
+        const { token, error } = await TemporaryAuthToken.issue(
+          response.locals.targetUser.id
+        );
         if (error) return response.status(500).json({ error: error });
 
         response.status(200).json({

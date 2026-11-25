@@ -211,16 +211,35 @@ const Admin = {
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
+      .then((res) => res.json().catch(() => ({})))
       .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.statusText || "Error generating api key.");
-        }
-        return res.json();
+        if (!res.apiKey)
+          throw new Error(res.error || "Error generating api key.");
+        return res;
       })
       .catch((e) => {
         console.error(e);
         return { apiKey: null, error: e.message };
       });
+  },
+  /**
+   * Replaces the scopes and workspace limit of an API key.
+   * @param {number} apiKeyId
+   * @param {{scopes: string[]|null, workspaceIds: number[]|null}} data
+   * @returns {Promise<{apiKey: Object|null, error: string|null}>}
+   */
+  updateApiKey: async function (apiKeyId, data = {}) {
+    return fetch(`${API_BASE}/admin/update-api-key/${apiKeyId}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json().catch(() => ({})))
+      .then(({ apiKey = null, error = null }) => ({
+        apiKey,
+        error: apiKey ? null : error || "Error updating api key.",
+      }))
+      .catch((e) => ({ apiKey: null, error: e.message }));
   },
   deleteApiKey: async function (apiKeyId = "") {
     return fetch(`${API_BASE}/admin/delete-api-key/${apiKeyId}`, {

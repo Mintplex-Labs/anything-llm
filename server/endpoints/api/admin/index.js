@@ -2,6 +2,7 @@ const { EventLogs } = require("../../../models/eventLogs");
 const { Invite } = require("../../../models/invite");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
+const { ApiKey } = require("../../../models/apiKeys");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { WorkspaceUser } = require("../../../models/workspaceUsers");
@@ -192,13 +193,8 @@ function apiAdminEndpoints(app) {
         return;
       }
 
-      const { id } = request.params;
       const updates = reqBody(request);
-      const user = await User.get({ id: Number(id) });
-      if (!user) {
-        response.status(200).json({ success: false, error: "User not found." });
-        return;
-      }
+      const user = response.locals.targetUser;
 
       const validAdminRoleModification = await canModifyAdmin(user, updates);
 
@@ -258,8 +254,7 @@ function apiAdminEndpoints(app) {
           return;
         }
 
-        const { id } = request.params;
-        const user = await User.get({ id: Number(id) });
+        const user = response.locals.targetUser;
         await User.delete({ id: user.id });
         await EventLogs.logEvent("api_user_deleted", {
           userName: user.username,
@@ -366,9 +361,15 @@ function apiAdminEndpoints(app) {
       }
 
       const body = reqBody(request);
-      const { invite, error } = await Invite.create({
-        workspaceIds: body?.workspaceIds ?? [],
-      });
+      const workspaceIds = body?.workspaceIds ?? [];
+      if (!ApiKey.canAccessWorkspaces(response.locals.apiKey, workspaceIds))
+        return response.status(403).json({
+          invite: null,
+          error:
+            "This api key is not permitted to access one or more of these workspaces.",
+        });
+
+      const { invite, error } = await Invite.create({ workspaceIds });
       response.status(200).json({ invite, error });
     } catch (e) {
       console.error(e);
@@ -487,8 +488,9 @@ function apiAdminEndpoints(app) {
           return;
         }
 
-        const workspaceId = request.params.workspaceId;
-        const users = await Workspace.workspaceUsers(workspaceId);
+        const users = await Workspace.workspaceUsers(
+          response.locals.workspace.id
+        );
 
         response.status(200).json({ users });
       } catch (e) {
@@ -551,10 +553,9 @@ function apiAdminEndpoints(app) {
           return;
         }
 
-        const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          workspaceId,
+          response.locals.workspace.id,
           userIds
         );
         response.status(200).json({ success, error });
@@ -622,20 +623,11 @@ function apiAdminEndpoints(app) {
           return;
         }
 
-        const { workspaceSlug } = request.params;
         const { userIds: _uids, reset = false } = reqBody(request);
         const userIds = (
           await User.where({ id: { in: _uids.map(Number) } })
         ).map((user) => user.id);
-        const workspace = await Workspace.get({ slug: String(workspaceSlug) });
-        if (!workspace) {
-          response.status(404).json({
-            success: false,
-            error: `Workspace ${workspaceSlug} not found`,
-            users: [],
-          });
-          return;
-        }
+        const { workspace } = response.locals;
 
         const workspaceUsers = await Workspace.workspaceUsers(workspace.id);
 

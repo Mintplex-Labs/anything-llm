@@ -532,11 +532,23 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { name = null } = reqBody(request);
-        const { apiKey, error } = await ApiKey.create(user.id, name);
+        const {
+          name = null,
+          scopes = null,
+          workspaceIds = null,
+        } = reqBody(request);
+        const { apiKey, error } = await ApiKey.create(user.id, name, {
+          scopes,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
         await EventLogs.logEvent(
           "api_key_created",
-          { createdBy: user?.username, name: apiKey?.name },
+          {
+            createdBy: user?.username,
+            name: apiKey?.name,
+            scopes: ApiKey.scopesOf(apiKey),
+          },
           user?.id
         );
         return response.status(200).json({
@@ -546,6 +558,38 @@ function adminEndpoints(app) {
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/admin/update-api-key/:id",
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400);
+
+        const user = await userFromSession(request, response);
+        const { scopes = null, workspaceIds = null } = reqBody(request);
+        const { apiKey, error } = await ApiKey.updateScopes(Number(id), {
+          scopes,
+          workspaceIds,
+        });
+        if (!apiKey) return response.status(400).json({ apiKey, error });
+        await EventLogs.logEvent(
+          "api_key_updated",
+          {
+            updatedBy: user?.username,
+            name: apiKey.name,
+            scopes: ApiKey.scopesOf(apiKey),
+          },
+          user?.id
+        );
+        return response.status(200).json({ apiKey, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500);
       }
     }
   );
