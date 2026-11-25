@@ -18,7 +18,8 @@ export default function TTSMessage({ slug, chatId, message }) {
     case "kokoro":
       return (
         <WrapTTS>
-          <AsyncTTSMessage chatId={chatId} slug={slug} />
+          {/* Keyed by message so an edit reloads the audio. */}
+          <AsyncTTSMessage key={message} chatId={chatId} slug={slug} />
         </WrapTTS>
       );
     case "piper_local":
