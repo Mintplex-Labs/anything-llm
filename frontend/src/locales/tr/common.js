@@ -114,6 +114,7 @@ const TRANSLATIONS = {
     "scheduled-jobs": "Zamanlanmış Görevler",
     "model-router": "Model Yönlendirici",
     "image-generation": "Görsel Oluşturma",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -820,6 +821,11 @@ const TRANSLATIONS = {
       prompt: "İstem",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
+      cost: null,
+      "cost-breakdown": null,
+      "cost-unknown": null,
+      "cost-unknown-hint": null,
+      model: null,
     },
   },
   api: {
@@ -1541,6 +1547,13 @@ const TRANSLATIONS = {
           "Bu örnekteki herkes varsayılan paleti kullanır ve değiştiremez.",
         "save-failed": "Renk paletleri kaydedilemedi: {{error}}",
       },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+        "rates-as-of": null,
+      },
     },
   },
   "main-page": {
@@ -2130,6 +2143,39 @@ const TRANSLATIONS = {
       description:
         "Bu işlem biraz zaman alabilir. Hazır olduğunda burada görüntülenecektir.",
       aborted: "Görsel oluşturma iptal edildi.",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

@@ -5,6 +5,7 @@ import validateSessionTokenForUser from "@/utils/session";
 import paths from "@/utils/paths";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { userFromStorage } from "@/utils/request";
+import { storeDisplayCurrency } from "@/utils/localeCurrency";
 import System from "@/models/system";
 import UserMenu from "../UserMenu";
 import { KeyboardShortcutWrapper } from "@/utils/keyboardShortcuts";
@@ -21,8 +22,10 @@ function useIsAuthenticated() {
   useEffect(() => {
     const validateSession = async () => {
       const onboardingComplete = await System.isOnboardingComplete();
-      const { MultiUserMode, RequiresAuth } = await System.keys();
+      const { MultiUserMode, RequiresAuth, DisplayCurrency } =
+        await System.keys();
       setMultiUserMode(!!MultiUserMode);
+      storeDisplayCurrency(DisplayCurrency);
 
       // Check for the onboarding redirect condition
       if (onboardingComplete === false) {

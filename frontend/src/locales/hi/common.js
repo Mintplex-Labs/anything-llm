@@ -120,6 +120,7 @@ const TRANSLATIONS = {
       telegram: "Telegram",
     },
     "image-generation": "चित्र निर्माण",
+    "model-pricing": null,
   },
   login: {
     "multi-user": {
@@ -838,6 +839,11 @@ const TRANSLATIONS = {
       prompt: "प्रॉम्प्ट",
       response: "उत्तर",
       at: "भेजा गया समय",
+      cost: null,
+      "cost-breakdown": null,
+      "cost-unknown": null,
+      "cost-unknown-hint": null,
+      model: null,
     },
   },
   customization: {
@@ -964,6 +970,13 @@ const TRANSLATIONS = {
         "enforce-description":
           "इस इंस्टेंस पर सभी लोग डिफ़ॉल्ट पैलेट का उपयोग करते हैं और इसे बदल नहीं सकते।",
         "save-failed": "रंग पैलेट सहेजने में विफल: {{error}}",
+      },
+      "display-currency": {
+        title: null,
+        description: null,
+        automatic: null,
+        error: null,
+        "rates-as-of": null,
       },
     },
   },
@@ -2097,6 +2110,39 @@ const TRANSLATIONS = {
       description:
         "इसमें कुछ समय लग सकता है। तैयार होते ही यह यहाँ दिखाई देगा।",
       aborted: "चित्र निर्माण रद्द कर दी गई।",
+    },
+  },
+  "model-pricing": {
+    title: null,
+    description: null,
+    add: null,
+    "all-models": null,
+    "no-prices": null,
+    "empty-description": null,
+    "delete-confirm": null,
+    "toast-delete-failed": null,
+    remove: null,
+    table: {
+      provider: null,
+      model: null,
+      input: null,
+      output: null,
+    },
+    modal: {
+      "new-title": null,
+      "edit-title": null,
+      "model-label": null,
+      "model-description": null,
+      "input-label": null,
+      "input-hint": null,
+      "output-label": null,
+      "output-hint": null,
+      "listed-note": null,
+      "provider-required": null,
+      cancel: null,
+      create: null,
+      save: null,
+      error: null,
     },
   },
 };

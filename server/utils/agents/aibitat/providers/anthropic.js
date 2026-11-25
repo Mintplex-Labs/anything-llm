@@ -294,6 +294,10 @@ class AnthropicProvider extends Provider {
         // Capture input tokens from message_start event
         if (chunk.type === "message_start" && chunk.message?.usage) {
           usage.input_tokens = chunk.message.usage.input_tokens || 0;
+          usage.cache_read_input_tokens =
+            chunk.message.usage.cache_read_input_tokens || 0;
+          usage.cache_creation_input_tokens =
+            chunk.message.usage.cache_creation_input_tokens || 0;
         }
 
         // Capture output tokens from message_delta event

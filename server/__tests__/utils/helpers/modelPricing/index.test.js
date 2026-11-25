@@ -32,6 +32,13 @@ function okResponse(data, { etag = null } = {}) {
   };
 }
 
+const UNKNOWN_COST = {
+  inputCost: 0,
+  outputCost: 0,
+  totalCost: 0,
+  costKnown: false,
+};
+
 /** Waits for the constructor's background refresh to settle. */
 async function flushRefresh() {
   await lastInstance.bootRefresh;
@@ -310,7 +317,7 @@ describe("ModelPricing", () => {
         { status: 500, headers: { get: () => null }, json: async () => ({}) },
       ],
     ])(
-      "returns null for cost when remote responds with %s and no disk cache exists",
+      "records zero cost when remote responds with %s and no disk cache exists",
       async (_label, response) => {
         mockFetchWith(response);
         const pricing = freshInstance();
@@ -320,11 +327,11 @@ describe("ModelPricing", () => {
           pricing.getCostBreakdown("openai", "gpt-4o", {
             prompt_tokens: 1_000_000,
           })
-        ).toBeNull();
+        ).toEqual(UNKNOWN_COST);
       }
     );
 
-    it("returns null for cost when offline with no disk cache", async () => {
+    it("records zero cost when offline with no disk cache", async () => {
       global.fetch = jest.fn().mockRejectedValue(new Error("offline"));
       const pricing = freshInstance();
       await flushRefresh();
@@ -334,7 +341,7 @@ describe("ModelPricing", () => {
           prompt_tokens: 1_000_000,
           completion_tokens: 0,
         })
-      ).toBeNull();
+      ).toEqual(UNKNOWN_COST);
     });
   });
 
@@ -503,19 +510,64 @@ describe("ModelPricing", () => {
       ).toEqual({ inputCost: 0, outputCost: 0, totalCost: 0 });
     });
 
-    it("returns null for unknown pricing", () => {
+    it("records zero cost for unknown pricing", () => {
       // Unmapped provider slug
-      expect(pricing.getCostBreakdown("generic-openai", "gpt-4o")).toBeNull();
+      expect(pricing.getCostBreakdown("generic-openai", "gpt-4o")).toEqual(
+        UNKNOWN_COST
+      );
       // Unknown model on a known provider
-      expect(pricing.getCostBreakdown("openai", "not-a-model")).toBeNull();
+      expect(pricing.getCostBreakdown("openai", "not-a-model")).toEqual(
+        UNKNOWN_COST
+      );
       // Model whose upstream cost is null (slimmed away)
-      expect(pricing.getCostBreakdown("openrouter", "some-model")).toBeNull();
+      expect(pricing.getCostBreakdown("openrouter", "some-model")).toEqual(
+        UNKNOWN_COST
+      );
       // Model with no published pricing (slimmed away)
       expect(
         pricing.getCostBreakdown("openai", "gpt-subscription-only")
-      ).toBeNull();
+      ).toEqual(UNKNOWN_COST);
       // No provider at all
-      expect(pricing.getCostBreakdown(null, "gpt-4o")).toBeNull();
+      expect(pricing.getCostBreakdown(null, "gpt-4o")).toEqual(UNKNOWN_COST);
+    });
+
+    it("bills cached and reasoning tokens at their own rates", () => {
+      // 700k uncached at $1, 200k cache reads at $0.10, 100k cache writes at
+      // $1.25, then 750k output at $4 and 250k reasoning at $8.
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-detailed-rates", {
+          prompt_tokens: 1_000_000,
+          cache_read_tokens: 200_000,
+          cache_write_tokens: 100_000,
+          completion_tokens: 1_000_000,
+          reasoning_tokens: 250_000,
+        })
+      ).toEqual({ inputCost: 0.845, outputCost: 5, totalCost: 5.845 });
+    });
+
+    it("bills cached and reasoning tokens at the base rates when none are listed", () => {
+      // gpt-4o-mini lists a cache read rate only.
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o-mini", {
+          prompt_tokens: 1_000_000,
+          cache_read_tokens: 400_000,
+          cache_write_tokens: 100_000,
+          completion_tokens: 1_000_000,
+          reasoning_tokens: 500_000,
+        })
+      ).toEqual({ inputCost: 0.12, outputCost: 0.6, totalCost: 0.72 });
+    });
+
+    it("caps cached and reasoning counts at their totals", () => {
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-detailed-rates", {
+          prompt_tokens: 1_000_000,
+          cache_read_tokens: 5_000_000,
+          cache_write_tokens: 5_000_000,
+          completion_tokens: 1_000_000,
+          reasoning_tokens: -5,
+        })
+      ).toEqual({ inputCost: 0.1, outputCost: 4, totalCost: 4.1 });
     });
 
     it("matches model ids case-insensitively", () => {
@@ -633,14 +685,14 @@ describe("ModelPricing", () => {
     });
 
     it("degrades a corrupt applicable tier to unknown, never a wrong price", () => {
-      // The tier applies (prompt > size) but its rate is garbage - report
-      // no cost rather than a number computed from junk.
+      // The tier applies (prompt > size) but its rate is garbage - record
+      // zero cost rather than a number computed from junk.
       expect(
         pricing.getCostBreakdown("gemini", "gemini-corrupt-tier", {
           prompt_tokens: 1_000_000,
           completion_tokens: 0,
         })
-      ).toBeNull();
+      ).toEqual(UNKNOWN_COST);
     });
 
     it("resolves openrouter vendor/model ids directly", () => {
@@ -652,25 +704,25 @@ describe("ModelPricing", () => {
       ).toEqual({ inputCost: 3, outputCost: 0, totalCost: 3 });
     });
 
-    it("returns null when model is a non-string type", () => {
+    it("records zero cost when model is a non-string type", () => {
       for (const model of [123, {}, [], true, 0]) {
         expect(
           pricing.getCostBreakdown("openai", model, {
             prompt_tokens: 1000,
             completion_tokens: 0,
           })
-        ).toBeNull();
+        ).toEqual(UNKNOWN_COST);
       }
     });
 
-    it("returns null when providerSlug is a non-string type", () => {
+    it("records zero cost when providerSlug is a non-string type", () => {
       for (const slug of [123, true, {}, []]) {
         expect(
           pricing.getCostBreakdown(slug, "gpt-4o", {
             prompt_tokens: 1000,
             completion_tokens: 0,
           })
-        ).toBeNull();
+        ).toEqual(UNKNOWN_COST);
       }
     });
 
@@ -694,6 +746,327 @@ describe("ModelPricing", () => {
       expect(asString).not.toMatch(/\d{10,}/);
       expect(asString).not.toMatch(/e[+-]/);
     });
+  });
+
+  describe("pricing overrides", () => {
+    let pricing;
+
+    beforeEach(async () => {
+      mockFetchWith(okResponse(FIXTURE));
+      pricing = freshInstance();
+      await flushRefresh();
+    });
+
+    const USAGE = { prompt_tokens: 1_000_000, completion_tokens: 1_000_000 };
+
+    it("prices providers models.dev does not cover", () => {
+      pricing.setOverrides([
+        { provider: "generic-openai", model: "my-model", input: 1, output: 2 },
+      ]);
+      expect(
+        pricing.getCostBreakdown("generic-openai", "my-model", USAGE)
+      ).toEqual({ inputCost: 1, outputCost: 2, totalCost: 3 });
+    });
+
+    it("takes precedence over models.dev and free providers", () => {
+      pricing.setOverrides([
+        { provider: "openai", model: "gpt-4o", input: 1, output: 1 },
+        { provider: "ollama", model: null, input: 0.5, output: 0.5 },
+      ]);
+      expect(pricing.getCostBreakdown("openai", "gpt-4o", USAGE)).toEqual({
+        inputCost: 1,
+        outputCost: 1,
+        totalCost: 2,
+      });
+      expect(pricing.getCostBreakdown("ollama", "llama3", USAGE)).toEqual({
+        inputCost: 0.5,
+        outputCost: 0.5,
+        totalCost: 1,
+      });
+    });
+
+    it("prefers an exact model match over a provider-wide override", () => {
+      pricing.setOverrides([
+        { provider: "litellm", model: null, input: 1, output: 1 },
+        { provider: "litellm", model: "Big-Model", input: 10, output: 10 },
+      ]);
+      expect(
+        pricing.getCostBreakdown("litellm", "big-model", USAGE).totalCost
+      ).toBe(20);
+      expect(
+        pricing.getCostBreakdown("litellm", "small-model", USAGE).totalCost
+      ).toBe(2);
+    });
+
+    it("rejects a save holding an invalid entry and keeps the saved prices", () => {
+      const valid = { provider: "litellm", model: null, input: 3, output: 4 };
+      pricing.setOverrides([valid]);
+
+      const price = (fields) => ({ provider: "openai", model: "m", ...fields });
+      const invalidEntries = [
+        null,
+        "nope",
+        { provider: "", input: 1, output: 1 },
+        price({ input: -1, output: 1 }),
+        price({ input: "abc", output: 1 }),
+        price({ input: 1, output: null }),
+        price({ input: "", output: 1 }),
+        price({ input: 1 }),
+        price({ input: Infinity, output: 1 }),
+        price({ input: [], output: 1 }),
+        price({ input: true, output: 1 }),
+        price({ input: 1, output: 1, currency: "XXX" }),
+        price({ input: 1, output: 1, currency: 5 }),
+      ];
+      for (const entry of invalidEntries)
+        expect(() => pricing.setOverrides([valid, entry])).toThrow(
+          /must be|missing its provider|not supported/
+        );
+      expect(() => pricing.setOverrides("not-an-array")).toThrow(
+        "Model prices must be a list."
+      );
+      // The same provider + model twice, model ids matching case-insensitively.
+      expect(() =>
+        pricing.setOverrides([
+          price({ input: 1, output: 1 }),
+          price({ model: "M", input: 2, output: 2 }),
+        ])
+      ).toThrow("A price for openai / M already exists.");
+
+      expect(pricing.getOverrides()).toEqual([{ ...valid, currency: "USD" }]);
+      expect(
+        pricing.getCostBreakdown("openai", "gpt-4o", {
+          prompt_tokens: 1_000_000,
+          completion_tokens: 0,
+        }).inputCost
+      ).toBe(2.5);
+    });
+
+    it("accepts numeric strings and a zero price", () => {
+      expect(
+        pricing.setOverrides([
+          { provider: "openai", model: " h ", input: "1.5", output: 0 },
+        ])
+      ).toEqual([
+        { provider: "openai", model: "h", input: 1.5, output: 0, currency: "USD" },
+      ]);
+    });
+
+    it("loads the valid entries of a saved file holding malformed ones", () => {
+      fs.writeFileSync(
+        path.join(tempDir, "models", "pricing", "overrides.json"),
+        JSON.stringify([
+          { provider: "litellm", model: null, input: 1, output: 1 },
+          { provider: "litellm", model: "bad", input: -1, output: 1 },
+          "nope",
+          { provider: "litellm", model: null, input: 3, output: 4 },
+        ])
+      );
+      expect(freshInstance().getOverrides()).toEqual([
+        { provider: "litellm", model: null, input: 3, output: 4, currency: "USD" },
+      ]);
+    });
+
+    it("keeps a price in the currency it was entered in and converts it when costing", async () => {
+      const currencyDir = path.join(tempDir, "currency");
+      fs.mkdirSync(currencyDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(currencyDir, "exchange-rates.json"),
+        JSON.stringify({ date: "2026-08-06", rates: { EUR: 0.8 } })
+      );
+      fs.writeFileSync(
+        path.join(currencyDir, ".cached_at"),
+        Date.now().toString()
+      );
+      jest.resetModules();
+      const booted = freshInstance();
+      await flushRefresh();
+
+      const saved = booted.setOverrides([
+        { provider: "mistral", model: null, input: 2, output: 4, currency: "eur" },
+      ]);
+      expect(saved).toEqual([
+        { provider: "mistral", model: null, input: 2, output: 4, currency: "EUR" },
+      ]);
+      // 2 EUR and 4 EUR per 1M at 0.8 EUR per USD.
+      expect(booted.getCostBreakdown("mistral", "any", USAGE)).toEqual({
+        inputCost: 2.5,
+        outputCost: 5,
+        totalCost: 7.5,
+      });
+    });
+
+    it("treats a non-USD price as unknown while no exchange rate is loaded", () => {
+      pricing.setOverrides([
+        { provider: "mistral", model: null, input: 2, output: 4, currency: "EUR" },
+      ]);
+      expect(pricing.getCostBreakdown("mistral", "any", USAGE)).toEqual(
+        UNKNOWN_COST
+      );
+    });
+
+    it("refuses to save more than 500 overrides and keeps the saved ones", () => {
+      const entry = (i) => ({
+        provider: "ollama",
+        model: `m${i}`,
+        input: 1,
+        output: 1,
+      });
+      pricing.setOverrides([entry(0)]);
+      expect(
+        pricing.setOverrides(Array.from({ length: 500 }, (_, i) => entry(i)))
+      ).toHaveLength(500);
+      expect(() =>
+        pricing.setOverrides(Array.from({ length: 501 }, (_, i) => entry(i)))
+      ).toThrow("Cannot save more than 500 model prices.");
+      expect(pricing.getOverrides()).toHaveLength(500);
+    });
+
+    it("persists to disk so other processes read the same overrides", () => {
+      pricing.setOverrides([
+        { provider: "litellm", model: null, input: 1, output: 1 },
+      ]);
+      const other = freshInstance();
+      expect(other.getOverrides()).toEqual([
+        { provider: "litellm", model: null, input: 1, output: 1, currency: "USD" },
+      ]);
+    });
+
+    it("are ignored by the listed models.dev rates", () => {
+      pricing.setOverrides([
+        { provider: "openai", model: "gpt-4o", input: 1, output: 1 },
+      ]);
+      expect(pricing.getListedRates("openai", "gpt-4o")).toMatchObject({
+        input: 2.5,
+        output: 10,
+      });
+      expect(pricing.getListedRates("ollama", "llama3")).toBeNull();
+      expect(pricing.getListedRates("openai", null)).toBeNull();
+    });
+
+    it("reads no overrides from a corrupt file", () => {
+      fs.writeFileSync(
+        path.join(tempDir, "models", "pricing", "overrides.json"),
+        "{not json"
+      );
+      const booted = freshInstance();
+      expect(booted.getOverrides()).toEqual([]);
+      expect(booted.getCostBreakdown("litellm", "x", USAGE)).toEqual(
+        UNKNOWN_COST
+      );
+    });
+
+    it("prices from memory without touching the overrides file", () => {
+      pricing.setOverrides([
+        { provider: "litellm", model: "Big-Model", input: 1, output: 1 },
+      ]);
+      const statSpy = jest.spyOn(fs, "statSync");
+      const readSpy = jest.spyOn(fs, "readFileSync");
+      expect(
+        pricing.getCostBreakdown("litellm", "BIG-model", USAGE).totalCost
+      ).toBe(2);
+      expect(statSpy).not.toHaveBeenCalled();
+      expect(readSpy).not.toHaveBeenCalled();
+      statSpy.mockRestore();
+      readSpy.mockRestore();
+    });
+
+    it("does not let callers mutate the saved overrides", () => {
+      const saved = pricing.setOverrides([
+        { provider: "litellm", model: null, input: 1, output: 1 },
+      ]);
+      saved[0].input = 999;
+      pricing.getOverrides()[0].output = 999;
+      expect(pricing.getCostBreakdown("litellm", "x", USAGE).totalCost).toBe(2);
+    });
+  });
+
+  describe("normalizeTokenUsage", () => {
+    const {
+      normalizeTokenUsage,
+    } = require("../../../../utils/helpers/modelPricing/usage");
+
+    it.each([
+      [
+        "OpenAI chat completions",
+        {
+          prompt_tokens: 1000,
+          completion_tokens: 200,
+          prompt_tokens_details: { cached_tokens: 600 },
+          completion_tokens_details: { reasoning_tokens: 50 },
+        },
+        {
+          prompt_tokens: 1000,
+          completion_tokens: 200,
+          cache_read_tokens: 600,
+          reasoning_tokens: 50,
+        },
+      ],
+      [
+        "OpenAI responses",
+        {
+          input_tokens: 1000,
+          output_tokens: 200,
+          input_tokens_details: { cached_tokens: 600 },
+          output_tokens_details: { reasoning_tokens: 50 },
+        },
+        {
+          prompt_tokens: 1000,
+          completion_tokens: 200,
+          cache_read_tokens: 600,
+          reasoning_tokens: 50,
+        },
+      ],
+      [
+        "Anthropic, whose cached tokens sit beside input_tokens",
+        {
+          input_tokens: 100,
+          output_tokens: 200,
+          cache_read_input_tokens: 600,
+          cache_creation_input_tokens: 300,
+        },
+        {
+          prompt_tokens: 1000,
+          completion_tokens: 200,
+          cache_read_tokens: 600,
+          cache_write_tokens: 300,
+        },
+      ],
+      [
+        "a usage without cached or reasoning counts",
+        { prompt_tokens: "10", completion_tokens: 5 },
+        { prompt_tokens: 10, completion_tokens: 5 },
+      ],
+      [
+        "sub-counts larger than their totals",
+        {
+          prompt_tokens: 10,
+          completion_tokens: 5,
+          prompt_tokens_details: { cached_tokens: 99 },
+          completion_tokens_details: { reasoning_tokens: 99 },
+        },
+        {
+          prompt_tokens: 10,
+          completion_tokens: 5,
+          cache_read_tokens: 10,
+          reasoning_tokens: 5,
+        },
+      ],
+    ])("reads %s", (_label, usage, expected) => {
+      expect(normalizeTokenUsage(usage)).toEqual(expected);
+      // A normalized usage reads back unchanged.
+      expect(normalizeTokenUsage(expected)).toEqual(expected);
+    });
+
+    it.each([null, undefined, "nope", 5, []])(
+      "reads %p as zero tokens",
+      (usage) => {
+        expect(normalizeTokenUsage(usage)).toEqual({
+          prompt_tokens: 0,
+          completion_tokens: 0,
+        });
+      }
+    );
   });
 
   describe("addCostToMetrics", () => {
@@ -731,7 +1104,7 @@ describe("ModelPricing", () => {
       expect(decorated.inputCost).toBe(0.15);
     });
 
-    it("returns metrics unchanged when pricing is unknown", () => {
+    it("records zero cost when pricing is unknown", () => {
       const {
         addCostToMetrics,
       } = require("../../../../utils/helpers/modelPricing");
@@ -741,7 +1114,7 @@ describe("ModelPricing", () => {
         model: "some-local-model",
       };
       expect(addCostToMetrics(metrics, { provider: "generic-openai" })).toEqual(
-        metrics
+        { ...metrics, ...UNKNOWN_COST }
       );
       expect(addCostToMetrics({}, { provider: "openai" })).toEqual({});
     });
@@ -832,15 +1205,18 @@ describe("ModelPricing", () => {
       });
     });
 
-    it("returns metrics unchanged when no provider can be resolved", () => {
-      expect(addChatCostToMetrics(METRICS, {})).toEqual(METRICS);
+    it("records zero cost when no provider can be resolved", () => {
+      expect(addChatCostToMetrics(METRICS, {})).toEqual({
+        ...METRICS,
+        ...UNKNOWN_COST,
+      });
       expect(
         addChatCostToMetrics(METRICS, {
           routingMetadata: { routedTo: null },
           workspace: { chatProvider: null },
           connector: null,
         })
-      ).toEqual(METRICS);
+      ).toEqual({ ...METRICS, ...UNKNOWN_COST });
     });
   });
 });

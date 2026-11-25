@@ -14,6 +14,7 @@ export const SESSION_REASONING_EFFORT_MAP =
   "anythingllm_session_reasoning_effort_map";
 
 export const APPEARANCE_SETTINGS = "anythingllm_appearance_settings";
+export const DISPLAY_CURRENCY = "anythingllm_display_currency";
 
 export const OLLAMA_COMMON_URLS = [
   "http://127.0.0.1:11434",

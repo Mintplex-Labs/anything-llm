@@ -102,6 +102,7 @@ const TRANSLATIONS = {
     "ai-providers": "AI Providers",
     "agent-skills": "Agent Skills",
     "model-router": "Model Router",
+    "model-pricing": "Model Pricing",
     "community-hub": {
       title: "Community Hub",
       trending: "Explore Trending",
@@ -838,7 +839,14 @@ const TRANSLATIONS = {
       workspace: "Workspace",
       prompt: "Prompt",
       response: "Response",
+      model: "Model",
+      cost: "Cost",
       at: "Sent At",
+      "cost-breakdown":
+        "Total: {{total}} · Input: {{input}} · Output: {{output}}",
+      "cost-unknown": "Unknown",
+      "cost-unknown-hint":
+        "No price is known for this model, so its cost is not counted. Add one in Model Pricing.",
     },
   },
   customization: {
@@ -932,6 +940,13 @@ const TRANSLATIONS = {
         title: "Display Language",
         description:
           "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
+      },
+      "display-currency": {
+        title: "Display Currency",
+        description: "Currency used to display LLM usage costs.",
+        automatic: "Automatic ({{currency}})",
+        error: "Failed to update display currency.",
+        "rates-as-of": "Exchange rates as of {{date}}.",
       },
       logo: {
         title: "Brand Logo",
@@ -1030,6 +1045,42 @@ const TRANSLATIONS = {
         chat_completions: "Chat Completions",
         responses: "Responses API",
       },
+    },
+  },
+  "model-pricing": {
+    title: "Model Pricing",
+    description:
+      "Set input and output prices for models whose pricing is unknown, or to replace the public pricing of a model. Chats with no known price are shown as unknown and are not counted.",
+    add: "Add price",
+    "all-models": "All models",
+    "no-prices": "No custom prices",
+    "empty-description":
+      "Add a price for a model to track its usage costs when public pricing is unavailable.",
+    "delete-confirm": "Are you sure you want to remove the price for {{name}}?",
+    "toast-delete-failed": "Failed to remove price: {{error}}",
+    remove: "Remove price",
+    table: {
+      provider: "Provider",
+      model: "Model",
+      input: "Input / 1M",
+      output: "Output / 1M",
+    },
+    modal: {
+      "new-title": "Add model price",
+      "edit-title": "Edit model price",
+      "model-label": "Provider & Model",
+      "model-description":
+        "Leave the model as All models to price every model of the provider.",
+      "input-label": "Input price",
+      "input-hint": "{{currency}} per 1 million prompt tokens.",
+      "output-label": "Output price",
+      "output-hint": "{{currency}} per 1 million completion tokens.",
+      "listed-note": "Filled in with the public price from models.dev.",
+      "provider-required": "A provider is required.",
+      cancel: "Cancel",
+      create: "Add price",
+      save: "Save",
+      error: "Failed to save model price.",
     },
   },
   "model-router": {

@@ -273,23 +273,74 @@ describe("Provider cost accumulation", () => {
     expect(totals.totalCost).toBe(11);
   });
 
-  test("cost fields stay absent when pricing is unknown", () => {
-    jest.spyOn(MODEL_PRICING, "getCostBreakdown").mockReturnValue(null);
-
+  test("unknown pricing records zero cost and flags it as not known", () => {
     const provider = new TestProvider();
+    provider.providerSlug = null;
     provider.resetUsage();
     provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
 
-    expect(provider.getUsage()).not.toHaveProperty("totalCost");
-    expect(provider.getCumulativeUsage()).not.toHaveProperty("totalCost");
+    expect(provider.getUsage().totalCost).toBe(0);
+    expect(provider.getUsage().costKnown).toBe(false);
+    expect(provider.getCumulativeUsage().totalCost).toBe(0);
+    expect(provider.getCumulativeUsage().costKnown).toBe(false);
+
+    provider.resetCumulativeUsage();
+    expect(provider.getCumulativeUsage().costKnown).toBeUndefined();
   });
 
-  test("a partially priceable run sums only the priced calls", () => {
+  test("cached and reasoning tokens are priced and summed across calls", () => {
+    const priced = jest
+      .spyOn(MODEL_PRICING, "getCostBreakdown")
+      .mockReturnValue({ inputCost: 1, outputCost: 2, totalCost: 3 });
+
+    const provider = new TestProvider();
+    provider.providerSlug = "anthropic";
+
+    // Anthropic reports cached prompt tokens beside input_tokens.
+    provider.resetUsage();
+    provider.recordUsage({
+      input_tokens: 100,
+      output_tokens: 20,
+      cache_read_input_tokens: 600,
+      cache_creation_input_tokens: 300,
+    });
+    expect(priced).toHaveBeenLastCalledWith("anthropic", provider.model, {
+      prompt_tokens: 1000,
+      completion_tokens: 20,
+      cache_read_tokens: 600,
+      cache_write_tokens: 300,
+    });
+    expect(provider.getUsage()).toMatchObject({
+      prompt_tokens: 1000,
+      total_tokens: 1020,
+      cache_read_tokens: 600,
+      cache_write_tokens: 300,
+    });
+
+    // OpenAI reports them inside prompt_tokens and completion_tokens.
+    provider.resetUsage();
+    provider.recordUsage({
+      prompt_tokens: 1000,
+      completion_tokens: 50,
+      prompt_tokens_details: { cached_tokens: 400 },
+      completion_tokens_details: { reasoning_tokens: 30 },
+    });
+    expect(provider.getCumulativeUsage()).toMatchObject({
+      prompt_tokens: 2000,
+      completion_tokens: 70,
+      cache_read_tokens: 1000,
+      cache_write_tokens: 300,
+      reasoning_tokens: 30,
+    });
+    expect(provider.getCumulativeUsage().costKnown).toBeUndefined();
+  });
+
+  test("a partially priceable run sums the priced calls", () => {
     jest
       .spyOn(MODEL_PRICING, "getCostBreakdown")
       .mockImplementation((_slug, model) =>
         model === "unknown-model"
-          ? null
+          ? { inputCost: 0, outputCost: 0, totalCost: 0, costKnown: false }
           : { inputCost: 1, outputCost: 2, totalCost: 3 }
       );
 
@@ -303,9 +354,10 @@ describe("Provider cost accumulation", () => {
     provider.resetUsage();
     provider.recordUsage({ prompt_tokens: 100, completion_tokens: 10 });
 
-    // The unpriced call contributes nothing, but the priced call's cost survives.
-    expect(provider.getUsage()).not.toHaveProperty("totalCost");
+    // The unpriced call contributes zero, but the priced call's cost survives.
+    expect(provider.getUsage().totalCost).toBe(0);
     expect(provider.getCumulativeUsage().totalCost).toBe(3);
+    expect(provider.getCumulativeUsage().costKnown).toBe(false);
   });
 });
 
