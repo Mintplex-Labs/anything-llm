@@ -1,11 +1,53 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { extractTextContent } = require("../../endpoints/api/openai/helpers");
 
 const { PassThrough } = require("stream");
+
+/**
+ * The prompt compressor rebuilds the history it keeps from stored chat rows, a
+ * prompt and a response each. This endpoint receives its history in the request
+ * instead, so shape it like stored rows or every earlier turn is dropped once
+ * the prompt has to be compressed.
+ * Consecutive messages from the same role are joined into one. Only complete
+ * exchanges become rows. An assistant message before any user message, or a
+ * user message nobody answered, is left out, because a row with an empty half
+ * turns into a blank message and some providers refuse those. The prompt that
+ * is not compressed is built from the request history itself and keeps them.
+ * @param {{role: string, content: string|object[]}[]} history
+ * @returns {{prompt: string, response: string}[]}
+ */
+function historyAsChatRecords(history = []) {
+  const rows = [];
+  for (const { role, content } of history) {
+    if (role !== "user" && role !== "assistant") continue;
+    // A null part would make extractTextContent throw, even when nothing is
+    // compressed.
+    const text = extractTextContent(
+      Array.isArray(content) ? content.filter(Boolean) : content
+    );
+    if (typeof text !== "string" || !text.trim()) continue;
+
+    // A user message after an assistant reply starts a new row.
+    const row = rows.at(-1);
+    if (role === "assistant") row?.response.push(text);
+    else if (!row || row.response.length > 0)
+      rows.push({ prompt: [text], response: [] });
+    else row.prompt.push(text);
+  }
+  return rows
+    .filter(({ response }) => response.length > 0)
+    .map(({ prompt, response }) => ({
+      prompt: prompt.join("\n\n"),
+      response: JSON.stringify({ text: response.join("\n\n") }),
+    }));
+}
 
 async function chatSync({
   workspace,
@@ -16,11 +58,23 @@ async function chatSync({
   temperature = null,
 }) {
   const uuid = uuidv4();
-  const chatMode = workspace?.chatMode ?? "chat";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  const chatMode = workspace?.chatMode ?? "automatic";
+
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt,
+      attachments,
+      temperature,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      // Do not +1 to this, since OAI message history ends in a user message
+      // and does not need to re-include an uncounted user message.
+      messageCountOverride: history.length,
+    });
+
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -152,22 +206,25 @@ async function chatSync({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: String(prompt),
-    contextTexts,
-    chatHistory: history,
-    attachments,
-  });
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
+      userPrompt: String(prompt),
+      contextTexts,
+      chatHistory: history,
+      attachments,
+    },
+    historyAsChatRecords(history)
+  );
 
   // Send the text completion.
-  const { textResponse, metrics } = await LLMConnector.getChatCompletion(
-    messages,
-    {
-      temperature:
-        temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    }
-  );
+  const { textResponse, metrics: completionMetrics } =
+    await LLMConnector.getChatCompletion(messages);
+  const metrics = addChatCostToMetrics(completionMetrics, {
+    routingMetadata,
+    workspace,
+    connector: LLMConnector,
+  });
 
   if (!textResponse) {
     return formatJSON(
@@ -219,11 +276,27 @@ async function streamChat({
   temperature = null,
 }) {
   const uuid = uuidv4();
-  const chatMode = workspace?.chatMode ?? "chat";
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
-  });
+  const chatMode = workspace?.chatMode ?? "automatic";
+
+  const { connector: LLMConnector, routingMetadata } =
+    await resolveProviderConnector({
+      workspace,
+      prompt,
+      attachments,
+      temperature,
+      chatHistoryOverride: {
+        rawHistory: history,
+        chatHistory: history,
+      },
+      // Do not +1 to this, since OAI message history ends in a user message
+      // and does not need to re-include an uncounted user message.
+      messageCountOverride: history.length,
+    });
+
+  // A disconnected client (aborted request, closed connection) should stop the
+  // provider generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
+
   const VectorDb = getVectorDbClass();
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -236,7 +309,7 @@ async function streamChat({
   const responseInterceptor = new PassThrough({});
   responseInterceptor.on("data", (chunk) => {
     try {
-      const originalData = JSON.parse(chunk.toString().split("data: ")[1]);
+      const originalData = JSON.parse(chunk.toString().replace(/^data: /, ""));
       const modified = formatJSON(originalData, {
         chunked: true,
         model: workspace.slug,
@@ -386,13 +459,16 @@ async function streamChat({
 
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
-  const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: String(prompt),
-    contextTexts,
-    chatHistory: history,
-    attachments,
-  });
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
+      userPrompt: String(prompt),
+      contextTexts,
+      chatHistory: history,
+      attachments,
+    },
+    historyAsChatRecords(history)
+  );
 
   if (!LLMConnector.streamingEnabled()) {
     writeResponseChunk(
@@ -416,10 +492,7 @@ async function streamChat({
     return;
   }
 
-  const stream = await LLMConnector.streamGetChatCompletion(messages, {
-    temperature:
-      temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-  });
+  const stream = await LLMConnector.streamGetChatCompletion(messages);
   const completeText = await LLMConnector.handleStream(
     responseInterceptor,
     stream,
@@ -428,6 +501,11 @@ async function streamChat({
       sources,
     }
   );
+  const metrics = addChatCostToMetrics(stream.metrics, {
+    routingMetadata,
+    workspace,
+    connector: LLMConnector,
+  });
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
@@ -437,7 +515,7 @@ async function streamChat({
         text: completeText,
         sources,
         type: chatMode,
-        metrics: stream.metrics,
+        metrics,
         attachments,
       },
     });
@@ -457,7 +535,7 @@ async function streamChat({
           chunked: true,
           model: workspace.slug,
           finish_reason: "stop",
-          usage: stream.metrics,
+          usage: metrics,
         }
       )
     );
@@ -478,7 +556,7 @@ async function streamChat({
         chunked: true,
         model: workspace.slug,
         finish_reason: "stop",
-        usage: stream.metrics,
+        usage: metrics,
       }
     )
   );

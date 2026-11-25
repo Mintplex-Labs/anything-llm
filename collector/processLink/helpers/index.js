@@ -6,6 +6,16 @@ const { ACCEPTED_MIMES } = require("../../utils/constants");
 const { validYoutubeVideoUrl } = require("../../utils/url");
 
 /**
+ * Parse a Content-Type header value and return the MIME type without charset or other parameters.
+ * @param {string|null} contentTypeHeader - The raw Content-Type header value
+ * @returns {string|null} - The MIME type (e.g., "application/pdf") or null
+ */
+function parseContentType(contentTypeHeader) {
+  if (!contentTypeHeader) return null;
+  return contentTypeHeader.toLowerCase().split(";")[0].trim() || null;
+}
+
+/**
  * Get the content type of a resource
  * - Sends a HEAD request to the URL and returns the Content-Type header with a 5 second timeout
  * @param {string} url - The URL to get the content type of
@@ -34,8 +44,9 @@ async function getContentTypeFromURL(url) {
         contentType: null,
       };
 
-    const contentType = res.headers.get("Content-Type")?.toLowerCase();
-    const contentTypeWithoutCharset = contentType?.split(";")[0].trim();
+    const contentTypeWithoutCharset = parseContentType(
+      res.headers.get("Content-Type")
+    );
     if (!contentTypeWithoutCharset)
       return {
         success: false,
@@ -118,9 +129,16 @@ async function determineContentType(uri) {
  * Process a link as a file
  * @param {string} uri - The link to process as a file
  * @param {boolean} saveAsDocument - Whether to save the content as a document. Default is true
+ * @param {{[key: string]: string}} metadata - Metadata to use when creating the document
+ * @param {Object} options - The collector options sent by the server (eg: transcription provider, OCR languages)
  * @returns {Promise<{success: boolean, reason: string|null, documents: Object[], content: string|null, saveAsDocument: boolean}>} - The content of the file
  */
-async function processAsFile({ uri, saveAsDocument = true }) {
+async function processAsFile({
+  uri,
+  saveAsDocument = true,
+  metadata = {},
+  options = {},
+}) {
   const fileContentResult = await downloadURIToFile(uri);
   if (!fileContentResult.success)
     return returnResult({
@@ -144,9 +162,11 @@ async function processAsFile({ uri, saveAsDocument = true }) {
    * TODO: Improve this process via a new option that will instantly delete the file after processing
    * if we find we dont need this file ever after processing.
    */
-  const processSingleFileResult = await processSingleFile(targetFilename, {
-    parseOnly: saveAsDocument === false,
-  });
+  const processSingleFileResult = await processSingleFile(
+    targetFilename,
+    { ...options, parseOnly: saveAsDocument === false },
+    metadata
+  );
   if (!processSingleFileResult.success) {
     return returnResult({
       success: false,
@@ -158,11 +178,16 @@ async function processAsFile({ uri, saveAsDocument = true }) {
   }
 
   // If we intend to return only the text content, return the content from the file
-  // and then delete the file - otherwise it will be saved as a document
+  // and then delete the file - otherwise it will be saved as a document.
+  // Some file types (eg: mbox) parse into multiple documents, so we join the text
+  // of every non-empty document rather than returning just the first.
   if (!saveAsDocument) {
     return returnResult({
       success: true,
-      content: processSingleFileResult.documents[0].pageContent,
+      content: processSingleFileResult.documents
+        .map((document) => document?.pageContent ?? "")
+        .filter((pageContent) => pageContent.length > 0)
+        .join("\n\n"),
       saveAsDocument,
     });
   }
@@ -171,6 +196,7 @@ async function processAsFile({ uri, saveAsDocument = true }) {
 }
 
 module.exports = {
+  parseContentType,
   returnResult,
   getContentTypeFromURL,
   determineContentType,

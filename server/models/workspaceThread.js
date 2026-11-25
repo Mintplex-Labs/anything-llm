@@ -1,6 +1,7 @@
 const prisma = require("../utils/prisma");
 const slugifyModule = require("slugify");
 const { v4: uuidv4 } = require("uuid");
+const truncate = require("truncate");
 
 const WorkspaceThread = {
   defaultName: "Thread",
@@ -36,9 +37,10 @@ const WorkspaceThread = {
       const thread = await prisma.workspace_threads.create({
         data: {
           name: data.name ? String(data.name) : this.defaultName,
-          slug: data.slug
-            ? this.slugify(data.slug, { lowercase: true })
-            : uuidv4(),
+          // Custom slugs keep the caller's casing on purpose. Thread lookups are
+          // exact, case-sensitive matches, so API clients that address a thread
+          // by the slug they supplied would fail to find it if we lowercased it.
+          slug: data.slug ? this.slugify(data.slug) : uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
         },
@@ -90,6 +92,17 @@ const WorkspaceThread = {
 
   delete: async function (clause = {}) {
     try {
+      const { WorkspaceChats } = require("./workspaceChats");
+      // Hide chats without deleting rows so daily message usage is preserved.
+      const threads = await prisma.workspace_threads.findMany({
+        where: clause,
+        select: { id: true },
+      });
+      if (threads.length > 0)
+        await WorkspaceChats.markThreadHistoryInvalidV2({
+          thread_id: { in: threads.map((thread) => thread.id) },
+        });
+
       await prisma.workspace_threads.deleteMany({
         where: clause,
       });
@@ -120,15 +133,28 @@ const WorkspaceThread = {
     }
   },
 
-  // Will fire on first message (included or not) for a thread and rename the thread with the newName prop.
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_threads.updateMany({
+        where: { user_id: null },
+        data: { user_id: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  // Will fire on first message (included or not) for a thread and rename the thread based on the prompt.
   autoRenameThread: async function ({
     workspace = null,
     thread = null,
     user = null,
-    newName = null,
+    prompt = null,
     onRename = null,
   }) {
-    if (!workspace || !thread || !newName) return false;
+    if (!workspace || !thread || !prompt) return false;
     if (thread.name !== this.defaultName) return false; // don't rename if already named.
 
     const { WorkspaceChats } = require("./workspaceChats");
@@ -139,7 +165,7 @@ const WorkspaceThread = {
     });
     if (chatCount !== 1) return { renamed: false, thread };
     const { thread: updatedThread } = await this.update(thread, {
-      name: newName,
+      name: truncate(prompt, 22),
     });
 
     onRename?.(updatedThread);

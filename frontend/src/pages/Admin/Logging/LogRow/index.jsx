@@ -1,18 +1,20 @@
+import moment from "moment";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { safeJsonParse } from "@/utils/request";
+import useMultiUserMode from "@/hooks/useMultiUserMode";
 
 export default function LogRow({ log }) {
+  const multiUserMode = useMultiUserMode();
   const [expanded, setExpanded] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [hasMetadata, setHasMetadata] = useState(false);
 
   useEffect(() => {
     function parseAndSetMetadata() {
-      try {
-        let data = JSON.parse(log.metadata);
-        setHasMetadata(Object.keys(data)?.length > 0);
-        setMetadata(data);
-      } catch {}
+      const data = safeJsonParse(log.metadata, {});
+      setHasMetadata(Object.keys(data)?.length > 0);
+      setMetadata(data);
     }
     parseAndSetMetadata();
   }, [log.metadata]);
@@ -32,11 +34,13 @@ export default function LogRow({ log }) {
         }`}
       >
         <EventBadge event={log.event} />
+        {multiUserMode && (
+          <td className="px-6 border-transparent transform transition-transform duration-200">
+            {log.user.username}
+          </td>
+        )}
         <td className="px-6 border-transparent transform transition-transform duration-200">
-          {log.user.username}
-        </td>
-        <td className="px-6 border-transparent transform transition-transform duration-200">
-          {log.occurredAt}
+          {moment(log.occurredAt).format("lll")}
         </td>
         {hasMetadata && (
           <div className="mt-1">

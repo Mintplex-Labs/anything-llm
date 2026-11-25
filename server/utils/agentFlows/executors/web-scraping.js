@@ -67,6 +67,7 @@ async function executeWebScraping(config, context) {
     provider: aibitat.defaultProvider.provider,
     model: aibitat.defaultProvider.model,
     content,
+    aibitat,
   });
 
   introspect(`Successfully summarized content`);

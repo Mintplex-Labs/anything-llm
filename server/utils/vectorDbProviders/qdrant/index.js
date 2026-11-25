@@ -5,10 +5,18 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { VectorDatabase } = require("../base");
 
-const QDrant = {
-  name: "QDrant",
-  connect: async function () {
+class QDrant extends VectorDatabase {
+  constructor() {
+    super();
+  }
+
+  get name() {
+    return "QDrant";
+  }
+
+  async connect() {
     if (process.env.VECTOR_DB !== "qdrant")
       throw new Error("QDrant::Invalid ENV settings");
 
@@ -26,12 +34,14 @@ const QDrant = {
       );
 
     return { client };
-  },
-  heartbeat: async function () {
+  }
+
+  async heartbeat() {
     await this.connect();
     return { heartbeat: Number(new Date()) };
-  },
-  totalVectors: async function () {
+  }
+
+  async totalVectors() {
     const { client } = await this.connect();
     const { collections } = await client.getCollections();
     var totalVectors = 0;
@@ -41,13 +51,15 @@ const QDrant = {
         (await this.namespace(client, collection.name))?.vectorCount || 0;
     }
     return totalVectors;
-  },
-  namespaceCount: async function (_namespace = null) {
+  }
+
+  async namespaceCount(_namespace = null) {
     const { client } = await this.connect();
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
-  },
-  similarityResponse: async function ({
+  }
+
+  async similarityResponse({
     client,
     namespace,
     queryVector,
@@ -70,7 +82,7 @@ const QDrant = {
     responses.forEach((response) => {
       if (response.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
-        console.log(
+        this.logger(
           "QDrant: A source was filtered from context as it's parent document is pinned."
         );
         return;
@@ -86,8 +98,9 @@ const QDrant = {
     });
 
     return result;
-  },
-  namespace: async function (client, namespace = null) {
+  }
+
+  async namespace(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.getCollection(namespace).catch(() => null);
     if (!collection) return null;
@@ -97,28 +110,32 @@ const QDrant = {
       ...collection,
       vectorCount: (await client.count(namespace, { exact: true })).count,
     };
-  },
-  hasNamespace: async function (namespace = null) {
+  }
+
+  async hasNamespace(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, namespace);
-  },
-  namespaceExists: async function (client, namespace = null) {
+  }
+
+  async namespaceExists(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.getCollection(namespace).catch((e) => {
-      console.error("QDrant::namespaceExists", e.message);
+      this.logger("namespaceExists", e.message);
       return null;
     });
     return !!collection;
-  },
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  }
+
+  async deleteVectorsInNamespace(client, namespace = null) {
     await client.deleteCollection(namespace);
     return true;
-  },
+  }
+
   // QDrant requires a dimension aspect for collection creation
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
-  getOrCreateCollection: async function (client, namespace, dimensions = null) {
+  async getOrCreateCollection(client, namespace, dimensions = null) {
     if (await this.namespaceExists(client, namespace)) {
       return await client.getCollection(namespace);
     }
@@ -133,8 +150,9 @@ const QDrant = {
       },
     });
     return await client.getCollection(namespace);
-  },
-  addDocumentToNamespace: async function (
+  }
+
+  async addDocumentToNamespace(
     namespace,
     documentData = {},
     fullFilePath = null,
@@ -146,7 +164,7 @@ const QDrant = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      this.logger("Adding new vectorized document into namespace", namespace);
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -168,13 +186,8 @@ const QDrant = {
               namespace,
             });
 
+          const records = [];
           for (const chunk of chunks) {
-            const submission = {
-              ids: [],
-              vectors: [],
-              payloads: [],
-            };
-
             // Before sending to Qdrant and saving the records to our db
             // we need to assign the id of each chunk that is stored in the cached file.
             // The id property must be defined or else it will be unable to be managed by ALLM.
@@ -183,24 +196,16 @@ const QDrant = {
               if (chunk?.payload?.hasOwnProperty("id")) {
                 const { id: _id, ...payload } = chunk.payload;
                 documentVectors.push({ docId, vectorId: id });
-                submission.ids.push(id);
-                submission.vectors.push(chunk.vector);
-                submission.payloads.push(payload);
+                records.push({ id, vector: chunk.vector, payload });
               } else {
                 console.error(
                   "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
                 );
               }
             });
-
-            const additionResult = await client.upsert(namespace, {
-              wait: true,
-              batch: { ...submission },
-            });
-            if (additionResult?.status !== "completed")
-              throw new Error("Error embedding into QDrant", additionResult);
           }
 
+          await this.#upsertRecords(client, namespace, records);
           await DocumentVectors.bulkInsert(documentVectors);
           return { vectorized: true, error: null };
         }
@@ -227,7 +232,7 @@ const QDrant = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Snippets created from document:", textChunks.length);
+      this.logger("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -274,43 +279,45 @@ const QDrant = {
         });
 
       if (vectors.length > 0) {
-        const chunks = [];
-
-        console.log("Inserting vectorized chunks into QDrant collection.");
-        for (const chunk of toChunks(vectors, 500)) {
-          const batchIds = [],
-            batchVectors = [],
-            batchPayloads = [];
-          chunks.push(chunk);
-          chunk.forEach((v) => {
-            batchIds.push(v.id);
-            batchVectors.push(v.vector);
-            batchPayloads.push(v.payload);
-          });
-
-          const additionResult = await client.upsert(namespace, {
-            wait: true,
-            batch: {
-              ids: batchIds,
-              vectors: batchVectors,
-              payloads: batchPayloads,
-            },
-          });
-          if (additionResult?.status !== "completed")
-            throw new Error("Error embedding into QDrant", additionResult);
-        }
-
-        await storeVectorResult(chunks, fullFilePath);
+        this.logger("Inserting vectorized chunks into QDrant collection.");
+        await this.#upsertRecords(client, namespace, vectors);
+        await storeVectorResult(toChunks(vectors, 500), fullFilePath);
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
-      return { vectorized: false, error: e.message };
+      // Qdrant's reason for a rejected request is in the response body, not the message.
+      const reason = e?.data?.status?.error;
+      const message = reason ? `${e.message}: ${reason}` : e.message;
+      this.logger("addDocumentToNamespace", message);
+      return { vectorized: false, error: message };
     }
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  }
+
+  /**
+   * Upsert points in batches small enough to stay under Qdrant's default 32MB
+   * request limit. A 500-point batch of 4096-dim vectors is ~42MB of JSON.
+   * @param {QdrantClient} client
+   * @param {string} namespace
+   * @param {{id: string, vector: number[], payload: object}[]} records
+   */
+  async #upsertRecords(client, namespace, records) {
+    for (const batch of toChunks(records, 100)) {
+      const result = await client.upsert(namespace, {
+        wait: true,
+        batch: {
+          ids: batch.map((r) => r.id),
+          vectors: batch.map((r) => r.vector),
+          payloads: batch.map((r) => r.payload),
+        },
+      });
+      if (result?.status !== "completed")
+        throw new Error("Error embedding into QDrant", result);
+    }
+  }
+
+  async deleteDocumentFromNamespace(namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
@@ -327,8 +334,9 @@ const QDrant = {
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
     return true;
-  },
-  performSimilaritySearch: async function ({
+  }
+
+  async performSimilaritySearch({
     namespace = null,
     input = "",
     LLMConnector = null,
@@ -366,8 +374,9 @@ const QDrant = {
       sources: this.curateSources(sources),
       message: false,
     };
-  },
-  "namespace-stats": async function (reqBody = {}) {
+  }
+
+  async "namespace-stats"(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -377,8 +386,9 @@ const QDrant = {
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
-  },
-  "delete-namespace": async function (reqBody = {}) {
+  }
+
+  async "delete-namespace"(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -389,16 +399,18 @@ const QDrant = {
     return {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
     };
-  },
-  reset: async function () {
+  }
+
+  async reset() {
     const { client } = await this.connect();
     const response = await client.getCollections();
     for (const collection of response.collections) {
       await client.deleteCollection(collection.name);
     }
     return { reset: true };
-  },
-  curateSources: function (sources = []) {
+  }
+
+  curateSources(sources = []) {
     const documents = [];
     for (const source of sources) {
       if (Object.keys(source).length > 0) {
@@ -412,7 +424,7 @@ const QDrant = {
     }
 
     return documents;
-  },
-};
+  }
+}
 
 module.exports.QDrant = QDrant;

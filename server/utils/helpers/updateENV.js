@@ -1,13 +1,19 @@
 const { Telemetry } = require("../../models/telemetry");
-const {
-  SUPPORTED_CONNECTION_METHODS,
-} = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
+    postUpdate: [
+      require("../AiProviders/embeddedLemonade/config")
+        .manageEngineOnProviderChange,
+    ],
+  },
+  // Model Router Settings
+  ModelRouterId: {
+    envKey: "MODEL_ROUTER_ID",
+    checks: [],
   },
   // OpenAI Settings
   OpenAiKey: {
@@ -32,12 +38,13 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
   AzureOpenAiModelPref: {
-    envKey: "OPEN_MODEL_PREF",
+    envKey: "AZURE_OPENAI_MODEL_PREF",
     checks: [isNotEmpty],
   },
   AzureOpenAiEmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [handleVectorStoreReset],
   },
   AzureOpenAiModelType: {
     envKey: "AZURE_OPENAI_MODEL_TYPE",
@@ -46,6 +53,15 @@ const KEY_MAPPING = {
         ["default", "reasoning"].includes(input)
           ? null
           : "Invalid model type. Must be one of: default, reasoning.",
+    ],
+  },
+  AzureOpenAiAgentApi: {
+    envKey: "AZURE_OPENAI_AGENT_API",
+    checks: [
+      (input) =>
+        ["chat", "responses"].includes(input)
+          ? null
+          : "Invalid agent API. Must be one of: chat, responses.",
     ],
   },
 
@@ -94,6 +110,10 @@ const KEY_MAPPING = {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
     checks: [],
   },
+  LMStudioAuthToken: {
+    envKey: "LMSTUDIO_AUTH_TOKEN",
+    checks: [],
+  },
 
   // LocalAI Settings
   LocalAiBasePath: {
@@ -106,7 +126,7 @@ const KEY_MAPPING = {
   },
   LocalAiTokenLimit: {
     envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   LocalAiApiKey: {
     envKey: "LOCAL_AI_API_KEY",
@@ -123,10 +143,6 @@ const KEY_MAPPING = {
   },
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
-    checks: [],
-  },
-  OllamaLLMPerformanceMode: {
-    envKey: "OLLAMA_PERFORMANCE_MODE",
     checks: [],
   },
   OllamaLLMKeepAliveSeconds: {
@@ -148,20 +164,6 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // Hugging Face LLM Inference Settings
-  HuggingFaceLLMEndpoint: {
-    envKey: "HUGGING_FACE_LLM_ENDPOINT",
-    checks: [isNotEmpty, isValidURL, validHuggingFaceEndpoint],
-  },
-  HuggingFaceLLMAccessToken: {
-    envKey: "HUGGING_FACE_LLM_API_KEY",
-    checks: [isNotEmpty],
-  },
-  HuggingFaceLLMTokenLimit: {
-    envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
-
   // KoboldCPP Settings
   KoboldCPPBasePath: {
     envKey: "KOBOLD_CPP_BASE_PATH",
@@ -173,11 +175,11 @@ const KEY_MAPPING = {
   },
   KoboldCPPTokenLimit: {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   KoboldCPPMaxTokens: {
     envKey: "KOBOLD_CPP_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [],
   },
 
   // Text Generation Web UI Settings
@@ -231,32 +233,13 @@ const KEY_MAPPING = {
   },
   GenericOpenAiMaxTokens: {
     envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
-    checks: [nonZero],
+    checks: [nonNegative],
   },
 
-  // AWS Bedrock LLM InferenceSettings
-  AwsBedrockLLMConnectionMethod: {
-    envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
-    checks: [
-      (input) =>
-        SUPPORTED_CONNECTION_METHODS.includes(input) ? null : "invalid Value",
-    ],
-  },
-  AwsBedrockLLMAccessKeyId: {
-    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
-    checks: [],
-  },
-  AwsBedrockLLMAccessKey: {
-    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
-    checks: [],
-  },
-  AwsBedrockLLMSessionToken: {
-    envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
-    checks: [],
-  },
-  AwsBedrockLLMAPIKey: {
+  // AWS Bedrock LLM Settings
+  AwsBedrockLLMApiKey: {
     envKey: "AWS_BEDROCK_LLM_API_KEY",
-    checks: [],
+    checks: [isNotEmpty],
   },
   AwsBedrockLLMRegion: {
     envKey: "AWS_BEDROCK_LLM_REGION",
@@ -270,23 +253,9 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
-  AwsBedrockLLMMaxOutputTokens: {
-    envKey: "AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS",
-    checks: [nonZero],
-  },
-
-  // Dell Pro AI Studio Settings
-  DellProAiStudioBasePath: {
-    envKey: "DPAIS_LLM_BASE_PATH",
-    checks: [isNotEmpty, validDockerizedUrl],
-  },
-  DellProAiStudioModelPref: {
-    envKey: "DPAIS_LLM_MODEL_PREF",
-    checks: [isNotEmpty],
-  },
-  DellProAiStudioTokenLimit: {
-    envKey: "DPAIS_LLM_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+  AwsBedrockLLMMaxTokens: {
+    envKey: "AWS_BEDROCK_LLM_MAX_TOKENS",
+    checks: [],
   },
 
   EmbeddingEngine: {
@@ -307,6 +276,10 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
   },
+  EmbeddingOutputDimensions: {
+    envKey: "EMBEDDING_OUTPUT_DIMENSIONS",
+    checks: [],
+  },
   OllamaEmbeddingBatchSize: {
     envKey: "OLLAMA_EMBEDDING_BATCH_SIZE",
     checks: [nonZero],
@@ -326,6 +299,84 @@ const KEY_MAPPING = {
   GenericOpenAiEmbeddingMaxConcurrentChunks: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
     checks: [nonZero],
+  },
+  GenericOpenAiEmbeddingPassagePrefix: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX",
+    checks: [],
+  },
+  GenericOpenAiEmbeddingQueryPrefix: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX",
+    checks: [],
+  },
+
+  // Image Generation Settings
+  ImageGenerationProvider: {
+    envKey: "IMAGE_GEN_PROVIDER",
+    checks: [isNotEmpty, supportedImageGenerationProvider],
+  },
+  ImageGenerationModelPref: {
+    envKey: "IMAGE_GEN_MODEL_PREF",
+    checks: [],
+  },
+  ImageGenerationDimensions: {
+    envKey: "IMAGE_GEN_SIZE_PREF",
+    checks: [],
+  },
+  ImageGenerationOpenAiKey: {
+    envKey: "IMAGE_GEN_OPENAI_KEY",
+    checks: [isNotEmpty, validOpenAIKey],
+  },
+  ImageGenerationOpenRouterApiKey: {
+    envKey: "IMAGE_GEN_OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationOllamaBasePath: {
+    envKey: "IMAGE_GEN_OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  ImageGenerationOllamaAuthToken: {
+    envKey: "IMAGE_GEN_OLLAMA_AUTH_TOKEN",
+    checks: [],
+  },
+  ImageGenerationLemonadeBasePath: {
+    envKey: "IMAGE_GEN_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  ImageGenerationLemonadeApiKey: {
+    envKey: "IMAGE_GEN_LEMONADE_API_KEY",
+    checks: [],
+  },
+  ImageGenerationLocalAiBasePath: {
+    envKey: "IMAGE_GEN_LOCALAI_BASE_PATH",
+    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
+  },
+  ImageGenerationLocalAiApiKey: {
+    envKey: "IMAGE_GEN_LOCALAI_API_KEY",
+    checks: [],
+  },
+  ImageGenerationLlmmanBasePath: {
+    envKey: "IMAGE_GEN_LLMMAN_BASE_PATH",
+    checks: [isNotEmpty, isValidURL, validDockerizedUrl],
+  },
+  ImageGenerationLlmmanAuthToken: {
+    envKey: "IMAGE_GEN_LLMMAN_AUTH_TOKEN",
+    checks: [],
+  },
+  ImageGenerationGeminiApiKey: {
+    envKey: "IMAGE_GEN_GEMINI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationMinimaxApiKey: {
+    envKey: "IMAGE_GEN_MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ImageGenerationMinimaxResolution: {
+    envKey: "IMAGE_GEN_MINIMAX_RESOLUTION",
+    checks: [],
+  },
+  ImageGenerationMinimaxPromptEnhancement: {
+    envKey: "IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT",
+    checks: [],
   },
 
   // Vector Database Selection Settings
@@ -371,6 +422,18 @@ const KEY_MAPPING = {
   WeaviateApiKey: {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
+  },
+  WeaviateDeployment: {
+    envKey: "WEAVIATE_DEPLOYMENT",
+    checks: [validWeaviateDeployment],
+  },
+  WeaviateGrpcHost: {
+    envKey: "WEAVIATE_GRPC_HOST",
+    checks: [optional(validHostname)],
+  },
+  WeaviateGrpcPort: {
+    envKey: "WEAVIATE_GRPC_PORT",
+    checks: [optional(validPort)],
   },
 
   // QDrant Options
@@ -451,6 +514,10 @@ const KEY_MAPPING = {
     envKey: "TOGETHER_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  TogetherAiMaxTokens: {
+    envKey: "TOGETHER_AI_MAX_TOKENS",
+    checks: [nonNegative],
+  },
 
   // Fireworks AI Options
   FireworksAiLLMApiKey: {
@@ -484,6 +551,17 @@ const KEY_MAPPING = {
   OpenRouterTimeout: {
     envKey: "OPENROUTER_TIMEOUT_MS",
     checks: [],
+  },
+  OpenRouterServiceTier: {
+    envKey: "OPENROUTER_SERVICE_TIER",
+    checks: [
+      (input) => {
+        const { OpenRouterLLM } = require("../AiProviders/openRouter");
+        return OpenRouterLLM.SERVICE_TIERS.includes(input)
+          ? null
+          : `Invalid service tier. Must be one of: ${OpenRouterLLM.SERVICE_TIERS.join(", ")}.`;
+      },
+    ],
   },
 
   // Novita Options
@@ -537,6 +615,21 @@ const KEY_MAPPING = {
     checks: [validLocalWhisper],
     postUpdate: [],
   },
+  WhisperGenericOpenAiBaseUrl: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_BASE_URL",
+    checks: [isValidURL],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiApiKey: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+    postUpdate: [],
+  },
+  WhisperGenericOpenAiModel: {
+    envKey: "WHISPER_GENERIC_OPEN_AI_MODEL",
+    checks: [isNotEmpty],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -558,14 +651,6 @@ const KEY_MAPPING = {
   },
 
   // Agent Integration ENVs
-  AgentGoogleSearchEngineId: {
-    envKey: "AGENT_GSE_CTX",
-    checks: [],
-  },
-  AgentGoogleSearchEngineKey: {
-    envKey: "AGENT_GSE_KEY",
-    checks: [],
-  },
   AgentSerpApiKey: {
     envKey: "AGENT_SERPAPI_API_KEY",
     checks: [],
@@ -590,6 +675,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_BING_SEARCH_API_KEY",
     checks: [],
   },
+  AgentBaiduSearchApiKey: {
+    envKey: "AGENT_BAIDU_SEARCH_API_KEY",
+    checks: [],
+  },
   AgentSerplyApiKey: {
     envKey: "AGENT_SERPLY_API_KEY",
     checks: [],
@@ -604,6 +693,46 @@ const KEY_MAPPING = {
   },
   AgentExaApiKey: {
     envKey: "AGENT_EXA_API_KEY",
+    checks: [],
+  },
+  AgentPerplexityApiKey: {
+    envKey: "AGENT_PERPLEXITY_API_KEY",
+    checks: [],
+  },
+  AgentBraveApiKey: {
+    envKey: "AGENT_BRAVE_API_KEY",
+    checks: [],
+  },
+  AgentCrwApiKey: {
+    envKey: "AGENT_CRW_API_KEY",
+    checks: [],
+  },
+  AgentCrwApiUrl: {
+    envKey: "AGENT_CRW_API_URL",
+    checks: [],
+  },
+  AgentYouApiKey: {
+    envKey: "AGENT_YOU_API_KEY",
+    checks: [],
+  },
+  AgentKeenableApiKey: {
+    envKey: "AGENT_KEENABLE_API_KEY",
+    checks: [],
+  },
+  AgentKeenableApiUrl: {
+    envKey: "AGENT_KEENABLE_API_URL",
+    checks: [],
+  },
+  AgentAnySearchApiKey: {
+    envKey: "AGENT_ANYSEARCH_API_KEY",
+    checks: [],
+  },
+  AgentFirecrawlApiKey: {
+    envKey: "AGENT_FIRECRAWL_API_KEY",
+    checks: [],
+  },
+  AgentDeepSeekApiKey: {
+    envKey: "AGENT_DEEPSEEK_API_KEY",
     checks: [],
   },
 
@@ -657,6 +786,76 @@ const KEY_MAPPING = {
     checks: [isValidURL],
   },
 
+  // Kokoro TTS (self-hosted kokoro-fastapi)
+  TTSKokoroEndpoint: {
+    envKey: "TTS_KOKORO_ENDPOINT",
+    checks: [isValidURL],
+  },
+  TTSKokoroKey: {
+    envKey: "TTS_KOKORO_KEY",
+    checks: [],
+  },
+  TTSKokoroVoiceModel: {
+    envKey: "TTS_KOKORO_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+
+  // STT Selection
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [supportedSTTProvider],
+  },
+
+  // STT OpenAI
+  STTOpenAIModel: {
+    envKey: "STT_OPEN_AI_MODEL",
+    checks: [],
+  },
+
+  // STT Lemonade
+  STTLemonadeBasePath: {
+    envKey: "STT_LEMONADE_BASE_PATH",
+    checks: [isValidURL],
+  },
+  STTLemonadeModelPref: {
+    envKey: "STT_LEMONADE_MODEL_PREF",
+    checks: [],
+  },
+
+  // STT Deepgram
+  STTDeepgramApiKey: {
+    envKey: "STT_DEEPGRAM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTDeepgramModel: {
+    envKey: "STT_DEEPGRAM_MODEL",
+    checks: [isNotEmpty],
+  },
+
+  // STT OpenAI Generic
+  STTOpenAICompatibleKey: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  STTOpenAICompatibleModel: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_MODEL",
+    checks: [],
+  },
+  STTOpenAICompatibleEndpoint: {
+    envKey: "STT_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
+  // STT Groq
+  STTGroqApiKey: {
+    envKey: "STT_GROQ_API_KEY",
+    checks: [isNotEmpty],
+  },
+  STTGroqModel: {
+    envKey: "STT_GROQ_MODEL",
+    checks: [isNotEmpty],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -665,6 +864,48 @@ const KEY_MAPPING = {
   DeepSeekModelPref: {
     envKey: "DEEPSEEK_MODEL_PREF",
     checks: [isNotEmpty],
+  },
+
+  // Minimax Options
+  MinimaxApiKey: {
+    envKey: "MINIMAX_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MinimaxModelPref: {
+    envKey: "MINIMAX_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Cerebras Options
+  CerebrasApiKey: {
+    envKey: "CEREBRAS_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CerebrasModelPref: {
+    envKey: "CEREBRAS_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Google Vertex AI Options
+  VertexAiLLMApiKey: {
+    envKey: "VERTEX_AI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMProjectId: {
+    envKey: "VERTEX_AI_LLM_PROJECT_ID",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMRegion: {
+    envKey: "VERTEX_AI_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMModelPref: {
+    envKey: "VERTEX_AI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  VertexAiLLMTokenLimit: {
+    envKey: "VERTEX_AI_LLM_MODEL_TOKEN_LIMIT",
+    checks: [],
   },
 
   // APIPie Options
@@ -789,7 +1030,107 @@ const KEY_MAPPING = {
     envKey: "GITEE_AI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+
+  // llmman Options
+  LlmmanBasePath: {
+    envKey: "LLMMAN_BASE_PATH",
+    checks: [isNotEmpty, isValidURL, validDockerizedUrl],
+  },
+  LlmmanModelPref: {
+    envKey: "LLMMAN_MODEL_PREF",
+    checks: [],
+  },
+  LlmmanTokenLimit: {
+    envKey: "LLMMAN_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+  LlmmanKeepAliveSeconds: {
+    envKey: "LLMMAN_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
+  },
+  LlmmanAuthToken: {
+    envKey: "LLMMAN_AUTH_TOKEN",
+    checks: [],
+  },
+
+  // Privatemode Options
+  PrivateModeBasePath: {
+    envKey: "PRIVATEMODE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  PrivateModeModelPref: {
+    envKey: "PRIVATEMODE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // SambaNova Options
+  SambaNovaLLMApiKey: {
+    envKey: "SAMBANOVA_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  SambaNovaLLMModelPref: {
+    envKey: "SAMBANOVA_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Embedded Lemonade Options
+  ...require("../AiProviders/embeddedLemonade/config").ENV_KEYS,
+
+  // Lemonade Options
+  LemonadeLLMBasePath: {
+    envKey: "LEMONADE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LemonadeLLMApiKey: {
+    envKey: "LEMONADE_LLM_API_KEY",
+    checks: [],
+  },
+  LemonadeLLMModelPref: {
+    envKey: "LEMONADE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LemonadeLLMModelTokenLimit: {
+    envKey: "LEMONADE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // OMLX Options
+  OMLXLLMBasePath: {
+    envKey: "OMLX_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  OMLXLLMApiKey: {
+    envKey: "OMLX_LLM_API_KEY",
+    checks: [],
+  },
+  OMLXLLMModelPref: {
+    envKey: "OMLX_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  OMLXLLMTokenLimit: {
+    envKey: "OMLX_LLM_TOKEN_LIMIT",
+    checks: [],
+  },
+
+  // Agent Skill Settings
+  AgentSkillMaxToolCalls: {
+    envKey: "AGENT_MAX_TOOL_CALLS",
+    checks: [nonZero],
+  },
+  AgentSkillRerankerEnabled: {
+    envKey: "AGENT_SKILL_RERANKER_ENABLED",
+    checks: [],
+  },
+  AgentSkillRerankerTopN: {
+    envKey: "AGENT_SKILL_RERANKER_TOP_N",
+    checks: [nonZero],
+  },
 };
+
+// Skips check when value is empty
+function optional(check) {
+  return (input = "") => (input ? check(input) : null);
+}
 
 function isNotEmpty(input = "") {
   return !input || input.length === 0 ? "Value cannot be empty" : null;
@@ -800,16 +1141,40 @@ function nonZero(input = "") {
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
 }
 
+// Zero is allowed and means the field is omitted from the request payload.
+function nonNegative(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input) < 0 ? "Value cannot be negative" : null;
+}
+
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
-  return Number(input);
+  if (!Number.isInteger(Number(input))) return "Value must be a whole number";
+  return null;
+}
+
+function validPort(input = "") {
+  const port = Number(input);
+  return /^\d+$/.test(input) && port >= 1 && port <= 65535
+    ? null
+    : "Port must be a whole number from 1 to 65535";
+}
+
+// Each dot-separated label must start and end with a letter, digit or underscore
+// (underscores allow Docker Compose service names like `weaviate_db`).
+function validHostname(input = "") {
+  const label = /^[a-z0-9_]([a-z0-9_-]*[a-z0-9_])?$/i;
+  return input.length <= 253 &&
+    input.split(".").every((l) => l.length <= 63 && label.test(l))
+    ? null
+    : "Enter a hostname only, without a protocol, port or path";
 }
 
 function isValidURL(input = "") {
   try {
     new URL(input);
     return null;
-  } catch (e) {
+  } catch {
     return "URL is not a valid URL.";
   }
 }
@@ -854,8 +1219,21 @@ function supportedTTSProvider(input = "") {
     "elevenlabs",
     "piper_local",
     "generic-openai",
+    "kokoro",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function supportedSTTProvider(input = "") {
+  const validSelection = [
+    "native",
+    "openai",
+    "lemonade",
+    "deepgram",
+    "groq",
+    "generic-openai",
+  ].includes(input);
+  return validSelection ? null : `${input} is not a valid STT provider.`;
 }
 
 function validLocalWhisper(input = "") {
@@ -880,7 +1258,6 @@ function supportedLLM(input = "") {
     "togetherai",
     "fireworksai",
     "mistral",
-    "huggingface",
     "perplexity",
     "openrouter",
     "novita",
@@ -896,18 +1273,27 @@ function supportedLLM(input = "") {
     "xai",
     "nvidia-nim",
     "ppio",
-    "dpais",
     "moonshotai",
     "cometapi",
     "foundry",
     "zai",
     "giteeai",
+    "llmman",
+    "privatemode",
+    "sambanova",
+    "lemonade",
+    ...require("../AiProviders/embeddedLemonade/config").supportedProviders(),
+    "minimax",
+    "cerebras",
+    "omlx",
+    "anythingllm-router",
+    "vertex",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
 
 function supportedTranscriptionProvider(input = "") {
-  const validSelection = ["openai", "local"].includes(input);
+  const validSelection = ["openai", "generic-openai", "local"].includes(input);
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;
@@ -925,6 +1311,13 @@ function validGeminiSafetySetting(input = "") {
     : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
 }
 
+function validWeaviateDeployment(input = "") {
+  const validDeployments = ["cloud", "self-hosted"];
+  return validDeployments.includes(input)
+    ? null
+    : `Invalid Weaviate deployment. Must be one of ${validDeployments.join(", ")}.`;
+}
+
 function supportedEmbeddingModel(input = "") {
   const supported = [
     "openai",
@@ -940,6 +1333,7 @@ function supportedEmbeddingModel(input = "") {
     "generic-openai",
     "mistral",
     "openrouter",
+    "lemonade",
   ];
   return supported.includes(input)
     ? null
@@ -962,6 +1356,22 @@ function supportedVectorDB(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
+}
+
+function supportedImageGenerationProvider(input = "") {
+  const supported = [
+    "openai",
+    "ollama",
+    "lemonade",
+    "openrouter",
+    "localai",
+    "llmman",
+    "gemini",
+    "minimax",
+  ];
+  return supported.includes(input)
+    ? null
+    : `Invalid image generation provider. Must be one of ${supported.join(", ")}.`;
 }
 
 function validChromaURL(input = "") {
@@ -1005,12 +1415,6 @@ async function validDockerizedUrl(input = "") {
   return null;
 }
 
-function validHuggingFaceEndpoint(input = "") {
-  return input.slice(-6) !== ".cloud"
-    ? `Your HF Endpoint should end in ".cloud"`
-    : null;
-}
-
 function noRestrictedChars(input = "") {
   const regExp = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
   return !regExp.test(input)
@@ -1027,7 +1431,13 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
     return await resetAllVectorStores({ vectorDbKey: prevValue });
   }
 
-  if (key === "EmbeddingEngine" || key === "EmbeddingModelPref") {
+  if (
+    [
+      "EmbeddingEngine",
+      "EmbeddingModelPref",
+      "AzureOpenAiEmbeddingModelPref",
+    ].includes(key)
+  ) {
     console.log(
       `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
     );
@@ -1058,8 +1468,14 @@ async function downloadEmbeddingModelIfRequired(key, prevValue, nextValue) {
  * @returns {string} - An error message if the connection string is invalid, otherwise null.
  */
 async function looksLikePostgresConnectionString(connectionString = null) {
-  if (!connectionString || !connectionString.startsWith("postgresql://"))
-    return "Invalid Postgres connection string. Must start with postgresql://";
+  // node-postgres accepts both URI schemes that libpq documents.
+  if (
+    !connectionString ||
+    !["postgresql://", "postgres://"].some((scheme) =>
+      connectionString.startsWith(scheme)
+    )
+  )
+    return "Invalid Postgres connection string. Must start with postgresql:// or postgres://";
   if (connectionString.includes(" "))
     return "Invalid Postgres connection string. Must not contain spaces.";
   return null;
@@ -1122,9 +1538,10 @@ async function validatePGVectorTableName(key, prevValue, nextValue) {
 // and is simply for debugging when the .env not found issue many come across.
 async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
+  const runAfterAll = [];
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && !/^\*+$/.test(newENVs[key]) // strip out answers where the value is all asterisks (masked placeholder)
   );
   const newValues = {};
 
@@ -1132,9 +1549,11 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     const {
       envKey,
       checks,
-      preUpdate = [],
-      postUpdate = [],
+      preUpdate = [], // Functions to run before updating a specific ENV variable
+      postUpdate = [], // Functions to run after updating a specific ENV variable
+      postSettled = [], // Functions to run after all ENV variables have been updated
     } = KEY_MAPPING[key];
+    runAfterAll.push(...postSettled);
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
     let errors = await executeValidationChecks(checks, nextValue, force);
@@ -1166,6 +1585,9 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     for (const postUpdateFunc of postUpdate)
       await postUpdateFunc(key, prevValue, nextValue);
   }
+
+  for (const runAfterAllFunc of runAfterAll)
+    await runAfterAllFunc(newValues, userId);
 
   await logChangesToEventLog(newValues, userId);
   if (process.env.NODE_ENV === "production") dumpENV();
@@ -1207,6 +1629,7 @@ function dumpENV() {
 
     "STORAGE_DIR",
     "SERVER_PORT",
+    "COLLECTOR_PORT",
     // For persistent data encryption
     "SIG_KEY",
     "SIG_SALT",
@@ -1224,6 +1647,9 @@ function dumpENV() {
     "HTTPS_KEY_PATH",
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
+    "DISABLE_SWAGGER_DOCS",
+    "DISABLE_METRICS_ENDPOINT",
+    "WORKSPACE_DELETION_PROTECTION",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",
@@ -1242,6 +1668,10 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+    // Custom headers for Generic OpenAI
+    "GENERIC_OPEN_AI_CUSTOM_HEADERS",
+    // Custom request field name for Generic OpenAI max tokens (eg: max_completion_tokens)
+    "GENERIC_OPEN_AI_MODEL_MAX_TOKEN_KEY",
 
     // Specify Chromium args for collector
     "ANYTHINGLLM_CHROMIUM_ARGS",
@@ -1251,6 +1681,50 @@ function dumpENV() {
 
     // Allow disabling of MCP tool cooldown
     "MCP_NO_COOLDOWN",
+
+    // Allow disabling of streaming for AWS Bedrock
+    "AWS_BEDROCK_STREAMING_DISABLED",
+
+    // Allow capabilities for specific providers.
+    "PROVIDER_DISABLE_NATIVE_TOOL_CALLING",
+    "PROVIDER_SUPPORTS_REASONING",
+    "PROVIDER_SUPPORTS_IMAGE_GENERATION",
+    "PROVIDER_SUPPORTS_VISION",
+    "GENERIC_OPEN_AI_REPORT_USAGE",
+
+    // Allow auto-approval of skills
+    "AGENT_AUTO_APPROVED_SKILLS",
+
+    // Allow setting a custom fetch timeouts for providers
+    "ANYTHINGLLM_FETCH_TIMEOUT",
+    "ANYTHINGLLM_MAX_RETRIES",
+
+    // Deny-by-default for embed widgets that have no allowlist configured
+    "EMBED_REQUIRE_ALLOWLIST",
+
+    // Allow setting a custom timeout for tool call approval prompts
+    "TOOL_CALL_APPROVAL_TIMEOUT_MS",
+
+    // AWS Bedrock endpoint host overrides for air-gapped or specialized partitions
+    "AWS_BEDROCK_LLM_MANTLE_ENDPOINT",
+    "AWS_BEDROCK_LLM_RUNTIME_ENDPOINT",
+    "AWS_BEDROCK_LLM_CONTROL_ENDPOINT",
+
+    // Allow setting a delay between Generic OpenAI embedding requests
+    "GENERIC_OPEN_AI_EMBEDDING_API_DELAY_MS",
+
+    // Memory extraction, scheduled job and document sync worker settings
+    "MEMORY_EXTRACTION_INTERVAL",
+    "MEMORY_IDLE_THRESHOLD_MS",
+    "SCHEDULED_JOB_MAX_CONCURRENT",
+    "SCHEDULED_JOB_TIMEOUT_MS",
+    "DOCUMENT_SYNC_STALE_AFTER_MS",
+
+    // Legacy provider overrides that are still read when set
+    "CEREBRAS_MODEL_TOKEN_LIMIT",
+    "DEEPSEEK_MAX_TOKENS",
+    "LLMMAN_RESPONSE_TIMEOUT",
+    "VERTEX_AI_LLM_MAX_TOKENS",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

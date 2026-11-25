@@ -27,7 +27,7 @@ export default function QDrantDBOptions({ settings }) {
             name="QdrantApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="wOeqxsYP4....1244sba"
-            defaultValue={settings?.QdrantApiKey}
+            defaultValue={settings?.QdrantApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}
           />

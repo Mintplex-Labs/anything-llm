@@ -1,8 +1,8 @@
 /**
  * Dynamically load the correct repository loader from a specific platform
  * by default will return GitHub.
- * @param {('github'|'gitlab')} platform
- * @returns {import("./GithubRepo/RepoLoader")|import("./GitlabRepo/RepoLoader")} the repo loader class for provider
+ * @param {('github'|'gitlab'|'gitea')} platform
+ * @returns {import("./GithubRepo/RepoLoader")|import("./GitlabRepo/RepoLoader")|import("./GiteaRepo/RepoLoader")} the repo loader class for provider
  */
 function resolveRepoLoader(platform = "github") {
   switch (platform) {
@@ -12,6 +12,9 @@ function resolveRepoLoader(platform = "github") {
     case "gitlab":
       console.log(`Loading GitLab RepoLoader...`);
       return require("./GitlabRepo/RepoLoader");
+    case "gitea":
+      console.log(`Loading Gitea RepoLoader...`);
+      return require("./GiteaRepo/RepoLoader");
     default:
       console.log(`Loading GitHub RepoLoader...`);
       return require("./GithubRepo/RepoLoader");
@@ -21,8 +24,8 @@ function resolveRepoLoader(platform = "github") {
 /**
  * Dynamically load the correct repository loader function from a specific platform
  * by default will return Github.
- * @param {('github'|'gitlab')} platform
- * @returns {import("./GithubRepo")['fetchGithubFile'] | import("./GitlabRepo")['fetchGitlabFile']} the repo loader class for provider
+ * @param {('github'|'gitlab'|'gitea')} platform
+ * @returns {import("./GithubRepo")['fetchGithubFile'] | import("./GitlabRepo")['fetchGitlabFile'] | import("./GiteaRepo")['fetchGiteaFile']} the repo loader class for provider
  */
 function resolveRepoLoaderFunction(platform = "github") {
   switch (platform) {
@@ -32,6 +35,9 @@ function resolveRepoLoaderFunction(platform = "github") {
     case "gitlab":
       console.log(`Loading GitLab loader function...`);
       return require("./GitlabRepo").loadGitlabRepo;
+    case "gitea":
+      console.log(`Loading Gitea loader function...`);
+      return require("./GiteaRepo").loadGiteaRepo;
     default:
       console.log(`Loading GitHub loader function...`);
       return require("./GithubRepo").loadGithubRepo;

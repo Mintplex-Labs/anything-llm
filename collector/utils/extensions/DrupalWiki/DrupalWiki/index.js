@@ -11,6 +11,8 @@ const {
   sanitizeFileName,
   writeToServerDocuments,
   documentsFolder,
+  normalizePath,
+  isWithin,
 } = require("../../../files");
 const { default: slugify } = require("slugify");
 const path = require("path");
@@ -62,10 +64,11 @@ class DrupalWiki {
    *
    * @param {number} spaceId
    * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
-   * @returns {Promise<void>}
+   * @returns {Promise<number>} Number of pages stored.
    */
   async loadAndStoreAllPagesForSpace(spaceId, encryptionWorker) {
     const pageIndex = await this.#getPageIndexForSpace(spaceId);
+    let stored = 0;
     for (const pageId of pageIndex) {
       try {
         const page = await this.loadPage(pageId);
@@ -73,6 +76,7 @@ class DrupalWiki {
         // Pages with an empty body will lead to embedding issues / exceptions
         if (page.processedBody.trim() !== "") {
           this.#storePage(page, encryptionWorker);
+          stored++;
           await this.#downloadAndProcessAttachments(page.id);
         } else {
           console.log(`Skipping page (${page.id}) since it has no content`);
@@ -84,6 +88,7 @@ class DrupalWiki {
         console.error(e);
       }
     }
+    return stored;
   }
 
   /**
@@ -264,7 +269,7 @@ class DrupalWiki {
    * @returns {string}
    * @private
    */
-  #processPageBody({ body, url, title, lastModified }) {
+  #processPageBody({ body, title }) {
     const textContent = body.trim() !== "" ? body : title;
 
     const plainTextContent = htmlToText(textContent, {
@@ -312,10 +317,23 @@ class DrupalWiki {
         }
 
         const buffer = await attachmentResponse.arrayBuffer();
-        const localFilePath = `${WATCH_DIRECTORY}/${fileName}`;
-        require("fs").writeFileSync(localFilePath, Buffer.from(buffer));
+        const localFilePath = normalizePath(
+          path.resolve(
+            WATCH_DIRECTORY,
+            sanitizeFileName(path.basename(fileName))
+          )
+        );
+        if (!isWithin(path.resolve(WATCH_DIRECTORY), localFilePath)) {
+          console.error(
+            `[DrupalWiki Loader]: File name ${localFilePath} is not within the storage path ${path.resolve(
+              WATCH_DIRECTORY
+            )}`
+          );
+          continue;
+        }
 
-        await processSingleFile(fileName);
+        require("fs").writeFileSync(localFilePath, Buffer.from(buffer));
+        await processSingleFile(path.basename(localFilePath));
       }
     } catch (err) {
       console.error(`Fetching/processing attachments failed:`, err);

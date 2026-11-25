@@ -1,0 +1,101 @@
+name: Lint
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "server/**/*.js"
+      - "server/eslint.config.mjs"
+      - "collector/**/*.js"
+      - "collector/eslint.config.mjs"
+      - "frontend/src/**/*.js"
+      - "frontend/src/**/*.jsx"
+      - "frontend/eslint.config.js"
+
+jobs:
+  # Reads the PR's changed files from the GitHub API (no checkout) so lint jobs
+  # for untouched packages are skipped without ever starting a runner.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      collector: ${{ steps.filter.outputs.collector }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            server:
+              - "server/**/*.js"
+              - "server/eslint.config.mjs"
+            frontend:
+              - "frontend/src/**/*.js"
+              - "frontend/src/**/*.jsx"
+              - "frontend/eslint.config.js"
+            collector:
+              - "collector/**/*.js"
+              - "collector/eslint.config.mjs"
+
+  lint-server:
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/cache@v4
+        with:
+          path: server/node_modules
+          key: ${{ runner.os }}-yarn-server-${{ hashFiles('server/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-server-
+      - run: cd server && yarn install --frozen-lockfile
+      - run: cd server && yarn lint:check
+
+  lint-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-yarn-frontend-${{ hashFiles('frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-frontend-
+      - run: cd frontend && yarn install --frozen-lockfile
+      - run: cd frontend && yarn lint:check
+
+  lint-collector:
+    needs: changes
+    if: needs.changes.outputs.collector == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/cache@v4
+        with:
+          path: collector/node_modules
+          key: ${{ runner.os }}-yarn-collector-${{ hashFiles('collector/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-collector-
+      - run: cd collector && yarn install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
+          SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
+      - run: cd collector && yarn lint:check

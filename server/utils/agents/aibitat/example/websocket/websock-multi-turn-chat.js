@@ -45,7 +45,7 @@ app.ws("/ws", function (ws, _response) {
         })
       );
     });
-  } catch (error) {}
+  } catch {}
 });
 
 app.all("*", function (_, response) {

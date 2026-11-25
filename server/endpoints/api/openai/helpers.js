@@ -21,7 +21,7 @@ function getMimeTypeFromDataUrl(dataUrl) {
   try {
     const matches = dataUrl.match(/^data:([^;]+);base64,/);
     return matches ? matches[1].toLowerCase() : "image/png";
-  } catch (e) {
+  } catch {
     return "image/png";
   }
 }

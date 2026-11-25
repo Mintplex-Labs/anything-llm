@@ -1,5 +1,5 @@
 import { X } from "@phosphor-icons/react";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import BG from "./bg.png";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
@@ -8,10 +8,11 @@ import MobileConnection from "@/models/mobile";
 import PreLoader from "@/components/Preloader";
 import Logo from "@/media/logo/anything-llm-infinity.png";
 import paths from "@/utils/paths";
+import GetOnGooglePlay from "./gplay-badge.svg";
 
 export default function MobileConnectModal({ isOpen, onClose }) {
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose} variant="bare">
       <div
         className="relative w-full rounded-lg shadow"
         style={{
@@ -25,9 +26,9 @@ export default function MobileConnectModal({ isOpen, onClose }) {
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+          className="border-none absolute top-4 right-4 transition-all duration-200 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-zinc-800 light:hover:bg-slate-100"
         >
-          <X size={24} weight="bold" className="text-[#FFF]" />
+          <X size={24} weight="bold" className="text-white" />
         </button>
 
         <div className="flex w-full h-full justify-between p-[35px]">
@@ -37,13 +38,23 @@ export default function MobileConnectModal({ isOpen, onClose }) {
               Go mobile. Stay local. AnythingLLM Mobile.
             </p>
             <p className="text-[#FFF] text-lg">
-              AnythingLLM for mobile allows you to connect or clone your
-              workspace's chats, threads and documents for you to use on the go.
+              AnythingLLM for mobile allows you to connect to your workspace's
+              chats, threads, tools, and documents for you to use on the go.
               <br />
               <br />
               Run with local models on your phone privately or relay chats
               directly to this instance seamlessly.
             </p>
+            <Link
+              to="https://play.google.com/store/apps/details?id=com.anythingllm"
+              target="_blank"
+            >
+              <img
+                src={GetOnGooglePlay}
+                alt="Get on Google Play"
+                className="w-[150px] h-auto"
+              />
+            </Link>
           </div>
 
           {/* right column */}
@@ -65,7 +76,7 @@ export default function MobileConnectModal({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </ModalWrapper>
+    </Modal>
   );
 }
 

@@ -2,6 +2,7 @@ const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { WorkspaceThread } = require("../../../models/workspaceThread");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
+const { writeResponseChunk } = require("../../../utils/helpers/chat/responses");
 const { reqBody } = require("../../../utils/http");
 const prisma = require("../../../utils/prisma");
 const { getModelTag } = require("../../utils");
@@ -33,6 +34,7 @@ async function handleMobileCommand(request, response) {
         prisma.workspace_chats.count({
           where: {
             workspaceId: workspace.id,
+            thread_id: { not: null }, // the app only imports chats that belong to a thread
             include: true,
             ...(user ? { user_id: user.id } : {}),
           },
@@ -108,20 +110,26 @@ async function handleMobileCommand(request, response) {
 
     if (!workspace)
       return response.status(400).json({ error: "Workspace not found" });
-    const threadId = threadSlug
-      ? await prisma.workspace_threads.findFirst({
-          where: {
-            workspace_id: workspace.id,
-            slug: String(threadSlug),
-            ...(user ? { user_id: user.id } : {}),
-          },
-        })?.id
-      : null;
+    // No threadSlug is the default thread (threadId null) - older mobile clients rely on that.
+    // A threadSlug that does not resolve is rejected so a stale slug never resets the default thread.
+    let threadId = null;
+    if (threadSlug) {
+      const thread = await prisma.workspace_threads.findFirst({
+        where: {
+          workspace_id: workspace.id,
+          slug: String(threadSlug),
+          ...(user ? { user_id: user.id } : {}),
+        },
+      });
+      if (!thread)
+        return response.status(404).json({ error: "Thread not found" });
+      threadId = thread.id;
+    }
 
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
       ...(user ? { user_id: user.id } : {}),
-      thread_id: threadId, // if threadId is null, this will reset the default thread.
+      thread_id: threadId, // null here is the default thread.
     });
     return response.status(200).json({ success: true });
   }
@@ -160,6 +168,9 @@ async function handleMobileCommand(request, response) {
           },
         })
       : null;
+    // Same contract as reset-chat: no threadSlug is the default thread, an unknown one is rejected.
+    if (threadSlug && !thread)
+      return response.status(404).json({ error: "Thread not found" });
 
     response.setHeader("Cache-Control", "no-cache");
     response.setHeader("Content-Type", "text/event-stream");
@@ -171,11 +182,27 @@ async function handleMobileCommand(request, response) {
       workspace,
       thread,
       message,
-      mode: "chat",
+      mode: workspace.chatMode,
       user: user,
       sessionId: null,
       attachments: [],
       reset: false,
+    });
+    // If thread was renamed emit event to the client via special `action` response.
+    await WorkspaceThread.autoRenameThread({
+      thread,
+      workspace,
+      user,
+      prompt: message,
+      onRename: (thread) => {
+        writeResponseChunk(response, {
+          action: "rename_thread",
+          thread: {
+            slug: thread.slug,
+            name: thread.name,
+          },
+        });
+      },
     });
     return response.end();
   }

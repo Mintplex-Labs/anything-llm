@@ -1,45 +1,58 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Admin from "@/models/admin";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import GoogleSearchIcon from "./icons/google.png";
 import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
+import BaiduSearchIcon from "./icons/baidu.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import ExaIcon from "./icons/exa.png";
-import {
-  CaretUpDown,
-  MagnifyingGlass,
-  X,
-  ListMagnifyingGlass,
-} from "@phosphor-icons/react";
+import PerplexitySearchIcon from "./icons/perplexity.png";
+import BraveSearchIcon from "./icons/brave.png";
+import CrwSearchIcon from "./icons/crw.png";
+import YouSearchIcon from "./icons/you.png";
+import KeenableSearchIcon from "./icons/keenable.png";
+import AnySearchSearchIcon from "./icons/anysearch.png";
+import FirecrawlSearchIcon from "./icons/firecrawl.png";
+import DeepSeekSearchIcon from "@/media/llmprovider/deepseek.png";
+import { ListMagnifyingGlass } from "@phosphor-icons/react";
+import Toggle from "@/components/lib/Toggle";
+import { DefaultBadge } from "../Badges/default";
 import SearchProviderItem from "./SearchProviderItem";
 import WebSearchImage from "@/media/agents/scrape-websites.png";
+import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
 import {
   SerpApiOptions,
   SearchApiOptions,
   SerperDotDevOptions,
-  GoogleSearchOptions,
   BingSearchOptions,
+  BaiduSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
   DuckDuckGoOptions,
   ExaSearchOptions,
+  PerplexitySearchOptions,
+  BraveSearchOptions,
+  CrwSearchOptions,
+  YouSearchOptions,
+  KeenableSearchOptions,
+  AnySearchOptions,
+  FirecrawlSearchOptions,
+  DeepSeekSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
   {
-    name: "Please make a selection",
-    value: "none",
-    logo: AnythingLLMIcon,
-    options: () => <React.Fragment />,
+    name: "You.com Search",
+    value: "you-search",
+    logo: YouSearchIcon,
+    options: (settings) => <YouSearchOptions settings={settings} />,
     description:
-      "Web search will be disabled until a provider and keys are provided.",
+      "LLM-ready web search with no API key required and zero data retention.",
   },
   {
     name: "DuckDuckGo",
@@ -49,12 +62,11 @@ const SEARCH_PROVIDERS = [
     description: "Free and privacy-focused web search using DuckDuckGo.",
   },
   {
-    name: "Google Search Engine",
-    value: "google-search-engine",
-    logo: GoogleSearchIcon,
-    options: (settings) => <GoogleSearchOptions settings={settings} />,
-    description:
-      "Web search powered by a custom Google Search Engine. Free for 100 queries per day.",
+    name: "Brave Search",
+    value: "brave-search",
+    logo: BraveSearchIcon,
+    options: (settings) => <BraveSearchOptions settings={settings} />,
+    description: "Web search powered by the Brave Search API.",
   },
   {
     name: "SerpApi",
@@ -88,6 +100,14 @@ const SEARCH_PROVIDERS = [
     description: "Web search powered by the Bing Search API (paid service).",
   },
   {
+    name: "Baidu Search",
+    value: "baidu-search",
+    logo: BaiduSearchIcon,
+    options: (settings) => <BaiduSearchOptions settings={settings} />,
+    description:
+      "Web search powered by Baidu Search for stronger zh-CN retrieval.",
+  },
+  {
     name: "Serply.io",
     value: "serply-engine",
     logo: SerplySearchIcon,
@@ -116,83 +136,106 @@ const SEARCH_PROVIDERS = [
     value: "exa-search",
     logo: ExaIcon,
     options: (settings) => <ExaSearchOptions settings={settings} />,
-    description: "AI-powered search engine optimized for LLM use cases.",
+    description:
+      "One of the best web search APIs for AI agents with real-time results and full page contents.",
+  },
+  {
+    name: "Perplexity Search",
+    value: "perplexity-search",
+    logo: PerplexitySearchIcon,
+    options: (settings) => <PerplexitySearchOptions settings={settings} />,
+    description: "AI-powered web search using the Perplexity Search API.",
+  },
+  {
+    name: "fastCRW Search",
+    value: "crw-search",
+    logo: CrwSearchIcon,
+    options: (settings) => <CrwSearchOptions settings={settings} />,
+    description: "Open-source, self-hostable Firecrawl/Tavily alternative.",
+  },
+  {
+    name: "Keenable",
+    value: "keenable-search",
+    logo: KeenableSearchIcon,
+    options: (settings) => <KeenableSearchOptions settings={settings} />,
+    description: "Web search built for AI agents. No API key required.",
+  },
+  {
+    name: "AnySearch",
+    value: "anysearch-search",
+    logo: AnySearchSearchIcon,
+    options: (settings) => <AnySearchOptions settings={settings} />,
+    description: "Real-time web search for AI agents. Requires a free API key.",
+  },
+  {
+    name: "Firecrawl",
+    value: "firecrawl-search",
+    logo: FirecrawlSearchIcon,
+    options: (settings) => <FirecrawlSearchOptions settings={settings} />,
+    description: "Web search API for AI agents. Requires a free API key.",
+  },
+  {
+    name: "DeepSeek",
+    value: "deepseek-search",
+    logo: DeepSeekSearchIcon,
+    options: (settings) => <DeepSeekSearchOptions settings={settings} />,
+    description: "DeepSeek's web search tool API. Requires a DeepSeek API key.",
   },
 ];
 
 export default function AgentWebSearchSelection({
   skill,
+  title,
+  description,
   settings,
   toggleSkill,
-  enabled = false,
+  enabled = true,
   setHasChanges,
 }) {
-  const searchInputRef = useRef(null);
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("none");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState("you-search");
 
   function updateChoice(selection) {
-    setSearchQuery("");
     setSelectedProvider(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
   }
-
-  function handleXButton() {
-    if (searchQuery.length > 0) {
-      setSearchQuery("");
-      if (searchInputRef.current) searchInputRef.current.value = "";
-    } else {
-      setSearchMenuOpen(!searchMenuOpen);
-    }
-  }
-
-  useEffect(() => {
-    const filtered = SEARCH_PROVIDERS.filter((provider) =>
-      provider.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredResults(filtered);
-  }, [searchQuery, selectedProvider]);
 
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_search_provider"])
       .then((res) =>
-        setSelectedProvider(res?.settings?.agent_search_provider ?? "none")
+        setSelectedProvider(
+          res?.settings?.agent_search_provider ?? "you-search"
+        )
       )
-      .catch(() => setSelectedProvider("none"));
+      .catch(() => setSelectedProvider("you-search"));
   }, []);
 
-  const selectedSearchProviderObject = SEARCH_PROVIDERS.find(
-    (provider) => provider.value === selectedProvider
-  );
+  const selectedSearchProviderObject =
+    SEARCH_PROVIDERS.find((provider) => provider.value === selectedProvider) ??
+    SEARCH_PROVIDERS[0];
 
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
-        <div className="flex items-center gap-x-2">
-          <ListMagnifyingGlass
-            size={24}
-            color="var(--theme-text-primary)"
-            weight="bold"
-          />
-          <label
-            htmlFor="name"
-            className="text-theme-text-primary text-md font-bold"
-          >
-            Live web search and browsing
-          </label>
-          <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
-            <input
-              type="checkbox"
-              className="peer sr-only"
-              checked={enabled}
-              onChange={() => toggleSkill(skill)}
+        <div className="flex w-full justify-between items-center">
+          <div className="flex items-center gap-x-2">
+            <ListMagnifyingGlass
+              size={24}
+              color="var(--theme-text-primary)"
+              weight="bold"
             />
-            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-            <span className="ml-3 text-sm font-medium"></span>
-          </label>
+            <label
+              htmlFor="name"
+              className="text-theme-text-primary text-md font-bold"
+            >
+              {title}
+            </label>
+            <DefaultBadge title={title} />
+          </div>
+          <Toggle
+            size="lg"
+            enabled={enabled}
+            onChange={() => toggleSkill(skill)}
+          />
         </div>
         <img
           src={WebSearchImage}
@@ -200,9 +243,7 @@ export default function AgentWebSearchSelection({
           className="w-full rounded-md"
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-          Enable your agent to search the web to answer your questions by
-          connecting to a web-search (SERP) provider. Web search during agent
-          sessions will not work until this is set up.
+          {description}
         </p>
         <div hidden={!enabled}>
           <div className="relative">
@@ -211,84 +252,25 @@ export default function AgentWebSearchSelection({
               name="system::agent_search_provider"
               value={selectedProvider}
             />
-            {searchMenuOpen && (
-              <div
-                className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
-                onClick={() => setSearchMenuOpen(false)}
-              />
-            )}
-            {searchMenuOpen ? (
-              <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                <div className="w-full flex flex-col gap-y-1">
-                  <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                    <MagnifyingGlass
-                      size={20}
-                      weight="bold"
-                      className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                    />
-                    <input
-                      type="text"
-                      name="web-provider-search"
-                      autoComplete="off"
-                      placeholder="Search available web-search providers"
-                      className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      ref={searchInputRef}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") e.preventDefault();
-                      }}
-                    />
-                    <X
-                      size={20}
-                      weight="bold"
-                      className="cursor-pointer text-white hover:text-x-button"
-                      onClick={handleXButton}
-                    />
-                  </div>
-                  <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
-                    {filteredResults.map((provider) => {
-                      return (
-                        <SearchProviderItem
-                          provider={provider}
-                          key={provider.name}
-                          checked={selectedProvider === provider.value}
-                          onClick={() => updateChoice(provider.value)}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <button
-                className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
-                type="button"
-                onClick={() => setSearchMenuOpen(true)}
-              >
-                <div className="flex gap-x-4 items-center">
-                  <img
-                    src={selectedSearchProviderObject.logo}
-                    alt={`${selectedSearchProviderObject.name} logo`}
-                    className="w-10 h-10 rounded-md"
-                  />
-                  <div className="flex flex-col text-left">
-                    <div className="text-sm font-semibold text-white">
-                      {selectedSearchProviderObject.name}
-                    </div>
-                    <div className="mt-1 text-xs text-description">
-                      {selectedSearchProviderObject.description}
-                    </div>
-                  </div>
-                </div>
-                <CaretUpDown size={24} weight="bold" className="text-white" />
-              </button>
-            )}
+            <ProviderSearchMenu
+              items={SEARCH_PROVIDERS}
+              selected={selectedSearchProviderObject}
+              placeholder="Search available web-search providers"
+              renderItem={(provider, close) => (
+                <SearchProviderItem
+                  provider={provider}
+                  checked={selectedProvider === provider.value}
+                  onClick={() => {
+                    updateChoice(provider.value);
+                    close();
+                  }}
+                />
+              )}
+            />
           </div>
-          {selectedProvider !== "none" && (
-            <div className="mt-4 flex flex-col gap-y-1">
-              {selectedSearchProviderObject.options(settings)}
-            </div>
-          )}
+          <div className="mt-4 flex flex-col gap-y-1">
+            {selectedSearchProviderObject.options(settings)}
+          </div>
         </div>
       </div>
     </div>

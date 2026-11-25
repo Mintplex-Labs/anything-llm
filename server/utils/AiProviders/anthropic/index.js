@@ -9,8 +9,22 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { getAnythingLLMUserAgent } = require("../../../endpoints/utils");
+const { reasoningParams } = require("../../helpers/reasoningEffort");
 
+// Temperature is never sent. Anthropic models from Opus 4.7 onward reject it with
+// a 400, and every model accepts requests without it, so omitting it everywhere
+// avoids tracking per-model support as new models ship. The workspace temperature
+// setting therefore has no effect for Anthropic.
 class AnthropicLLM {
+  /**
+   * Whether the model supports the temperature parameter at all.
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature() {
+    return false;
+  }
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
@@ -20,23 +34,31 @@ class AnthropicLLM {
     const AnthropicAI = require("@anthropic-ai/sdk");
     const anthropic = new AnthropicAI({
       apiKey: process.env.ANTHROPIC_API_KEY,
+      defaultHeaders: {
+        "User-Agent": getAnythingLLMUserAgent(),
+      },
     });
     this.anthropic = anthropic;
     this.model =
       modelPreference ||
       process.env.ANTHROPIC_MODEL_PREF ||
-      "claude-3-5-sonnet-20241022";
+      "claude-sonnet-4-6";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
 
+    this.maxTokens = null;
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized with ${this.model}. Cache ${this.cacheControl ? `enabled (${this.cacheControl.ttl})` : "disabled"}`
     );
+
+    AnthropicLLM.fetchModelMaxTokens(this.model).then((maxTokens) => {
+      this.maxTokens = maxTokens;
+      this.log(`Model ${this.model} max tokens: ${this.maxTokens}`);
+    });
   }
 
   log(text, ...args) {
@@ -57,6 +79,35 @@ class AnthropicLLM {
 
   isValidChatCompletionModel(_modelName = "") {
     return true;
+  }
+
+  async assertModelMaxTokens() {
+    if (this.maxTokens) return this.maxTokens;
+    this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
+    return this.maxTokens;
+  }
+
+  /**
+   * Fetches the maximum number of tokens the model should generate in its response.
+   * This varies per model but will fallback to 4096 if the model is not found.
+   * @param {string} modelName - The name of the model to fetch the max tokens for
+   * @returns {Promise<number>} The maximum output tokens limit for API calls.
+   */
+  static async fetchModelMaxTokens(
+    modelName = process.env.ANTHROPIC_MODEL_PREF
+  ) {
+    try {
+      const AnthropicAI = require("@anthropic-ai/sdk");
+      /** @type {import("@anthropic-ai/sdk").Anthropic} */
+      const anthropic = new AnthropicAI({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+      const model = await anthropic.models.retrieve(modelName);
+      return Number(model.max_tokens ?? 4096);
+    } catch (error) {
+      console.error(`Error fetching model max tokens for ${modelName}:`, error);
+      return 4096;
+    }
   }
 
   /**
@@ -147,51 +198,99 @@ class AnthropicLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Returns the capabilities of the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    try {
+      const model = await this.anthropic.models.retrieve(this.model);
+      const effortCapabilities = model.capabilities?.effort;
+      if (!effortCapabilities?.supported)
+        return { reasoning: false, reasoningOptions: [] };
+
+      const reasoningOptions = Object.entries(effortCapabilities)
+        .filter(([level, config]) => level !== "supported" && config?.supported)
+        .map(([level]) => level);
+      return { reasoning: true, reasoningOptions };
+    } catch (error) {
+      console.error("Anthropic:getModelCapabilities", error.message);
+      return { reasoning: "unknown", reasoningOptions: [] };
+    }
+  }
+
+  async getChatCompletion(messages = null, { reasoningEffort = null } = {}) {
+    await this.assertModelMaxTokens();
     try {
       const systemContent = messages[0].content;
+      // We assemble the response from the streaming endpoint rather than the
+      // non-streaming `messages.create`. The Anthropic SDK throws
+      // (`_calculateNonstreamingTimeout`) for non-streaming requests whose
+      // `max_tokens` is large enough that the worst-case latency could exceed
+      // 10 minutes - which is the case for recent Claude models with large max
+      // output tokens. Streaming and resolving the final message avoids that
+      // guard while still returning a single, complete response so the REST API
+      // chat path stays at parity with the UI. See issue #5925.
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
-        this.anthropic.messages.create({
-          model: this.model,
-          max_tokens: 4096,
-          system: this.#buildSystemPrompt(systemContent),
-          messages: messages.slice(1), // Pop off the system message
-          temperature: Number(temperature ?? this.defaultTemp),
-        })
+        this.anthropic.messages
+          .stream({
+            model: this.model,
+            max_tokens: this.maxTokens,
+            system: this.#buildSystemPrompt(systemContent),
+            messages: messages.slice(1), // Pop off the system message
+            ...reasoningParams("anthropic", reasoningEffort, this.model),
+          })
+          .finalMessage()
       );
 
       const promptTokens = result.output.usage.input_tokens;
       const completionTokens = result.output.usage.output_tokens;
 
       return {
-        textResponse: result.output.content[0].text,
+        // Models that think by default put a thinking block before the answer,
+        // so the reply is read from the text blocks rather than the first block.
+        textResponse: result.output.content
+          .filter((block) => block.type === "text")
+          .map((block) => block.text)
+          .join(""),
         metrics: {
           prompt_tokens: promptTokens,
           completion_tokens: completionTokens,
           total_tokens: promptTokens + completionTokens,
           outputTps: completionTokens / result.duration,
           duration: result.duration,
+          model: this.model,
+          provider: this.className,
+          timestamp: new Date(),
         },
       };
     } catch (error) {
-      console.log(error);
-      return { textResponse: error, metrics: {} };
+      console.error(error);
+      throw new Error(
+        `AnthropicLLM::getChatCompletion failed to communicate with Anthropic. ${error.message}`
+      );
     }
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { reasoningEffort = null } = {}
+  ) {
+    await this.assertModelMaxTokens();
     const systemContent = messages[0].content;
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.anthropic.messages.stream({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.anthropic.messages.stream({
         model: this.model,
-        max_tokens: 4096,
+        max_tokens: this.maxTokens,
         system: this.#buildSystemPrompt(systemContent),
         messages: messages.slice(1), // Pop off the system message
-        temperature: Number(temperature ?? this.defaultTemp),
+        ...reasoningParams("anthropic", reasoningEffort, this.model),
       }),
       messages,
-      false
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    });
 
     return measuredStreamRequest;
   }
@@ -221,6 +320,12 @@ class AnthropicLLM {
         clientAbortedHandler(resolve, fullText);
       };
       response.on("close", handleAbort);
+
+      stream.on("abort", () => {
+        response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
+      });
 
       stream.on("error", (event) => {
         const parseErrorMsg = (event) => {

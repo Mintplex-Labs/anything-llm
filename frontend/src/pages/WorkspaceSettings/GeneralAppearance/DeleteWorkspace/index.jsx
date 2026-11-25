@@ -5,7 +5,7 @@ import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
 
-export default function DeleteWorkspace({ workspace }) {
+export default function DeleteWorkspace({ workspace, visible = true }) {
   const { slug } = useParams();
   const [deleting, setDeleting] = useState(false);
   const { t } = useTranslation();
@@ -32,17 +32,19 @@ export default function DeleteWorkspace({ workspace }) {
       ? (window.location = paths.home())
       : window.location.reload();
   };
+
+  if (!visible) return null;
   return (
-    <div className="flex flex-col mt-10">
+    <div className="flex flex-col gap-y-[8px]">
       <label className="block input-label">{t("general.delete.title")}</label>
-      <p className="text-theme-text-secondary text-xs font-medium py-1.5">
+      <p className="text-theme-text-secondary text-xs font-medium">
         {t("general.delete.description")}
       </p>
       <button
         disabled={deleting}
         onClick={deleteWorkspace}
         type="button"
-        className="w-60 mt-4 transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 light:text-red-500 hover:light:text-[#FFFFFF] hover:text-[#FFFFFF] hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
+        className="w-60 transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 light:text-red-500 hover:light:text-[#FFFFFF] hover:text-[#FFFFFF] hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
       >
         {deleting ? t("general.delete.deleting") : t("general.delete.delete")}
       </button>

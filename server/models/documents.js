@@ -19,6 +19,8 @@ const Document = {
   parseDocumentTypeAndSource: function (document) {
     const metadata = safeJsonParse(document.metadata, null);
     if (!metadata) return { metadata: null, type: null, source: null };
+    if (typeof metadata.chunkSource !== "string")
+      return { metadata, type: null, source: null };
 
     // Parse the correct type of source and its original source path.
     const idx = metadata.chunkSource.indexOf("://");
@@ -82,49 +84,151 @@ const Document = {
 
   addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
-    if (additions.length === 0) return { failed: [], embedded: [] };
+    if (additions.length === 0)
+      return { failedToEmbed: [], errors: [], embedded: [] };
     const { fileData } = require("../utils/files");
+    const { emitProgress } = require("../utils/EmbeddingWorkerManager");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
 
-    for (const path of additions) {
-      const data = await fileData(path);
-      if (!data) continue;
+    emitProgress(workspace.slug, {
+      type: "batch_starting",
+      workspaceSlug: workspace.slug,
+      userId,
+      filenames: additions,
+      totalDocs: additions.length,
+    });
+
+    for (const [index, path] of additions.entries()) {
+      const filename = path.split(/[/\\]/).pop();
+      const docProgress = {
+        workspaceSlug: workspace.slug,
+        userId,
+        filename: path,
+        docIndex: index,
+        totalDocs: additions.length,
+      };
+      const failDocument = (filename, error) => {
+        failedToEmbed.push(filename);
+        errors.add(error);
+        emitProgress(workspace.slug, {
+          type: "doc_failed",
+          ...docProgress,
+          error,
+        });
+      };
+
+      let data = null;
+      try {
+        data = await fileData(path);
+      } catch (error) {
+        console.error(error.message);
+        failDocument(filename, error.message || "Failed to load file data");
+        continue;
+      }
+
+      if (!data) {
+        failDocument(filename, "Failed to load file data");
+        continue;
+      }
 
       const docId = uuidv4();
-      const { pageContent, ...metadata } = data;
+      const { pageContent: _pageContent, ...metadata } = data;
       const newDoc = {
         docId,
-        filename: path.split("/")[1],
+        filename,
         docpath: path,
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
       };
 
-      const { vectorized, error } = await VectorDb.addDocumentToNamespace(
-        workspace.slug,
-        { ...data, docId },
-        path
-      );
+      emitProgress(workspace.slug, { type: "doc_starting", ...docProgress });
+
+      global.__embeddingProgress = {
+        workspaceSlug: workspace.slug,
+        filename: path,
+        userId,
+      };
+
+      let vectorized = false;
+      let error = null;
+      try {
+        ({ vectorized, error } = await VectorDb.addDocumentToNamespace(
+          workspace.slug,
+          { ...data, docId },
+          path
+        ));
+      } catch (vectorizeError) {
+        error = vectorizeError.message || "Unknown error";
+      }
 
       if (!vectorized) {
         console.error(
           "Failed to vectorize",
           metadata?.title || newDoc.filename
         );
-        failedToEmbed.push(metadata?.title || newDoc.filename);
-        errors.add(error);
+        failDocument(
+          metadata?.title || newDoc.filename,
+          error || "Unknown error"
+        );
         continue;
       }
 
       try {
         await prisma.workspace_documents.create({ data: newDoc });
         embedded.push(path);
+        emitProgress(workspace.slug, {
+          type: "doc_complete",
+          ...docProgress,
+        });
       } catch (error) {
         console.error(error.message);
+        failDocument(
+          newDoc.filename,
+          error.message || "Failed to save document record"
+        );
+
+        // The vectors were written before the document row existed. Roll them
+        // back so a failed insert cannot leave an unlisted document behind.
+        let vectorsRemoved = false;
+        try {
+          const deleted = await VectorDb.deleteDocumentFromNamespace(
+            workspace.slug,
+            docId
+          );
+          vectorsRemoved = deleted !== false;
+        } catch (cleanupError) {
+          console.error(
+            `Failed to roll back vectors for ${newDoc.filename}:`,
+            cleanupError.message
+          );
+        }
+
+        if (vectorsRemoved) {
+          try {
+            const { DocumentVectors } = require("./vectors");
+            await DocumentVectors.delete({ docId });
+          } catch (cleanupError) {
+            console.error(
+              `Failed to remove vector rows for ${newDoc.filename}:`,
+              cleanupError.message
+            );
+          }
+        }
       }
     }
+
+    global.__embeddingProgress = null;
+
+    emitProgress(workspace.slug, {
+      type: "all_complete",
+      workspaceSlug: workspace.slug,
+      userId,
+      totalDocs: additions.length,
+      embedded: embedded.length,
+      failed: failedToEmbed.length,
+    });
 
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -258,48 +362,67 @@ const Document = {
    */
   api: {
     /**
-     * Process a document upload from the API and upsert it into the database. This
+     * Process document uploads from the API and upsert them into the database. This
      * functionality should only be used by the backend /v1/documents/upload endpoints for post-upload embedding.
-     * @param {string} wsSlugs - The slugs of the workspaces to embed the document into, will be comma-separated list of workspace slugs
-     * @param {string} docLocation - The location/path of the document that was uploaded
-     * @returns {Promise<boolean>} - True if the document was uploaded successfully, false otherwise
+     * Every document is attempted so one failure cannot block the rest.
+     * @param {string} wsSlugs - The slugs of the workspaces to embed the documents into, will be comma-separated list of workspace slugs
+     * @param {string|string[]} docLocations - The location/path of each document that was uploaded
+     * @returns {Promise<{success: boolean, partial: boolean, error: string|null}>} - `partial` is true when some documents were embedded and others were not
      */
-    uploadToWorkspace: async function (wsSlugs = "", docLocation = null) {
-      if (!docLocation)
-        return console.log(
-          "No document location provided for embedding",
-          docLocation
-        );
+    uploadToWorkspace: async function (wsSlugs = "", docLocations = []) {
+      const locations = (
+        Array.isArray(docLocations) ? docLocations : [docLocations]
+      ).filter(Boolean);
+      if (locations.length === 0)
+        return {
+          success: false,
+          partial: false,
+          error: "No document location provided for embedding.",
+        };
 
       const slugs = wsSlugs
         .split(",")
         .map((slug) => String(slug)?.trim()?.toLowerCase());
       if (slugs.length === 0)
-        return console.log(`No workspaces provided got: ${wsSlugs}`);
+        return {
+          success: false,
+          partial: false,
+          error: `No workspaces provided got: ${wsSlugs}`,
+        };
 
       const { Workspace } = require("./workspace");
       const workspaces = await Workspace.where({ slug: { in: slugs } });
       if (workspaces.length === 0)
-        return console.log("No valid workspaces found for slugs: ", slugs);
+        return {
+          success: false,
+          partial: false,
+          error: `No valid workspaces found for slugs: ${slugs.join(", ")}`,
+        };
 
-      // Upsert the document into each workspace - do this sequentially
+      // Upsert each document into each workspace - do this sequentially
       // because the document may be large and we don't want to overwhelm the embedder, plus on the first
       // upsert we will then have the cache of the document - making n+1 embeds faster. If we parallelize this
       // we will have to do a lot of extra work to ensure that the document is not embedded more than once.
-      for (const workspace of workspaces) {
-        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
-          workspace,
-          [docLocation]
-        );
-        if (failedToEmbed.length > 0)
-          return console.log(
-            `Failed to embed document into workspace ${workspace.slug}`,
-            errors
-          );
-        console.log(`Document embedded into workspace ${workspace.slug}...`);
+      const failures = [];
+      for (const docLocation of locations) {
+        for (const workspace of workspaces) {
+          const { failedToEmbed = [], errors = [] } =
+            await Document.addDocuments(workspace, [docLocation]);
+          if (failedToEmbed.length > 0) {
+            failures.push(
+              `${docLocation}: Failed to embed document into workspace ${workspace.slug}: ${errors[0] || "Unknown error"}`
+            );
+            break;
+          }
+          console.log(`Document embedded into workspace ${workspace.slug}...`);
+        }
       }
 
-      return true;
+      return {
+        success: failures.length === 0,
+        partial: failures.length > 0 && failures.length < locations.length,
+        error: failures.length > 0 ? failures.join("; ") : null,
+      };
     },
   },
 };

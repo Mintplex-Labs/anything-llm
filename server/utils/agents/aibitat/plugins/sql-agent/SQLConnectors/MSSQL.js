@@ -62,14 +62,19 @@ class MSSQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
+   * @param {Array} params optional parameters for prepared statement
    * @returns {Promise<import(".").QueryResult>}
    */
-  async runQuery(queryString = "") {
+  async runQuery(queryString = "", params = []) {
     const result = { rows: [], count: 0, error: null };
     try {
       if (!this.#connected) await this.connect();
 
-      const query = await this._client.query(queryString);
+      const request = this._client.request();
+      params.forEach((value, index) => {
+        request.input(`p${index}`, value);
+      });
+      const query = await request.query(queryString);
       result.rows = query.recordset;
       result.count = query.rowsAffected.reduce((sum, a) => sum + a, 0);
     } catch (err) {
@@ -99,7 +104,10 @@ class MSSQLConnector {
   }
 
   getTableSchemaSql(table_name) {
-    return `SELECT COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${table_name}'`;
+    return {
+      query: `SELECT COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @p0`,
+      params: [table_name],
+    };
   }
 }
 

@@ -1,5 +1,6 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -20,19 +21,21 @@ const webBrowsing = {
               .toString()
               .replace(/\B(?=(\d{3})+(?!\d))/g, ","),
           description:
-            "Searches for a given query using a search engine to get better results for the user query.",
+            "Search the internet for real-time information. Look online for current news, recent updates, latest changes, or any information not available locally. Browse the web to find answers about current events, prices, weather, or live data.",
           examples: [
             {
-              prompt: "Who won the world series today?",
-              call: JSON.stringify({ query: "Winner of today's world series" }),
+              prompt: "Look online for recent changes to AnythingLLM",
+              call: JSON.stringify({
+                query: "AnythingLLM recent changes updates",
+              }),
             },
             {
-              prompt: "What is AnythingLLM?",
-              call: JSON.stringify({ query: "AnythingLLM" }),
+              prompt: "Search the internet for the latest news",
+              call: JSON.stringify({ query: "latest news today" }),
             },
             {
-              prompt: "Current AAPL stock price",
-              call: JSON.stringify({ query: "AAPL stock price today" }),
+              prompt: "What's the current weather in NYC?",
+              call: JSON.stringify({ query: "current weather New York City" }),
             },
           ],
           parameters: {
@@ -66,9 +69,6 @@ const webBrowsing = {
                 ?.value ?? "unknown";
             let engine;
             switch (provider) {
-              case "google-search-engine":
-                engine = "_googleSearchEngine";
-                break;
               case "serpapi":
                 engine = "_serpApi";
                 break;
@@ -80,6 +80,9 @@ const webBrowsing = {
                 break;
               case "bing-search":
                 engine = "_bingWebSearch";
+                break;
+              case "baidu-search":
+                engine = "_baiduSearch";
                 break;
               case "serply-engine":
                 engine = "_serplyEngine";
@@ -96,81 +99,66 @@ const webBrowsing = {
               case "exa-search":
                 engine = "_exaSearch";
                 break;
+              case "perplexity-search":
+                engine = "_perplexitySearch";
+                break;
+              case "brave-search":
+                engine = "_braveSearch";
+                break;
+              case "crw-search":
+                engine = "_crwSearch";
+                break;
+              case "you-search":
+                engine = "_youSearch";
+                break;
+              case "keenable-search":
+                engine = "_keenableSearch";
+                break;
+              case "anysearch-search":
+                engine = "_anySearchSearch";
+                break;
+              case "firecrawl-search":
+                engine = "_firecrawlSearch";
+                break;
+              case "deepseek-search":
+                engine = "_deepSeekSearch";
+                break;
               default:
-                engine = "_googleSearchEngine";
+                // No provider configured - use You.com's keyless free tier,
+                // which falls back to DuckDuckGo on any failure.
+                engine = "_youSearch";
             }
             return await this[engine](query);
           },
 
           /**
-           * Utility function to truncate a string to a given length for debugging
-           * calls to the API while keeping the actual values mostly intact
-           * @param {string} str - The string to truncate
-           * @param {number} length - The length to truncate the string to
-           * @returns {string} The truncated string
+           * Report citations for an array of search results.
+           * Uses title, link, and snippet directly from result data.
+           * @param {Array<{title?: string, link?: string, snippet?: string}>} results - Search results to report as citations
            */
-          middleTruncate(str, length = 5) {
-            if (str.length <= length) return str;
-            return `${str.slice(0, length)}...${str.slice(-length)}`;
-          },
+          reportSearchResultsCitations: function (results) {
+            if (!Array.isArray(results)) return;
+            const citations = [];
+            for (const result of results) {
+              const fallbackUrl =
+                result.link ||
+                result.url ||
+                result.website ||
+                result.product_link ||
+                result.patent_link ||
+                result.link_clean;
 
-          /**
-           * Use Google Custom Search Engines
-           * Free to set up, easy to use, 100 calls/day
-           * https://programmablesearchengine.google.com/controlpanel/create
-           */
-          _googleSearchEngine: async function (query) {
-            if (!process.env.AGENT_GSE_CTX || !process.env.AGENT_GSE_KEY) {
-              this.super.introspect(
-                `${this.caller}: I can't use Google searching because the user has not defined the required API keys.\nVisit: https://programmablesearchengine.google.com/controlpanel/create to create the API keys.`
-              );
-              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
-            }
-
-            const searchURL = new URL(
-              "https://www.googleapis.com/customsearch/v1"
-            );
-            searchURL.searchParams.append("key", process.env.AGENT_GSE_KEY);
-            searchURL.searchParams.append("cx", process.env.AGENT_GSE_CTX);
-            searchURL.searchParams.append("q", query);
-
-            this.super.introspect(
-              `${this.caller}: Searching on Google for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
-            );
-            const data = await fetch(searchURL)
-              .then((res) => {
-                if (res.ok) return res.json();
-                throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ key: this.middleTruncate(process.env.AGENT_GSE_KEY, 5), cx: this.middleTruncate(process.env.AGENT_GSE_CTX, 5), q: query })}`
-                );
-              })
-              .then((searchResult) => searchResult?.items || [])
-              .then((items) => {
-                return items.map((item) => {
-                  return {
-                    title: item.title,
-                    link: item.link,
-                    snippet: item.snippet,
-                  };
-                });
-              })
-              .catch((e) => {
-                this.super.handlerProps.log(
-                  `${this.name}: Google Search Error: ${e.message}`
-                );
-                return [];
+              citations.push({
+                id: result.link || fallbackUrl,
+                title: result.title || fallbackUrl,
+                text: result.snippet || result.description || result.text || "",
+                chunkSource: result.link
+                  ? `link://${result.link}`
+                  : `link://${fallbackUrl}`,
+                score: null,
               });
-
-            if (data.length === 0)
-              return `No information was found online for the search query.`;
-
-            const result = JSON.stringify(data);
-            this.super.introspect(
-              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
-            );
-            return result;
+            }
+            this.super.addCitation?.(citations);
           },
 
           /**
@@ -209,7 +197,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPAPI_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -258,6 +246,7 @@ const webBrowsing = {
                     extensions,
                   });
                 });
+                break;
               case "google_maps":
                 response.local_results?.slice(0, 10).forEach((searchResult) => {
                   const {
@@ -279,6 +268,7 @@ const webBrowsing = {
                     extensions,
                   });
                 });
+                break;
               case "google_images_light":
                 response.images_results
                   ?.slice(0, 10)
@@ -291,6 +281,7 @@ const webBrowsing = {
                       thumbnail,
                     });
                   });
+                break;
               case "google_shopping_light":
                 response.shopping_results
                   ?.slice(0, 10)
@@ -316,6 +307,7 @@ const webBrowsing = {
                       product_link,
                     });
                   });
+                break;
               case "google_news_light":
                 response.news_results?.slice(0, 10).forEach((searchResult) => {
                   const { title, link, source, thumbnail, snippet, date } =
@@ -329,6 +321,7 @@ const webBrowsing = {
                     date,
                   });
                 });
+                break;
               case "google_jobs":
                 response.jobs_results?.forEach((searchResult) => {
                   const {
@@ -348,6 +341,7 @@ const webBrowsing = {
                     extensions,
                   });
                 });
+                break;
               case "google_patents":
                 response.organic_results?.forEach((searchResult) => {
                   const {
@@ -367,6 +361,7 @@ const webBrowsing = {
                     publication_number,
                   });
                 });
+                break;
               case "google_scholar":
                 response.organic_results?.forEach((searchResult) => {
                   const { title, link, snippet, publication_info } =
@@ -378,6 +373,7 @@ const webBrowsing = {
                     publication_info,
                   });
                 });
+                break;
               case "baidu":
                 if (response.hasOwnProperty("answer_box"))
                   data.push(response.answer_box);
@@ -389,6 +385,7 @@ const webBrowsing = {
                     snippet,
                   });
                 });
+                break;
               case "amazon":
                 response.organic_results
                   ?.slice(0, 10)
@@ -415,6 +412,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -459,7 +457,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SEARCHAPI_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -473,22 +471,180 @@ const webBrowsing = {
               return `There was an error searching for content. ${error}`;
 
             const data = [];
-            if (response.hasOwnProperty("knowledge_graph"))
-              data.push(response.knowledge_graph?.description);
-            if (response.hasOwnProperty("answer_box"))
-              data.push(response.answer_box?.answer);
-            response.organic_results?.forEach((searchResult) => {
-              const { title, link, snippet } = searchResult;
+            const knowledgeGraph = response.knowledge_graph;
+            const knowledgeGraphSnippet =
+              knowledgeGraph?.description || knowledgeGraph?.snippet;
+            if (knowledgeGraphSnippet)
               data.push({
-                title,
-                link,
-                snippet,
+                title: knowledgeGraph.title || query,
+                link:
+                  knowledgeGraph.source?.link ||
+                  knowledgeGraph.website ||
+                  knowledgeGraph.link ||
+                  response.search_metadata?.request_url,
+                snippet: knowledgeGraphSnippet,
               });
-            });
+            if (response.answer_box?.answer) {
+              const answerBox = response.answer_box;
+              data.push({
+                title:
+                  answerBox.organic_result?.title || answerBox.title || query,
+                link:
+                  answerBox.organic_result?.link ||
+                  answerBox.link ||
+                  response.search_metadata?.request_url,
+                snippet: answerBox.answer,
+              });
+            }
+            const takeTen = (results) => results?.slice(0, 10) ?? [];
+            const addLocalResults = (results) => {
+              takeTen(results).forEach((place) => {
+                const { title, address, place_id } = place;
+                const terms = [title, address].filter(Boolean).join(", ");
+                const mapUrl = new URL("https://www.google.com/maps/search/");
+                mapUrl.searchParams.set("api", "1");
+                mapUrl.searchParams.set("query", terms || query);
+                if (place_id)
+                  mapUrl.searchParams.set("query_place_id", place_id);
+                data.push({
+                  title,
+                  link: place.website || mapUrl.href,
+                  snippet: place.description,
+                  address,
+                  rating: place.rating,
+                  reviews: place.reviews,
+                });
+              });
+            };
+            switch (engine) {
+              case "google_jobs":
+                takeTen(response.jobs).forEach((job) => {
+                  data.push({
+                    title: job.title,
+                    company_name: job.company_name,
+                    location: job.location,
+                    link: job.apply_link || job.sharing_link,
+                    snippet: job.description,
+                  });
+                });
+                break;
+              case "google_maps":
+                addLocalResults(response.local_results);
+                break;
+              case "google_shopping":
+                takeTen(response.shopping_results).forEach((product) => {
+                  data.push({
+                    title: product.title,
+                    link: product.product_link,
+                    snippet: product.price,
+                    seller: product.seller,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                  });
+                });
+                break;
+              case "google_finance":
+                if (response.summary)
+                  data.push({
+                    ...response.summary,
+                    link: response.search_metadata?.request_url,
+                    snippet:
+                      response.knowledge_graph?.about?.description ||
+                      [response.summary.price, response.summary.currency]
+                        .filter((value) => value != null)
+                        .join(" "),
+                  });
+                break;
+              case "google_patents":
+                takeTen(response.organic_results).forEach((patent) => {
+                  const link = patent.patent_id
+                    ? new URL(patent.patent_id, "https://patents.google.com/")
+                        .href
+                    : response.search_metadata?.request_url;
+                  data.push({
+                    title: patent.title,
+                    link,
+                    snippet: patent.snippet,
+                    inventor: patent.inventor,
+                    assignee: patent.assignee,
+                    publication_number: patent.publication_number,
+                  });
+                });
+                break;
+              case "youtube":
+                takeTen(response.videos).forEach((video) => {
+                  data.push({
+                    title: video.title,
+                    link: video.link,
+                    snippet: video.description,
+                    channel: video.channel?.title,
+                    views: video.views,
+                    published_time: video.published_time,
+                  });
+                });
+                break;
+              case "amazon_search":
+                takeTen(response.organic_results).forEach((product) => {
+                  data.push({
+                    title: product.title,
+                    link: product.link,
+                    snippet: product.price,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                  });
+                });
+                break;
+              case "google_news":
+              case "bing_news":
+                takeTen(response.organic_results).forEach((article) => {
+                  const { title, link, snippet, source, date } = article;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    source,
+                    date,
+                  });
+                });
+                break;
+              case "google_scholar":
+                takeTen(response.organic_results).forEach((paper) => {
+                  const { title, link, snippet, publication } = paper;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                    publication,
+                  });
+                });
+                break;
+              case "google":
+                takeTen(response.organic_results).forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                addLocalResults(response.local_results);
+                break;
+              default:
+                takeTen(response.organic_results).forEach((searchResult) => {
+                  const { title, link, snippet } = searchResult;
+                  data.push({
+                    title,
+                    link,
+                    snippet,
+                  });
+                });
+                break;
+            }
 
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -529,7 +685,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPER_DEV_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -557,6 +713,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -591,7 +748,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_BING_SEARCH_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -612,9 +769,113 @@ const webBrowsing = {
             if (searchResponse.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(searchResponse);
             const result = JSON.stringify(searchResponse);
             this.super.introspect(
               `${this.caller}: I found ${searchResponse.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+          _baiduSearch: async function (query) {
+            if (!process.env.AGENT_BAIDU_SEARCH_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Baidu Search because the user has not defined the required API key.\nVisit: https://cloud.baidu.com/doc/qianfan-api/s/Wmbq4z7e5 to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Baidu Search to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://qianfan.baidubce.com/v2/ai_search/web_search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.AGENT_BAIDU_SEARCH_API_KEY}`,
+                  "X-Appbuilder-Authorization": `Bearer ${process.env.AGENT_BAIDU_SEARCH_API_KEY}`,
+                },
+                body: JSON.stringify({
+                  messages: [{ role: "user", content: query }],
+                  resource_type_filter: [{ type: "web", top_k: 10 }],
+                }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+
+                const body = await res.text().catch(() => "");
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    q: query,
+                    body: body.slice(0, 300),
+                  })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Baidu Search Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            if (
+              (response?.code || response?.message) &&
+              !response?.references
+            ) {
+              return `There was an error searching for content. ${response?.message || response?.code}`;
+            }
+
+            /**
+             * Normalize Baidu Search References to the expected search results format
+             * @param {Array} references - The references to normalize
+             * @returns {Array} The normalized references
+             */
+            function normalizeBaiduSearchReferences(references = []) {
+              if (!Array.isArray(references)) return [];
+
+              const seenLinks = new Set();
+              return references
+                .filter((reference) => {
+                  if (!reference) return false;
+                  const referenceType = String(
+                    reference.type || reference.resource_type || "web"
+                  ).toLowerCase();
+                  return referenceType === "web";
+                })
+                .map((reference) => {
+                  const title = String(
+                    reference.title || reference.web_anchor || ""
+                  ).trim();
+                  const link = String(reference.url || "").trim();
+                  const snippet = String(
+                    reference.snippet || reference.content || ""
+                  ).trim();
+
+                  if (!title || !link || seenLinks.has(link)) return null;
+                  seenLinks.add(link);
+
+                  return { title, link, snippet };
+                })
+                .filter(Boolean);
+            }
+
+            const data = normalizeBaiduSearchReferences(response?.references);
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
             );
             return result;
           },
@@ -622,6 +883,7 @@ const webBrowsing = {
             query,
             language = "en",
             hl = "us",
+            //eslint-disable-next-line
             limit = 100,
             device_type = "desktop",
             proxy_location = "US"
@@ -664,7 +926,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_SERPLY_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -695,6 +957,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -712,7 +975,7 @@ const webBrowsing = {
 
             try {
               searchURL = new URL(process.env.AGENT_SEARXNG_API_URL);
-              searchURL.searchParams.append("q", encodeURIComponent(query));
+              searchURL.searchParams.append("q", query);
               searchURL.searchParams.append("format", "json");
             } catch (e) {
               this.super.handlerProps.log(`SearXNG Search: ${e.message}`);
@@ -737,18 +1000,19 @@ const webBrowsing = {
             })
               .then((res) => {
                 if (res.ok) return res.json();
-                throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ url: searchURL.toString() })}`
-                );
+                throw new Error(`${res.status} - ${res.statusText}`);
               })
               .then((data) => {
                 return { response: data, error: null };
               })
               .catch((e) => {
                 this.super.handlerProps.log(
-                  `SearXNG Search Error: ${e.message}`
+                  `SearXNG Search Error: ${e.message}. url: ${searchURL.toString()}`
                 );
-                return { response: null, error: e.message };
+                return {
+                  response: null,
+                  error: `${e.message}. params: ${JSON.stringify({ q: query })}`,
+                };
               });
             if (error)
               return `There was an error searching for content. ${error}`;
@@ -767,6 +1031,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -801,7 +1066,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_TAVILY_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -830,6 +1095,7 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -837,6 +1103,37 @@ const webBrowsing = {
             return result;
           },
           _duckDuckGoEngine: async function (query) {
+            /**
+             * Extract the actual destination URL from a DuckDuckGo redirect link.
+             * DDG links look like: //duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com&rut=...
+             * @param {string} ddgLink - The DuckDuckGo redirect link
+             * @returns {string} The actual destination URL
+             */
+            function extractUrl(ddgLink) {
+              if (!ddgLink) return ddgLink;
+              try {
+                const fullUrl = ddgLink.startsWith("//")
+                  ? `https:${ddgLink}`
+                  : ddgLink;
+                const url = new URL(fullUrl);
+                const actualUrl = url.searchParams.get("uddg");
+                return actualUrl || ddgLink;
+              } catch {
+                return ddgLink;
+              }
+            }
+
+            /**
+             * DDG titles and snippets are HTML fragments (entities such as &#x27;
+             * and &amp;, <b> highlights, a <span> badge on PDF results).
+             * @param {string} fragment
+             * @returns {string} The plain text of the fragment.
+             */
+            function htmlToText(fragment = "") {
+              const Cheerio = require("cheerio");
+              return Cheerio.load(fragment, null, false).text().trim();
+            }
+
             this.super.introspect(
               `${this.caller}: Using DuckDuckGo to search for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
@@ -873,21 +1170,19 @@ const webBrowsing = {
               const titleMatch = result.match(
                 /<a[^>]*class="result__a"[^>]*>(.*?)<\/a>/
               );
-              const title = titleMatch ? titleMatch[1].trim() : "";
+              const title = titleMatch ? htmlToText(titleMatch[1]) : "";
 
-              // Extract URL
+              // Extract URL and clean DDG redirect
               const urlMatch = result.match(
                 /<a[^>]*class="result__a"[^>]*href="([^"]*)">/
               );
-              const link = urlMatch ? urlMatch[1] : "";
+              const link = extractUrl(urlMatch ? urlMatch[1] : "");
 
               // Extract snippet
               const snippetMatch = result.match(
                 /<a[^>]*class="result__snippet"[^>]*>(.*?)<\/a>/
               );
-              const snippet = snippetMatch
-                ? snippetMatch[1].replace(/<\/?b>/g, "").trim()
-                : "";
+              const snippet = snippetMatch ? htmlToText(snippetMatch[1]) : "";
 
               if (title && link && snippet) {
                 data.push({ title, link, snippet });
@@ -898,6 +1193,7 @@ const webBrowsing = {
               return `No information was found online for the search query.`;
             }
 
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
@@ -937,7 +1233,7 @@ const webBrowsing = {
               .then((res) => {
                 if (res.ok) return res.json();
                 throw new Error(
-                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_EXA_API_KEY, 5), q: query })}`
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
                 );
               })
               .then((data) => {
@@ -965,6 +1261,718 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
 
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          _perplexitySearch: async function (query) {
+            if (!process.env.AGENT_PERPLEXITY_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Perplexity searching because the user has not defined the required API key.\nVisit: [https://console.perplexity.ai](https://console.perplexity.ai) to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Perplexity to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.perplexity.ai/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${process.env.AGENT_PERPLEXITY_API_KEY}`,
+                  "X-Pplx-Integration": getAnythingLLMUserAgent(),
+                },
+                body: JSON.stringify({
+                  query: query,
+                  max_results: 5,
+                  max_tokens_per_page: 2048,
+                }),
+              }
+            )
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    q: query,
+                  })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `Perplexity Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            if (response.results) {
+              response.results.forEach((result) => {
+                data.push({
+                  title: result.title,
+                  link: result.url,
+                  snippet: result.snippet || "",
+                });
+              });
+            }
+
+            if (data.length === 0)
+              return "No information was found online for the search query.";
+
+            this.reportSearchResultsCitations(data);
+
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+
+            return result;
+          },
+
+          _braveSearch: async function (query) {
+            let searchURL;
+            if (!process.env.AGENT_BRAVE_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Brave searching because the user has not defined the required API key.\nVisit: [https://brave.com/search/api](https://brave.com/search/api) to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            try {
+              searchURL = new URL(
+                "https://api.search.brave.com/res/v1/web/search"
+              );
+              searchURL.searchParams.append("q", query);
+              searchURL.searchParams.append(
+                "result_filter",
+                "web,discussions,faq,news,summarizer"
+              );
+              searchURL.searchParams.append("text_decorations", false);
+            } catch (e) {
+              this.super.handlerProps.log(`Brave Search: ${e.message}`);
+              this.super.introspect(
+                `${this.caller}: I can't use Brave searching because the url provided is not a valid URL.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Brave to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(searchURL.toString(), {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "x-subscription-token": process.env.AGENT_BRAVE_API_KEY,
+              },
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(`${res.status} - ${res.statusText}`);
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Brave Search Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            const searchResults = response?.web?.results ?? [];
+            searchResults.forEach((searchResult) => {
+              const { url, title, description } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          _crwSearch: async function (query) {
+            if (!process.env.AGENT_CRW_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use fastCRW searching because the user has not defined the required API key.\nVisit: https://fastcrw.com/ to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using fastCRW to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            let baseUrl = "https://fastcrw.com/api";
+            if (process.env.AGENT_CRW_API_URL) {
+              try {
+                // Strip any trailing slash so appending pathname is still valid
+                baseUrl = new URL(process.env.AGENT_CRW_API_URL)
+                  .toString()
+                  .replace(/\/+$/, "");
+              } catch (e) {
+                this.super.handlerProps.log(
+                  `invalid fastCRW Search URL: ${e.message}`
+                );
+              }
+            }
+
+            const { response, error } = await fetch(`${baseUrl}/v1/search`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${process.env.AGENT_CRW_API_KEY}`,
+              },
+              body: JSON.stringify({ query }),
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ q: query })}`
+                );
+              })
+              .then((data) => {
+                if (data?.success === false)
+                  throw new Error(
+                    data?.error || "fastCRW returned an unsuccessful response."
+                  );
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `fastCRW Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            // Managed fastCRW returns `data` as a flat array; self-hosted nests it under `data.results`.
+            const searchResults = Array.isArray(response?.data)
+              ? response.data
+              : response?.data?.results ?? [];
+
+            const data = [];
+            searchResults.forEach((searchResult) => {
+              const { title, url, description } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          _keenableSearch: async function (query) {
+            const apiKey = (process.env.AGENT_KEENABLE_API_KEY || "").trim();
+            let baseUrl = "https://api.keenable.ai";
+            if (process.env.AGENT_KEENABLE_API_URL) {
+              try {
+                const parsed = new URL(process.env.AGENT_KEENABLE_API_URL);
+                const isLoopback = [
+                  "localhost",
+                  "127.0.0.1",
+                  "::1",
+                  "host.docker.internal",
+                ].includes(parsed.hostname);
+                if (parsed.protocol === "https:" || isLoopback)
+                  baseUrl = parsed.origin;
+                else
+                  throw new Error(
+                    "AGENT_KEENABLE_API_URL must use https:// (or target a loopback host)."
+                  );
+              } catch (e) {
+                this.super.handlerProps.log(
+                  `invalid Keenable Search URL: ${e.message}`
+                );
+                return `Keenable search is misconfigured: ${e.message}`;
+              }
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Keenable to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const headers = {
+              "Content-Type": "application/json",
+              "User-Agent": "keenable-anythingllm",
+              "X-Keenable-Title": getAnythingLLMUserAgent(),
+            };
+
+            // Keyless public endpoint by default; keyed endpoint + X-API-Key
+            // when a key is configured.
+            const path = apiKey ? "/v1/search" : "/v1/search/public";
+            if (apiKey) headers["X-API-Key"] = apiKey;
+
+            const { response, error } = await fetch(`${baseUrl}${path}`, {
+              method: "POST",
+              headers,
+              body: JSON.stringify({ query: String(query), mode: "pro" }),
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(`${res.status} - ${res.statusText}`);
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `Keenable Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { title, url, description, snippet } = searchResult;
+              // Keenable returns both fields: `snippet` carries the page text and
+              // `description` is the page's meta description, which is empty for
+              // most pages. It returns whole pages rather than an excerpt, so the
+              // text is collapsed and capped to snippet length for the agent.
+              const text = String(snippet || description || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title,
+                link: url,
+                snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * You.com Search — keyless free tier by default, optional API key for higher limits.
+           * Keyless: GET https://api.you.com/v1/agents/search
+           * (100 queries/day per IP - responds 402 once exhausted)
+           * Keyed:   GET https://ydc-index.io/v1/search with X-API-Key
+           * Falls back to DuckDuckGo on any request failure so search never
+           * hard-fails. An empty-but-successful response is passed through as
+           * "no results" rather than retried, since DDG is unlikely to do better.
+           * Note: a rejected API key returns 401/403 (not 402), so we call that
+           * out separately - it is an admin misconfiguration, not a quota limit.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _youSearch: async function (query) {
+            const apiKey = process.env.AGENT_YOU_API_KEY || null;
+            const usingKey = !!apiKey;
+
+            this.super.introspect(
+              `${this.caller}: Using You.com${usingKey ? "" : " (free tier)"} to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const searchURL = new URL(
+              usingKey
+                ? "https://ydc-index.io/v1/search"
+                : "https://api.you.com/v1/agents/search"
+            );
+            searchURL.searchParams.append("query", query);
+            searchURL.searchParams.append("count", "10");
+
+            const headers = {
+              Accept: "application/json",
+              // Pin identity encoding: keyless endpoint can advertise gzip with
+              // body bytes that Node's decoder rejects (same workaround as LiteLLM).
+              "Accept-Encoding": "identity",
+              "X-Client-Info": `skill; client=${getAnythingLLMUserAgent()}`,
+            };
+            if (usingKey) headers["X-API-Key"] = apiKey;
+
+            const { response, error, status } = await fetch(
+              searchURL.toString(),
+              {
+                method: "GET",
+                headers,
+              }
+            )
+              .then((res) => {
+                if (res.ok) return res.json();
+                const err = new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({
+                    q: query,
+                  })}`
+                );
+                err.status = res.status;
+                throw err;
+              })
+              .then((data) => {
+                return { response: data, error: null, status: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `You.com Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message, status: e.status };
+              });
+
+            const data = [];
+            const webResults = Array.isArray(response?.results?.web)
+              ? response.results.web
+              : [];
+            const newsResults = Array.isArray(response?.results?.news)
+              ? response.results.news
+              : [];
+
+            const mapResult = (searchResult, type) => {
+              const { url, title, description, snippets, page_age } =
+                searchResult;
+              if (!url && !title) return;
+              const snippet =
+                Array.isArray(snippets) && snippets.length > 0
+                  ? snippets.join("\n")
+                  : description;
+
+              // `description` is a curated summary of the page while `snippets` are
+              // excerpts from it, so they usually carry different information. Pass
+              // both unless the description is already present in the snippet text.
+              const includeDescription =
+                !!description && snippet && !snippet.includes(description);
+              data.push({
+                title: title || "",
+                link: url || "",
+                snippet: snippet || "",
+                ...(includeDescription ? { description } : {}),
+                ...(page_age ? { published: page_age } : {}),
+                ...(type === "news" ? { type } : {}),
+              });
+            };
+            webResults.forEach((result) => mapResult(result, "web"));
+            newsResults.forEach((result) => mapResult(result, "news"));
+
+            if (error) {
+              if (usingKey && (status === 401 || status === 403))
+                this.super.handlerProps.log(
+                  `You.com Search rejected the configured AGENT_YOU_API_KEY (${status}) - verify the key. Falling back to DuckDuckGo.`
+                );
+              else
+                this.super.handlerProps.log(
+                  `You.com Search failed - falling back to DuckDuckGo.`
+                );
+              return await this._duckDuckGoEngine(query);
+            }
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * AnySearch — https://anysearch.com
+           * POST https://api.anysearch.com/v1/search
+           * Requires AGENT_ANYSEARCH_API_KEY (free key from
+           * https://anysearch.com/console/api-keys). Envelope responses use
+           * `{code, message, data}` where a non-zero `code` is an API error.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _anySearchSearch: async function (query) {
+            const apiKey = (process.env.AGENT_ANYSEARCH_API_KEY || "").trim();
+            if (!apiKey)
+              return `AnySearch API key is missing. Get a free key at https://anysearch.com/console/api-keys and set AGENT_ANYSEARCH_API_KEY.`;
+
+            this.super.introspect(
+              `${this.caller}: Using AnySearch to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            };
+
+            const { response, error } = await fetch(
+              "https://api.anysearch.com/v1/search",
+              {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ query: String(query), max_results: 10 }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // AnySearch returns a JSON envelope with an actionable
+                // message on errors (e.g. 401 {"code": -1, "message":
+                // "Invalid API key."}); surface it when present.
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.message) message = body.message;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => {
+                if (data?.code !== 0)
+                  throw new Error(
+                    data?.message || `API error code ${data?.code}`
+                  );
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`AnySearch Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.data?.results?.forEach((searchResult) => {
+              const { title, url, snippet, content } = searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(snippet || content || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Firecrawl Search - https://www.firecrawl.dev
+           * POST https://api.firecrawl.dev/v2/search
+           * Requires AGENT_FIRECRAWL_API_KEY (free key from
+           * https://www.firecrawl.dev/app/api-keys).
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _firecrawlSearch: async function (query) {
+            const apiKey = (process.env.AGENT_FIRECRAWL_API_KEY || "").trim();
+            if (!apiKey) {
+              this.super.introspect(
+                `${this.caller}: I can't use Firecrawl searching because the user has not defined the required API key.\nVisit: https://www.firecrawl.dev/app/api-keys to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Firecrawl to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.firecrawl.dev/v2/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                  query: String(query),
+                  limit: 10,
+                  sources: ["web"],
+                  highlights: false,
+                  origin: "anythingllm",
+                }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // Surface Firecrawl's {error} message (e.g. 401 "Unauthorized: Invalid token").
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.error) message = body.error;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => {
+                if (data?.success === false)
+                  throw new Error(data?.error || "Unknown error");
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Firecrawl Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.data?.web?.forEach((searchResult) => {
+              const { title, url, description } = searchResult;
+              if (!url) return; // skip rows without a link
+              const text = String(description || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+
+          /**
+           * Use DeepSeek's search tool API to search the web.
+           * https://api-docs.deepseek.com/guides/search
+           * Each result has title, url, snippet, summary (long markdown), date, rerank_score & authority.
+           * Only results with a rerank_score of 1.5 or above are returned.
+           * @param {string} query
+           * @returns {Promise<string>}
+           */
+          _deepSeekSearch: async function (query) {
+            const apiKey = (process.env.AGENT_DEEPSEEK_API_KEY || "").trim();
+            if (!apiKey) {
+              this.super.introspect(
+                `${this.caller}: I can't use DeepSeek searching because the user has not defined the required API key.\nVisit: https://platform.deepseek.com/api_keys to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using DeepSeek to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(
+              "https://api.deepseek.com/v1/tools/search",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({ query: String(query), count: 10 }),
+              }
+            )
+              .then(async (res) => {
+                if (res.ok) return res.json();
+                // Surface DeepSeek's {error: {message}} (e.g. 401 "Authentication Fails").
+                let message = `${res.status} - ${res.statusText}`;
+                try {
+                  const body = await res.json();
+                  if (body?.error?.message) message = body.error.message;
+                } catch {}
+                throw new Error(message);
+              })
+              .then((data) => ({ response: data, error: null }))
+              .catch((e) => {
+                this.super.handlerProps.log(
+                  `DeepSeek Search Error: ${e.message}`
+                );
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response?.results?.forEach((searchResult) => {
+              const { title, url, snippet, summary, date, rerank_score } =
+                searchResult;
+              if (!url) return; // skip rows without a link
+              // DeepSeek considers a rerank_score of 1.5+ (out of 3) a high-quality result.
+              // https://api-docs.deepseek.com/guides/search#response
+              if (!(rerank_score >= 1.5)) return;
+              const text = String(snippet || summary || "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 500);
+              data.push({
+                title: String(title || url).slice(0, 100),
+                link: url,
+                snippet: text,
+                ...(date ? { date } : {}),
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+
+            this.reportSearchResultsCitations(data);
             const result = JSON.stringify(data);
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`

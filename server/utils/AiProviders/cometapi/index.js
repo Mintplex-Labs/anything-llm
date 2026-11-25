@@ -12,6 +12,9 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { COMETAPI_IGNORE_PATTERNS } = require("./constants");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "cometapi")
@@ -37,6 +40,12 @@ class CometApiLLM {
     });
     this.model =
       modelPreference || process.env.COMETAPI_LLM_MODEL_PREF || "gpt-5-mini";
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -44,13 +53,7 @@ class CometApiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
 
     this.log(`Loaded with model: ${this.model}`);
   }
@@ -193,7 +196,10 @@ class CometApiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `CometAPI chat: ${this.model} is not valid for chat completion!`
@@ -204,7 +210,7 @@ class CometApiLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -225,25 +231,34 @@ class CometApiLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `CometAPI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+      provider: this.className,
+    });
     return measuredStreamRequest;
   }
 

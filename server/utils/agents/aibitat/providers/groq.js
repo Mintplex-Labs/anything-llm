@@ -2,10 +2,17 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
+const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the GroqAI provider.
- * We wrap Groq in UnTooled because its tool-calling built in is quite bad and wasteful.
+ * Supports true OpenAI-compatible tool calling when enabled via ENV,
+ * falling back to the UnTooled prompt-based approach otherwise.
  */
 class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -16,12 +23,13 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: "https://api.groq.com/openai/v1",
       apiKey: process.env.GROQ_API_KEY,
-      maxRetries: 3,
     });
 
+    this.providerTag = "groq";
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this._supportsToolCalling = null;
   }
 
   get client() {
@@ -36,6 +44,7 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
       })
       .then((result) => {
@@ -53,36 +62,104 @@ class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
     });
   }
 
+  /**
+   * Stream a chat completion with tool calling support.
+   * Uses native tool calling when enabled via ENV, otherwise falls back to UnTooled.
+   */
   async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
+    const useNative = await this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
+    this.providerLog(
+      "Provider.stream (tooled) - will process this chat completion."
     );
+
+    try {
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
+  /**
+   * Create a non-streaming completion with tool calling support.
+   * Uses native tool calling when enabled via ENV, otherwise falls back to UnTooled.
+   */
   async complete(messages, functions = []) {
-    return await UnTooled.prototype.complete.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallChat.bind(this)
-    );
+    const useNative = await this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    try {
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   /**
    * Get the cost of the completion.
-   *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;

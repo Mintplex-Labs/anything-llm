@@ -17,8 +17,6 @@ export default function SlashCommand({ item, setStep }) {
     } catch (e) {
       console.error(e);
       showToast(`Failed to import slash command. ${e.message}`, "error");
-    } finally {
-      setLoading(false);
     }
   }
 

@@ -7,7 +7,11 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
@@ -27,6 +31,12 @@ class FireworksAiLLM {
       apiKey: process.env.FIREWORKS_AI_LLM_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.FIREWORKS_AI_LLM_MODEL_PREF;
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -34,12 +44,6 @@ class FireworksAiLLM {
     };
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
-    this.defaultTemp = 0.7;
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
   }
 
   log(text, ...args) {
@@ -132,10 +136,17 @@ class FireworksAiLLM {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory, ({ userPrompt }) => userPrompt),
+      { role: "user", content: userPrompt },
+    ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `FireworksAI chat: ${this.model} is not valid for chat completion!`
@@ -145,7 +156,7 @@ class FireworksAiLLM {
       this.openai.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -163,26 +174,34 @@ class FireworksAiLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `FireworksAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
       messages,
-      false
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    });
     return measuredStreamRequest;
   }
 

@@ -1,8 +1,11 @@
-const { EventEmitter } = require("events");
+/* eslint-disable unused-imports/no-unused-vars */
+const { EventEmitter, setMaxListeners } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
+const { resolveTemperature } = require("../../helpers");
 const { Telemetry } = require("../../../models/telemetry.js");
 const { v4 } = require("uuid");
+const { ToolReranker } = require("./utils/toolReranker.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -26,21 +29,87 @@ class AIbitat {
    */
   skipHandleExecution = false;
 
-  provider = null;
+  _provider = null;
+
+  /** @type {import("./providers/ai-provider").AgentProviderInstance|null} */
+  _providerInstance = null;
+
+  /**
+   * Whether this session was aborted (user hit stop, socket closed, or bail command).
+   * Checked at loop boundaries so no further LLM calls or turns run after abort.
+   * @type {boolean}
+   */
+  _aborted = false;
+
+  /**
+   * Session-wide AbortController. Its signal is bound to every provider handed out
+   * by `getProviderForConfig` so an abort tears down in-flight LLM requests.
+   * @type {AbortController}
+   */
+  abortController = new AbortController();
+
   defaultProvider = null;
   defaultInterrupt;
   maxRounds;
   _chats;
-
+  _trackedChatId = null;
   agents = new Map();
   channels = new Map();
   functions = new Map();
 
+  /**
+   * Buffer for citations collected during tool execution.
+   * Citations are flushed to the frontend when the response is finalized.
+   * @type {Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>}
+   */
+  _pendingCitations = [];
+
+  /**
+   * Buffer for attachments (images) collected during tool execution.
+   * Tools can call addToolAttachment() to queue images for injection into the conversation.
+   * These are injected as a user message so all providers' existing attachment handling works.
+   * @type {Array<{name: string, mime: string, contentString: string}>}
+   */
+  _toolAttachments = [];
+
+  /**
+   * Buffer for clarifying-question surveys completed during tool execution.
+   * Each entry is one ask-user invocation (questions + the user's result),
+   * drained by the chat-history plugin into workspace_chats.response so the
+   * filled-in survey persists alongside citations/outputs.
+   * @type {Array<{questions: Array<Object>, result: Object}>}
+   */
+  _pendingClarifyingQuestionSurveys = [];
+
+  /**
+   * Get the default maximum number of tools an agent can chain for a single response.
+   * @returns {number}
+   */
+  static defaultMaxToolCalls() {
+    const envMaxToolCalls = parseInt(process.env.AGENT_MAX_TOOL_CALLS, 10);
+    return !isNaN(envMaxToolCalls) && envMaxToolCalls > 0
+      ? envMaxToolCalls
+      : 10;
+  }
+
+  /**
+   * Create a new AIbitat instance.
+   * @param {Object} props - The properties for the AIbitat instance.
+   * @param {Array} props.chats - [default: []] The chat history between agents and channels.
+   * @param {string} props.interrupt - [default: "NEVER"] The interrupt mode for the AIbitat instance.
+   * @param {number} props.maxRounds - [default: 100] The maximum number of rounds for the AIbitat instance.
+   * @param {number} props.maxToolCalls - [default: AIbitat.defaultMaxToolCalls()] The maximum number of tools an agent can chain for a single response.
+   * @param {string} props.provider - [default: "openai"] The provider for the AIbitat instance.
+   * @param {number|string|null} props.temperature - Sampling temperature applied to provider requests. Omitted from requests when unset.
+   * @param {Object} props.handlerProps - The handler properties for the AIbitat instance.
+   * @param {Object} rest - The rest of the properties for the AIbitat instance.
+   */
   constructor(props = {}) {
     const {
       chats = [],
       interrupt = "NEVER",
       maxRounds = 100,
+      maxToolCalls = AIbitat.defaultMaxToolCalls(),
       provider = "openai",
       handlerProps = {}, // Inherited props we can spread so aibitat can access.
       ...rest
@@ -48,6 +117,7 @@ class AIbitat {
     this._chats = chats;
     this.defaultInterrupt = interrupt;
     this.maxRounds = maxRounds;
+    this.maxToolCalls = maxToolCalls;
     this.handlerProps = handlerProps;
 
     this.defaultProvider = {
@@ -56,6 +126,10 @@ class AIbitat {
     };
     this.provider = this.defaultProvider.provider;
     this.model = this.defaultProvider.model;
+
+    // Providers can register an abort listener per LLM request on the session
+    // signal - lift the EventTarget warning threshold (0 = unlimited).
+    setMaxListeners(0, this.abortController.signal);
   }
 
   /**
@@ -65,12 +139,191 @@ class AIbitat {
     return this._chats;
   }
 
+  get provider() {
+    return this._provider;
+  }
+
+  set provider(value) {
+    if (value !== null && typeof value !== "string") {
+      console.trace(); // print this for user report debugging so call stack is visible
+      throw new TypeError(
+        `aibitat.provider must be a string tag (e.g. "openai"), got ${typeof value}. ` +
+          `Use aibitat.providerInstance to to get/store the provider instance.`
+      );
+    }
+    this._provider = value;
+  }
+
+  /** @returns {import("./providers/ai-provider").AgentProviderInstance} */
+  get providerInstance() {
+    return this._providerInstance;
+  }
+
+  /** @param {import("./providers/ai-provider").AgentProviderInstance|null} value */
+  set providerInstance(value) {
+    this._providerInstance = value;
+  }
+
   /**
    * Install a plugin.
    */
   use(plugin) {
     plugin.setup(this);
     return this;
+  }
+
+  /**
+   * Register a new chat ID for tracking for a given conversation exchange
+   * @param {number} chatId - The ID of the chat to register.
+   */
+  registerChatId(chatId = null) {
+    if (!chatId) return;
+    this._trackedChatId = Number(chatId);
+  }
+
+  /**
+   * Get the tracked chat ID for a given conversation exchange
+   * @returns {number|null} The ID of the chat to register.
+   */
+  get trackedChatId() {
+    return this._trackedChatId ?? null;
+  }
+
+  /**
+   * Clear the tracked chat ID for a given conversation exchange
+   */
+  clearTrackedChatId() {
+    this._trackedChatId = null;
+  }
+
+  /**
+   * Emit the tracked chat ID to the frontend via the websocket
+   * plugin (assumed to be attached).
+   * @param {string} [uuid] - The message UUID to associate with this chatId
+   */
+  emitChatId(uuid = null) {
+    if (!this.trackedChatId || !uuid) return null;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "chatId",
+      uuid,
+      chatId: this.trackedChatId,
+    });
+  }
+
+  /**
+   * Add citation(s) to be reported when the response is finalized.
+   * Citations are buffered and flushed with the correct message UUID.
+   * @param {{id: string, title: string, text: string, chunkSource?: string, score?: number}|Array<{id: string, title: string, text: string, chunkSource?: string, score?: number}>} citations - Citation object or array of citation objects
+   */
+  addCitation(citations) {
+    if (!citations) return;
+    if (Array.isArray(citations))
+      this._pendingCitations.push(...citations.filter(Boolean));
+    else if (typeof citations === "object")
+      this._pendingCitations.push(citations);
+  }
+
+  /**
+   * Register attached documents (parsed/pinned files) as citations so they surface as
+   * sources, mirroring normal chat. Dedupes by id since this runs on every reply turn.
+   * @param {Array<{name: string, content: string, metadata?: object}>} documents
+   */
+  addDocumentCitations(documents = []) {
+    const existingIds = new Set(this._pendingCitations.map((c) => c.id));
+    for (const { name, content, metadata = {} } of documents) {
+      const id = metadata.id || metadata.location || name;
+      if (existingIds.has(id)) continue;
+      existingIds.add(id);
+      this.addCitation({
+        id,
+        title: name,
+        text: content.slice(0, 1_000) + "...continued on in source document...",
+        chunkSource: metadata.chunkSource || null,
+        score: null,
+      });
+    }
+  }
+
+  /**
+   * Flush all pending citations to the frontend with the given message UUID.
+   * Called automatically when the agent response is finalized.
+   * Note: Does not clear citations - they are cleared by chat-history plugin after persisting.
+   * @param {string} messageUuid - The UUID of the message to attach citations to
+   */
+  flushCitations(messageUuid) {
+    if (!messageUuid || this._pendingCitations.length === 0) return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "citations",
+      uuid: messageUuid,
+      citations: this._pendingCitations,
+    });
+  }
+
+  /**
+   * Clear all pending citations. Called after citations have been persisted.
+   */
+  clearCitations() {
+    this._pendingCitations = [];
+  }
+
+  /**
+   * Send routing metadata to the frontend for the given message UUID.
+   * Only emits if routing metadata exists in handlerProps.
+   * @param {string} messageUuid - The UUID of the message to attach routing info to
+   */
+  flushRoutingMetadata(messageUuid) {
+    const routingMetadata = this.handlerProps?.routingMetadata;
+    if (
+      !messageUuid ||
+      !routingMetadata?.routedTo ||
+      !routingMetadata.routedTo.shouldNotify
+    )
+      return;
+    this.socket?.send?.("reportStreamEvent", {
+      type: "modelRouteNotification",
+      uuid: `${messageUuid}:route`,
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
+  /**
+   * Add an attachment (image) from a tool to be injected into the conversation.
+   * The attachment will be added as a user message so the model can "see" it.
+   * This leverages existing provider attachment handling for user messages.
+   * @param {{name: string, mime: string, contentString: string}} attachment - The attachment object with name, mime type, and base64 data URL
+   */
+  addToolAttachment(attachment) {
+    if (!attachment || !attachment.contentString) return;
+    this._toolAttachments.push(attachment);
+  }
+
+  /**
+   * Add a completed clarifying-question survey to the pending buffer.
+   * The chat-history plugin drains this buffer when persisting the agent reply.
+   * @param {{questions: Array<Object>, result: Object}} survey - The survey to add
+   */
+  addClarifyingQuestionSurvey(survey) {
+    if (!survey || typeof survey !== "object") return;
+    this._pendingClarifyingQuestionSurveys.push(survey);
+  }
+
+  /**
+   * Clear all pending clarifying-question surveys. Called after surveys
+   * have been persisted to the workspace_chats record.
+   */
+  clearClarifyingQuestionSurveys() {
+    this._pendingClarifyingQuestionSurveys = [];
+  }
+
+  /**
+   * Collect and clear any pending tool attachments.
+   * @returns {Array<{name: string, mime: string, contentString: string}>} The collected attachments
+   */
+  collectToolAttachments() {
+    if (this._toolAttachments.length === 0) return [];
+    const attachments = [...this._toolAttachments];
+    this._toolAttachments = [];
+    return attachments;
   }
 
   /**
@@ -172,9 +425,13 @@ class AIbitat {
   }
 
   /**
-   * Abort the running of any plugins that may still be pending (Langchain summarize)
+   * Abort the session: cancels in-flight provider requests via the abort
+   * signal, stops the chat loop at the next boundary, and notifies plugins
+   * that may still be pending (Langchain summarize).
    */
   abort() {
+    this._aborted = true;
+    this.abortController.abort();
     this.emitter.emit("abort", null, this);
   }
 
@@ -273,10 +530,23 @@ class AIbitat {
       /**
        * The message when the error occurred.
        */
+      // eslint-disable-next-line
       {}
     ) => null
   ) {
     this.emitter.on("replyError", listener);
+    return this;
+  }
+
+  /**
+   * Triggered when a tool call completes and returns a result.
+   * Used by scheduled jobs to capture tool results for the execution trace.
+   *
+   * @param listener
+   * @returns
+   */
+  onToolCallResult(listener = () => null) {
+    this.emitter.on("toolCallResult", listener);
     return this;
   }
 
@@ -334,6 +604,8 @@ class AIbitat {
    * @param keepAlive Whether to keep the chat alive.
    */
   async chat(route, keepAlive = true) {
+    if (this._aborted) return;
+
     // check if the message is for a group
     // if it is, select the next node to chat with from the group
     // and then ask them to reply.
@@ -343,6 +615,7 @@ class AIbitat {
       try {
         nextNode = await this.selectNext(route.from);
       } catch (error) {
+        if (this._aborted) return;
         if (error instanceof APIError) {
           return this.newError({ from: route.from, to: route.to }, error);
         }
@@ -387,11 +660,17 @@ class AIbitat {
     try {
       reply = await this.reply(route);
     } catch (error) {
+      if (this._aborted) return;
       if (error instanceof APIError) {
         return this.newError({ from: route.from, to: route.to }, error);
       }
       throw error;
     }
+
+    // An abort mid-stream resolves with a partial reply - stop here so the
+    // session doesn't fall through to interrupt/terminate handling (which
+    // would park a feedback timeout waiting on a socket that already closed).
+    if (this._aborted) return;
 
     if (
       reply === "TERMINATE" ||
@@ -468,10 +747,10 @@ class AIbitat {
 
     // get the provider that will be used for the channel
     // if the channel has a provider, use that otherwise
-    // use the GPT-4 because it has a better reasoning
+    // use the default OpenAI model
     const provider = this.getProviderForConfig({
       // @ts-expect-error
-      model: "gpt-4",
+      model: "gpt-5.6-luna",
       ...this.defaultProvider,
       ...channelConfig,
     });
@@ -488,9 +767,7 @@ class AIbitat {
       {
         role: "user",
         content: `You are in a role play game. The following roles are available:
-${availableNodes
-  .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
-  .join("\n")}.
+${availableNodes.map((node) => `@${node}: ${this.getAgentConfig(node).role}`).join("\n")}.
 
 Read the following conversation.
 
@@ -529,6 +806,27 @@ Only return the role.
   }
 
   /**
+   * Extract the user's prompt from the messages array for tool reranking.
+   * Gets the content of the last user message.
+   * @param {Array} messages - Array of chat messages
+   * @returns {string|null} The user's prompt or null if not found
+   */
+  #extractUserPrompt(messages) {
+    if (!messages || !Array.isArray(messages)) return null;
+
+    // Find the last user message
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i];
+      if (msg.role === "user" && msg.content) {
+        return typeof msg.content === "string"
+          ? msg.content
+          : JSON.stringify(msg.content);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Check if the chat has reached the maximum number of rounds.
    */
   hasReachedMaximumRounds(from = "", to = "") {
@@ -560,10 +858,22 @@ ${this.getHistory({ to: route.to })
     }
 
     // This is normal chat between user<->agent
-    return this.getHistory(route).map((c) => ({
-      content: c.content,
-      role: c.from === route.to ? "user" : "assistant",
-    }));
+    // Include attachments if present (for vision/multimodal support)
+    return this.getHistory(route).map((c) => {
+      const message = {
+        content: c.content,
+        role: c.from === route.to ? "user" : "assistant",
+      };
+      // Pass attachments through for user messages that have them
+      if (
+        c.attachments &&
+        c.attachments.length > 0 &&
+        message.role === "user"
+      ) {
+        message.attachments = c.attachments;
+      }
+      return message;
+    });
   }
 
   /**
@@ -580,6 +890,27 @@ ${this.getHistory({ to: route.to })
   async reply(route) {
     const fromConfig = this.getAgentConfig(route.from);
     const chatHistory = this.getOrFormatNodeChatHistory(route);
+    // Captured before document injection below - skill reranking and model
+    // routing must run on what the user asked, not on attached file contents.
+    const userPrompt = this.#extractUserPrompt(chatHistory);
+
+    // Fetch fresh parsed file context and inject into the last user message
+    if (this.fetchParsedFileContext) {
+      const parsedContext = await this.fetchParsedFileContext();
+      if (parsedContext) {
+        // Find the last user message and append context to it
+        for (let i = chatHistory.length - 1; i >= 0; i--) {
+          if (chatHistory[i].role === "user") {
+            chatHistory[i] = {
+              ...chatHistory[i],
+              content: chatHistory[i].content + parsedContext,
+            };
+            break;
+          }
+        }
+      }
+    }
+
     const messages = [
       {
         content: fromConfig.role,
@@ -589,23 +920,49 @@ ${this.getHistory({ to: route.to })
     ];
 
     // get the functions that the node can call
-    const functions = fromConfig.functions
+    let functions = fromConfig.functions
       ?.map((name) => this.functions.get(this.#parseFunctionName(name)))
       .filter((a) => !!a);
 
-    const provider = this.getProviderForConfig({
+    // Rerank tools based on user prompt if enabled
+    if (ToolReranker.isEnabled() && functions?.length) {
+      const toolReranker = new ToolReranker();
+      if (userPrompt)
+        functions = await toolReranker.rerank(userPrompt, functions);
+    } else {
+      if (functions?.length > ToolReranker.defaultTopN) {
+        this.handlerProps.log?.(
+          `
+
+\x1b[44m[HINT]\x1b[0m: You are injecting \x1b[0;93m${functions.length} tools\x1b[0m into every request.
+Consider enabling \x1b[0;93mIntelligent Skill Selection\x1b[0m to reduce token usage from tool call bloat by up to \x1b[0;93m80% per request\x1b[0m.
+https://docs.anythingllm.com/agent/intelligent-tool-selection
+
+`
+        );
+      }
+    }
+
+    // Re-evaluate model router before each turn if a resolver is attached.
+    // This ensures routing rules are applied per-message, not just at initialization.
+    if (this.resolveRoute) {
+      this.applyResolvedRoute(
+        await this.resolveRoute(userPrompt || route.content || "")
+      );
+    }
+
+    this.providerInstance = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,
     });
-    provider.attachHandlerProps(this.handlerProps);
+    this.providerInstance.attachHandlerProps(this.handlerProps);
 
     let content;
-    if (provider.supportsAgentStreaming) {
+    if (this.providerInstance.supportsAgentStreaming) {
       this.handlerProps.log?.(
         "[DEBUG] Provider supports agent streaming - will use async execution!"
       );
       content = await this.handleAsyncExecution(
-        provider,
         messages,
         functions,
         route.from
@@ -614,12 +971,7 @@ ${this.getHistory({ to: route.to })
       this.handlerProps.log?.(
         "[DEBUG] Provider does not support agent streaming - will use synchronous execution!"
       );
-      content = await this.handleExecution(
-        provider,
-        messages,
-        functions,
-        route.from
-      );
+      content = await this.handleExecution(messages, functions, route.from);
     }
 
     this.newMessage({ ...route, content });
@@ -627,10 +979,45 @@ ${this.getHistory({ to: route.to })
   }
 
   /**
-   * Handle the async (streaming) execution of the provider
-   * with tool calls.
+   * Wrapper for provider calls that catches errors and converts them to APIError.
+   * This ensures provider errors are properly surfaced to the user instead of crashing.
    *
-   * @param provider
+   * @param {Function} providerCall - Async function that calls the provider
+   * @returns {Promise<any>} - The result of the provider call
+   * @throws {APIError} - If the provider call fails
+   */
+  async #safeProviderCall(providerCall) {
+    try {
+      return await providerCall();
+    } catch (error) {
+      // User-initiated abort - rethrow as-is so the chat loop exits quietly.
+      if (this._aborted) throw error;
+      console.error(`[AIbitat] Provider error: ${error.message}`, {
+        hide_meta: true,
+      });
+      throw new APIError(`The agent model failed to respond: ${error.message}`);
+    }
+  }
+
+  /**
+   * Local inference servers can take a long time to load a model into memory,
+   * so tell the user when the upcoming completion will have to wait on that.
+   */
+  async #reportModelLoading() {
+    try {
+      if (await this.providerInstance.isModelLoaded()) return;
+    } catch {
+      return;
+    }
+    this?.introspect?.(
+      `Loading ${this.providerInstance.model} into memory, this may take a moment.`
+    );
+  }
+
+  /**
+   * Handle the async (streaming) execution of the provider
+   * with tool calls. Reads the provider from this.providerInstance.
+   *
    * @param messages
    * @param functions
    * @param byAgent
@@ -638,31 +1025,50 @@ ${this.getHistory({ to: route.to })
    * @returns {Promise<string>}
    */
   async handleAsyncExecution(
-    provider,
     messages = [],
     functions = [],
-    byAgent = null
+    byAgent = null,
+    depth = 0
   ) {
+    // Bail before any (further) LLM calls when the session was aborted mid-execution.
+    if (this._aborted) return null;
     const eventHandler = (type, data) => {
       this?.socket?.send(type, data);
     };
 
+    // Emit routing notification before the first completion so it appears above the response
+    // and reset the usage accumulator so metrics only cover this run's completions.
+    if (depth === 0) {
+      this?.flushRoutingMetadata?.(v4());
+      this.providerInstance.resetCumulativeUsage();
+      await this.#reportModelLoading();
+    }
+
     /** @type {{ functionCall: { name: string, arguments: string }, textResponse: string }} */
-    const completionStream = await provider.stream(
-      messages,
-      functions,
-      eventHandler
+    const completionStream = await this.#safeProviderCall(() =>
+      this.providerInstance.stream(messages, functions, eventHandler)
     );
+
+    // An abort mid-stream resolves (not throws) with a partial completion,
+    // which can include a truncated tool call - never act on it.
+    if (this._aborted) return null;
 
     if (completionStream.functionCall) {
       const { name, arguments: args } = completionStream.functionCall;
       const fn = this.functions.get(name);
+      const reachedToolLimit = depth >= this.maxToolCalls;
 
-      // if provider hallucinated on the function name
-      // ask the provider to complete again
+      if (reachedToolLimit) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Executing final tool call then generating response.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. After this tool I will generate a final response.`
+        );
+      }
+
       if (!fn) {
         return await this.handleAsyncExecution(
-          provider,
           [
             ...messages,
             {
@@ -672,28 +1078,31 @@ ${this.getHistory({ to: route.to })
               originalFunctionCall: completionStream.functionCall,
             },
           ],
-          functions,
-          byAgent
+          reachedToolLimit ? [] : functions,
+          byAgent,
+          depth + 1
         );
       }
 
-      // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
 
-      // If provider is verbose, log the tool call to the frontend
-      if (provider?.verbose) {
+      if (this.providerInstance?.verbose) {
         this?.introspect?.(
           `${fn.caller} is executing \`${name}\` tool ${JSON.stringify(args, null, 2)}`
         );
       }
 
-      // Always log the tool call to the console for debugging purposes
       this.handlerProps?.log?.(
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool ${JSON.stringify(args, null, 2)}`
       );
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
       /**
        * If the tool call has direct output enabled, return the result directly to the chat
@@ -702,7 +1111,7 @@ ${this.getHistory({ to: route.to })
        * or else no response will be sent to the chat.
        */
       if (this.skipHandleExecution) {
-        this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
+        this.skipHandleExecution = false;
         this?.introspect?.(
           `The tool call has direct output enabled! The result will be returned directly to the chat without any further processing and no further tool calls will be run.`
         );
@@ -710,62 +1119,123 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        const directOutputUUID = completionStream?.uuid || v4();
         eventHandler?.("reportStreamEvent", {
           type: "fullTextResponse",
-          uuid: v4(),
+          uuid: directOutputUUID,
           content: result,
         });
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: directOutputUUID,
+          metrics: this.providerInstance.getCumulativeUsage(),
+        });
+        this?.flushCitations?.(directOutputUUID);
+        this?.emitChatId?.(directOutputUUID);
         return result;
       }
 
+      const toolAttachments = this.collectToolAttachments();
+      const newMessages = [
+        ...messages,
+        {
+          name,
+          role: "function",
+          content: result,
+          originalFunctionCall: completionStream.functionCall,
+        },
+      ];
+
+      if (toolAttachments.length > 0) {
+        this.handlerProps?.log?.(
+          `[debug]: Injecting ${toolAttachments.length} image attachment(s) from tool result`
+        );
+        newMessages.push({
+          role: "user",
+          content: "[Attached image(s) from tool result]",
+          attachments: toolAttachments,
+        });
+      }
+
       return await this.handleAsyncExecution(
-        provider,
-        [
-          ...messages,
-          {
-            name,
-            role: "function",
-            content: result,
-            originalFunctionCall: completionStream.functionCall,
-          },
-        ],
-        functions,
-        byAgent
+        newMessages,
+        reachedToolLimit ? [] : functions,
+        byAgent,
+        depth + 1
       );
     }
 
+    const responseUuid = completionStream?.uuid || v4();
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: responseUuid,
+      metrics: this.providerInstance.getCumulativeUsage(),
+    });
+    this?.flushCitations?.(responseUuid);
+    this?.emitChatId?.(responseUuid);
     return completionStream?.textResponse;
   }
 
   /**
    * Handle the synchronous (non-streaming) execution of the provider
-   * with tool calls.
+   * with tool calls. Reads the provider from this.providerInstance.
    *
-   * @param provider
    * @param messages
    * @param functions
    * @param byAgent
+   * @param depth
+   * @param msgUUID - The message UUID to use for event correlation (created at depth=0)
    *
    * @returns {Promise<string>}
    */
   async handleExecution(
-    provider,
     messages = [],
     functions = [],
-    byAgent = null
+    byAgent = null,
+    depth = 0,
+    msgUUID = null
   ) {
+    // Bail before any (further) LLM calls when the session was aborted mid-execution.
+    if (this._aborted) return null;
+    // Create a stable UUID at the start of execution for event correlation
+    if (!msgUUID) msgUUID = v4();
+    const eventHandler = (type, data) => {
+      this?.socket?.send(type, data);
+    };
+
+    // Emit routing notification before the first completion so it appears above the response
+    // and reset the usage accumulator so metrics only cover this run's completions.
+    if (depth === 0) {
+      this?.flushRoutingMetadata?.(msgUUID);
+      this.providerInstance.resetCumulativeUsage();
+      await this.#reportModelLoading();
+    }
+
     // get the chat completion
-    const completion = await provider.complete(messages, functions);
+    const completion = await this.#safeProviderCall(() =>
+      this.providerInstance.complete(messages, functions)
+    );
+
+    // An abort mid-stream resolves (not throws) with a partial completion,
+    // which can include a truncated tool call - never act on it.
+    if (this._aborted) return null;
 
     if (completion.functionCall) {
       const { name, arguments: args } = completion.functionCall;
       const fn = this.functions.get(name);
+      const reachedToolLimit = depth >= this.maxToolCalls;
 
-      // if provider hallucinated on the function name
-      // ask the provider to complete again
+      if (reachedToolLimit) {
+        this.handlerProps?.log?.(
+          `[warning]: Maximum tool call limit (${this.maxToolCalls}) reached. Executing final tool call then generating response.`
+        );
+        this?.introspect?.(
+          `Maximum tool call limit (${this.maxToolCalls}) reached. After this tool I will generate a final response.`
+        );
+      }
+
       if (!fn) {
         return await this.handleExecution(
-          provider,
           [
             ...messages,
             {
@@ -775,33 +1245,35 @@ ${this.getHistory({ to: route.to })
               originalFunctionCall: completion.functionCall,
             },
           ],
-          functions,
-          byAgent
+          reachedToolLimit ? [] : functions,
+          byAgent,
+          depth + 1,
+          msgUUID
         );
       }
 
-      // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
 
-      // If provider is verbose, log the tool call to the frontend
-      if (provider?.verbose) {
+      if (this.providerInstance?.verbose) {
         this?.introspect?.(
           `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
         );
       }
 
-      // Always log the tool call to the console for debugging purposes
       this.handlerProps?.log?.(
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
       );
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+      this.emitter.emit("toolCallResult", {
+        toolName: name,
+        arguments: args,
+        result,
+      });
 
-      // If the tool call has direct output enabled, return the result directly to the chat
-      // without any further processing and no further tool calls will be run.
       if (this.skipHandleExecution) {
-        this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
+        this.skipHandleExecution = false;
         this?.introspect?.(
           `The tool call has direct output enabled! The result will be returned directly to the chat without any further processing and no further tool calls will be run.`
         );
@@ -809,25 +1281,53 @@ ${this.getHistory({ to: route.to })
         this.handlerProps?.log?.(
           `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
         );
+        eventHandler?.("reportStreamEvent", {
+          type: "usageMetrics",
+          uuid: msgUUID,
+          metrics: this.providerInstance.getCumulativeUsage(),
+        });
+        this?.flushCitations?.(msgUUID);
         return result;
       }
 
+      const toolAttachments = this.collectToolAttachments();
+      const newMessages = [
+        ...messages,
+        {
+          name,
+          role: "function",
+          content: result,
+          originalFunctionCall: completion.functionCall,
+        },
+      ];
+
+      if (toolAttachments.length > 0) {
+        this.handlerProps?.log?.(
+          `[debug]: Injecting ${toolAttachments.length} image attachment(s) from tool result`
+        );
+        newMessages.push({
+          role: "user",
+          content: "[Attached image(s) from tool result]",
+          attachments: toolAttachments,
+        });
+      }
+
       return await this.handleExecution(
-        provider,
-        [
-          ...messages,
-          {
-            name,
-            role: "function",
-            content: result,
-            originalFunctionCall: completion.functionCall,
-          },
-        ],
-        functions,
-        byAgent
+        newMessages,
+        reachedToolLimit ? [] : functions,
+        byAgent,
+        depth + 1,
+        msgUUID
       );
     }
 
+    eventHandler?.("reportStreamEvent", {
+      type: "usageMetrics",
+      uuid: msgUUID,
+      metrics: this.providerInstance.getCumulativeUsage(),
+    });
+    this?.flushCitations?.(msgUUID);
+    this?.emitChatId?.(msgUUID);
     return completion?.textResponse;
   }
 
@@ -837,9 +1337,10 @@ ${this.getHistory({ to: route.to })
    * Provide a feedback where it was interrupted if you want to.
    *
    * @param feedback The feedback to the interruption if any.
+   * @param attachments Optional attachments (images) to include with the feedback.
    * @returns
    */
-  async continue(feedback) {
+  async continue(feedback, attachments = []) {
     const lastChat = this._chats.at(-1);
     if (!lastChat || lastChat.state !== "interrupt") {
       throw new Error("No chat to continue");
@@ -859,6 +1360,7 @@ ${this.getHistory({ to: route.to })
         from,
         to,
         content: feedback,
+        ...(attachments?.length > 0 ? { attachments } : {}),
       };
 
       // register the message in the chat history
@@ -887,6 +1389,7 @@ ${this.getHistory({ to: route.to })
     }
 
     // remove the last chat's that threw an error
+    // eslint-disable-next-line
     const { from, to } = this?._chats?.pop();
 
     await this.chat({ from, to });
@@ -920,24 +1423,82 @@ ${this.getHistory({ to: route.to })
   }
 
   /**
-   * Get provider based on configurations.
-   * If the provider is a string, it will return the default provider for that string.
+   * Switches the default provider to a route the model router resolved. The
+   * route's reasoning effort replaces the previous one, since an effort is
+   * only validated for the model it was resolved against.
+   * @param {{provider: string, model: string, reasoningEffort?: string|null}|null} resolved
+   */
+  applyResolvedRoute(resolved) {
+    if (!resolved) return;
+    this.defaultProvider = {
+      ...this.defaultProvider,
+      provider: resolved.provider,
+      model: resolved.model,
+      reasoningEffort: resolved.reasoningEffort ?? null,
+    };
+  }
+
+  /**
+   * Get provider based on configurations with the session abort signal bound to it,
+   * so aborting the session cancels whatever requests that provider has in flight.
    *
    * @param config The provider configuration.
    * @returns {Providers.OpenAIProvider} The provider instance.
    */
   getProviderForConfig(config) {
+    const provider = this.#buildProviderForConfig(config);
+    // Record the slug the instance was built from so usage metrics can be
+    // priced - pre-built instances (config.provider as an object) keep theirs.
+    if (typeof config?.provider === "string") {
+      provider.providerSlug ??= config.provider;
+      provider.temperature = resolveTemperature(
+        config.provider,
+        provider.model,
+        config.temperature
+      );
+    }
+    provider.attachAbortSignal?.(this.abortController.signal);
+    return provider;
+  }
+
+  /**
+   * Instantiate the provider for a configuration.
+   * If the provider is a string, it will return the default provider for that string.
+   *
+   * @param config The provider configuration.
+   * @returns {Providers.OpenAIProvider} The provider instance.
+   */
+  #buildProviderForConfig(config) {
     if (typeof config.provider === "object") return config.provider;
+    // The effort was validated for the default provider + model only - any
+    // other provider or model this config points at gets no reasoning params.
+    const reasoningEffort =
+      config.provider === this.defaultProvider?.provider &&
+      config.model === this.defaultProvider?.model
+        ? config.reasoningEffort ?? null
+        : null;
 
     switch (config.provider) {
       case "openai":
-        return new Providers.OpenAIProvider({ model: config.model });
+        return new Providers.OpenAIProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "anthropic":
-        return new Providers.AnthropicProvider({ model: config.model });
+        return new Providers.AnthropicProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "lmstudio":
-        return new Providers.LMStudioProvider({ model: config.model });
+        return new Providers.LMStudioProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "ollama":
-        return new Providers.OllamaProvider({ model: config.model });
+        return new Providers.OllamaProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "groq":
         return new Providers.GroqProvider({ model: config.model });
       case "togetherai":
@@ -949,17 +1510,26 @@ ${this.getHistory({ to: route.to })
       case "localai":
         return new Providers.LocalAIProvider({ model: config.model });
       case "openrouter":
-        return new Providers.OpenRouterProvider({ model: config.model });
+        return new Providers.OpenRouterProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "mistral":
-        return new Providers.MistralProvider({ model: config.model });
+        return new Providers.MistralProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "generic-openai":
-        return new Providers.GenericOpenAiProvider({ model: config.model });
+        return new Providers.GenericOpenAiProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "perplexity":
         return new Providers.PerplexityProvider({ model: config.model });
       case "textgenwebui":
         return new Providers.TextWebGenUiProvider({});
       case "bedrock":
-        return new Providers.AWSBedrockProvider({});
+        return new Providers.AWSBedrockProvider({ model: config.model });
       case "fireworksai":
         return new Providers.FireworksAIProvider({ model: config.model });
       case "nvidia-nim":
@@ -967,7 +1537,10 @@ ${this.getHistory({ to: route.to })
       case "moonshotai":
         return new Providers.MoonshotAiProvider({ model: config.model });
       case "deepseek":
-        return new Providers.DeepSeekProvider({ model: config.model });
+        return new Providers.DeepSeekProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "litellm":
         return new Providers.LiteLLMProvider({ model: config.model });
       case "apipie":
@@ -981,15 +1554,44 @@ ${this.getHistory({ to: route.to })
       case "ppio":
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":
-        return new Providers.GeminiProvider({ model: config.model });
-      case "dpais":
-        return new Providers.DellProAiStudioProvider({ model: config.model });
+        return new Providers.GeminiProvider({
+          model: config.model,
+          reasoningEffort,
+        });
       case "cometapi":
         return new Providers.CometApiProvider({ model: config.model });
       case "foundry":
         return new Providers.FoundryProvider({ model: config.model });
       case "giteeai":
         return new Providers.GiteeAIProvider({ model: config.model });
+      case "cohere":
+        return new Providers.CohereProvider({ model: config.model });
+      case "llmman":
+        return new Providers.LlmmanProvider({ model: config.model });
+      case "privatemode":
+        return new Providers.PrivatemodeProvider({ model: config.model });
+      case "sambanova":
+        return new Providers.SambaNovaProvider({ model: config.model });
+      case "lemonade":
+        return new Providers.LemonadeProvider({
+          model: config.model,
+          reasoningEffort,
+        });
+      case "embedded_lemonade": {
+        const EmbeddedLemonadeProvider = require("../../AiProviders/embeddedLemonade/agentProvider");
+        return new EmbeddedLemonadeProvider({
+          model: config.model,
+          reasoningEffort,
+        });
+      }
+      case "omlx":
+        return new Providers.OMLXProvider({ model: config.model });
+      case "minimax":
+        return new Providers.MinimaxProvider({ model: config.model });
+      case "cerebras":
+        return new Providers.CerebrasProvider({ model: config.model });
+      case "vertex":
+        return new Providers.VertexProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`
@@ -1004,6 +1606,17 @@ ${this.getHistory({ to: route.to })
    */
   function(functionConfig) {
     this.functions.set(functionConfig.name, functionConfig);
+    return this;
+  }
+
+  /**
+   * Remove a registered function so the agent can no longer call it on its next
+   * turn. Used to disable a tool mid-session; restore it by re-running its plugin
+   * via aibitat.use().
+   * @param {string} functionName - The registered name of the function to remove.
+   */
+  removeFunction(functionName) {
+    this.functions.delete(functionName);
     return this;
   }
 }

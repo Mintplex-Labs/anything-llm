@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
-const { normalizePath } = require(".");
+const { normalizePath, sanitizeFileName } = require(".");
 
 /**
  * Handle File uploads for auto-uploading.
@@ -17,10 +17,10 @@ const fileUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
+    file.originalname = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
-    cb(null, file.originalname);
+    cb(null, `${v4().split("-")[0]}-${file.originalname}`);
   },
 });
 
@@ -37,10 +37,10 @@ const fileAPIUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
+    file.originalname = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
-    cb(null, file.originalname);
+    cb(null, `${v4().split("-")[0]}-${file.originalname}`);
   },
 });
 
@@ -55,8 +55,8 @@ const assetUploadStorage = multer.diskStorage({
     return cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
+    file.originalname = sanitizeFileName(
+      normalizePath(Buffer.from(file.originalname, "latin1").toString("utf8"))
     );
     cb(null, file.originalname);
   },
@@ -170,9 +170,61 @@ function handlePfpUpload(request, response, next) {
   });
 }
 
+/**
+ * Handle in-memory audio upload for STT transcription. Audio buffers are
+ * passed straight to the STT provider so we never persist them to disk.
+ */
+function handleAudioUpload(request, response, next) {
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25MB matches OpenAI Whisper limit
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype?.startsWith("audio/"))
+        return cb(new Error("Only audio uploads are allowed."));
+      cb(null, true);
+    },
+  }).single("audio");
+  upload(request, response, function (err) {
+    if (err) {
+      return response.status(500).json({
+        success: false,
+        error: `Invalid audio upload. ${err.message}`,
+      });
+    }
+    next();
+  });
+}
+
+/**
+ * Handle in-memory image upload for image generation/editing. Buffers are
+ * passed directly to the image generation provider, never persisted to disk.
+ */
+function handleImageGenUpload(request, response, next) {
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 25 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype?.startsWith("image/"))
+        return cb(new Error("Only image uploads are allowed."));
+      cb(null, true);
+    },
+  }).array("image_references", 10);
+  upload(request, response, function (err) {
+    if (err) {
+      return response.status(500).json({
+        success: false,
+        error: `Invalid image upload. ${err.message}`,
+      });
+    }
+    next();
+  });
+}
+
 module.exports = {
   handleFileUpload,
   handleAPIFileUpload,
   handleAssetUpload,
   handlePfpUpload,
+  handleAudioUpload,
+  handleImageGenUpload,
 };

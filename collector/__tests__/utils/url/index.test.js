@@ -144,6 +144,37 @@ describe("validYoutubeVideoUrl", () => {
     expect(validYoutubeVideoUrl(`youtube.com/watch?v=${ID}`)).toBe(true);
   });
 
+  // Scheme and host are case-insensitive; the video ID keeps its case.
+  it.each([
+    `HTTPS://WWW.YOUTUBE.COM/watch?v=${ID}`,
+    `Https://www.youtube.com/watch?v=${ID}`,
+    `https://WwW.YouTube.Com/watch?v=${ID}`,
+    `HTTP://M.YOUTUBE.COM/watch?v=${ID}`,
+    `https://MUSIC.YOUTUBE.COM/watch?v=${ID}`,
+    `HTTPS://YOUTU.BE/${ID}`,
+    `WWW.YOUTUBE.COM/shorts/${ID}`,
+  ])("accepts any scheme and host casing: %s", (link) => {
+    expect(validYoutubeVideoUrl(link, true)).toBe(ID);
+  });
+
+  it("keeps the path and query case-sensitive", () => {
+    expect(validYoutubeVideoUrl(`https://youtube.com/WATCH?v=${ID}`)).toBe(false);
+    expect(validYoutubeVideoUrl(`https://youtube.com/watch?V=${ID}`)).toBe(false);
+  });
+
+  it.each([
+    `https://youtube.com.evil.com/watch?v=${ID}`,
+    `https://notyoutube.com/watch?v=${ID}`,
+    `https://evil.com/youtube.com/watch?v=${ID}`,
+    `https://youtube.com@evil.com/watch?v=${ID}`,
+    `https://evil.com/?u=youtube.com/watch?v=${ID}`,
+    `ftp://youtube.com/watch?v=${ID}`,
+    `javascript:alert(1)//youtube.com/watch?v=${ID}`,
+    ID,
+  ])("rejects lookalike or non-http links: %s", (link) => {
+    expect(validYoutubeVideoUrl(link, true)).toBe(null);
+  });
+
   it("returns true for youtu.be short URLs", () => {
     expect(validYoutubeVideoUrl(`https://youtu.be/${ID}`)).toBe(true);
     expect(validYoutubeVideoUrl(`https://youtu.be/${ID}?si=abc`)).toBe(true);
@@ -170,10 +201,66 @@ describe("validYoutubeVideoUrl", () => {
     expect(validYoutubeVideoUrl("https://www.youtube.com/")).toBe(false);
   });
 
+  it("returns false for channel URLs that are 11 or more word characters", () => {
+    // Legacy custom channel URLs have no /c/ or /@ prefix. Their first 11
+    // characters must not be read as a video ID.
+    expect(validYoutubeVideoUrl("https://www.youtube.com/LinusTechTips")).toBe(
+      false
+    );
+    expect(validYoutubeVideoUrl("https://www.youtube.com/MrBeast6000")).toBe(
+      false
+    );
+    expect(validYoutubeVideoUrl("youtube.com/LinusTechTips")).toBe(false);
+    expect(
+      validYoutubeVideoUrl("https://www.youtube.com/LinusTechTips", true)
+    ).toBe(null);
+    expect(
+      validYoutubeVideoUrl(
+        `https://www.youtube.com/watch_videos?video_ids=${ID}`,
+        true
+      )
+    ).toBe(null);
+  });
+
+  it("returns false when the video ID is longer than 11 characters", () => {
+    expect(validYoutubeVideoUrl(`https://youtu.be/${ID}abc`)).toBe(false);
+    expect(
+      validYoutubeVideoUrl(`https://www.youtube.com/watch?v=${ID}abc`)
+    ).toBe(false);
+  });
+
+  it("returns the video ID for live and shorts URLs", () => {
+    expect(
+      validYoutubeVideoUrl(`https://www.youtube.com/live/${ID}`, true)
+    ).toBe(ID);
+    expect(
+      validYoutubeVideoUrl(
+        `https://youtube.com/shorts/${ID}?feature=share`,
+        true
+      )
+    ).toBe(ID);
+    expect(
+      validYoutubeVideoUrl(`https://www.youtube.com/watch?v=${ID}#t=30`, true)
+    ).toBe(ID);
+  });
+
   it("returns false for empty or bad inputs", () => {
     expect(validYoutubeVideoUrl("")).toBe(false);
     expect(validYoutubeVideoUrl(null)).toBe(false);
     expect(validYoutubeVideoUrl(undefined)).toBe(false);
+  });
+
+  it("returns false for malformed absolute URLs without logging", () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      expect(validYoutubeVideoUrl("https://")).toBe(false);
+      expect(
+        validYoutubeVideoUrl("https://youtube.com:bad/watch?v=dQw4w9WgXcQ")
+      ).toBe(false);
+      expect(errorSpy).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 
   it("returns the video ID for valid YouTube video URLs", () => {

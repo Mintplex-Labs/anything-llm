@@ -5,22 +5,40 @@ process.env.NODE_ENV === "development"
 const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
-const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
+const { sanitizeThemePalettes } = require("../utils/themePalettes");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
+const {
+  ConnectionStringParser,
+} = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors/utils");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
   return isNaN(value);
 }
 
+/**
+ * Merges a string field from source to target if it passes validation.
+ * @param {Object} target - The target object to merge into
+ * @param {Object} source - The source object to read from
+ * @param {string} fieldName - The field name to merge
+ * @param {Function|null} validator - Optional validator function that returns false to reject the value
+ */
+function mergeStringField(target, source, fieldName, validator = null) {
+  const value = source[fieldName];
+  if (value && typeof value === "string" && value.trim()) {
+    if (validator && !validator(value)) return;
+    target[fieldName] = value.trim();
+  }
+}
+
 const SystemSettings = {
   /** A default system prompt that is used when no other system prompt is set or available to the function caller. */
   saneDefaultSystemPrompt:
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
-  protectedFields: ["multi_user_mode", "hub_api_key"],
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. The current date and time is {datetime}. Return only your response to the question given the above information following the users instructions as needed.",
+  protectedFields: ["multi_user_mode", "hub_api_key", "onboarding_complete"],
   publicFields: [
     "footer_data",
     "support_email",
@@ -31,11 +49,23 @@ const SystemSettings = {
     "agent_sql_connections",
     "default_agent_skills",
     "disabled_agent_skills",
+    "disabled_filesystem_skills",
+    "disabled_create_files_skills",
+    "disabled_gmail_skills",
+    "gmail_agent_config",
+    "disabled_google_calendar_skills",
+    "google_calendar_agent_config",
+    "disabled_outlook_skills",
+    "outlook_agent_config",
     "imported_agent_skills",
+    "agent_clarifying_questions_enabled",
+    "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "feature_flags",
     "meta_page_title",
     "meta_page_favicon",
+    "memory_enabled",
+    "memory_auto_extraction",
   ],
   supportedFields: [
     "logo_filename",
@@ -48,28 +78,44 @@ const SystemSettings = {
     "agent_search_provider",
     "default_agent_skills",
     "disabled_agent_skills",
+    "disabled_filesystem_skills",
+    "disabled_create_files_skills",
+    "disabled_gmail_skills",
+    "gmail_agent_config",
+    "disabled_google_calendar_skills",
+    "google_calendar_agent_config",
+    "disabled_outlook_skills",
+    "outlook_agent_config",
     "agent_sql_connections",
+    "agent_clarifying_questions_enabled",
+    "agent_clarifying_questions_max_per_turn",
     "custom_app_name",
     "default_system_prompt",
 
     // Meta page customization
     "meta_page_title",
     "meta_page_favicon",
+    "theme_palettes",
 
     // beta feature flags
     "experimental_live_file_sync",
 
     // Hub settings
     "hub_api_key",
+
+    // Memory/Personalization
+    "memory_enabled",
+    "memory_auto_extraction",
   ],
   validations: {
+    theme_palettes: (update) => JSON.stringify(sanitizeThemePalettes(update)),
     footer_data: (updates) => {
       try {
         const array = JSON.parse(updates)
           .filter((setting) => isValidUrl(setting.url))
           .slice(0, 3); // max of 3 items in footer.
         return JSON.stringify(array);
-      } catch (e) {
+      } catch {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
       }
@@ -114,11 +160,20 @@ const SystemSettings = {
             "searchapi",
             "serper-dot-dev",
             "bing-search",
+            "baidu-search",
             "serply-engine",
             "searxng-engine",
             "tavily-search",
             "duckduckgo-engine",
             "exa-search",
+            "perplexity-search",
+            "brave-search",
+            "crw-search",
+            "you-search",
+            "keenable-search",
+            "anysearch-search",
+            "firecrawl-search",
+            "deepseek-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -135,18 +190,210 @@ const SystemSettings = {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
         return JSON.stringify(skills);
-      } catch (e) {
+      } catch {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
+      }
+    },
+    memory_enabled: async (update) => {
+      try {
+        const enabled = String(update) === "true";
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index.js");
+        const bgService = new BackgroundService();
+        const autoSetting = await SystemSettings.get({
+          label: "memory_auto_extraction",
+        });
+        const autoOn = !autoSetting || autoSetting.value === "true";
+        await bgService.syncMemoryJob(enabled && autoOn);
+        return String(enabled);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on memory_enabled`,
+          e.message
+        );
+        return String(update);
+      }
+    },
+    memory_auto_extraction: async (update) => {
+      try {
+        const enabled = String(update) === "true";
+        const {
+          BackgroundService,
+        } = require("../utils/BackgroundWorkers/index.js");
+        const bgService = new BackgroundService();
+        const memoriesOn = await SystemSettings.memoriesEnabled();
+        await bgService.syncMemoryJob(memoriesOn && enabled);
+        return String(enabled);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on memory_auto_extraction`,
+          e.message
+        );
+        return String(update);
       }
     },
     disabled_agent_skills: (updates) => {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
         return JSON.stringify(skills);
-      } catch (e) {
+      } catch {
         console.error(`Could not validate disabled agent skills.`);
         return JSON.stringify([]);
+      }
+    },
+    disabled_filesystem_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled filesystem skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_create_files_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled create files skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_gmail_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled gmail skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    gmail_agent_config: async (update) => {
+      const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "gmail_agent_config" }))?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "deploymentId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "apiKey",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(`Could not validate gmail agent config:`, e.message);
+        return JSON.stringify({});
+      } finally {
+        GmailBridge.reset();
+      }
+    },
+    disabled_google_calendar_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled google calendar skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    google_calendar_agent_config: async (update) => {
+      const GoogleCalendarBridge = require("../utils/agents/aibitat/plugins/google-calendar/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "google_calendar_agent_config" }))
+            ?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "deploymentId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "apiKey",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(
+          `Could not validate google calendar agent config:`,
+          e.message
+        );
+        return JSON.stringify({});
+      } finally {
+        GoogleCalendarBridge.reset();
+      }
+    },
+    disabled_outlook_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled outlook skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    outlook_agent_config: async (update) => {
+      const OutlookBridge = require("../utils/agents/aibitat/plugins/outlook/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "outlook_agent_config" }))?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "clientId");
+        mergeStringField(mergedConfig, newConfig, "tenantId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "clientSecret",
+          (v) => !v.match(/^\*+$/)
+        );
+        mergeStringField(mergedConfig, newConfig, "authType", (v) =>
+          Object.values(OutlookBridge.AUTH_TYPES).includes(v)
+        );
+
+        if (newConfig.accessToken !== undefined) {
+          mergedConfig.accessToken = newConfig.accessToken;
+        }
+        if (newConfig.refreshToken !== undefined) {
+          mergedConfig.refreshToken = newConfig.refreshToken;
+        }
+        if (newConfig.tokenExpiry !== undefined) {
+          mergedConfig.tokenExpiry = newConfig.tokenExpiry;
+        }
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(`Could not validate outlook agent config:`, e.message);
+        return JSON.stringify({});
+      } finally {
+        OutlookBridge.reset();
       }
     },
     agent_sql_connections: async (updates) => {
@@ -160,10 +407,19 @@ const SystemSettings = {
           safeJsonParse(updates, [])
         );
         return JSON.stringify(updatedConnections);
-      } catch (e) {
+      } catch {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
       }
+    },
+    agent_clarifying_questions_enabled: (update) => {
+      if (typeof update === "boolean") return update ? "true" : "false";
+      return String(update) === "true" ? "true" : "false";
+    },
+    agent_clarifying_questions_max_per_turn: (update) => {
+      const n = Number(update);
+      if (!Number.isFinite(n) || n < 1) return 3;
+      return Math.min(Math.floor(n), 10);
     },
     experimental_live_file_sync: (update) => {
       if (typeof update === "boolean")
@@ -205,6 +461,11 @@ const SystemSettings = {
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
+    const {
+      ToolReranker,
+    } = require("../utils/agents/aibitat/utils/toolReranker");
+    const AIbitat = require("../utils/agents/aibitat");
+
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
@@ -217,6 +478,8 @@ const SystemSettings = {
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
+      MemoryEnabled: await this.memoriesEnabled(),
+      MemoryAutoExtraction: await this.memoryAutoExtractionSetting(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
 
       // --------------------------------------------------------
@@ -230,6 +493,8 @@ const SystemSettings = {
         embeddingEngine === "native"
           ? NativeEmbedder._getEmbeddingModel()
           : process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingOutputDimensions:
+        process.env.EMBEDDING_OUTPUT_DIMENSIONS || null,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       OllamaEmbeddingBatchSize: process.env.OLLAMA_EMBEDDING_BATCH_SIZE || 1,
@@ -239,6 +504,34 @@ const SystemSettings = {
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
+      GenericOpenAiEmbeddingPassagePrefix:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_PASSAGE_PREFIX || "",
+      GenericOpenAiEmbeddingQueryPrefix:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_QUERY_PREFIX || "",
+
+      // --------------------------------------------------------
+      // Image Generation Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      ImageGenerationProvider: process.env.IMAGE_GEN_PROVIDER || null,
+      ImageGenerationModelPref: process.env.IMAGE_GEN_MODEL_PREF || null,
+      ImageGenerationDimensions: process.env.IMAGE_GEN_SIZE_PREF || "512x512",
+      ImageGenerationOpenAiKey: !!process.env.IMAGE_GEN_OPENAI_KEY,
+      ImageGenerationOpenRouterApiKey:
+        !!process.env.IMAGE_GEN_OPENROUTER_API_KEY,
+      ImageGenerationOllamaBasePath: process.env.IMAGE_GEN_OLLAMA_BASE_PATH,
+      ImageGenerationOllamaAuthToken: !!process.env.IMAGE_GEN_OLLAMA_AUTH_TOKEN,
+      ImageGenerationLemonadeBasePath: process.env.IMAGE_GEN_LEMONADE_BASE_PATH,
+      ImageGenerationLemonadeApiKey: !!process.env.IMAGE_GEN_LEMONADE_API_KEY,
+      ImageGenerationLocalAiBasePath: process.env.IMAGE_GEN_LOCALAI_BASE_PATH,
+      ImageGenerationLocalAiApiKey: !!process.env.IMAGE_GEN_LOCALAI_API_KEY,
+      ImageGenerationLlmmanBasePath: process.env.IMAGE_GEN_LLMMAN_BASE_PATH,
+      ImageGenerationLlmmanAuthToken: !!process.env.IMAGE_GEN_LLMMAN_AUTH_TOKEN,
+      ImageGenerationGeminiApiKey: !!process.env.IMAGE_GEN_GEMINI_API_KEY,
+      ImageGenerationMinimaxApiKey: !!process.env.IMAGE_GEN_MINIMAX_API_KEY,
+      ImageGenerationMinimaxResolution:
+        process.env.IMAGE_GEN_MINIMAX_RESOLUTION || "1K",
+      ImageGenerationMinimaxPromptEnhancement:
+        process.env.IMAGE_GEN_MINIMAX_PROMPT_ENHANCEMENT || "false",
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -251,6 +544,7 @@ const SystemSettings = {
       // --------------------------------------------------------
       LLMProvider: llmProvider,
       LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
+      ModelRouterId: process.env.MODEL_ROUTER_ID || null,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------
@@ -261,6 +555,9 @@ const SystemSettings = {
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref:
         process.env.WHISPER_MODEL_PREF || "Xenova/whisper-small",
+      WhisperGenericOpenAiBaseUrl: process.env.WHISPER_GENERIC_OPEN_AI_BASE_URL,
+      WhisperGenericOpenAiApiKey: !!process.env.WHISPER_GENERIC_OPEN_AI_API_KEY,
+      WhisperGenericOpenAiModel: process.env.WHISPER_GENERIC_OPEN_AI_MODEL,
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
@@ -282,22 +579,57 @@ const SystemSettings = {
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
+      // Kokoro TTS
+      TTSKokoroEndpoint: process.env.TTS_KOKORO_ENDPOINT,
+      TTSKokoroKey: !!process.env.TTS_KOKORO_KEY,
+      TTSKokoroVoiceModel: process.env.TTS_KOKORO_VOICE_MODEL,
+
+      // STT Selection
+      SpeechToTextProvider: process.env.STT_PROVIDER || "native",
+      // STT OpenAI
+      STTOpenAIModel: process.env.STT_OPEN_AI_MODEL,
+
+      // STT Lemonade
+      STTLemonadeBasePath: process.env.STT_LEMONADE_BASE_PATH,
+      STTLemonadeModelPref: process.env.STT_LEMONADE_MODEL_PREF,
+
+      // STT Deepgram
+      STTDeepgramApiKey: !!process.env.STT_DEEPGRAM_API_KEY,
+      STTDeepgramModel: process.env.STT_DEEPGRAM_MODEL,
+
+      // STT Generic OpenAI
+      STTOpenAICompatibleKey: !!process.env.STT_OPEN_AI_COMPATIBLE_KEY,
+      STTOpenAICompatibleModel: process.env.STT_OPEN_AI_COMPATIBLE_MODEL,
+      STTOpenAICompatibleEndpoint: process.env.STT_OPEN_AI_COMPATIBLE_ENDPOINT,
+
+      // STT Groq
+      STTGroqApiKey: !!process.env.STT_GROQ_API_KEY,
+      STTGroqModel: process.env.STT_GROQ_MODEL,
 
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
-      AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
       AgentSerpApiKey: !!process.env.AGENT_SERPAPI_API_KEY || null,
       AgentSerpApiEngine: process.env.AGENT_SERPAPI_ENGINE || "google",
       AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
       AgentSearchApiEngine: process.env.AGENT_SEARCHAPI_ENGINE || "google",
       AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
       AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
+      AgentBaiduSearchApiKey: !!process.env.AGENT_BAIDU_SEARCH_API_KEY || null,
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
       AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
+      AgentPerplexityApiKey: !!process.env.AGENT_PERPLEXITY_API_KEY || null,
+      AgentBraveApiKey: !!process.env.AGENT_BRAVE_API_KEY || null,
+      AgentCrwApiKey: !!process.env.AGENT_CRW_API_KEY || null,
+      AgentCrwApiUrl: process.env.AGENT_CRW_API_URL || null,
+      AgentYouApiKey: !!process.env.AGENT_YOU_API_KEY || null,
+      AgentKeenableApiKey: !!process.env.AGENT_KEENABLE_API_KEY || null,
+      AgentKeenableApiUrl: process.env.AGENT_KEENABLE_API_URL || null,
+      AgentAnySearchApiKey: !!process.env.AGENT_ANYSEARCH_API_KEY || null,
+      AgentFirecrawlApiKey: !!process.env.AGENT_FIRECRAWL_API_KEY || null,
+      AgentDeepSeekApiKey: !!process.env.AGENT_DEEPSEEK_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -305,6 +637,8 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+      WorkspaceDeletionProtection:
+        "WORKSPACE_DELETION_PROTECTION" in process.env || false,
 
       // --------------------------------------------------------
       // Simple SSO Settings
@@ -312,6 +646,24 @@ const SystemSettings = {
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
+
+      // --------------------------------------------------------
+      // Agent Skill Settings
+      // --------------------------------------------------------
+      AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
+      AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
+      AgentSkillRerankerTopN: ToolReranker.getTopN(),
+      AgentClarifyingQuestionsEnabled:
+        (await this.getValueOrFallback(
+          { label: "agent_clarifying_questions_enabled" },
+          "false"
+        )) === "true",
+      AgentClarifyingQuestionsMaxPerTurn: Number(
+        (await this.getValueOrFallback(
+          { label: "agent_clarifying_questions_max_per_turn" },
+          "3"
+        )) || 3
+      ),
     };
   },
 
@@ -363,6 +715,18 @@ const SystemSettings = {
     return this._updateSettings(updates);
   },
 
+  delete: async function (clause = {}) {
+    try {
+      if (!Object.keys(clause).length)
+        throw new Error("Clause cannot be empty");
+      await prisma.system_settings.deleteMany({ where: clause });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   // Explicit update of settings + key validations.
   // Only use this method when directly setting a key value
   // that takes no user input for the keys being modified.
@@ -378,6 +742,8 @@ const SystemSettings = {
             validatedValue = this.validations[key](updates[key]);
           }
         }
+
+        if (validatedValue === undefined) continue;
 
         updatePromises.push(
           prisma.system_settings.upsert({
@@ -405,6 +771,59 @@ const SystemSettings = {
     try {
       const setting = await this.get({ label: "multi_user_mode" });
       return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  memoriesEnabled: async function () {
+    try {
+      const setting = await this.get({ label: "memory_enabled" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  autoMemoriesEnabled: async function () {
+    try {
+      if (!(await this.memoriesEnabled())) return false;
+      const setting = await this.get({ label: "memory_auto_extraction" });
+      return !setting || setting.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  memoryAutoExtractionSetting: async function () {
+    try {
+      const setting = await this.get({ label: "memory_auto_extraction" });
+      return !setting || setting.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return true;
+    }
+  },
+
+  isOnboardingComplete: async function () {
+    try {
+      const setting = await this.get({ label: "onboarding_complete" });
+      return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  markOnboardingComplete: async function () {
+    try {
+      await this._updateSettings({ onboarding_complete: true });
+      const { Telemetry } = require("./telemetry");
+      await Telemetry.sendTelemetry("onboarding_complete");
+      return true;
     } catch (error) {
       console.error(error.message);
       return false;
@@ -450,11 +869,14 @@ const SystemSettings = {
 
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+      WeaviateApiKey: !!process.env.WEAVIATE_API_KEY,
+      WeaviateDeployment: process.env.WEAVIATE_DEPLOYMENT,
+      WeaviateGrpcHost: process.env.WEAVIATE_GRPC_HOST,
+      WeaviateGrpcPort: process.env.WEAVIATE_GRPC_PORT,
 
       // QDrant DB Keys
       QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-      QdrantApiKey: process.env.QDRANT_API_KEY,
+      QdrantApiKey: !!process.env.QDRANT_API_KEY,
 
       // Milvus DB Keys
       MilvusAddress: process.env.MILVUS_ADDRESS,
@@ -463,10 +885,10 @@ const SystemSettings = {
 
       // Zilliz DB Keys
       ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
-      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+      ZillizApiToken: !!process.env.ZILLIZ_API_TOKEN,
 
       // AstraDB Keys
-      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+      AstraDBApplicationToken: !!process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
 
       // PGVector Keys
@@ -479,25 +901,28 @@ const SystemSettings = {
     return {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4o",
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-5.6-luna",
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
       AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-      AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+      AzureOpenAiModelPref:
+        process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF,
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
       AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",
+      AzureOpenAiAgentApi: process.env.AZURE_OPENAI_AGENT_API || "chat",
 
       // Anthropic Keys
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
-      AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+      AnthropicModelPref:
+        process.env.ANTHROPIC_MODEL_PREF || "claude-sonnet-4-6",
       AnthropicCacheControl: process.env.ANTHROPIC_CACHE_CONTROL || "none",
 
       // Gemini Keys
       GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
       GeminiLLMModelPref:
-        process.env.GEMINI_LLM_MODEL_PREF || "gemini-2.0-flash-lite",
+        process.env.GEMINI_LLM_MODEL_PREF || "gemini-3.1-flash-lite",
       GeminiSafetySetting:
         process.env.GEMINI_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
 
@@ -505,6 +930,7 @@ const SystemSettings = {
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
       LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || null,
       LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
+      LMStudioAuthToken: !!process.env.LMSTUDIO_AUTH_TOKEN,
 
       // LocalAI Keys
       LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
@@ -518,7 +944,6 @@ const SystemSettings = {
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT || null,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
-      OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
       // Novita LLM Keys
       NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
@@ -528,6 +953,7 @@ const SystemSettings = {
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+      TogetherAiMaxTokens: process.env.TOGETHER_AI_MAX_TOKENS,
 
       // Fireworks AI API Keys
       FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -541,6 +967,7 @@ const SystemSettings = {
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
       OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
+      OpenRouterServiceTier: process.env.OPENROUTER_SERVICE_TIER,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,
@@ -549,11 +976,6 @@ const SystemSettings = {
       // Groq AI API Keys
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
-
-      // HuggingFace Dedicated Inference
-      HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
-      HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
-      HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
 
       // KoboldCPP Keys
       KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
@@ -589,18 +1011,12 @@ const SystemSettings = {
       FoundryModelPref: process.env.FOUNDRY_MODEL_PREF,
       FoundryModelTokenLimit: process.env.FOUNDRY_MODEL_TOKEN_LIMIT,
 
-      AwsBedrockLLMConnectionMethod:
-        process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
-      AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-      AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-      AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
-      AwsBedrockLLMAPIKey: !!process.env.AWS_BEDROCK_LLM_API_KEY,
+      AwsBedrockLLMApiKey: !!process.env.AWS_BEDROCK_LLM_API_KEY,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit:
         process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
-      AwsBedrockLLMMaxOutputTokens:
-        process.env.AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS || 4096,
+      AwsBedrockLLMMaxTokens: process.env.AWS_BEDROCK_LLM_MAX_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
@@ -627,12 +1043,6 @@ const SystemSettings = {
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
 
-      // Dell Pro AI Studio Keys
-      DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
-      DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
-      DellProAiStudioTokenLimit:
-        process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
-
       // CometAPI LLM Keys
       CometApiLLMApiKey: !!process.env.COMETAPI_LLM_API_KEY,
       CometApiLLMModelPref: process.env.COMETAPI_LLM_MODEL_PREF,
@@ -646,21 +1056,80 @@ const SystemSettings = {
       GiteeAIApiKey: !!process.env.GITEE_AI_API_KEY,
       GiteeAIModelPref: process.env.GITEE_AI_MODEL_PREF,
       GiteeAITokenLimit: process.env.GITEE_AI_MODEL_TOKEN_LIMIT || 8192,
+
+      // llmman Keys
+      LlmmanBasePath: process.env.LLMMAN_BASE_PATH,
+      LlmmanModelPref: process.env.LLMMAN_MODEL_PREF,
+      LlmmanTokenLimit: process.env.LLMMAN_MODEL_TOKEN_LIMIT || 8192,
+      LlmmanKeepAliveSeconds: process.env.LLMMAN_KEEP_ALIVE_TIMEOUT ?? 300,
+      LlmmanAuthToken: !!process.env.LLMMAN_AUTH_TOKEN,
+
+      // Privatemode Keys
+      PrivateModeBasePath: process.env.PRIVATEMODE_LLM_BASE_PATH,
+      PrivateModeModelPref: process.env.PRIVATEMODE_LLM_MODEL_PREF,
+
+      // SambaNova Keys
+      SambaNovaLLMApiKey: !!process.env.SAMBANOVA_LLM_API_KEY,
+      SambaNovaLLMModelPref: process.env.SAMBANOVA_LLM_MODEL_PREF,
+
+      // Lemonade Keys
+      LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
+      LemonadeLLMApiKey: !!process.env.LEMONADE_LLM_API_KEY,
+      LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
+      LemonadeLLMModelTokenLimit:
+        process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
+
+      // Embedded Lemonade Keys
+      ...require("../utils/AiProviders/embeddedLemonade/config").settings(),
+
+      // Minimax Keys
+      MinimaxApiKey: !!process.env.MINIMAX_API_KEY,
+      MinimaxModelPref: process.env.MINIMAX_MODEL_PREF,
+
+      // Cerebras Keys
+      CerebrasApiKey: !!process.env.CEREBRAS_API_KEY,
+      CerebrasModelPref: process.env.CEREBRAS_MODEL_PREF,
+
+      // Google Vertex AI Keys
+      VertexAiLLMApiKey: !!process.env.VERTEX_AI_LLM_API_KEY,
+      VertexAiLLMProjectId: process.env.VERTEX_AI_LLM_PROJECT_ID,
+      VertexAiLLMRegion: process.env.VERTEX_AI_LLM_REGION,
+      VertexAiLLMModelPref: process.env.VERTEX_AI_LLM_MODEL_PREF,
+      VertexAiLLMTokenLimit: process.env.VERTEX_AI_LLM_MODEL_TOKEN_LIMIT,
+
+      // OMLX Keys
+      OMLXLLMBasePath: process.env.OMLX_LLM_BASE_PATH,
+      OMLXLLMApiKey: !!process.env.OMLX_LLM_API_KEY,
+      OMLXLLMModelPref: process.env.OMLX_LLM_MODEL_PREF,
+      OMLXLLMTokenLimit: process.env.OMLX_LLM_TOKEN_LIMIT,
     };
   },
 
-  // For special retrieval of a key setting that does not expose any credential information
-  brief: {
-    agent_sql_connections: async function () {
-      const setting = await SystemSettings.get({
-        label: "agent_sql_connections",
-      });
-      if (!setting) return [];
-      return safeJsonParse(setting.value, []).map((dbConfig) => {
-        const { connectionString, ...rest } = dbConfig;
-        return rest;
-      });
-    },
+  agent_sql_connections: async function () {
+    const setting = await SystemSettings.get({
+      label: "agent_sql_connections",
+    });
+    if (!setting) return [];
+
+    const connections = safeJsonParse(setting.value, []).map((conn) => {
+      let scheme = conn.engine;
+      if (scheme === "sql-server") scheme = "mssql";
+      if (scheme === "postgresql") scheme = "postgres";
+      const parser = new ConnectionStringParser({ scheme });
+
+      const parsed = parser.parse(conn.connectionString);
+      return {
+        ...conn,
+        username: parsed.username,
+        password: parsed.password,
+        host: parsed.hosts?.[0]?.host,
+        port: parsed.hosts?.[0]?.port,
+        database: parsed.endpoint,
+        scheme: parsed.scheme,
+      };
+    });
+
+    return connections;
   },
   getFeatureFlags: async function () {
     return {
@@ -710,42 +1179,94 @@ const SystemSettings = {
   },
 };
 
+/**
+ * Merges SQL connection updates from the frontend with existing backend connections.
+ * Processes three types of actions: "remove", "update", and "add".
+ *
+ * @param {Array<Object>} existingConnections - Current connections stored in the database
+ * @param {Array<Object>} updates - Connection updates from frontend, each with an action property
+ * @returns {Array<Object>} - The merged connections array
+ */
 function mergeConnections(existingConnections = [], updates = []) {
-  let updatedConnections = [...existingConnections];
-  const existingDbIds = existingConnections.map((conn) => conn.database_id);
-
-  // First remove all 'action:remove' candidates from existing connections.
-  const toRemove = updates
-    .filter((conn) => conn.action === "remove")
-    .map((conn) => conn.database_id);
-  updatedConnections = updatedConnections.filter(
-    (conn) => !toRemove.includes(conn.database_id)
+  const connectionsMap = new Map(
+    existingConnections.map((conn) => [conn.database_id, conn])
   );
 
-  // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
-  // but we do validate their database_id is unique.
-  updates
-    .filter((conn) => conn.action === "add")
-    .forEach((update) => {
-      if (!update.connectionString) return; // invalid connection string
+  for (const update of updates) {
+    const {
+      action,
+      database_id,
+      originalDatabaseId,
+      connectionString,
+      engine,
+      schema,
+    } = update;
 
-      // Remap name to be unique to entire set.
-      if (existingDbIds.includes(update.database_id)) {
-        update.database_id = slugify(
-          `${update.database_id}-${v4().slice(0, 4)}`
-        );
-      } else {
-        update.database_id = slugify(update.database_id);
+    switch (action) {
+      case "remove": {
+        connectionsMap.delete(database_id);
+        break;
+      }
+      case "update": {
+        if (!connectionString) continue;
+        const newId = slugify(database_id);
+
+        // Verify original connection exists
+        if (!connectionsMap.has(originalDatabaseId)) {
+          console.warn(
+            `[mergeConnections] Update skipped: Original connection "${originalDatabaseId}" not found`
+          );
+          break;
+        }
+
+        // Check for name conflict (excluding the one being updated)
+        if (newId !== originalDatabaseId && connectionsMap.has(newId)) {
+          console.warn(
+            `[mergeConnections] Update skipped: New name "${newId}" conflicts with existing connection`
+          );
+          break;
+        }
+
+        // Remove old and add updated connection
+        connectionsMap.delete(originalDatabaseId);
+        connectionsMap.set(newId, {
+          engine,
+          database_id: newId,
+          connectionString,
+          ...(schema && { schema }),
+        });
+        break;
       }
 
-      updatedConnections.push({
-        engine: update.engine,
-        database_id: update.database_id,
-        connectionString: update.connectionString,
-      });
-    });
+      case "add": {
+        if (!connectionString) continue;
+        const slugifiedId = slugify(database_id);
 
-  return updatedConnections;
+        // Skip if already exists
+        if (connectionsMap.has(slugifiedId)) {
+          console.warn(
+            `[mergeConnections] Add skipped: Connection "${slugifiedId}" already exists`
+          );
+          break;
+        }
+
+        connectionsMap.set(slugifiedId, {
+          engine,
+          database_id: slugifiedId,
+          connectionString,
+          ...(schema && { schema }),
+        });
+        break;
+      }
+
+      default: {
+        if (!action) continue;
+        throw new Error("SQL connection update contains an invalid action.");
+      }
+    }
+  }
+
+  return Array.from(connectionsMap.values());
 }
 
 module.exports.SystemSettings = SystemSettings;

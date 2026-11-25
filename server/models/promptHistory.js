@@ -86,6 +86,25 @@ const PromptHistory = {
   },
 
   /**
+   * Delete a single prompt history entry scoped to a workspace.
+   * @param {Object} options
+   * @param {number} options.id - The ID of the prompt history entry.
+   * @param {number} options.workspaceId - The workspace the entry must belong to.
+   * @returns {Promise<boolean>} true only if a matching entry was deleted.
+   */
+  deleteForWorkspace: async function ({ id, workspaceId }) {
+    try {
+      const { count } = await prisma.prompt_history.deleteMany({
+        where: { id: Number(id), workspaceId: Number(workspaceId) },
+      });
+      return count > 0;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  /**
    * Utility method to handle prompt changes and create history entries
    * @param {import('./workspace').Workspace} workspaceData - The workspace object (previous state)
    * @param {{id: number, role: string}|null} user - The user making the change

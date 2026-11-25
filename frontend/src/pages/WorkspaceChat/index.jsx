@@ -16,28 +16,47 @@ export default function WorkspaceChat() {
     return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
   }
 
-  return <ShowWorkspaceChat />;
+  return (
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
+      {!isMobile && <Sidebar />}
+      <ShowWorkspaceChat />
+    </div>
+  );
 }
 
 function ShowWorkspaceChat() {
   const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Tracks which workspace `workspace` belongs to. While a new workspace's
+  // data is in flight, we keep the previous workspace's chat mounted
+  // (Slack/Linear-style transition) instead of flashing a loader.
+  const [loadedSlug, setLoadedSlug] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      if (!_workspace) return setLoading(false);
+      if (cancelled) return;
+      if (!_workspace) {
+        setWorkspace(null);
+        setLoadedSlug(slug);
+        return;
+      }
 
-      const suggestedMessages = await Workspace.getSuggestedMessages(slug);
-      const pfpUrl = await Workspace.fetchPfp(slug);
+      const [suggestedMessages, { showAgentCommand }] = await Promise.all([
+        Workspace.getSuggestedMessages(slug),
+        Workspace.agentCommandAvailable(slug),
+      ]);
+      if (cancelled) return;
+
       setWorkspace({
         ..._workspace,
         suggestedMessages,
-        pfpUrl,
+        showAgentCommand,
       });
-      setLoading(false);
+      setLoadedSlug(slug);
       localStorage.setItem(
         LAST_VISITED_WORKSPACE,
         JSON.stringify({
@@ -47,14 +66,16 @@ function ShowWorkspaceChat() {
       );
     }
     getWorkspace();
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
 
   return (
-    <>
-      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-        {!isMobile && <Sidebar />}
-        <WorkspaceChatContainer loading={loading} workspace={workspace} />
-      </div>
-    </>
+    <WorkspaceChatContainer
+      loading={loadedSlug !== slug}
+      workspace={workspace}
+    />
   );
 }

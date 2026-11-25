@@ -1,0 +1,437 @@
+import cronstrue from "cronstrue/i18n";
+import moment from "moment";
+
+/**
+ * Whole calendar days the date moved between two moments (-1, 0 or 1) when a
+ * wall-clock time is converted local -> UTC or UTC -> local.
+ */
+function dayShiftBetween(from, to) {
+  return moment
+    .utc(to.format("YYYY-MM-DD"))
+    .diff(moment.utc(from.format("YYYY-MM-DD")), "days");
+}
+
+/**
+ * Move a day of month by a number of days, but only when both the old and the
+ * new day are within 1-28, which every month has. Other days stay as they are.
+ */
+function shiftDayOfMonth(dom, shift) {
+  const shifted = dom + shift;
+  return Math.min(dom, shifted) >= 1 && Math.max(dom, shifted) <= 28
+    ? shifted
+    : dom;
+}
+
+/** Move weekdays (0-6) by a number of days, wrapping around the week. */
+function shiftWeekdays(days, shift) {
+  return [...new Set(days.map((d) => (((d + shift) % 7) + 7) % 7))].sort(
+    (a, b) => a - b
+  );
+}
+
+/**
+ * Convert a local hour and minute to UTC using moment.js.
+ * Handles DST and timezone edge cases properly.
+ * @param {number} localHour - Hour in local time (0-23).
+ * @param {number} localMinute - Minute (0-59).
+ * @returns {{ hour: number, minute: number, dayShift: number }} UTC time and calendar-day shift.
+ */
+export function localTimeToUTC(localHour, localMinute = 0) {
+  const local = moment().hour(localHour).minute(localMinute).second(0);
+  const utc = local.clone().utc();
+  return {
+    hour: utc.hour(),
+    minute: utc.minute(),
+    dayShift: dayShiftBetween(local, utc),
+  };
+}
+
+/**
+ * Convert a UTC hour and minute to local time using moment.js.
+ * Handles DST and timezone edge cases properly.
+ * @param {number} utcHour - Hour in UTC (0-23).
+ * @param {number} utcMinute - Minute (0-59).
+ * @returns {{ hour: number, minute: number, dayShift: number }} Local time and calendar-day shift.
+ */
+export function utcTimeToLocal(utcHour, utcMinute = 0) {
+  const utc = moment.utc().hour(utcHour).minute(utcMinute).second(0);
+  const local = utc.clone().local();
+  return {
+    hour: local.hour(),
+    minute: local.minute(),
+    dayShift: dayShiftBetween(utc, local),
+  };
+}
+
+/**
+ * Get the user's timezone abbreviation for display.
+ * @returns {string} Timezone abbreviation (e.g., "PST", "EST", "UTC").
+ */
+export function getTimezoneAbbreviation() {
+  try {
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      timeZoneName: "short",
+    });
+    const parts = formatter.formatToParts(new Date());
+    const tzPart = parts.find((p) => p.type === "timeZoneName");
+    return tzPart?.value || "local time";
+  } catch {
+    return "local time";
+  }
+}
+
+/**
+ * Humanize a cron expression for display in the user's local timezone.
+ * The cron is stored in UTC, so we convert it to local time for display. A
+ * schedule with no single local expression is shown in UTC.
+ * @param {string} cron - The cron expression (in UTC).
+ * @param {string} locale - The locale.
+ * @returns {string} The humanized cron expression with timezone indicator.
+ */
+export function humanizeCron(cron, locale) {
+  if (!cron) return "";
+  try {
+    const localCron = convertCronToLocalTime(cron);
+    const humanized = cronstrue.toString(localCron ?? cron, {
+      throwExceptionOnParseError: false,
+      locale: toCronstrueLocale(locale),
+    });
+    return `${humanized} ${localCron ? getTimezoneAbbreviation() : "UTC"}`;
+  } catch {
+    return cron;
+  }
+}
+
+const WEEKDAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+/**
+ * Expand a cron minute or hour field into its sorted values. Supports numbers,
+ * ranges, steps and lists of those.
+ * @returns {number[]|null} null when the field has any other syntax or a value outside min-max.
+ */
+function expandField(field, min, max) {
+  const values = new Set();
+  for (const part of field.split(",")) {
+    const match = /^(?:\*|(\d+)(?:-(\d+))?)(?:\/(\d+))?$/.exec(part);
+    if (!match) return null;
+    const [, from, to, step] = match;
+    let start = min;
+    let end = max;
+    if (from !== undefined) {
+      start = Number(from);
+      end = to !== undefined ? Number(to) : step !== undefined ? max : start;
+    }
+    const increment = step !== undefined ? Number(step) : 1;
+    if (start < min || end > max || start > end || increment < 1) return null;
+    for (let v = start; v <= end; v += increment) values.add(v);
+  }
+  return [...values].sort((a, b) => a - b);
+}
+
+/** Write sorted values back as a cron field: "*", a step, or a list of numbers and ranges. */
+function compressField(values, min, max) {
+  if (values.length === max - min + 1) return "*";
+  const step = values[1] - values[0];
+  if (
+    values.length >= 3 &&
+    step > 1 &&
+    values.every((v, i) => v === values[0] + i * step)
+  ) {
+    const last = values[values.length - 1];
+    return values[0] === min && last + step > max
+      ? `*/${step}`
+      : `${values[0]}-${last}/${step}`;
+  }
+  const parts = [];
+  for (let i = 0; i < values.length; ) {
+    let j = i;
+    while (values[j + 1] === values[j] + 1) j++;
+    if (j - i >= 2) parts.push(`${values[i]}-${values[j]}`);
+    else for (let k = i; k <= j; k++) parts.push(String(values[k]));
+    i = j + 1;
+  }
+  return parts.join(",");
+}
+
+/**
+ * Move a weekday field by whole days. Weekday lists and ranges ("1-5", "0,6",
+ * "MON-FRI") become an explicit shifted list. Other values stay as they are.
+ */
+function shiftWeekdayField(dow, dayShift) {
+  const numericDow = dow.replace(
+    /[a-z]+/gi,
+    // Unknown names become -1, which fails the pattern check below.
+    (name) => WEEKDAY_NAMES.indexOf(name.toUpperCase())
+  );
+  if (!/^\d+(-\d+)?(,\d+(-\d+)?)*$/.test(numericDow)) return dow;
+  const days = numericDow.split(",").flatMap((part) => {
+    const [from, to = from] = part.split("-").map(Number);
+    return Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  });
+  return shiftWeekdays(days, dayShift).join(",");
+}
+
+/**
+ * Move every run of a 5-field cron expression by a number of minutes. Mirrors
+ * shiftCron in server/utils/agents/aibitat/plugins/create-scheduled-job/cronUtils.js.
+ *
+ * Returns null when no single expression has the moved runs: the moved
+ * minute and hour values no longer combine into exactly the moved runs, or
+ * some runs cross midnight and others do not while a day field is set.
+ * @param {string} cron - 5-field cron expression.
+ * @param {number} shiftMinutes - Minutes to add to every run.
+ * @returns {string|null}
+ */
+function shiftCron(cron, shiftMinutes) {
+  if (!cron || typeof cron !== "string") return cron;
+  const parts = cron.trim().split(/\s+/);
+  if (parts.length !== 5) return cron;
+
+  const [minute, hour, dom, month, dow] = parts;
+  const minutes = expandField(minute, 0, 59);
+  const hours = expandField(hour, 0, 23);
+  if (!minutes || !hours) return null;
+
+  const movedMinutes = new Set();
+  const movedHours = new Set();
+  const dayShifts = new Set();
+  for (const h of hours) {
+    for (const m of minutes) {
+      const total = h * 60 + m + shiftMinutes;
+      const minuteOfDay = ((total % 1440) + 1440) % 1440;
+      movedHours.add(Math.floor(minuteOfDay / 60));
+      movedMinutes.add(minuteOfDay % 60);
+      dayShifts.add(Math.floor(total / 1440));
+    }
+  }
+
+  // Every run moves to a distinct minute of the day, so the moved runs fill
+  // all hour/minute combinations exactly when the counts match.
+  if (movedHours.size * movedMinutes.size !== hours.length * minutes.length)
+    return null;
+
+  const daysRestricted = !["*", "?"].includes(dom) || !["*", "?"].includes(dow);
+  if (dayShifts.size > 1 && daysRestricted) return null;
+  const dayShift = dayShifts.size === 1 ? [...dayShifts][0] : 0;
+
+  // Keep the original text of a field whose values did not change.
+  const rewrite = (field, values, moved, max) =>
+    values.length === moved.size && values.every((v) => moved.has(v))
+      ? field
+      : compressField(
+          [...moved].sort((a, b) => a - b),
+          0,
+          max
+        );
+
+  return [
+    rewrite(minute, minutes, movedMinutes, 59),
+    rewrite(hour, hours, movedHours, 23),
+    dayShift && /^\d+$/.test(dom)
+      ? String(shiftDayOfMonth(Number(dom), dayShift))
+      : dom,
+    month,
+    dayShift ? shiftWeekdayField(dow, dayShift) : dow,
+  ].join(" ");
+}
+
+/**
+ * Convert a UTC cron expression to local time for display purposes, using the
+ * browser's current offset.
+ * @param {string} cron - The cron expression in UTC.
+ * @returns {string|null} The cron expression in local time, or null when no
+ *   single local expression runs at the same times.
+ */
+function convertCronToLocalTime(cron) {
+  return shiftCron(cron, moment().utcOffset());
+}
+
+/**
+ * Convert a locale code to a cronstrue locale code.
+ * i18next uses BCP-47-ish codes like "zh-tw"; cronstrue's i18n bundle
+ * uses "zh_TW". Convert "xx-yy" → "xx_YY" so region-tagged locales resolve
+ * instead of silently falling back to English.
+ * @param {string} locale - The locale code.
+ * @returns {string} The cronstrue locale code.
+ */
+function toCronstrueLocale(locale) {
+  if (!locale) return undefined;
+  const [lang, region] = locale.split("-");
+  return region ? `${lang}_${region.toUpperCase()}` : lang;
+}
+
+/**
+ * Default state for the visual builder. Used when an incoming cron expression
+ * cannot be reverse-parsed into one of the builder's supported shapes.
+ * @returns {Object} The default builder state.
+ */
+export const DEFAULT_BUILDER_STATE = {
+  frequency: "day",
+  minuteInterval: 1,
+  hourMinuteOffset: 0,
+  hour: 9,
+  minute: 0,
+  weekdays: [1],
+  dayOfMonth: 1,
+};
+
+/**
+ * Parse a 5-field cron expression into the visual builder's state shape.
+ * Only recognizes the patterns the builder itself can produce; anything else
+ * (ranges, step values in non-minute fields, multiple months, etc.) is
+ * reported with `wasFallback: true` so the UI can warn the user that the
+ * stored expression cannot be edited visually.
+ *
+ * IMPORTANT: The cron expression is stored in UTC on the backend. This function
+ * converts the hour to local time so the builder shows the user's local time.
+ *
+ * Returns: { state, wasFallback }
+ * @param {string} cron - The cron expression (in UTC).
+ * @returns {Object} The builder state (with hours in local time).
+ */
+export function parseCronToBuilderState(cron) {
+  const fallback = { state: { ...DEFAULT_BUILDER_STATE }, wasFallback: true };
+  if (!cron || typeof cron !== "string") return fallback;
+  const parts = cron.trim().split(/\s+/);
+  if (parts.length !== 5) return fallback;
+  const [m, h, dom, mon, dow] = parts;
+  if (mon !== "*") return fallback;
+
+  // Every minute
+  if (m === "*" && h === "*" && dom === "*" && dow === "*") {
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "minute",
+        minuteInterval: 1,
+      },
+      wasFallback: false,
+    };
+  }
+
+  // Every N minutes
+  const stepMatch = m.match(/^\*\/(\d+)$/);
+  if (stepMatch && h === "*" && dom === "*" && dow === "*") {
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "minute",
+        minuteInterval: parseInt(stepMatch[1], 10),
+      },
+      wasFallback: false,
+    };
+  }
+
+  // Hourly at minute X
+  if (/^\d+$/.test(m) && h === "*" && dom === "*" && dow === "*") {
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "hour",
+        hourMinuteOffset: utcTimeToLocal(0, parseInt(m, 10)).minute,
+      },
+      wasFallback: false,
+    };
+  }
+
+  // Daily at H:M - convert UTC to local
+  if (/^\d+$/.test(m) && /^\d+$/.test(h) && dom === "*" && dow === "*") {
+    const local = utcTimeToLocal(parseInt(h, 10), parseInt(m, 10));
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "day",
+        hour: local.hour,
+        minute: local.minute,
+      },
+      wasFallback: false,
+    };
+  }
+
+  // Weekly on one or more weekdays at H:M - convert UTC to local
+  if (
+    /^\d+$/.test(m) &&
+    /^\d+$/.test(h) &&
+    dom === "*" &&
+    /^\d+(,\d+)*$/.test(dow)
+  ) {
+    const days = [
+      ...new Set(
+        dow
+          .split(",")
+          .map((d) => parseInt(d, 10) % 7)
+          .filter((d) => d >= 0 && d <= 6)
+      ),
+    ];
+    const local = utcTimeToLocal(parseInt(h, 10), parseInt(m, 10));
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "week",
+        hour: local.hour,
+        minute: local.minute,
+        weekdays: days.length ? shiftWeekdays(days, local.dayShift) : [1],
+      },
+      wasFallback: false,
+    };
+  }
+
+  // Monthly on day D at H:M - convert UTC to local
+  if (/^\d+$/.test(m) && /^\d+$/.test(h) && /^\d+$/.test(dom) && dow === "*") {
+    const local = utcTimeToLocal(parseInt(h, 10), parseInt(m, 10));
+    return {
+      state: {
+        ...DEFAULT_BUILDER_STATE,
+        frequency: "month",
+        hour: local.hour,
+        minute: local.minute,
+        dayOfMonth: shiftDayOfMonth(parseInt(dom, 10), local.dayShift),
+      },
+      wasFallback: false,
+    };
+  }
+
+  return fallback;
+}
+
+/**
+ * Build a 5-field cron expression from the visual builder's state.
+ *
+ * IMPORTANT: The builder state has hours in local time. This function
+ * converts the time to UTC before building the cron expression, since
+ * the backend stores and executes cron expressions in UTC.
+ *
+ * @param {Object} state - The builder state (with time in local timezone).
+ * @returns {string} The cron expression (in UTC).
+ */
+export function buildCronFromBuilderState(state) {
+  switch (state.frequency) {
+    case "minute": {
+      const n = state.minuteInterval || 1;
+      return n === 1 ? "* * * * *" : `*/${n} * * * *`;
+    }
+    case "hour":
+      return `${localTimeToUTC(0, state.hourMinuteOffset).minute} * * * *`;
+    case "day": {
+      const utc = localTimeToUTC(state.hour, state.minute);
+      return `${utc.minute} ${utc.hour} * * *`;
+    }
+    case "week": {
+      const utc = localTimeToUTC(state.hour, state.minute);
+      const days = shiftWeekdays(
+        state.weekdays?.length ? state.weekdays : [1],
+        utc.dayShift
+      ).join(",");
+      return `${utc.minute} ${utc.hour} * * ${days}`;
+    }
+    case "month": {
+      const utc = localTimeToUTC(state.hour, state.minute);
+      const dom = shiftDayOfMonth(state.dayOfMonth, utc.dayShift);
+      return `${utc.minute} ${utc.hour} ${dom} * *`;
+    }
+    default: {
+      const utc = localTimeToUTC(9, 0);
+      return `${utc.minute} ${utc.hour} * * *`;
+    }
+  }
+}

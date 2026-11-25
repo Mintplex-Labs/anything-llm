@@ -4,8 +4,11 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../../../utils/helpers");
-const { multiUserMode, reqBody } = require("../../../utils/http");
+const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../utils/helpers");
+const { multiUserMode, reqBody, toBoundedInt } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
 const { EventLogs } = require("../../../models/eventLogs");
@@ -15,6 +18,9 @@ const {
 } = require("../../../utils/helpers/chat/responses");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
+const {
+  workspaceDeletionProtection,
+} = require("../../../utils/middleware/workspaceDeletionProtection");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -221,7 +227,7 @@ function apiWorkspaceEndpoints(app) {
 
   app.delete(
     "/v1/workspace/:slug",
-    [validApiKey],
+    [validApiKey, workspaceDeletionProtection],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
@@ -241,7 +247,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -329,7 +335,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const currWorkspace = await Workspace.get({ slug: String(slug) });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -340,7 +346,10 @@ function apiWorkspaceEndpoints(app) {
           currWorkspace.id,
           data
         );
-        response.status(200).json({ workspace, message });
+
+        if (!workspace)
+          return response.status(500).json({ workspace: null, message });
+        return response.status(200).json({ workspace, message });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -415,14 +424,14 @@ function apiWorkspaceEndpoints(app) {
           limit = 100,
           orderBy = "asc",
         } = request.query;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        const validLimit = Math.max(1, parseInt(limit));
+        const validLimit = toBoundedInt(limit, 100, { min: 1 });
         const validOrderBy = ["asc", "desc"].includes(orderBy)
           ? orderBy
           : "asc";
@@ -502,7 +511,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const currWorkspace = await Workspace.get({ slug: String(slug) });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -561,7 +570,7 @@ function apiWorkspaceEndpoints(app) {
         }
       }
       #swagger.responses[404] = {
-        description: 'Document not found'
+        description: 'Workspace or document not found'
       }
       #swagger.responses[500] = {
         description: 'Internal Server Error'
@@ -570,7 +579,8 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { docPath, pinStatus = false } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) return response.sendStatus(404).end();
 
         const document = await Document.get({
           workspaceId: workspace.id,
@@ -598,13 +608,13 @@ function apiWorkspaceEndpoints(app) {
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a chat with a workspace'
    #swagger.requestBody = {
-       description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
+       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
        required: true,
        content: {
          "application/json": {
            example: {
              message: "What is AnythingLLM?",
-             mode: "query | chat",
+             mode:"automatic | query | chat",
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
                {
@@ -650,7 +660,7 @@ function apiWorkspaceEndpoints(app) {
         const { slug } = request.params;
         const {
           message,
-          mode = "query",
+          mode = null,
           sessionId = null,
           attachments = [],
           reset = false,
@@ -669,7 +679,11 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
+        const resolvedMode = mode ?? workspace.chatMode;
+        if (
+          (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
+          !reset
+        ) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -678,7 +692,7 @@ function apiWorkspaceEndpoints(app) {
             close: true,
             error: !message?.length
               ? "Message is empty"
-              : `${mode} is not a valid mode.`,
+              : `${resolvedMode} is not a valid mode.`,
           });
           return;
         }
@@ -686,7 +700,7 @@ function apiWorkspaceEndpoints(app) {
         const result = await ApiChatHandler.chatSync({
           workspace,
           message,
-          mode,
+          mode: resolvedMode,
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
@@ -728,13 +742,13 @@ function apiWorkspaceEndpoints(app) {
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a streamable chat with a workspace'
    #swagger.requestBody = {
-       description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
+       description: 'Send a prompt to the workspace and the type of conversation (automatic, query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Automatic:</b> Will use tool-calling if the provider supports native tool calling without needing to invoke @agent.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.<br/><b>Attachments:</b> Can include images and documents.<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document attachments:</b> must have the mime type <code>application/anythingllm-document</code> - otherwise it will be passed to the LLM as an image and may fail to process. This uses the built-in document processor to first parse the document to text before injecting it into the context window.',
        required: true,
        content: {
          "application/json": {
            example: {
              message: "What is AnythingLLM?",
-             mode: "query | chat",
+             mode: "automatic | query | chat",
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
                {
@@ -801,7 +815,7 @@ function apiWorkspaceEndpoints(app) {
         const { slug } = request.params;
         const {
           message,
-          mode = "query",
+          mode = null,
           sessionId = null,
           attachments = [],
           reset = false,
@@ -820,7 +834,11 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
+        const resolvedMode = mode ?? workspace.chatMode;
+        if (
+          (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
+          !reset
+        ) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -829,7 +847,7 @@ function apiWorkspaceEndpoints(app) {
             close: true,
             error: !message?.length
               ? "Message is empty"
-              : `${mode} is not a valid mode.`,
+              : `${resolvedMode} is not a valid mode.`,
           });
           return;
         }
@@ -844,7 +862,7 @@ function apiWorkspaceEndpoints(app) {
           response,
           workspace,
           message,
-          mode,
+          mode: resolvedMode,
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
@@ -973,10 +991,15 @@ function apiWorkspaceEndpoints(app) {
           return input;
         };
 
+        const { connector: LLMConnector } = await resolveProviderConnector({
+          workspace,
+          prompt: String(query),
+        });
+
         const results = await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
           input: String(query),
-          LLMConnector: getLLMProvider(),
+          LLMConnector,
           similarityThreshold: parseSimilarityThreshold(),
           topN: parseTopN(),
           rerank: workspace?.vectorSearchMode === "rerank",

@@ -42,7 +42,7 @@ const MobileDevice = {
       const tokenData = TemporaryMobileDeviceRequests.get(token);
       if (tokenData.expiresAt < Date.now()) return null;
       return tokenData;
-    } catch (error) {
+    } catch {
       return null;
     } finally {
       TemporaryMobileDeviceRequests.delete(token);
@@ -167,7 +167,7 @@ const MobileDevice = {
   /**
    * Fetches mobile device by params.
    * @param {object} clause - Prisma props for search
-   * @returns {Promise<import("@prisma/client").desktop_mobile_devices[]>}
+   * @returns {Promise<import("@prisma/client").desktop_mobile_devices|null>}
    */
   get: async function (clause = {}, include = null) {
     try {
@@ -178,7 +178,7 @@ const MobileDevice = {
       return device;
     } catch (error) {
       console.error("FAILED TO GET MOBILE DEVICE.", error);
-      return [];
+      return null;
     }
   },
 
@@ -223,6 +223,27 @@ const MobileDevice = {
     } catch (error) {
       console.error("FAILED TO GET MOBILE DEVICES.", error.message);
       return [];
+    }
+  },
+
+  /**
+   * Migrates all mobile devices with null userId to the specified user.
+   * Called during multi-user mode enablement to assign orphaned devices to the new admin.
+   * @param {number} userId - The admin user ID to assign devices to
+   * @returns {Promise<void>}
+   */
+  migrateDevicesToMultiUser: async function (userId) {
+    try {
+      await prisma.desktop_mobile_devices.updateMany({
+        where: { userId: null },
+        data: { userId: userId },
+      });
+      console.log("Successfully migrated mobile devices to multi-user mode");
+    } catch (error) {
+      console.error(
+        "Error migrating mobile devices to multi-user mode:",
+        error
+      );
     }
   },
 };

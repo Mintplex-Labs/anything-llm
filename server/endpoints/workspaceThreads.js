@@ -17,6 +17,7 @@ const {
   validWorkspaceAndThreadSlug,
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { User } = require("../models/user");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { getModelTag } = require("./utils");
 
@@ -73,7 +74,16 @@ function workspaceThreadEndpoints(app) {
           workspace_id: workspace.id,
           user_id: user?.id || null,
         });
-        response.status(200).json({ threads });
+
+        const defaultThreadChatCount = await WorkspaceChats.count({
+          workspaceId: workspace.id,
+          user_id: user?.id || null,
+          thread_id: null,
+          api_session_id: null,
+          include: true,
+        });
+
+        response.status(200).json({ threads, defaultThreadChatCount });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -192,7 +202,13 @@ function workspaceThreadEndpoints(app) {
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        await WorkspaceChats.delete({
+        // Don't hide chats for a regenerate/edit that stream-chat would reject.
+        if (multiUserMode(response) && !(await User.canSendChat(user)))
+          return response.sendStatus(429);
+
+        // We mark the chat as hidden instead of deleting it so that it still
+        // counts towards the user's daily message limit.
+        await WorkspaceChats.markThreadHistoryInvalidV2({
           workspaceId: Number(workspace.id),
           thread_id: Number(thread.id),
           user_id: user?.id,
@@ -216,9 +232,9 @@ function workspaceThreadEndpoints(app) {
     ],
     async (request, response) => {
       try {
-        const { chatId, newText = null } = reqBody(request);
+        const { chatId, newText = null, role = "assistant" } = reqBody(request);
         if (!newText || !String(newText).trim())
-          throw new Error("Cannot save empty response");
+          throw new Error("Cannot save empty edit");
 
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
@@ -231,15 +247,20 @@ function workspaceThreadEndpoints(app) {
         });
         if (!existingChat) throw new Error("Invalid chat.");
 
-        const chatResponse = safeJsonParse(existingChat.response, null);
-        if (!chatResponse) throw new Error("Failed to parse chat response");
-
-        await WorkspaceChats._update(existingChat.id, {
-          response: JSON.stringify({
-            ...chatResponse,
-            text: String(newText),
-          }),
-        });
+        if (role === "user") {
+          await WorkspaceChats._update(existingChat.id, {
+            prompt: String(newText),
+          });
+        } else {
+          const chatResponse = safeJsonParse(existingChat.response, null);
+          if (!chatResponse) throw new Error("Failed to parse chat response");
+          await WorkspaceChats._update(existingChat.id, {
+            response: JSON.stringify({
+              ...chatResponse,
+              text: String(newText),
+            }),
+          });
+        }
 
         response.sendStatus(200).end();
       } catch (e) {

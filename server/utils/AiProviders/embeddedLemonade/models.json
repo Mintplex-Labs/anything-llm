@@ -1,0 +1,1494 @@
+{
+  "//": "The models the embedded Lemonade engine offers, in table order. Entries with a checkpoint are not in lemond's catalog and are pulled from Hugging Face. Capabilities drive the vision/tools/thinking controls - lemond's labels are not reliable. Based on the desktop registry, minus NPU (FLM) models.",
+  "families": [
+    {
+      "name": "Qwen3.8",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Qwen3.6",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Qwen3.5",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Gemma 4",
+      "organization": "Google"
+    },
+    {
+      "name": "gpt-oss",
+      "organization": "OpenAI"
+    },
+    {
+      "name": "Qwen3",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Qwen3-VL",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Qwen3 Coder",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Nemotron",
+      "organization": "NVIDIA"
+    },
+    {
+      "name": "LFM2.5",
+      "organization": "Liquid AI"
+    },
+    {
+      "name": "LFM2",
+      "organization": "Liquid AI"
+    },
+    {
+      "name": "Llama 3",
+      "organization": "Meta"
+    },
+    {
+      "name": "Gemma 3",
+      "organization": "Google"
+    },
+    {
+      "name": "Phi-4",
+      "organization": "Microsoft"
+    },
+    {
+      "name": "Mistral",
+      "organization": "Mistral"
+    },
+    {
+      "name": "Granite 4",
+      "organization": "IBM"
+    },
+    {
+      "name": "GLM",
+      "organization": "Z.ai"
+    },
+    {
+      "name": "MiniCPM",
+      "organization": "OpenBMB"
+    },
+    {
+      "name": "MiniCPM-V",
+      "organization": "OpenBMB"
+    },
+    {
+      "name": "DeepSeek R1",
+      "organization": "DeepSeek"
+    },
+    {
+      "name": "Qwen2.5",
+      "organization": "Qwen"
+    },
+    {
+      "name": "Bonsai",
+      "organization": "PrismML"
+    },
+    {
+      "name": "SmolLM3",
+      "organization": "Hugging Face"
+    },
+    {
+      "name": "Jan",
+      "organization": "Jan"
+    },
+    {
+      "name": "Ornith",
+      "organization": "Ornith"
+    },
+    {
+      "name": "Muse Glimmer",
+      "organization": "Muse"
+    }
+  ],
+  "models": [
+    {
+      "id": "Qwen3.8-27B-GGUF",
+      "name": "Qwen3.8-27B",
+      "family": "Qwen3.8",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.8,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["low", "medium", "high"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Qwen3.6-27B-GGUF",
+      "name": "Qwen3.6-27B",
+      "family": "Qwen3.6",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.5,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.6-27B-MTP-GGUF",
+      "name": "Qwen3.6-27B-MTP",
+      "family": "Qwen3.6",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.8,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Qwen3.6-35B-A3B-GGUF",
+      "name": "Qwen3.6-35B-A3B",
+      "family": "Qwen3.6",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 23.3,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.6-35B-A3B-MTP-GGUF",
+      "name": "Qwen3.6-35B-A3B-MTP",
+      "family": "Qwen3.6",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 23.8,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Qwen3.5-0.8B-GGUF",
+      "name": "Qwen3.5-0.8B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 0.764,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-0.8B-MTP-GGUF",
+      "name": "Qwen3.5-0.8B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 0.77,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"],
+      "checkpoint": "unsloth/Qwen3.5-0.8B-MTP-GGUF:Qwen3.5-0.8B-UD-Q4_K_XL.gguf",
+      "mmproj": "mmproj-F16.gguf",
+      "labels": ["chat", "vision", "tool-calling", "mtp"]
+    },
+    {
+      "id": "Qwen3.5-2B-GGUF",
+      "name": "Qwen3.5-2B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 2.01,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-2B-MTP-GGUF",
+      "name": "Qwen3.5-2B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 2.05,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"],
+      "checkpoint": "unsloth/Qwen3.5-2B-MTP-GGUF:Qwen3.5-2B-UD-Q4_K_XL.gguf",
+      "mmproj": "mmproj-F16.gguf",
+      "labels": ["chat", "vision", "tool-calling", "mtp"]
+    },
+    {
+      "id": "Qwen3.5-4B-GGUF",
+      "name": "Qwen3.5-4B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 3.58,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-4B-MTP-GGUF",
+      "name": "Qwen3.5-4B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 3.66,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Qwen3.5-9B-GGUF",
+      "name": "Qwen3.5-9B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 6.88,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-9B-MTP-GGUF",
+      "name": "Qwen3.5-9B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 7.06,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"],
+      "checkpoint": "unsloth/Qwen3.5-9B-MTP-GGUF:Qwen3.5-9B-UD-Q4_K_XL.gguf",
+      "mmproj": "mmproj-F16.gguf",
+      "labels": ["chat", "vision", "tool-calling", "mtp"]
+    },
+    {
+      "id": "Qwen3.5-27B-GGUF",
+      "name": "Qwen3.5-27B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.5,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-27B-MTP-GGUF",
+      "name": "Qwen3.5-27B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.83,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"],
+      "checkpoint": "unsloth/Qwen3.5-27B-MTP-GGUF:Qwen3.5-27B-UD-Q4_K_XL.gguf",
+      "mmproj": "mmproj-F16.gguf",
+      "labels": ["chat", "vision", "tool-calling", "mtp"]
+    },
+    {
+      "id": "Qwen3.5-35B-A3B-GGUF",
+      "name": "Qwen3.5-35B-A3B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 23.1,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-35B-A3B-MTP-GGUF",
+      "name": "Qwen3.5-35B-A3B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 23.75,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"],
+      "checkpoint": "unsloth/Qwen3.5-35B-A3B-MTP-GGUF:Qwen3.5-35B-A3B-UD-Q4_K_XL.gguf",
+      "mmproj": "mmproj-F16.gguf",
+      "labels": ["chat", "vision", "tool-calling", "mtp"]
+    },
+    {
+      "id": "Qwen3.5-122B-A10B-GGUF",
+      "name": "Qwen3.5-122B-A10B",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 77.9,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3.5-122B-A10B-MTP-GGUF",
+      "name": "Qwen3.5-122B-A10B-MTP",
+      "family": "Qwen3.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 79.6,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Gemma-4-E2B-it-GGUF",
+      "name": "Gemma-4-E2B-it",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 4.09,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Gemma-4-E4B-it-GGUF",
+      "name": "Gemma-4-E4B-it",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 5.97,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Gemma-4-12B-it-GGUF",
+      "name": "Gemma-4-12B-it",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 7.29,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Gemma-4-12B-it-MTP-GGUF",
+      "name": "Gemma-4-12B-it-MTP",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 7.75,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Gemma-4-26B-A4B-it-GGUF",
+      "name": "Gemma-4-26B-A4B-it",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 18.1,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Gemma-4-26B-A4B-it-MTP-GGUF",
+      "name": "Gemma-4-26B-A4B-it-MTP",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 18.5,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "Gemma-4-31B-it-GGUF",
+      "name": "Gemma-4-31B-it",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 19.5,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Gemma-4-31B-it-MTP-GGUF",
+      "name": "Gemma-4-31B-it-MTP",
+      "family": "Gemma 4",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 20,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "gpt-oss-20b-mxfp4-GGUF",
+      "name": "gpt-oss-20b-mxfp4",
+      "family": "gpt-oss",
+      "organization": "OpenAI",
+      "recipe": "llamacpp",
+      "size": 12.1,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["low", "medium", "high"]
+      },
+      "tags": []
+    },
+    {
+      "id": "gpt-oss-120b-mxfp-GGUF",
+      "name": "gpt-oss-120b-mxfp",
+      "family": "gpt-oss",
+      "organization": "OpenAI",
+      "recipe": "llamacpp",
+      "size": 63.4,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["low", "medium", "high"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3-0.6B-GGUF-Q4_K_M",
+      "name": "Qwen3-0.6B",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 0.4,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": [],
+      "checkpoint": "unsloth/Qwen3-0.6B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling", "reasoning"]
+    },
+    {
+      "id": "Qwen3-1.7B-GGUF-Q4_K_M",
+      "name": "Qwen3-1.7B",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 1.11,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": [],
+      "checkpoint": "unsloth/Qwen3-1.7B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling", "reasoning"]
+    },
+    {
+      "id": "Qwen3-4B-GGUF-Q4_K_M",
+      "name": "Qwen3-4B",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 2.5,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": [],
+      "checkpoint": "unsloth/Qwen3-4B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling", "reasoning"]
+    },
+    {
+      "id": "Qwen3-4B-Instruct-2507-GGUF",
+      "name": "Qwen3-4B-Instruct-2507",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 2.5,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3-8B-GGUF-Q4_K_M",
+      "name": "Qwen3-8B",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 5.03,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": [],
+      "checkpoint": "unsloth/Qwen3-8B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling", "reasoning"]
+    },
+    {
+      "id": "Qwen3-14B-GGUF-Q4_K_M",
+      "name": "Qwen3-14B",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 9,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": [],
+      "checkpoint": "unsloth/Qwen3-14B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling", "reasoning"]
+    },
+    {
+      "id": "Qwen3-30B-A3B-GGUF-Q4_K_M",
+      "name": "Qwen3-30B-A3B",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.56,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": [],
+      "checkpoint": "unsloth/Qwen3-30B-A3B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling", "reasoning"]
+    },
+    {
+      "id": "Qwen3-30B-A3B-Instruct-2507-GGUF",
+      "name": "Qwen3-30B-A3B-Instruct-2507",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 17.4,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3-Next-80B-A3B-Instruct-GGUF",
+      "name": "Qwen3-Next-80B-A3B-Instruct",
+      "family": "Qwen3",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 46.1,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3-VL-2B-Instruct-GGUF-Q8_0",
+      "name": "Qwen3-VL-2B-Instruct",
+      "family": "Qwen3-VL",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 2.65,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": [],
+      "checkpoint": "Qwen/Qwen3-VL-2B-Instruct-GGUF:Q8_0",
+      "mmproj": "mmproj-Qwen3VL-2B-Instruct-F16.gguf",
+      "labels": ["chat", "vision", "tool-calling"]
+    },
+    {
+      "id": "Qwen3-VL-4B-Instruct-GGUF",
+      "name": "Qwen3-VL-4B-Instruct",
+      "family": "Qwen3-VL",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 3.33,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3-VL-8B-Instruct-GGUF",
+      "name": "Qwen3-VL-8B-Instruct",
+      "family": "Qwen3-VL",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 6.19,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen3-Coder-30B-A3B-Instruct-GGUF",
+      "name": "Qwen3-Coder-30B-A3B-Instruct",
+      "family": "Qwen3 Coder",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 18.6,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": ["coding"]
+    },
+    {
+      "id": "Qwen3-Coder-Next-GGUF",
+      "name": "Qwen3-Coder-Next",
+      "family": "Qwen3 Coder",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 48,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": ["coding"]
+    },
+    {
+      "id": "Nemotron-3-Nano-30B-A3B-GGUF",
+      "name": "Nemotron-3-Nano-30B-A3B",
+      "family": "Nemotron",
+      "organization": "NVIDIA",
+      "recipe": "llamacpp",
+      "size": 22.8,
+      "contextWindow": 1048576,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
+      "name": "NVIDIA-Nemotron-3.5-Lightning-30B-A3B",
+      "family": "Nemotron",
+      "organization": "NVIDIA",
+      "recipe": "llamacpp",
+      "size": 25.5,
+      "contextWindow": 1048576,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["mtp"]
+    },
+    {
+      "id": "LFM2.5-1.2B-Instruct-GGUF",
+      "name": "LFM2.5-1.2B-Instruct",
+      "family": "LFM2.5",
+      "organization": "Liquid AI",
+      "recipe": "llamacpp",
+      "size": 0.731,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "LFM2.5-8B-A1B",
+      "name": "LFM2.5-8B-A1B",
+      "family": "LFM2.5",
+      "organization": "Liquid AI",
+      "recipe": "llamacpp",
+      "size": 5.16,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "LFM2-1.2B-GGUF",
+      "name": "LFM2-1.2B",
+      "family": "LFM2",
+      "organization": "Liquid AI",
+      "recipe": "llamacpp",
+      "size": 0.731,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": false,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "LFM2-8B-A1B-GGUF",
+      "name": "LFM2-8B-A1B",
+      "family": "LFM2",
+      "organization": "Liquid AI",
+      "recipe": "llamacpp",
+      "size": 5.04,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "LFM2-24B-A2B-GGUF",
+      "name": "LFM2-24B-A2B",
+      "family": "LFM2",
+      "organization": "Liquid AI",
+      "recipe": "llamacpp",
+      "size": 14.4,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Llama-3.2-1B-Instruct-GGUF",
+      "name": "Llama-3.2-1B-Instruct",
+      "family": "Llama 3",
+      "organization": "Meta",
+      "recipe": "llamacpp",
+      "size": 0.834,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Llama-3.2-3B-Instruct-GGUF",
+      "name": "Llama-3.2-3B-Instruct",
+      "family": "Llama 3",
+      "organization": "Meta",
+      "recipe": "llamacpp",
+      "size": 2.06,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Gemma-3-4b-it-GGUF",
+      "name": "Gemma-3-4b-it",
+      "family": "Gemma 3",
+      "organization": "Google",
+      "recipe": "llamacpp",
+      "size": 3.34,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": true,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Phi-4-mini-instruct-GGUF",
+      "name": "Phi-4-mini-instruct",
+      "family": "Phi-4",
+      "organization": "Microsoft",
+      "recipe": "llamacpp",
+      "size": 2.49,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Ministral-3-3B-Instruct-2512-GGUF",
+      "name": "Ministral-3-3B-Instruct-2512",
+      "family": "Mistral",
+      "organization": "Mistral",
+      "recipe": "llamacpp",
+      "size": 2.99,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Devstral-Small-2507-GGUF",
+      "name": "Devstral-Small-2507",
+      "family": "Mistral",
+      "organization": "Mistral",
+      "recipe": "llamacpp",
+      "size": 14.3,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": ["coding"]
+    },
+    {
+      "id": "granite-4.0-h-tiny-GGUF",
+      "name": "granite-4.0-h-tiny",
+      "family": "Granite 4",
+      "organization": "IBM",
+      "recipe": "llamacpp",
+      "size": 4.25,
+      "contextWindow": 1048576,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "GLM-4.7-Flash-GGUF",
+      "name": "GLM-4.7-Flash",
+      "family": "GLM",
+      "organization": "Z.ai",
+      "recipe": "llamacpp",
+      "size": 17.5,
+      "contextWindow": 202752,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "GLM-4.5-Air-UD-Q4K-XL-GGUF",
+      "name": "GLM-4.5-Air-UD-Q4K-XL",
+      "family": "GLM",
+      "organization": "Z.ai",
+      "recipe": "llamacpp",
+      "size": 67.7,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM5-1B-GGUF",
+      "name": "MiniCPM5-1B",
+      "family": "MiniCPM",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 0.69,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM3-4B-GGUF",
+      "name": "MiniCPM3-4B",
+      "family": "MiniCPM",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 2.47,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": false,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM4-8B-GGUF",
+      "name": "MiniCPM4-8B",
+      "family": "MiniCPM",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 4.97,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": false,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM4.1-8B-GGUF",
+      "name": "MiniCPM4.1-8B",
+      "family": "MiniCPM",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 4.97,
+      "contextWindow": 65536,
+      "capabilities": {
+        "vision": false,
+        "tools": false,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM-V-4.6-GGUF",
+      "name": "MiniCPM-V-4.6",
+      "family": "MiniCPM-V",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 1.64,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM-V-4.6-Thinking-GGUF",
+      "name": "MiniCPM-V-4.6-Thinking",
+      "family": "MiniCPM-V",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 1.64,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM-V-4-GGUF",
+      "name": "MiniCPM-V-4",
+      "family": "MiniCPM-V",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 3.15,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": true,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM-V-4.5-GGUF",
+      "name": "MiniCPM-V-4.5",
+      "family": "MiniCPM-V",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 6.12,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM-o-4.5-Vision-GGUF",
+      "name": "MiniCPM-o-4.5-Vision",
+      "family": "MiniCPM-V",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 6.12,
+      "contextWindow": 40960,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "MiniCPM-o-2.6-Vision-GGUF",
+      "name": "MiniCPM-o-2.6-Vision",
+      "family": "MiniCPM-V",
+      "organization": "OpenBMB",
+      "recipe": "llamacpp",
+      "size": 5.73,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "DeepSeek-R1-0528-Qwen3-8B-GGUF-Q4_K_M",
+      "name": "DeepSeek-R1-0528-Qwen3-8B",
+      "family": "DeepSeek R1",
+      "organization": "DeepSeek",
+      "recipe": "llamacpp",
+      "size": 5.03,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": []
+      },
+      "tags": [],
+      "checkpoint": "unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q4_K_M",
+      "mmproj": null,
+      "labels": ["chat", "tool-calling"]
+    },
+    {
+      "id": "Qwen2.5-VL-3B-Instruct-GGUF",
+      "name": "Qwen2.5-VL-3B-Instruct",
+      "family": "Qwen2.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 3.27,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": true,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen2.5-VL-7B-Instruct-GGUF",
+      "name": "Qwen2.5-VL-7B-Instruct",
+      "family": "Qwen2.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 6.04,
+      "contextWindow": 128000,
+      "capabilities": {
+        "vision": true,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen2.5-Omni-3B-GGUF",
+      "name": "Qwen2.5-Omni-3B",
+      "family": "Qwen2.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 4.73,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": true,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen2.5-Omni-7B-GGUF",
+      "name": "Qwen2.5-Omni-7B",
+      "family": "Qwen2.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 7.33,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": true,
+        "tools": false,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Qwen2.5-Coder-32B-Instruct-GGUF",
+      "name": "Qwen2.5-Coder-32B-Instruct",
+      "family": "Qwen2.5",
+      "organization": "Qwen",
+      "recipe": "llamacpp",
+      "size": 19.9,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": ["coding"]
+    },
+    {
+      "id": "Bonsai-1.7B-gguf",
+      "name": "Bonsai-1.7B",
+      "family": "Bonsai",
+      "organization": "PrismML",
+      "recipe": "llamacpp",
+      "size": 0.25,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Bonsai-4B-gguf",
+      "name": "Bonsai-4B",
+      "family": "Bonsai",
+      "organization": "PrismML",
+      "recipe": "llamacpp",
+      "size": 0.572,
+      "contextWindow": 32768,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Bonsai-8B-gguf",
+      "name": "Bonsai-8B",
+      "family": "Bonsai",
+      "organization": "PrismML",
+      "recipe": "llamacpp",
+      "size": 1.16,
+      "contextWindow": 65536,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "SmolLM3-3B-GGUF",
+      "name": "SmolLM3-3B",
+      "family": "SmolLM3",
+      "organization": "Hugging Face",
+      "recipe": "llamacpp",
+      "size": 1.94,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": []
+    },
+    {
+      "id": "Jan-nano-128k-GGUF",
+      "name": "Jan-nano-128k",
+      "family": "Jan",
+      "organization": "Jan",
+      "recipe": "llamacpp",
+      "size": 2.5,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": false,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Jan-v1-4B-GGUF",
+      "name": "Jan-v1-4B",
+      "family": "Jan",
+      "organization": "Jan",
+      "recipe": "llamacpp",
+      "size": 2.5,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": false,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": []
+      },
+      "tags": []
+    },
+    {
+      "id": "Ornith-1.5-9B-GGUF",
+      "name": "Ornith-1.5-9B",
+      "family": "Ornith",
+      "organization": "Ornith",
+      "recipe": "llamacpp",
+      "size": 6.7,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["coding"]
+    },
+    {
+      "id": "Ornith-1.5-35B-A3B-GGUF",
+      "name": "Ornith-1.5-35B-A3B",
+      "family": "Ornith",
+      "organization": "Ornith",
+      "recipe": "llamacpp",
+      "size": 22.6,
+      "contextWindow": 262144,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": ["on", "off"]
+      },
+      "tags": ["coding"]
+    },
+    {
+      "id": "Muse-Glimmer-30B-GGUF",
+      "name": "Muse-Glimmer-30B",
+      "family": "Muse Glimmer",
+      "organization": "Muse",
+      "recipe": "llamacpp",
+      "size": 19.9,
+      "contextWindow": 131072,
+      "capabilities": {
+        "vision": true,
+        "tools": true,
+        "reasoning": true,
+        "reasoningOptions": []
+      },
+      "tags": ["dflash"]
+    }
+  ]
+}

@@ -2,6 +2,14 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+  maxTokensParam,
+} = require("./helpers/tooled.js");
+const { RetryError } = require("../error.js");
+const { toValidNumber } = require("../../../http");
 
 /**
  * The agent provider for the TogetherAI provider.
@@ -12,15 +20,16 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model = "mistralai/Mistral-7B-Instruct-v0.1" } = config;
     super();
+    this.providerTag = "togetherai";
     const client = new OpenAI({
       baseURL: "https://api.together.xyz/v1",
       apiKey: process.env.TOGETHER_AI_API_KEY,
-      maxRetries: 3,
     });
 
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this.maxTokens = toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null);
   }
 
   get client() {
@@ -35,13 +44,15 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
+        ...maxTokensParam(this.maxTokens),
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("TogetherAI chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("TogetherAI chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -52,28 +63,91 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
+      ...maxTokensParam(this.maxTokens),
     });
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
+    const useNative = this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
+    this.providerLog(
+      "Provider.stream (tooled) - will process this chat completion."
     );
+
+    try {
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this, maxTokens: this.maxTokens }
+      );
+    } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   async complete(messages, functions = []) {
-    return await UnTooled.prototype.complete.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallChat.bind(this)
-    );
+    const useNative = this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    try {
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this, maxTokens: this.maxTokens }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   /**
@@ -81,7 +155,6 @@ class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;

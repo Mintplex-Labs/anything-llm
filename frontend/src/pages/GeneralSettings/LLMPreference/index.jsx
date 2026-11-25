@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
@@ -17,7 +17,6 @@ import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
-import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
@@ -26,19 +25,27 @@ import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
+import VertexLogo from "@/media/llmprovider/vertex.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import ZAiLogo from "@/media/llmprovider/zai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
-import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 import CometApiLogo from "@/media/llmprovider/cometapi.png";
 import FoundryLogo from "@/media/llmprovider/foundry-local.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
+import LlmmanLogo from "@/media/llmprovider/llmman.png";
+import PrivateModeLogo from "@/media/llmprovider/privatemode.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
+import LemonadeLogo from "@/media/llmprovider/lemonade.png";
+import MinimaxLogo from "@/media/llmprovider/minimax.png";
+import CerebrasLogo from "@/media/llmprovider/cerebras.png";
+import OMLXLogo from "@/media/llmprovider/omlx.png";
 
 import PreLoader from "@/components/Preloader";
+import ModelRouterOptions from "@/components/LLMSelection/ModelRouterOptions";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -52,7 +59,6 @@ import CometApiLLMOptions from "@/components/LLMSelection/CometApiLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
-import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
@@ -61,21 +67,43 @@ import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
+import VertexLLMOptions from "@/components/LLMSelection/VertexLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import ZAiLLMOptions from "@/components/LLMSelection/ZAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
-import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 import FoundryOptions from "@/components/LLMSelection/FoundryOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
+import LlmmanOptions from "@/components/LLMSelection/LlmmanOptions";
+import PrivateModeOptions from "@/components/LLMSelection/PrivateModeOptions";
+import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
+import LemonadeOptions from "@/components/LLMSelection/LemonadeOptions";
+import { withEmbeddedLemonade } from "@/components/LLMSelection/EmbeddedLemonadeOptions";
+import MinimaxOptions from "@/components/LLMSelection/MinimaxOptions";
+import CerebrasLLMOptions from "@/components/LLMSelection/CerebrasLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import OMLXOptions from "@/components/LLMSelection/OMLXOptions";
+import ProviderSearchMenu from "@/components/lib/ProviderSearchMenu";
 
+export const MODEL_ROUTER_PROVIDER = {
+  name: "Model Router",
+  value: "anythingllm-router",
+  logo: AnythingLLMIcon,
+  options: (settings) => <ModelRouterOptions settings={settings} />,
+  description:
+    "Route messages to different LLM providers based on rules you define.",
+  requiredConfig: [],
+};
+
+/**
+ * All LLM providers that are available to the user.
+ * This **never** includes the model router provider.
+ */
 export const AVAILABLE_LLM_PROVIDERS = [
   {
     name: "OpenAI",
@@ -119,38 +147,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["NvidiaNimLLMBasePath"],
   },
   {
-    name: "HuggingFace",
-    value: "huggingface",
-    logo: HuggingFaceLogo,
-    options: (settings) => <HuggingFaceOptions settings={settings} />,
-    description:
-      "Access 150,000+ open-source LLMs and the world's AI community",
-    requiredConfig: [
-      "HuggingFaceLLMEndpoint",
-      "HuggingFaceLLMAccessToken",
-      "HuggingFaceLLMTokenLimit",
-    ],
-  },
-  {
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["OllamaLLMBasePath"],
-  },
-  {
-    name: "Dell Pro AI Studio",
-    value: "dpais",
-    logo: DellProAiStudioLogo,
-    options: (settings) => <DellProAiStudioOptions settings={settings} />,
-    description:
-      "Run powerful LLMs quickly on NPU powered by Dell Pro AI Studio.",
-    requiredConfig: [
-      "DellProAiStudioBasePath",
-      "DellProAiStudioModelPref",
-      "DellProAiStudioTokenLimit",
-    ],
   },
   {
     name: "LM Studio",
@@ -162,12 +164,37 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["LMStudioBasePath"],
   },
   {
+    name: "llmman",
+    value: "llmman",
+    logo: LlmmanLogo,
+    options: (settings) => <LlmmanOptions settings={settings} />,
+    description: "Run LLMs locally using llmman.",
+    requiredConfig: ["LlmmanBasePath", "LlmmanModelPref", "LlmmanTokenLimit"],
+  },
+  {
+    name: "Lemonade",
+    value: "lemonade",
+    logo: LemonadeLogo,
+    options: (settings) => <LemonadeOptions settings={settings} />,
+    description:
+      "Run local LLMs, ASR, TTS, and more in a single unified AI runtime.",
+    requiredConfig: ["LemonadeLLMBasePath"],
+  },
+  {
+    name: "SambaNova",
+    value: "sambanova",
+    logo: SambaNovaLogo,
+    options: (settings) => <SambaNovaOptions settings={settings} />,
+    description: "Run open source models from SambaNova.",
+    requiredConfig: ["SambaNovaLLMApiKey"],
+  },
+  {
     name: "Local AI",
     value: "localai",
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
-    requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
+    requiredConfig: ["LocalAiApiKey", "LocalAiBasePath"],
   },
   {
     name: "Together AI",
@@ -177,6 +204,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description: "Run open source models from Together AI.",
     requiredConfig: ["TogetherAiApiKey"],
   },
+
   {
     name: "Fireworks AI",
     value: "fireworksai",
@@ -226,11 +254,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: KoboldCPPLogo,
     options: (settings) => <KoboldCPPOptions settings={settings} />,
     description: "Run local LLMs using koboldcpp.",
-    requiredConfig: [
-      "KoboldCPPModelPref",
-      "KoboldCPPBasePath",
-      "KoboldCPPTokenLimit",
-    ],
+    requiredConfig: ["KoboldCPPBasePath"],
   },
   {
     name: "Oobabooga Web UI",
@@ -280,10 +304,22 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
     requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
+      "AwsBedrockLLMApiKey",
       "AwsBedrockLLMRegion",
       "AwsBedrockLLMModel",
+    ],
+  },
+  {
+    name: "Google Vertex AI",
+    value: "vertex",
+    logo: VertexLogo,
+    options: (settings) => <VertexLLMOptions settings={settings} />,
+    description: "Run Gemini models through your Google Cloud project.",
+    requiredConfig: [
+      "VertexAiLLMApiKey",
+      "VertexAiLLMProjectId",
+      "VertexAiLLMRegion",
+      "VertexAiLLMModelPref",
     ],
   },
   {
@@ -301,6 +337,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <MoonshotAiOptions settings={settings} />,
     description: "Run Moonshot AI's powerful LLMs.",
     requiredConfig: ["MoonshotAiApiKey"],
+  },
+  {
+    name: "Privatemode",
+    value: "privatemode",
+    logo: PrivateModeLogo,
+    options: (settings) => <PrivateModeOptions settings={settings} />,
+    description: "Run LLMs with end-to-end encryption.",
+    requiredConfig: ["PrivateModeBasePath"],
   },
   {
     name: "Novita AI",
@@ -356,31 +400,57 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["GiteeAIApiKey"],
   },
   {
+    name: "Minimax",
+    value: "minimax",
+    logo: MinimaxLogo,
+    options: (settings) => <MinimaxOptions settings={settings} />,
+    description: "Run Minimax's powerful M2 LLMs.",
+    requiredConfig: ["MinimaxApiKey"],
+  },
+  {
+    name: "Cerebras",
+    value: "cerebras",
+    logo: CerebrasLogo,
+    options: (settings) => <CerebrasLLMOptions settings={settings} />,
+    description: "Run models at instant speed on Cerebras inference.",
+    requiredConfig: ["CerebrasApiKey"],
+  },
+  {
+    name: "oMLX",
+    value: "omlx",
+    logo: OMLXLogo,
+    options: (settings) => <OMLXOptions settings={settings} />,
+    description: "Run MLX models on Apple Silicon with smart caching.",
+    requiredConfig: ["OMLXLLMBasePath"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
-    requiredConfig: [
-      "GenericOpenAiBasePath",
-      "GenericOpenAiModelPref",
-      "GenericOpenAiTokenLimit",
-      "GenericOpenAiKey",
-    ],
+    requiredConfig: ["GenericOpenAiBasePath", "GenericOpenAiModelPref"],
+    connectionConfig: ["GenericOpenAiBasePath"],
   },
 ];
 
+/**
+ * All LLM providers that are available to the user.
+ * This **always** includes the model router provider.
+ */
+export const ALL_LLM_PROVIDERS = [
+  MODEL_ROUTER_PROVIDER,
+  ...AVAILABLE_LLM_PROVIDERS,
+];
+
+export const LLM_PREFERENCE_CHANGED_EVENT = "llm-preference-changed";
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchInputRef = useRef(null);
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -403,19 +473,8 @@ export default function GeneralLLMPreference() {
   };
 
   const updateLLMChoice = (selection) => {
-    setSearchQuery("");
     setSelectedLLM(selection);
-    setSearchMenuOpen(false);
     setHasChanges(true);
-  };
-
-  const handleXButton = () => {
-    if (searchQuery.length > 0) {
-      setSearchQuery("");
-      if (searchInputRef.current) searchInputRef.current.value = "";
-    } else {
-      setSearchMenuOpen(!searchMenuOpen);
-    }
   };
 
   useEffect(() => {
@@ -428,23 +487,30 @@ export default function GeneralLLMPreference() {
     fetchKeys();
   }, []);
 
+  // Some more complex LLM options do not bubble up the change event, so we need to listen to the custom event
+  // we can emit from the LLM options component using window.dispatchEvent(new Event(LLM_PREFERENCE_CHANGED_EVENT));
   useEffect(() => {
-    const filtered = AVAILABLE_LLM_PROVIDERS.filter((llm) =>
-      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredLLMs(filtered);
-  }, [searchQuery, selectedLLM]);
+    function updateHasChanges() {
+      setHasChanges(true);
+    }
+    window.addEventListener(LLM_PREFERENCE_CHANGED_EVENT, updateHasChanges);
+    return () => {
+      window.removeEventListener(
+        LLM_PREFERENCE_CHANGED_EVENT,
+        updateHasChanges
+      );
+    };
+  }, []);
 
-  const selectedLLMObject = AVAILABLE_LLM_PROVIDERS.find(
-    (llm) => llm.value === selectedLLM
-  );
+  const providers = withEmbeddedLemonade(AVAILABLE_LLM_PROVIDERS, settings);
+  const selectedLLMObject = providers.find((llm) => llm.value === selectedLLM);
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
       <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -453,7 +519,7 @@ export default function GeneralLLMPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
@@ -481,95 +547,39 @@ export default function GeneralLLMPreference() {
                 {t("llm.provider")}
               </div>
               <div className="relative">
-                {searchMenuOpen && (
-                  <div
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
-                    onClick={() => setSearchMenuOpen(false)}
-                  />
-                )}
-                {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                    <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                        <MagnifyingGlass
-                          size={20}
-                          weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                        />
-                        <input
-                          type="text"
-                          name="llm-search"
-                          autoComplete="off"
-                          placeholder="Search all LLM providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          ref={searchInputRef}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") e.preventDefault();
-                          }}
-                        />
-                        <X
-                          size={20}
-                          weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
-                          onClick={handleXButton}
-                        />
-                      </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
-                        {filteredLLMs.map((llm) => {
-                          return (
-                            <LLMItem
-                              key={llm.name}
-                              name={llm.name}
-                              value={llm.value}
-                              image={llm.logo}
-                              description={llm.description}
-                              checked={selectedLLM === llm.value}
-                              onClick={() => updateLLMChoice(llm.value)}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedLLMObject?.logo || AnythingLLMIcon}
-                        alt={`${selectedLLMObject?.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedLLMObject?.name || "None selected"}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedLLMObject?.description ||
-                            "You need to select an LLM"}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
+                <ProviderSearchMenu
+                  items={providers}
+                  selected={
+                    selectedLLMObject ?? {
+                      name: "None selected",
+                      logo: AnythingLLMIcon,
+                      description: "You need to select an LLM",
+                    }
+                  }
+                  placeholder="Search all LLM providers"
+                  renderItem={(llm, close) => (
+                    <LLMItem
+                      name={llm.name}
+                      value={llm.value}
+                      image={llm.logo}
+                      description={llm.description}
+                      checked={selectedLLM === llm.value}
+                      onClick={() => {
+                        updateLLMChoice(llm.value);
+                        close();
+                      }}
                     />
-                  </button>
-                )}
+                  )}
+                />
               </div>
               <div
                 onChange={() => setHasChanges(true)}
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedLLM &&
-                  AVAILABLE_LLM_PROVIDERS.find(
-                    (llm) => llm.value === selectedLLM
-                  )?.options?.(settings)}
+                  providers
+                    .find((llm) => llm.value === selectedLLM)
+                    ?.options?.(settings)}
               </div>
             </div>
           </form>

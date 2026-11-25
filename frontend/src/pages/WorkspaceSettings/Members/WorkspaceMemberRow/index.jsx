@@ -1,3 +1,4 @@
+import moment from "moment";
 import { titleCase } from "text-case";
 
 export default function WorkspaceMemberRow({ user }) {
@@ -8,7 +9,9 @@ export default function WorkspaceMemberRow({ user }) {
           {user.username}
         </th>
         <td className="px-6 py-4">{titleCase(user.role)}</td>
-        <td className="px-6 py-4">{user.lastUpdatedAt}</td>
+        <td className="px-6 py-4">
+          {moment(user.lastUpdatedAt).format("lll")}
+        </td>
       </tr>
     </>
   );

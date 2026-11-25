@@ -1,152 +1,254 @@
-const {
-  createBedrockCredentials,
-  getBedrockAuthMethod,
-  createBedrockChatClient,
-} = require("../../../AiProviders/bedrock/utils.js");
+const OpenAI = require("openai");
+const Anthropic = require("@anthropic-ai/sdk");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const {
-  HumanMessage,
-  SystemMessage,
-  AIMessage,
-} = require("@langchain/core/messages");
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
+const {
+  anthropicTooledStream,
+  anthropicTooledComplete,
+} = require("./helpers/anthropicTooled.js");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
+const { RetryError } = require("../error.js");
+const {
+  openaiBaseURL,
+  anthropicBaseURL,
+  isOpenAIModelId,
+} = require("../../../AiProviders/bedrock/endpoints.js");
 
 /**
  * The agent provider for the AWS Bedrock provider.
+ * Uses the OpenAI-compatible Mantle API endpoint for most models, the OpenAI
+ * Responses API with native tool calling for OpenAI GPT models, and the
+ * Anthropic Messages API with native tool calling for Anthropic models.
  */
 class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
     super();
-    const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
-    const client = createBedrockChatClient(
-      {},
-      this.authMethod,
-      this.credentials,
-      model
-    );
+    const model =
+      config.model || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE || null;
+    const region = process.env.AWS_BEDROCK_LLM_REGION;
+    const client = new OpenAI({
+      baseURL: openaiBaseURL(region, model),
+      apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
+    });
 
+    this.providerTag = "bedrock";
     this._client = client;
     this.model = model;
     this.verbose = true;
-  }
+    this._supportsToolCalling = null;
 
-  /**
-   * Gets the credentials for the AWS Bedrock LLM based on the authentication method provided.
-   * @returns {object} The credentials object.
-   */
-  get credentials() {
-    return createBedrockCredentials(this.authMethod);
-  }
-
-  /**
-   * Gets the configured AWS authentication method ('iam' or 'sessionToken').
-   * Defaults to 'iam' if the environment variable is invalid.
-   * @returns {"iam" | "iam_role" | "sessionToken"} The authentication method.
-   */
-  get authMethod() {
-    return getBedrockAuthMethod();
+    if (this.model?.includes("anthropic")) {
+      this._anthropic = new Anthropic({
+        apiKey: process.env.AWS_BEDROCK_LLM_API_KEY,
+        baseURL: anthropicBaseURL(region, this.model),
+        defaultHeaders: { "anthropic-version": "2023-06-01" },
+      });
+    }
   }
 
   get client() {
     return this._client;
   }
 
-  // For streaming we use Langchain's wrapper to handle weird chunks
-  // or otherwise absorb headaches that can arise from Ollama models
-  #convertToLangchainPrototypes(chats = []) {
-    const langchainChats = [];
-    const roleToMessageMap = {
-      system: SystemMessage,
-      user: HumanMessage,
-      assistant: AIMessage,
-    };
-
-    for (const chat of chats) {
-      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
-      const MessageClass = roleToMessageMap[chat.role];
-      langchainChats.push(new MessageClass({ content: chat.content }));
-    }
-
-    return langchainChats;
+  /**
+   * Anthropic models on Bedrock go through a second client, which must honor the
+   * session abort signal too.
+   * @returns {Array<object>}
+   */
+  abortableClients() {
+    return [this._client, this._anthropic].filter(Boolean);
   }
 
-  async #handleFunctionCallChat({ messages = [] }) {
-    const response = await this.client
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .then((res) => res)
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-
-    return response?.content;
+  get supportsAgentStreaming() {
+    if (!!process.env.AWS_BEDROCK_STREAMING_DISABLED) return false;
+    return true;
   }
 
   /**
-   * Create a completion based on the received messages.
-   *
-   * @param messages A list of messages to send to the API.
-   * @param functions
-   * @returns The completion.
+   * OpenAI GPT models on Bedrock reject function tools on Chat Completions and
+   * only support them via the Responses API.
+   * @returns {boolean}
    */
-  async complete(messages, functions = []) {
+  get #usesResponsesAPI() {
+    return isOpenAIModelId(this.model);
+  }
+
+  get #maxTokens() {
+    return Number(process.env.AWS_BEDROCK_LLM_MAX_TOKENS) || 4096;
+  }
+
+  // --- OpenAI (non-Anthropic) handlers ---
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        ...temperatureParam(this.temperature),
+        messages,
+        user: this.executingUserId,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("AWSBedrock chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("AWSBedrock chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
+  }
+
+  async #handleFunctionCallStream({ messages = [] }) {
+    return await this.client.chat.completions.create({
+      model: this.model,
+      ...temperatureParam(this.temperature),
+      stream: true,
+      messages,
+      user: this.executingUserId,
+    });
+  }
+
+  // --- Main stream/complete entry points ---
+
+  async stream(messages, functions = [], eventHandler = null) {
+    if (this._anthropic) {
+      return anthropicTooledStream(
+        this._anthropic,
+        this.model,
+        this.#maxTokens,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    }
+
+    const useNative = await this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
+    if (this.#usesResponsesAPI) {
+      this.providerLog(
+        "Provider.stream (responses) - will process this chat completion."
+      );
+      return await responsesTooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    }
+
+    this.providerLog(
+      "Provider.stream (tooled) - will process this chat completion."
+    );
+
     try {
-      let completion;
-      if (functions.length > 0) {
-        const { toolCall, text } = await this.functionCall(
-          messages,
-          functions,
-          this.#handleFunctionCallChat.bind(this)
-        );
-
-        if (toolCall !== null) {
-          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
-          return {
-            result: null,
-            functionCall: {
-              name: toolCall.name,
-              arguments: toolCall.arguments,
-            },
-            cost: 0,
-          };
-        }
-        completion = { content: text };
-      }
-
-      if (!completion?.content) {
-        this.providerLog(
-          "Will assume chat completion without tool call inputs."
-        );
-        const response = await this.client.invoke(
-          this.#convertToLangchainPrototypes(this.cleanMsgs(messages))
-        );
-        completion = response;
-      }
-
-      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
-      // from calling the exact same function over and over in a loop within a single chat exchange
-      // _but_ we should enable it to call previously used tools in a new chat interaction.
-      this.deduplicator.reset("runs");
-      return {
-        result: completion.content,
-        cost: 0,
-      };
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
     } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
       throw error;
     }
   }
 
-  /**
-   * Get the cost of the completion.
-   *
-   * @param _usage The completion to get the cost for.
-   * @returns The cost of the completion.
-   * Stubbed since KoboldCPP has no cost basis.
-   */
+  async complete(messages, functions = []) {
+    if (this._anthropic) {
+      return anthropicTooledComplete(
+        this._anthropic,
+        this.model,
+        this.#maxTokens,
+        messages,
+        functions,
+        { provider: this }
+      );
+    }
+
+    const useNative = await this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    if (this.#usesResponsesAPI) {
+      return await responsesTooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        { provider: this }
+      );
+    }
+
+    try {
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
+  }
+
   getCost(_usage) {
     return 0;
   }

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
+import { safeJsonParse } from "@/utils/request";
+import { isPathMatch } from "@/utils/paths";
+import useScrollActiveItemIntoView from "@/hooks/useScrollActiveItemIntoView";
 
 export default function MenuOption({
   btnText,
@@ -24,6 +27,20 @@ export default function MenuOption({
     location: location.pathname,
   });
 
+  const isActive = hasChildren
+    ? (!isExpanded &&
+        childOptions.some((child) =>
+          isPathMatch(child.href, location.pathname)
+        )) ||
+      location.pathname === href
+    : isPathMatch(href, location.pathname);
+
+  const { ref } = useScrollActiveItemIntoView({
+    isActive,
+    behavior: "instant",
+    block: "center",
+  });
+
   if (hidden) return null;
 
   // If this option is a parent level option
@@ -41,12 +58,6 @@ export default function MenuOption({
     if (!flex && !roles.includes(user?.role)) return null;
     if (flex && !!user && !roles.includes(user?.role)) return null;
   }
-
-  const isActive = hasChildren
-    ? (!isExpanded &&
-        childOptions.some((child) => child.href === location.pathname)) ||
-      location.pathname === href
-    : location.pathname === href;
 
   const handleClick = (e) => {
     if (hasChildren) {
@@ -66,12 +77,13 @@ export default function MenuOption({
           rounded-[6px]
           ${
             isActive
-              ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
-              : "hover:bg-theme-sidebar-subitem-hover"
+              ? "bg-theme-sidebar-subitem-selected light:bg-slate-300 font-medium border-outline"
+              : "hover:bg-theme-sidebar-subitem-hover light:hover:bg-slate-300"
           }
         `}
       >
         <Link
+          ref={ref}
           to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
             isChild ? "hover:text-white" : "text-white light:text-black"
@@ -130,17 +142,17 @@ function useIsExpanded({
     if (hasVisibleChildren) {
       const storedValue = localStorage.getItem(storageKey);
       if (storedValue !== null) {
-        return JSON.parse(storedValue);
+        return safeJsonParse(storedValue, false);
       }
-      return childOptions.some((child) => child.href === location);
+      return childOptions.some((child) => isPathMatch(child.href, location));
     }
     return false;
   });
 
   useEffect(() => {
     if (hasVisibleChildren) {
-      const shouldExpand = childOptions.some(
-        (child) => child.href === location
+      const shouldExpand = childOptions.some((child) =>
+        isPathMatch(child.href, location)
       );
       if (shouldExpand && !isExpanded) {
         setIsExpanded(true);

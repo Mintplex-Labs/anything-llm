@@ -112,6 +112,32 @@ const SlashCommandPresets = {
       return false;
     }
   },
+
+  /**
+   * Migrates all slash command presets with null userId to the specified admin user.
+   * Called during multi-user mode enablement to assign orphaned presets to the new admin.
+   * @param {number} adminUserId - The admin user ID to assign presets to
+   * @returns {Promise<void>}
+   */
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.slash_command_presets.updateMany({
+        where: { userId: null },
+        data: {
+          userId: adminUserId,
+          uid: adminUserId,
+        },
+      });
+      console.log(
+        "Successfully migrated slash command presets to multi-user mode"
+      );
+    } catch (error) {
+      console.error(
+        "Error migrating slash command presets to multi-user mode:",
+        error
+      );
+    }
+  },
 };
 
 module.exports.SlashCommandPresets = SlashCommandPresets;

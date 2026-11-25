@@ -1,21 +1,40 @@
-const { AzureOpenAI } = require("openai");
+const { OpenAI } = require("openai");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const Provider = require("./ai-provider.js");
+const { tooledStream, tooledComplete } = require("./helpers/tooled.js");
+const {
+  responsesTooledStream,
+  responsesTooledComplete,
+} = require("./helpers/responsesTooled.js");
 const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the Azure OpenAI API.
+ * Uses the shared native tool calling helper for OpenAI-compatible tool calling,
+ * or the Responses API when AZURE_OPENAI_AGENT_API is set to "responses".
  */
 class AzureOpenAiProvider extends Provider {
   model;
 
+  /**
+   * Not every Azure deployment or region supports the Responses API, so agent
+   * calls use Chat Completions unless the user opts in. Newer reasoning
+   * deployments (eg: GPT-6) reject function tools on Chat Completions, so this
+   * also flips on for the session when a deployment asks for /v1/responses.
+   */
+  #useResponsesAPI = process.env.AZURE_OPENAI_AGENT_API === "responses";
+
   constructor(config = { model: null }) {
-    const client = new AzureOpenAI({
+    const client = new OpenAI({
       apiKey: process.env.AZURE_OPENAI_KEY,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-      apiVersion: "2024-12-01-preview",
+      baseURL: AzureOpenAiLLM.formatBaseUrl(process.env.AZURE_OPENAI_ENDPOINT),
     });
     super(client);
-    this.model = config.model ?? process.env.OPEN_MODEL_PREF;
+    this.providerTag = "azure";
+    this.model =
+      config.model ||
+      process.env.AZURE_OPENAI_MODEL_PREF ||
+      process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
 
@@ -24,77 +43,107 @@ class AzureOpenAiProvider extends Provider {
   }
 
   /**
-   * Create a completion based on the received messages.
+   * Switches this session to the Responses API if the error is a deployment
+   * refusing function tools on Chat Completions.
+   * @param {Error & {status?: number}} error
+   * @returns {boolean} Whether the request should be retried on the Responses API.
+   */
+  #switchToResponsesAPI(error) {
+    if (this.#useResponsesAPI) return false;
+    if (error?.status !== 400 || !/\/v1\/responses/.test(error?.message ?? ""))
+      return false;
+    this.providerLog(
+      "Deployment requires the Responses API for tool calls - switching for this session."
+    );
+    this.#useResponsesAPI = true;
+    return true;
+  }
+
+  /**
+   * Maps an Azure OpenAI error to the error aibitat should handle.
+   * @param {Error} error
+   * @returns {Error}
+   */
+  #toAgentError(error) {
+    if (error instanceof OpenAI.AuthenticationError) return error;
+    if (
+      error instanceof OpenAI.RateLimitError ||
+      error instanceof OpenAI.InternalServerError ||
+      error instanceof OpenAI.APIError
+    ) {
+      return new RetryError(error.message);
+    }
+    return error;
+  }
+
+  /**
+   * Stream a chat completion from Azure OpenAI with tool calling.
    *
-   * @param messages A list of messages to send to the OpenAI API.
-   * @param functions
+   * @param {any[]} messages
+   * @param {any[]} functions
+   * @param {function} eventHandler
+   * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>}
+   */
+  async stream(messages, functions = [], eventHandler = null) {
+    const streamFn = this.#useResponsesAPI
+      ? responsesTooledStream
+      : tooledStream;
+    this.providerLog(
+      `Provider.stream${this.#useResponsesAPI ? " (responses)" : ""} - will process this chat completion.`
+    );
+
+    try {
+      return await streamFn(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    } catch (error) {
+      if (this.#switchToResponsesAPI(error))
+        return this.stream(messages, functions, eventHandler);
+      console.error(error.message, error);
+      throw this.#toAgentError(error);
+    }
+  }
+
+  /**
+   * Create a completion based on the received messages with tool calling.
+   *
+   * @param {any[]} messages
+   * @param {any[]} functions
    * @returns The completion.
    */
   async complete(messages, functions = []) {
     try {
-      const response = await this.client.chat.completions.create({
-        model: this.model,
-        stream: false,
-        messages,
-        ...(Array.isArray(functions) && functions?.length > 0
-          ? { functions }
-          : {}),
-      });
-
-      // Right now, we only support one completion,
-      // so we just take the first one in the list
-      const completion = response.choices[0].message;
-      const cost = this.getCost(response.usage);
-      // treat function calls
-      if (completion.function_call) {
-        let functionArgs = {};
-        try {
-          functionArgs = JSON.parse(completion.function_call.arguments);
-        } catch (error) {
-          // call the complete function again in case it gets a json error
-          return this.complete(
-            [
-              ...messages,
-              {
-                role: "function",
-                name: completion.function_call.name,
-                function_call: completion.function_call,
-                content: error?.message,
-              },
-            ],
-            functions
+      const result = this.#useResponsesAPI
+        ? await responsesTooledComplete(
+            this.client,
+            this.model,
+            messages,
+            functions,
+            { provider: this }
+          )
+        : await tooledComplete(
+            this.client,
+            this.model,
+            messages,
+            functions,
+            this.getCost.bind(this),
+            { provider: this }
           );
-        }
 
-        // console.log(completion, { functionArgs })
-        return {
-          textResponse: null,
-          functionCall: {
-            name: completion.function_call.name,
-            arguments: functionArgs,
-          },
-          cost,
-        };
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
       }
 
-      return {
-        textResponse: completion.content,
-        cost,
-      };
+      return result;
     } catch (error) {
-      // If invalid Auth error we need to abort because no amount of waiting
-      // will make auth better.
-      if (error instanceof AzureOpenAI.AuthenticationError) throw error;
-
-      if (
-        error instanceof AzureOpenAI.RateLimitError ||
-        error instanceof AzureOpenAI.InternalServerError ||
-        error instanceof AzureOpenAI.APIError // Also will catch AuthenticationError!!!
-      ) {
-        throw new RetryError(error.message);
-      }
-
-      throw error;
+      if (this.#switchToResponsesAPI(error))
+        return this.complete(messages, functions);
+      throw this.#toAgentError(error);
     }
   }
 

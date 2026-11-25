@@ -11,6 +11,9 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "novita")
@@ -39,6 +42,12 @@ class NovitaLLM {
       modelPreference ||
       process.env.NOVITA_LLM_MODEL_PREF ||
       "deepseek/deepseek-r1";
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -46,13 +55,7 @@ class NovitaLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
 
     this.log(`Loaded with model: ${this.model}`);
   }
@@ -82,7 +85,7 @@ class NovitaLLM {
   // from the current date. If it is, then we will refetch the API so that all the models are up
   // to date.
   #cacheIsStale() {
-    const MAX_STALE = 6.048e8; // 1 Week in MS
+    const MAX_STALE = 2.592e8; // 3 days in MS
     if (!fs.existsSync(this.cacheAtPath)) return true;
     const now = Number(new Date());
     const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
@@ -143,6 +146,32 @@ class NovitaLLM {
     return availableModels[this.model]?.maxLength || 4096;
   }
 
+  /**
+   * Get the capabilities of a model from the Novita API.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    try {
+      await this.#syncModels();
+      const availableModels = this.models();
+      const modelInfo = availableModels[this.model];
+      return {
+        tools: modelInfo.features.includes("function-calling"),
+        reasoning: modelInfo.features.includes("reasoning"),
+        imageGeneration: false, // no image generation capabilities for Novita yet.
+        vision: modelInfo.input_modalities.includes("image"),
+      };
+    } catch (error) {
+      console.error("Error getting model capabilities:", error);
+      return {
+        tools: "unknown",
+        reasoning: "unknown",
+        imageGeneration: "unknown",
+        vision: "unknown",
+      };
+    }
+  }
+
   async isValidChatCompletionModel(model = "") {
     await this.#syncModels();
     const availableModels = this.models();
@@ -193,7 +222,10 @@ class NovitaLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `Novita chat: ${this.model} is not valid for chat completion!`
@@ -204,7 +236,7 @@ class NovitaLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -225,25 +257,34 @@ class NovitaLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `Novita chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+      provider: this.className,
+    });
     return measuredStreamRequest;
   }
 
@@ -392,6 +433,8 @@ async function fetchNovitaModels() {
             model.id.split("/")[0].charAt(0).toUpperCase() +
             model.id.split("/")[0].slice(1),
           maxLength: model.context_size,
+          features: model.features ?? [],
+          input_modalities: model.input_modalities ?? [],
         };
       });
 

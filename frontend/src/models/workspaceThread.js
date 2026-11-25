@@ -1,12 +1,12 @@
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { v4 } from "uuid";
 
 const WorkspaceThread = {
   all: async function (workspaceSlug) {
-    const { threads } = await fetch(
+    const { threads, defaultThreadChatCount } = await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/threads`,
       {
         method: "GET",
@@ -14,11 +14,11 @@ const WorkspaceThread = {
       }
     )
       .then((res) => res.json())
-      .catch((e) => {
-        return { threads: [] };
+      .catch(() => {
+        return { threads: [], defaultThreadChatCount: 0 };
       });
 
-    return { threads };
+    return { threads, defaultThreadChatCount };
   },
   new: async function (workspaceSlug) {
     const { thread, error } = await fetch(
@@ -91,7 +91,8 @@ const WorkspaceThread = {
     { workspaceSlug, threadSlug },
     message,
     handleChat,
-    attachments = []
+    attachments = [],
+    reasoningEffort = null
   ) {
     const ctrl = new AbortController();
 
@@ -99,70 +100,73 @@ const WorkspaceThread = {
     // to early abort the streaming response. On abort we send a special `stopGeneration`
     // event to be handled which resets the UI for us to be able to send another message.
     // The backend response abort handling is done in each LLM's handleStreamResponse.
-    window.addEventListener(ABORT_STREAM_EVENT, () => {
+    const onAbortStream = () => {
       ctrl.abort();
       handleChat({ id: v4(), type: "stopGeneration" });
-    });
+    };
+    window.addEventListener(ABORT_STREAM_EVENT, onAbortStream);
 
-    await fetchEventSource(
-      `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
-      {
-        method: "POST",
-        body: JSON.stringify({ message, attachments }),
-        headers: baseHeaders(),
-        signal: ctrl.signal,
-        openWhenHidden: true,
-        async onopen(response) {
-          if (response.ok) {
-            return; // everything's good
-          } else if (
-            response.status >= 400 &&
-            response.status < 500 &&
-            response.status !== 429
-          ) {
+    try {
+      await fetchEventSource(
+        `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
+        {
+          method: "POST",
+          body: JSON.stringify({ message, attachments, reasoningEffort }),
+          headers: baseHeaders(),
+          signal: ctrl.signal,
+          openWhenHidden: true,
+          async onopen(response) {
+            if (response.ok) {
+              return; // everything's good
+            } else if (
+              response.status >= 400 &&
+              response.status < 500 &&
+              response.status !== 429
+            ) {
+              handleChat({
+                id: v4(),
+                type: "abort",
+                textResponse: null,
+                sources: [],
+                close: true,
+                error: `An error occurred while streaming response. Code ${response.status}`,
+              });
+              ctrl.abort();
+              throw new Error("Invalid Status code response.");
+            } else {
+              handleChat({
+                id: v4(),
+                type: "abort",
+                textResponse: null,
+                sources: [],
+                close: true,
+                error: `An error occurred while streaming response. Unknown Error.`,
+              });
+              ctrl.abort();
+              throw new Error("Unknown error");
+            }
+          },
+          async onmessage(msg) {
+            const chatResult = safeJsonParse(msg.data, null);
+            if (chatResult) handleChat(chatResult);
+          },
+          onerror(err) {
             handleChat({
               id: v4(),
               type: "abort",
               textResponse: null,
               sources: [],
               close: true,
-              error: `An error occurred while streaming response. Code ${response.status}`,
+              error: `An error occurred while streaming response. ${err.message}`,
             });
             ctrl.abort();
-            throw new Error("Invalid Status code response.");
-          } else {
-            handleChat({
-              id: v4(),
-              type: "abort",
-              textResponse: null,
-              sources: [],
-              close: true,
-              error: `An error occurred while streaming response. Unknown Error.`,
-            });
-            ctrl.abort();
-            throw new Error("Unknown error");
-          }
-        },
-        async onmessage(msg) {
-          try {
-            const chatResult = JSON.parse(msg.data);
-            handleChat(chatResult);
-          } catch {}
-        },
-        onerror(err) {
-          handleChat({
-            id: v4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `An error occurred while streaming response. ${err.message}`,
-          });
-          ctrl.abort();
-          throw new Error();
-        },
-      }
-    );
+            throw new Error();
+          },
+        }
+      );
+    } finally {
+      window.removeEventListener(ABORT_STREAM_EVENT, onAbortStream);
+    }
   },
   _deleteEditedChats: async function (
     workspaceSlug = "",
@@ -186,18 +190,19 @@ const WorkspaceThread = {
         return false;
       });
   },
-  _updateChatResponse: async function (
+  _updateChat: async function (
     workspaceSlug = "",
     threadSlug = "",
     chatId,
-    newText
+    newText,
+    role = "assistant"
   ) {
     return await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/update-chat`,
       {
         method: "POST",
         headers: baseHeaders(),
-        body: JSON.stringify({ chatId, newText }),
+        body: JSON.stringify({ chatId, newText, role }),
       }
     )
       .then((res) => {

@@ -17,15 +17,22 @@ const RESERVED_FILES = ["__HOTDIR__.md"];
  * @param {string} targetFilename - The filename to process
  * @param {Object} options - The options for the file processing
  * @param {boolean} options.parseOnly - If true, the file will not be saved as a document even when `writeToServerDocuments` is called in the handler. Must be explicitly set to true to use.
+ * @param {string} options.absolutePath - If provided, use this absolute path instead of resolving relative to WATCH_DIRECTORY. For internal use only.
+ * @param {string} options.originalFilename - If provided, the user-facing filename to use for titles and output names instead of `targetFilename`.
  * @param {Object} metadata - The metadata for the file processing
  * @returns {Promise<{success: boolean, reason: string, documents: Object[]}>} - The documents from the file processing
  */
 async function processSingleFile(targetFilename, options = {}, metadata = {}) {
-  const fullFilePath = path.resolve(
-    WATCH_DIRECTORY,
-    normalizePath(targetFilename)
+  const fullFilePath = normalizePath(
+    options.absolutePath || path.resolve(WATCH_DIRECTORY, targetFilename)
   );
-  if (!isWithin(path.resolve(WATCH_DIRECTORY), fullFilePath))
+
+  // If absolute path is not provided, check if the file is within the watch directory
+  // to prevent unauthorized paths from being processed.
+  if (
+    !options.absolutePath &&
+    !isWithin(path.resolve(WATCH_DIRECTORY), fullFilePath)
+  )
     return {
       success: false,
       reason: "Filename is a not a valid path to process.",
@@ -38,6 +45,7 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
       reason: "Filename is a reserved filename and cannot be processed.",
       documents: [],
     };
+
   if (!fs.existsSync(fullFilePath))
     return {
       success: false,
@@ -46,7 +54,7 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
     };
 
   const fileExtension = path.extname(fullFilePath).toLowerCase();
-  if (fullFilePath.includes(".") && !fileExtension) {
+  if (path.basename(fullFilePath).includes(".") && !fileExtension) {
     return {
       success: false,
       reason: `No file extension found. This file cannot be processed.`,
@@ -62,7 +70,8 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
       );
       processFileAs = ".txt";
     } else {
-      trashFile(fullFilePath);
+      // If absolute path is provided, do NOT trash the file since it is a user provided path.
+      if (!options.absolutePath) trashFile(fullFilePath);
       return {
         success: false,
         reason: `File extension ${fileExtension} not supported for parsing and cannot be assumed as text file type.`,
@@ -76,7 +85,11 @@ async function processSingleFile(targetFilename, options = {}, metadata = {}) {
   ]);
   return await FileTypeProcessor({
     fullFilePath,
-    filename: targetFilename,
+    // Uploads land in the hotdir under a unique name so concurrent uploads
+    // cannot collide - titles and output names use the user-facing name.
+    filename: options.originalFilename
+      ? path.basename(normalizePath(options.originalFilename))
+      : targetFilename,
     options,
     metadata,
   });

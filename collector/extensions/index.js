@@ -1,6 +1,9 @@
 const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
-const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/extensions/RepoLoader");
+const {
+  resolveRepoLoader,
+  resolveRepoLoaderFunction,
+} = require("../utils/extensions/RepoLoader");
 const { reqBody } = require("../utils/http");
 const { validURL, validateURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
@@ -15,7 +18,8 @@ function extensions(app) {
     async function (request, response) {
       try {
         const { type, options } = reqBody(request);
-        if (!RESYNC_METHODS.hasOwnProperty(type)) throw new Error(`Type "${type}" is not a valid type to sync.`);
+        if (!RESYNC_METHODS.hasOwnProperty(type))
+          throw new Error(`Type "${type}" is not a valid type to sync.`);
         return await RESYNC_METHODS[type](options, response);
       } catch (e) {
         console.error(e);
@@ -27,17 +31,19 @@ function extensions(app) {
       }
       return;
     }
-  )
+  );
 
   app.post(
     "/ext/:repo_platform-repo",
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const loadRepo = resolveRepoLoaderFunction(request.params.repo_platform);
+        const loadRepo = resolveRepoLoaderFunction(
+          request.params.repo_platform
+        );
         const { success, reason, data } = await loadRepo(
           reqBody(request),
-          response,
+          response
         );
         response.status(200).json({
           success,
@@ -92,7 +98,9 @@ function extensions(app) {
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const { loadYouTubeTranscript } = require("../utils/extensions/YoutubeTranscript");
+        const {
+          loadYouTubeTranscript,
+        } = require("../utils/extensions/YoutubeTranscript");
         const { success, reason, data } = await loadYouTubeTranscript(
           reqBody(request)
         );
@@ -122,6 +130,11 @@ function extensions(app) {
         const validatedUrl = validateURL(url);
         if (!validURL(validatedUrl)) throw new Error("Not a valid URL.");
         const scrapedData = await websiteDepth(validatedUrl, depth, maxLinks);
+        if (scrapedData.length === 0)
+          return response.status(200).json({
+            success: false,
+            reason: `No pages could be scraped from ${validatedUrl}.`,
+          });
         response.status(200).json({ success: true, data: scrapedData });
       } catch (e) {
         console.error(e);
@@ -162,7 +175,9 @@ function extensions(app) {
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const { loadAndStoreSpaces } = require("../utils/extensions/DrupalWiki");
+        const {
+          loadAndStoreSpaces,
+        } = require("../utils/extensions/DrupalWiki");
         const { success, reason, data } = await loadAndStoreSpaces(
           reqBody(request),
           response
@@ -208,7 +223,9 @@ function extensions(app) {
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const { loadPaperlessNgx } = require("../utils/extensions/PaperlessNgx");
+        const {
+          loadPaperlessNgx,
+        } = require("../utils/extensions/PaperlessNgx");
         const result = await loadPaperlessNgx(reqBody(request), response);
         response.status(200).json(result);
       } catch (e) {

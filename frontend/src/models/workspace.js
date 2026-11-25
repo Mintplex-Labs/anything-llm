@@ -55,6 +55,15 @@ const Workspace = {
 
     return { workspace, message };
   },
+  removeQueuedEmbedding: async function (slug, filename) {
+    return fetch(`${API_BASE}/workspace/${slug}/embed-queue`, {
+      method: "DELETE",
+      body: JSON.stringify({ filename }),
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ success: false }));
+  },
   chatHistory: async function (slug) {
     const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {
       method: "GET",
@@ -64,6 +73,24 @@ const Workspace = {
       .then((res) => res.history || [])
       .catch(() => []);
     return history;
+  },
+  /**
+   * Export a workspace or thread's chat as a server-generated branded PDF.
+   * @param {string} slug - Workspace slug
+   * @param {string|null} threadSlug - Thread slug, or null for the default workspace chat
+   * @returns {Promise<Blob|null>} The PDF blob, or null on failure
+   */
+  exportChatsToType: async function (slug, threadSlug = null, type = "pdf") {
+    return await fetch(`${API_BASE}/export-chat/${type}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ workspaceSlug: slug, threadSlug }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to export chat.");
+        return res.blob();
+      })
+      .catch(() => null);
   },
   updateChatFeedback: async function (chatId, slug, feedback) {
     const result = await fetch(
@@ -99,20 +126,16 @@ const Workspace = {
       return this.threads._deleteEditedChats(slug, threadSlug, startingId);
     return this._deleteEditedChats(slug, startingId);
   },
-  updateChatResponse: async function (
+  updateChat: async function (
     slug = "",
     threadSlug = "",
     chatId,
-    newText
+    newText,
+    role = "assistant"
   ) {
     if (!!threadSlug)
-      return this.threads._updateChatResponse(
-        slug,
-        threadSlug,
-        chatId,
-        newText
-      );
-    return this._updateChatResponse(slug, chatId, newText);
+      return this.threads._updateChat(slug, threadSlug, chatId, newText, role);
+    return this._updateChat(slug, chatId, newText, role);
   },
   multiplexStream: async function ({
     workspaceSlug,
@@ -120,89 +143,101 @@ const Workspace = {
     prompt,
     chatHandler,
     attachments = [],
+    reasoningEffort = null,
   }) {
     if (!!threadSlug)
       return this.threads.streamChat(
         { workspaceSlug, threadSlug },
         prompt,
         chatHandler,
-        attachments
+        attachments,
+        reasoningEffort
       );
     return this.streamChat(
       { slug: workspaceSlug },
       prompt,
       chatHandler,
-      attachments
+      attachments,
+      reasoningEffort
     );
   },
-  streamChat: async function ({ slug }, message, handleChat, attachments = []) {
+  streamChat: async function (
+    { slug },
+    message,
+    handleChat,
+    attachments = [],
+    reasoningEffort = null
+  ) {
     const ctrl = new AbortController();
 
     // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
     // to early abort the streaming response. On abort we send a special `stopGeneration`
     // event to be handled which resets the UI for us to be able to send another message.
     // The backend response abort handling is done in each LLM's handleStreamResponse.
-    window.addEventListener(ABORT_STREAM_EVENT, () => {
+    const onAbortStream = () => {
       ctrl.abort();
       handleChat({ id: v4(), type: "stopGeneration" });
-    });
+    };
+    window.addEventListener(ABORT_STREAM_EVENT, onAbortStream);
 
-    await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
-      method: "POST",
-      body: JSON.stringify({ message, attachments }),
-      headers: baseHeaders(),
-      signal: ctrl.signal,
-      openWhenHidden: true,
-      async onopen(response) {
-        if (response.ok) {
-          return; // everything's good
-        } else if (
-          response.status >= 400 &&
-          response.status < 500 &&
-          response.status !== 429
-        ) {
+    try {
+      await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
+        method: "POST",
+        body: JSON.stringify({ message, attachments, reasoningEffort }),
+        headers: baseHeaders(),
+        signal: ctrl.signal,
+        openWhenHidden: true,
+        async onopen(response) {
+          if (response.ok) {
+            return; // everything's good
+          } else if (
+            response.status >= 400 &&
+            response.status < 500 &&
+            response.status !== 429
+          ) {
+            handleChat({
+              id: v4(),
+              type: "abort",
+              textResponse: null,
+              sources: [],
+              close: true,
+              error: `An error occurred while streaming response. Code ${response.status}`,
+            });
+            ctrl.abort();
+            throw new Error("Invalid Status code response.");
+          } else {
+            handleChat({
+              id: v4(),
+              type: "abort",
+              textResponse: null,
+              sources: [],
+              close: true,
+              error: `An error occurred while streaming response. Unknown Error.`,
+            });
+            ctrl.abort();
+            throw new Error("Unknown error");
+          }
+        },
+        async onmessage(msg) {
+          const chatResult = safeJsonParse(msg.data, null);
+          if (chatResult) handleChat(chatResult);
+        },
+        onerror(err) {
           handleChat({
             id: v4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: `An error occurred while streaming response. Code ${response.status}`,
+            error: `An error occurred while streaming response. ${err.message}`,
           });
           ctrl.abort();
-          throw new Error("Invalid Status code response.");
-        } else {
-          handleChat({
-            id: v4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `An error occurred while streaming response. Unknown Error.`,
-          });
-          ctrl.abort();
-          throw new Error("Unknown error");
-        }
-      },
-      async onmessage(msg) {
-        try {
-          const chatResult = JSON.parse(msg.data);
-          handleChat(chatResult);
-        } catch {}
-      },
-      onerror(err) {
-        handleChat({
-          id: v4(),
-          type: "abort",
-          textResponse: null,
-          sources: [],
-          close: true,
-          error: `An error occurred while streaming response. ${err.message}`,
-        });
-        ctrl.abort();
-        throw new Error();
-      },
-    });
+          throw new Error();
+        },
+      });
+    } finally {
+      window.removeEventListener(ABORT_STREAM_EVENT, onAbortStream);
+    }
   },
   all: async function () {
     const workspaces = await fetch(`${API_BASE}/workspaces`, {
@@ -223,6 +258,21 @@ const Workspace = {
       .then((res) => res.workspace)
       .catch(() => null);
     return workspace;
+  },
+  /**
+   * Fetches the capabilities of the workspace's current LLM model.
+   * @param {string} slug - Workspace slug
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  llmCapabilities: async function (slug = "") {
+    const capabilities = await fetch(
+      `${API_BASE}/workspace/${slug}/llm-capabilities`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => res.json())
+      .then((res) => res.capabilities)
+      .catch(() => null);
+    return capabilities ?? { reasoning: "unknown", reasoningOptions: [] };
   },
   delete: async function (slug) {
     const result = await fetch(`${API_BASE}/workspace/${slug}`, {
@@ -350,62 +400,15 @@ const Workspace = {
         throw new Error("Failed to fetch TTS.");
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))
-      .catch((e) => {
+      .catch(() => {
         return null;
       });
   },
-  uploadPfp: async function (formData, slug) {
-    return await fetch(`${API_BASE}/workspace/${slug}/upload-pfp`, {
-      method: "POST",
-      body: formData,
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error uploading pfp.");
-        return { success: true, error: null };
-      })
-      .catch((e) => {
-        console.log(e);
-        return { success: false, error: e.message };
-      });
-  },
-
-  fetchPfp: async function (slug) {
-    return await fetch(`${API_BASE}/workspace/${slug}/pfp`, {
-      method: "GET",
-      cache: "no-cache",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (res.ok && res.status !== 204) return res.blob();
-        throw new Error("Failed to fetch pfp.");
-      })
-      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
-      .catch((e) => {
-        // console.log(e);
-        return null;
-      });
-  },
-
-  removePfp: async function (slug) {
-    return await fetch(`${API_BASE}/workspace/${slug}/remove-pfp`, {
-      method: "DELETE",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (res.ok) return { success: true, error: null };
-        throw new Error("Failed to remove pfp.");
-      })
-      .catch((e) => {
-        console.log(e);
-        return { success: false, error: e.message };
-      });
-  },
-  _updateChatResponse: async function (slug = "", chatId, newText) {
+  _updateChat: async function (slug = "", chatId, newText, role = "assistant") {
     return await fetch(`${API_BASE}/workspace/${slug}/update-chat`, {
       method: "POST",
       headers: baseHeaders(),
-      body: JSON.stringify({ chatId, newText }),
+      body: JSON.stringify({ chatId, newText, role }),
     })
       .then((res) => {
         if (res.ok) return true;
@@ -504,6 +507,22 @@ const Workspace = {
   },
 
   /**
+   * Moves parsed files into custom-documents so they can be queued for embedding.
+   * @param {string} slug - workspace slug
+   * @param {number[]} fileIds - parsed file ids
+   * @returns {Promise<{locations: (string|null)[]}>} document locations index-aligned with fileIds, null if the move failed
+   */
+  moveParsedFiles: async function (slug, fileIds = []) {
+    return fetch(`${API_BASE}/workspace/${slug}/move-parsed-files`, {
+      method: "POST",
+      body: JSON.stringify({ fileIds }),
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => ({ locations: fileIds.map(() => null) }));
+  },
+
+  /**
    * Deletes and un-embeds a single file in a single call from a workspace
    * @param {string} slug - workspace slug
    * @param {string} documentLocation - location of file eg: custom-documents/my-file-uuid.json
@@ -574,6 +593,27 @@ const Workspace = {
         return { workspaces: [], threads: [] };
       });
     return response;
+  },
+
+  /**
+   * Checks if the agent command is available for a workspace
+   * by checking if the workspace's agent provider supports native tool calling.
+   *
+   * This can be model specific or enabled via ENV flag.
+   * @param {string} slug - workspace slug
+   * @returns {Promise<{showAgentCommand: boolean}>}
+   */
+  agentCommandAvailable: async function (slug = null) {
+    if (!slug) return { showAgentCommand: true };
+    return await fetch(
+      `${API_BASE}/workspace/${slug}/is-agent-command-available`,
+      { headers: baseHeaders() }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { showAgentCommand: true };
+      });
   },
 
   threads: WorkspaceThread,

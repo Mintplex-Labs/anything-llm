@@ -1,30 +1,41 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
+const { RetryError } = require("../error.js");
+const { normalizeMistralClient } = require("../../../AiProviders/mistral");
 
 /**
  * The agent provider for the Mistral provider.
- * Mistral limits what models can call tools and even when using those
- * the model names change and dont match docs. When you do have the right model
- * it still fails and is not truly OpenAI compatible so its easier to just wrap
- * this with Untooled which 100% works since its just text & works far more reliably
  */
 class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
     super();
-    const { model = "mistral-medium" } = config;
-    const client = new OpenAI({
-      baseURL: "https://api.mistral.ai/v1",
-      apiKey: process.env.MISTRAL_API_KEY,
-      maxRetries: 3,
-    });
+    const { model = "mistral-medium", reasoningEffort = null } = config;
+    const client = normalizeMistralClient(
+      new OpenAI({
+        baseURL: "https://api.mistral.ai/v1",
+        apiKey: process.env.MISTRAL_API_KEY,
+      })
+    );
 
+    this.providerTag = "mistral";
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
+  }
+
+  get reasoningConfig() {
+    return reasoningParams("mistral", this.reasoningEffort, this.model);
   }
 
   get client() {
@@ -39,13 +50,14 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("Mistral chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("Mistral chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -56,28 +68,90 @@ class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
     });
   }
 
   async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
+    const useNative = this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
+    this.providerLog(
+      "Provider.stream (tooled) - will process this chat completion."
     );
+
+    try {
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   async complete(messages, functions = []) {
-    return await UnTooled.prototype.complete.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallChat.bind(this)
-    );
+    const useNative = this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    try {
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   /**

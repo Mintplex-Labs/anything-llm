@@ -1,11 +1,18 @@
 const path = require("path");
 const fs = require("fs");
-const { toChunks } = require("../../helpers");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 const { v4 } = require("uuid");
 const { SUPPORTED_NATIVE_EMBEDDING_MODELS } = require("./constants");
 
 class NativeEmbedder {
   static defaultModel = "Xenova/all-MiniLM-L6-v2";
+
+  // ONNX sessions cannot be freed on onnxruntime-node 1.14 (dispose() is a
+  // no-op), so we must only ever create one pipeline per model.
+  /** @type {Map<string, any>} */
+  static #pipelines = new Map();
+  /** @type {Map<string, Promise<any>>} */
+  static #pipelinePromises = new Map();
 
   /**
    * Supported embedding models for native.
@@ -178,28 +185,44 @@ class NativeEmbedder {
   // report 20 times a day: https://github.com/Mintplex-Labs/anything-llm/issues/821
   // So to attempt to monkey-patch this we have a single fallback URL to help alleviate duplicate bug reports.
   async embedderClient() {
-    if (!this.modelDownloaded)
+    if (NativeEmbedder.#pipelines.has(this.model))
+      return NativeEmbedder.#pipelines.get(this.model);
+    if (NativeEmbedder.#pipelinePromises.has(this.model))
+      return await NativeEmbedder.#pipelinePromises.get(this.model);
+
+    const loadPromise = (async () => {
+      if (!this.modelDownloaded)
+        this.log(
+          "The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)"
+        );
+
+      let fetchResponse = await this.#fetchWithHost();
+      if (fetchResponse.pipeline !== null) {
+        this.modelDownloaded = true;
+        NativeEmbedder.#pipelines.set(this.model, fetchResponse.pipeline);
+        return fetchResponse.pipeline;
+      }
+
       this.log(
-        "The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)"
+        `Failed to download model from primary URL. Using fallback ${fetchResponse.retry}`
       );
+      if (!!fetchResponse.retry)
+        fetchResponse = await this.#fetchWithHost(fetchResponse.retry);
+      if (fetchResponse.pipeline !== null) {
+        this.modelDownloaded = true;
+        NativeEmbedder.#pipelines.set(this.model, fetchResponse.pipeline);
+        return fetchResponse.pipeline;
+      }
 
-    let fetchResponse = await this.#fetchWithHost();
-    if (fetchResponse.pipeline !== null) {
-      this.modelDownloaded = true;
-      return fetchResponse.pipeline;
+      throw fetchResponse.error;
+    })();
+
+    NativeEmbedder.#pipelinePromises.set(this.model, loadPromise);
+    try {
+      return await loadPromise;
+    } finally {
+      NativeEmbedder.#pipelinePromises.delete(this.model);
     }
-
-    this.log(
-      `Failed to download model from primary URL. Using fallback ${fetchResponse.retry}`
-    );
-    if (!!fetchResponse.retry)
-      fetchResponse = await this.#fetchWithHost(fetchResponse.retry);
-    if (fetchResponse.pipeline !== null) {
-      this.modelDownloaded = true;
-      return fetchResponse.pipeline;
-    }
-
-    throw fetchResponse.error;
   }
 
   /**
@@ -211,9 +234,8 @@ class NativeEmbedder {
   #applyQueryPrefix(textInput) {
     if (!this.queryPrefix) return textInput;
     if (Array.isArray(textInput))
-      textInput = textInput.map((text) => `${this.queryPrefix}${text}`);
-    else textInput = `${this.queryPrefix}${textInput}`;
-    return textInput;
+      return textInput.map((text) => `${this.queryPrefix}${text}`);
+    return `${this.queryPrefix}${textInput}`;
   }
 
   /**
@@ -244,18 +266,18 @@ class NativeEmbedder {
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
     const chunkLen = chunks.length;
+    const totalChunks = textChunks.length;
 
+    const pipeline = await this.embedderClient();
     for (let [idx, chunk] of chunks.entries()) {
       if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
       let data;
-      let pipeline = await this.embedderClient();
       let output = await pipeline(chunk, {
         pooling: "mean",
         normalize: true,
       });
 
       if (output.length === 0) {
-        pipeline = null;
         output = null;
         data = null;
         continue;
@@ -266,7 +288,11 @@ class NativeEmbedder {
       this.log(`Embedded Chunk Group ${idx + 1} of ${chunkLen}`);
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
-      pipeline = null;
+
+      reportEmbeddingProgress(
+        Math.min((idx + 1) * this.maxConcurrentChunks, totalChunks),
+        totalChunks
+      );
       output = null;
       data = null;
     }

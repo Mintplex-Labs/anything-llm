@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { FullScreenLoader } from "@/components/Preloader";
 import Invite from "@/models/invite";
 import NewUserModal from "./NewUserModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 export default function InvitePage() {
   const { code } = useParams();
@@ -32,7 +32,7 @@ export default function InvitePage() {
 
   if (result.status === "loading") {
     return (
-      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+      <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
         <FullScreenLoader />
       </div>
     );
@@ -40,17 +40,17 @@ export default function InvitePage() {
 
   if (result.status === "invalid") {
     return (
-      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex items-center justify-center">
+      <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex items-center justify-center">
         <p className="text-red-400 text-lg">{result.message}</p>
       </div>
     );
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex items-center justify-center">
-      <ModalWrapper isOpen={true}>
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex items-center justify-center">
+      <Modal isOpen={true}>
         <NewUserModal />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

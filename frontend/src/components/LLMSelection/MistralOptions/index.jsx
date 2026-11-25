@@ -47,7 +47,16 @@ function MistralModelSelection({ apiKey, settings }) {
         "mistral",
         typeof apiKey === "boolean" ? null : apiKey
       );
-      setCustomModels(models || []);
+      // Aliases are not listed, so a saved alias is kept as its own option.
+      const savedModel = settings?.MistralModelPref;
+      const listed = models || [];
+      setCustomModels(
+        savedModel &&
+          listed.length > 0 &&
+          !listed.some((model) => model.id === savedModel)
+          ? [{ id: savedModel, name: savedModel }, ...listed]
+          : listed
+      );
       setLoading(false);
     }
     findCustomModels();

@@ -20,6 +20,10 @@ class ContextWindowFinder {
     deepseek: "deepseek",
     moonshot: "moonshot",
     zai: "vercel_ai_gateway", // Vercel has correct context windows for Z.AI models
+    sambanova: "sambanova",
+    minimax: "minimax",
+    cerebras: "cerebras",
+    vertex: "vertex_ai-language-models",
   };
   static expiryMs = 1000 * 60 * 60 * 24 * 3; // 3 days
   static remoteUrl =
@@ -41,11 +45,15 @@ class ContextWindowFinder {
       fs.mkdirSync(this.cacheLocation, { recursive: true });
 
     // If the cache is stale or not found at all, pull the model map from remote
-    if (this.isCacheStale || !fs.existsSync(this.cacheFilePath))
-      this.#pullRemoteModelMap();
+    if (this.isCacheStale || !fs.existsSync(this.cacheFilePath)) {
+      this.#pullRemoteModelMap().catch((err) =>
+        this.log("Background model map pull failed:", err)
+      );
+    }
   }
 
   log(text, ...args) {
+    if (process.env.NODE_ENV === "test") return;
     console.log(`\x1b[33m[ContextWindowFinder]\x1b[0m ${text}`, ...args);
   }
 
@@ -97,31 +105,24 @@ You can fix this by restarting AnythingLLM so the model map is re-pulled.
   async #pullRemoteModelMap() {
     try {
       this.log("Pulling remote model map...");
-      const remoteContexWindowMap = await fetch(ContextWindowFinder.remoteUrl)
-        .then((res) => {
-          if (res.status !== 200)
-            throw new Error(
-              "Failed to fetch remote model map - non 200 status code"
-            );
-          return res.json();
-        })
-        .then((data) => {
-          fs.writeFileSync(this.cacheFilePath, JSON.stringify(data, null, 2));
-          fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
-          this.log("Remote model map synced and cached");
-          return data;
-        })
-        .catch((error) => {
-          this.log("Error syncing remote model map", error);
-          return null;
-        });
-      if (!remoteContexWindowMap) return null;
+      const response = await fetch(ContextWindowFinder.remoteUrl);
+      if (response.status !== 200) {
+        throw new Error(
+          "Failed to fetch remote model map - non 200 status code"
+        );
+      }
 
-      const modelMap = this.#validateModelMap(
-        this.#formatModelMap(remoteContexWindowMap)
-      );
-      fs.writeFileSync(this.cacheFilePath, JSON.stringify(modelMap, null, 2));
-      fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
+      const data = await response.json();
+      const modelMap = this.#validateModelMap(this.#formatModelMap(data));
+      await Promise.all([
+        fs.promises.writeFile(
+          this.cacheFilePath,
+          JSON.stringify(modelMap, null, 2)
+        ),
+        fs.promises.writeFile(this.cacheFileExpiryPath, Date.now().toString()),
+      ]);
+
+      this.log("Remote model map synced and cached");
       return modelMap;
     } catch (error) {
       this.log("Error syncing remote model map", error);

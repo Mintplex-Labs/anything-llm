@@ -1,5 +1,6 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
+const { temperatureParam } = require("./helpers/tooled.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 const { parseNvidiaNimBasePath } = require("../../../AiProviders/nvidiaNim");
@@ -14,10 +15,10 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(config = {}) {
     const { model } = config;
     super();
+    this.providerTag = "nvidia-nim";
     const client = new OpenAI({
       baseURL: parseNvidiaNimBasePath(process.env.NVIDIA_NIM_LLM_BASE_PATH),
       apiKey: null,
-      maxRetries: 0,
     });
 
     this._client = client;
@@ -33,10 +34,20 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Nvidia NIM has been deprecated and is no longer supported - returning false.
+   * @returns {boolean}
+   */
+  async supportsNativeToolCalling() {
+    return false;
+  }
+
   async #handleFunctionCallChat({ messages = [] }) {
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
       })
       .then((result) => {
@@ -54,6 +65,7 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
   async #handleFunctionCallStream({ messages = [] }) {
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
       messages,
     });

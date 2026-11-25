@@ -49,6 +49,7 @@ function ShowWorkspaceChat() {
   const { slug, tab } = useParams();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
+  const [deletionProtected, setDeletionProtected] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ function ShowWorkspaceChat() {
         vectorDB: _settings?.VectorDB,
         suggestedMessages,
       });
+      setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);
       setLoading(false);
     }
     getWorkspace();
@@ -76,11 +78,11 @@ function ShowWorkspaceChat() {
 
   const TabContent = TABS[tab];
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
       {!isMobile && <Sidebar />}
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll"
       >
         <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white light:border-theme-chat-input-border border-opacity-10">
           <Link
@@ -116,8 +118,12 @@ function ShowWorkspaceChat() {
             to={paths.workspace.settings.agentConfig(slug)}
           />
         </div>
-        <div className="px-16 py-6">
-          <TabContent slug={slug} workspace={workspace} />
+        <div className="px-4 md:px-16 py-6">
+          <TabContent
+            slug={slug}
+            workspace={workspace}
+            deletionProtected={deletionProtected}
+          />
         </div>
       </div>
     </div>

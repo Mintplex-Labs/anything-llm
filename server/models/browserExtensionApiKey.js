@@ -2,6 +2,8 @@ const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 
+const PUBLIC_USER_FIELDS = { select: { id: true, username: true, role: true } };
+
 const BrowserExtensionApiKey = {
   /**
    * Creates a new secret for a browser extension API key.
@@ -87,6 +89,28 @@ const BrowserExtensionApiKey = {
   },
 
   /**
+   * Deletes all browser extension API keys for a user.
+   * Should be called when a user is deleted to revoke all their keys.
+   * @param {number} userId - The user ID whose keys should be deleted
+   * @returns {Promise<{success: boolean, error: string|null}>}
+   */
+  deleteAllForUser: async function (userId) {
+    try {
+      if (!userId) return { success: false, error: "User ID is required" };
+      await prisma.browser_extension_api_keys.deleteMany({
+        where: { user_id: parseInt(userId) },
+      });
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(
+        "Failed to delete browser extension API keys for user",
+        error
+      );
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Gets browser keys by params
    * @param {object} clause
    * @param {number|null} limit
@@ -99,7 +123,7 @@ const BrowserExtensionApiKey = {
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
-        include: { user: true },
+        include: { user: PUBLIC_USER_FIELDS },
       });
       return apiKeys;
     } catch (error) {
@@ -132,7 +156,7 @@ const BrowserExtensionApiKey = {
           ...clause,
           user_id: user.id,
         },
-        include: { user: true },
+        include: { user: PUBLIC_USER_FIELDS },
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });

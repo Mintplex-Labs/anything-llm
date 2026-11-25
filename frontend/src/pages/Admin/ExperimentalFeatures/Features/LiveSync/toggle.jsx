@@ -4,6 +4,7 @@ import showToast from "@/utils/toast";
 import { ArrowSquareOut } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Toggle from "@/components/lib/Toggle";
 
 export default function LiveSyncToggle({ enabled = false, onToggle }) {
   const [status, setStatus] = useState(enabled);
@@ -36,15 +37,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
           <h2 className="text-theme-text-primary text-md font-bold">
             Automatic Document Content Sync
           </h2>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              onClick={toggleFeatureFlag}
-              checked={status}
-              className="peer sr-only pointer-events-none"
-            />
-            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-          </label>
+          <Toggle size="lg" enabled={status} onChange={toggleFeatureFlag} />
         </div>
         <div className="flex flex-col space-y-4">
           <p className="text-theme-text-secondary text-sm">
@@ -69,6 +62,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
               href="https://docs.anythingllm.com/beta-preview/active-features/live-document-sync"
               target="_blank"
               className="text-sm text-blue-400 light:text-blue-500 hover:underline flex items-center gap-x-1"
+              rel="noreferrer"
             >
               <ArrowSquareOut size={14} />
               <span>Feature Documentation and Warnings</span>

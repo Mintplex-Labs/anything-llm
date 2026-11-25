@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-document-collector",
-  "version": "1.9.1",
+  "version": "1.20.0",
   "description": "Document collector server endpoints",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
+    "lint": "eslint --fix .",
+    "lint:check": "eslint ."
   },
   "dependencies": {
     "@langchain/community": "^0.2.23",
@@ -21,8 +22,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "epub2": "git+https://github.com/Mintplex-Labs/epub2-static.git#main",
-    "express": "^4.18.2",
-    "fluent-ffmpeg": "^2.1.2",
+    "express": "^4.21.2",
+    "fix-path": "^4.0.0",
     "html-to-text": "^9.0.5",
     "ignore": "^5.3.0",
     "js-tiktoken": "^1.0.8",
@@ -39,16 +40,29 @@
     "puppeteer": "~21.5.2",
     "sharp": "^0.33.5",
     "slugify": "^1.6.6",
+    "strip-ansi": "^7.1.2",
     "tesseract.js": "^6.0.0",
+    "turndown": "7.2.4",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
     "winston": "^3.13.0",
+    "youtube-transcript-plus": "^1.1.2",
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "cross-env": "^7.0.3",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-unused-imports": "^4.0.0",
+    "globals": "^17.4.0",
     "nodemon": "^2.0.22",
     "prettier": "^2.4.1"
+  },
+  "resolutions": {
+    "string-width": "^4.2.3",
+    "wrap-ansi": "^7.0.0"
   }
 }

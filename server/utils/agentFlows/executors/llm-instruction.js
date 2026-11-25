@@ -23,13 +23,17 @@ async function executeLLMInstruction(config, context) {
     if (typeof input === "object") input = JSON.stringify(input);
     if (typeof input !== "string") input = String(input);
 
+    let completion;
     const provider = aibitat.getProviderForConfig(aibitat.defaultProvider);
-    const completion = await provider.complete([
-      {
-        role: "user",
-        content: input,
-      },
-    ]);
+    if (provider.supportsAgentStreaming) {
+      completion = await provider.stream(
+        [{ role: "user", content: input }],
+        [],
+        null
+      );
+    } else {
+      completion = await provider.complete([{ role: "user", content: input }]);
+    }
 
     introspect(`Successfully received LLM response`);
     if (resultVariable) config.resultVariable = resultVariable;

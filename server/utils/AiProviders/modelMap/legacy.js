@@ -117,6 +117,22 @@ const LEGACY_MODEL_MAP = {
     "deepseek-coder": 128000,
     "deepseek-reasoner": 128000,
   },
+  minimax: {
+    "MiniMax-M2.7": 196000,
+    "MiniMax-M2.7-highspeed": 196000,
+    "MiniMax-M2.5": 196000,
+    "MiniMax-M2.5-highspeed": 196000,
+    "MiniMax-M2.1": 196000,
+    "MiniMax-M2.1-highspeed": 196000,
+    "MiniMax-M2": 196000,
+  },
+  cerebras: {
+    "llama-3.3-70b": 128000,
+    "llama3.1-8b": 128000,
+    "gpt-oss-120b": 131072,
+    "qwen-3-32b": 128000,
+    "zai-glm-4.6": 128000,
+  },
   xai: {
     "grok-beta": 131072,
   },

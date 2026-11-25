@@ -46,10 +46,11 @@ async function loadConfluence(
     };
   }
 
-  const { origin, hostname } = new URL(baseUrl);
-  console.log(`-- Working Confluence ${origin} --`);
+  const normalizedBaseUrl = resolveConfluenceBaseUrl(baseUrl, cloud);
+  const { hostname } = new URL(normalizedBaseUrl);
+  console.log(`-- Working Confluence ${normalizedBaseUrl} --`);
   const loader = new ConfluencePagesLoader({
-    baseUrl: origin, // Use the origin to avoid issues with subdomains, ports, protocols, etc.
+    baseUrl: normalizedBaseUrl,
     spaceKey,
     username,
     accessToken,
@@ -98,16 +99,17 @@ async function loadConfluence(
       id: v4(),
       url: doc.metadata.url + ".page",
       title: doc.metadata.title || doc.metadata.source,
-      docAuthor: origin,
+      docAuthor: normalizedBaseUrl,
       description: doc.metadata.title,
-      docSource: `${origin} Confluence`,
+      docSource: `${normalizedBaseUrl} Confluence`,
       chunkSource: generateChunkSource(
         {
           doc,
-          baseUrl: origin,
+          baseUrl: normalizedBaseUrl,
           spaceKey,
           accessToken,
           username,
+          personalAccessToken,
           cloud,
           bypassSSL,
         },
@@ -153,10 +155,16 @@ async function fetchConfluencePage({
   spaceKey,
   username,
   accessToken,
+  personalAccessToken = null,
   cloud = true,
   bypassSSL = false,
 }) {
-  if (!pageUrl || !baseUrl || !spaceKey || !username || !accessToken) {
+  if (
+    !pageUrl ||
+    !baseUrl ||
+    !spaceKey ||
+    (!personalAccessToken && (!username || !accessToken))
+  ) {
     return {
       success: false,
       content: null,
@@ -182,12 +190,14 @@ async function fetchConfluencePage({
   }
 
   console.log(`-- Working Confluence Page ${pageUrl} --`);
+  const normalizedBaseUrl = resolveConfluenceBaseUrl(baseUrl, cloud);
   const loader = new ConfluencePagesLoader({
-    baseUrl, // Should be the origin of the baseUrl
+    baseUrl: normalizedBaseUrl,
     spaceKey,
     username,
     accessToken,
     cloud,
+    personalAccessToken,
     bypassSSL,
   });
 
@@ -238,9 +248,24 @@ function validBaseUrl(baseUrl) {
   try {
     new URL(baseUrl);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
+}
+
+/**
+ * Resolves the Confluence base URL, preserving context paths for self-hosted deployments.
+ * @param {string} baseUrl
+ * @param {boolean} cloud
+ * @returns {string}
+ */
+function resolveConfluenceBaseUrl(baseUrl, cloud = true) {
+  const url = new URL(baseUrl);
+  // Cloud URLs use just the origin; self-hosted may have a context path like /confluence
+  if (cloud) return url.origin;
+
+  const contextPath = url.pathname.replace(/\/+$/, "");
+  return `${url.origin}${contextPath}`;
 }
 
 /**
@@ -252,16 +277,28 @@ function validBaseUrl(baseUrl) {
  * @returns {string}
  */
 function generateChunkSource(
-  { doc, baseUrl, spaceKey, accessToken, username, cloud, bypassSSL },
+  {
+    doc,
+    baseUrl,
+    spaceKey,
+    accessToken,
+    username,
+    personalAccessToken,
+    cloud,
+    bypassSSL,
+  },
   encryptionWorker
 ) {
+  // Store only the credential in use. An unset key would expand to the string
+  // "null" and be replayed as a real credential.
   const payload = {
     baseUrl,
     spaceKey,
-    token: accessToken,
-    username,
     cloud,
     bypassSSL,
+    ...(personalAccessToken
+      ? { personalAccessToken }
+      : { token: accessToken, username }),
   };
   return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
@@ -271,4 +308,5 @@ function generateChunkSource(
 module.exports = {
   loadConfluence,
   fetchConfluencePage,
+  resolveConfluenceBaseUrl,
 };

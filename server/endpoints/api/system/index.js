@@ -2,7 +2,10 @@ const { EventLogs } = require("../../../models/eventLogs");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { purgeDocument } = require("../../../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../../../utils/helpers");
-const { exportChatsAsType } = require("../../../utils/helpers/chat/convertTo");
+const {
+  exportChatsAsType,
+  validExportTypes,
+} = require("../../../utils/helpers/chat/convertTo");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -10,6 +13,8 @@ const { validApiKey } = require("../../../utils/middleware/validApiKey");
 function apiSystemEndpoints(app) {
   if (!app) return;
 
+  // Intentionally unauthenticated so deploy/shutdown scripts can flush in-memory config to .env.
+  // Takes no input and returns nothing. NOT a vulnerability - see SECURITY.md.
   app.get("/v1/system/env-dump", async (_, response) => {
     /*
    #swagger.tags = ['System Settings']
@@ -189,6 +194,13 @@ function apiSystemEndpoints(app) {
     */
       try {
         const { type = "jsonl" } = request.query;
+        if (!validExportTypes.includes(type)) {
+          response.status(400).json({
+            message: `Invalid export type: ${type}. Must be one of ${validExportTypes.join(", ")}`,
+          });
+          return;
+        }
+
         const { contentType, data } = await exportChatsAsType(
           type,
           "workspace"
@@ -212,7 +224,7 @@ function apiSystemEndpoints(app) {
       #swagger.tags = ['System Settings']
       #swagger.description = 'Permanently remove documents from the system.'
       #swagger.requestBody = {
-        description: 'Array of document names to be removed permanently.',
+        description: 'Pass each document path as folder/filename.json, including the folder and file extension.',
         required: true,
         content: {
           "application/json": {
@@ -234,7 +246,7 @@ function apiSystemEndpoints(app) {
         }
       }
       #swagger.responses[200] = {
-        description: 'Documents removed successfully.',
+        description: 'Request processed. A 200 response does not confirm that each specified document existed or was removed.',
         content: {
           "application/json": {
             schema: {

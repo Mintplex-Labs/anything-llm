@@ -2,8 +2,10 @@ const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 const { grepAgents } = require("./agents");
 const {
   grepCommand,
@@ -12,19 +14,27 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const {
+  resolveReasoningEffort,
+  usesModelRouter,
+} = require("../helpers/reasoningEffort");
 
-const VALID_CHAT_MODE = ["chat", "query"];
+const VALID_CHAT_MODE = ["automatic", "chat", "query"];
 
 async function streamChatWithWorkspace(
   response,
   workspace,
   message,
-  chatMode = "chat",
+  chatMode = "automatic",
   user = null,
   thread = null,
-  attachments = []
+  attachments = [],
+  sessionReasoningEffort = null
 ) {
   const uuid = uuidv4();
+  // Routed workspaces show no reasoning controls, so a stored effort is
+  // never applied to whichever model the router picks.
+  if (usesModelRouter(workspace)) sessionReasoningEffort = null;
   const updatedMessage = await grepCommand(message, user);
 
   if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
@@ -33,7 +43,9 @@ async function streamChatWithWorkspace(
       message,
       uuid,
       user,
-      thread
+      thread,
+      response,
+      attachments
     );
     writeResponseChunk(response, data);
     return;
@@ -47,16 +59,50 @@ async function streamChatWithWorkspace(
     user,
     workspace,
     thread,
+    attachments,
+    reasoningEffort: sessionReasoningEffort,
   });
   if (isAgentChat) return;
 
-  const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider,
-    model: workspace?.chatModel,
+  const {
+    connector: LLMConnector,
+    routingMetadata,
+    prefetchedContext,
+    error: routerError,
+  } = await resolveLLMConnector({
+    workspace,
+    message: updatedMessage,
+    user,
+    thread,
+    attachments,
   });
+
+  if (routerError) {
+    return writeResponseChunk(response, {
+      id: uuid,
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: routerError,
+    });
+  }
+
+  // Stopping the generation (or closing the tab) should stop the provider
+  // generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
+
+  if (routingMetadata?.routedTo?.shouldNotify) {
+    writeResponseChunk(response, {
+      uuid: `${uuid}:route`,
+      type: "modelRouteNotification",
+      routedTo: routingMetadata.routedTo,
+    });
+  }
+
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = workspace?.openAiHistory || 20;
+  const messageLimit = workspace?.openAiHistory ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
@@ -99,44 +145,42 @@ async function streamChatWithWorkspace(
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
-  const { rawHistory, chatHistory } = await recentChatHistory({
-    user,
-    workspace,
-    thread,
-    messageLimit,
+
+  // If the router pre-fetched context we can reuse it; otherwise fetch fresh.
+  const {
+    rawHistory,
+    chatHistory,
+    pinnedDocs: prefetchedPinnedDocs,
+    parsedFiles: prefetchedParsedFiles,
+  } = prefetchedContext ??
+  (await recentChatHistory({ user, workspace, thread, messageLimit }));
+
+  // Pinned docs — reuse pre-fetched if available, otherwise fetch with token cap.
+  const pinnedDocs =
+    prefetchedPinnedDocs ??
+    (await new DocumentManager({
+      workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
+    }).pinnedDocs());
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
   });
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
-  // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
-  // it will undergo prompt compression anyway to make it work. If there is so much pinned that the context here is bigger than
-  // what the model can support - it would get compressed anyway and that really is not the point of pinning. It is really best
-  // suited for high-context models.
-  await new DocumentManager({
-    workspace,
-    maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
-    });
-
-  // Inject any parsed files for this workspace/thread/user
-  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
-    workspace,
-    thread || null,
-    user || null
-  );
+  // Parsed files — reuse pre-fetched if available, otherwise fetch fresh.
+  const parsedFiles =
+    prefetchedParsedFiles ??
+    (await WorkspaceParsedFiles.getContextFiles(
+      workspace,
+      thread || null,
+      user || null
+    ));
   parsedFiles.forEach((doc) => {
     const { pageContent, ...metadata } = doc;
     contextTexts.push(doc.pageContent);
@@ -226,17 +270,45 @@ async function streamChatWithWorkspace(
     return;
   }
 
+  // Save the prompt before calling the LLM so it stays in the thread even if
+  // the response fails or the user leaves before it finishes.
+  const { chat } = await WorkspaceChats.new({
+    workspaceId: workspace.id,
+    prompt: message,
+    response: { text: "", sources: [], type: chatMode, attachments },
+    threadId: thread?.id || null,
+    user,
+  });
+  if (chat)
+    writeResponseChunk(response, {
+      uuid,
+      type: "promptChatId",
+      chatId: chat.id,
+    });
+
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
+  // Reuse the system prompt from routing pre-fetch when available.
+  const systemPrompt =
+    prefetchedContext?.systemPrompt ??
+    (await chatPrompt(workspace, user, {
+      prompt: updatedMessage,
+      rawHistory,
+    }));
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(workspace, user),
+      systemPrompt,
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
       attachments,
     },
     rawHistory
+  );
+
+  const reasoningEffort = await resolveReasoningEffort(
+    LLMConnector,
+    sessionReasoningEffort
   );
 
   // If streaming is not explicitly enabled for connector
@@ -247,12 +319,16 @@ async function streamChatWithWorkspace(
     );
     const { textResponse, metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
-        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
         user: user,
+        reasoningEffort,
       });
 
     completeText = textResponse;
-    metrics = performanceMetrics;
+    metrics = addChatCostToMetrics(performanceMetrics, {
+      routingMetadata,
+      workspace,
+      connector: LLMConnector,
+    });
     writeResponseChunk(response, {
       uuid,
       sources,
@@ -264,18 +340,22 @@ async function streamChatWithWorkspace(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       user: user,
+      reasoningEffort,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources,
     });
-    metrics = stream.metrics;
+    metrics = addChatCostToMetrics(stream.metrics, {
+      routingMetadata,
+      workspace,
+      connector: LLMConnector,
+    });
   }
 
   if (completeText?.length > 0) {
-    const { chat } = await WorkspaceChats.new({
+    const completedChat = {
       workspaceId: workspace.id,
       prompt: message,
       response: {
@@ -287,14 +367,19 @@ async function streamChatWithWorkspace(
       },
       threadId: thread?.id || null,
       user,
-    });
+      include: true,
+    };
+    // The early save can fail, so fall back to creating the row here.
+    const { chat: savedChat } = chat
+      ? await WorkspaceChats.upsert(chat.id, completedChat)
+      : await WorkspaceChats.new(completedChat);
 
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
       close: true,
       error: false,
-      chatId: chat.id,
+      chatId: savedChat?.id,
       metrics,
     });
     return;
@@ -308,6 +393,32 @@ async function streamChatWithWorkspace(
     metrics,
   });
   return;
+}
+
+async function resolveLLMConnector({
+  workspace,
+  message,
+  user,
+  thread,
+  attachments,
+}) {
+  try {
+    const result = await resolveProviderConnector({
+      workspace,
+      prompt: message,
+      user,
+      thread,
+      attachments,
+    });
+    return { ...result, error: null };
+  } catch (routerError) {
+    return {
+      connector: null,
+      routingMetadata: null,
+      prefetchedContext: null,
+      error: `Model router error: ${routerError.message}`,
+    };
+  }
 }
 
 module.exports = {

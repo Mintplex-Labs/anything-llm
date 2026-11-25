@@ -43,6 +43,11 @@ const WorkspaceParsedFiles = {
     }
   },
 
+  /**
+   * Gets a parsed file by its ID or a clause.
+   * @param {object} clause - The clause to filter the parsed files.
+   * @returns {Promise<import("@prisma/client").workspace_parsed_files | null>} The parsed file.
+   */
   get: async function (clause = {}) {
     try {
       const file = await prisma.workspace_parsed_files.findFirst({
@@ -77,10 +82,10 @@ const WorkspaceParsedFiles = {
 
   delete: async function (clause = {}) {
     try {
-      await prisma.workspace_parsed_files.deleteMany({
+      const result = await prisma.workspace_parsed_files.deleteMany({
         where: clause,
       });
-      return true;
+      return result.count > 0;
     } catch (error) {
       console.error(error.message);
       return false;
@@ -95,9 +100,20 @@ const WorkspaceParsedFiles = {
     return _sum.tokenCountEstimate || 0;
   },
 
-  moveToDocumentsAndEmbed: async function (fileId, workspace) {
+  /**
+   * Moves a parsed file into custom-documents so it can be embedded and removes the parsed file record.
+   * @param {import("@prisma/client").users | null} user - The user performing the operation.
+   * @param {number} fileId - The ID of the parsed file.
+   * @param {import("@prisma/client").workspaces} workspace - The workspace the file belongs to.
+   * @returns {Promise<string>} The document location, eg: custom-documents/my-file-uuid.json
+   */
+  moveToDocuments: async function (user = null, fileId, workspace) {
     try {
-      const parsedFile = await this.get({ id: parseInt(fileId) });
+      const parsedFile = await this.get({
+        id: parseInt(fileId),
+        ...(user ? { userId: user.id } : {}),
+        workspaceId: workspace.id,
+      });
       if (!parsedFile) throw new Error("File not found");
 
       // Get file location from metadata
@@ -118,16 +134,31 @@ const WorkspaceParsedFiles = {
       const targetPath = path.join(customDocsPath, path.basename(location));
       fs.copyFileSync(sourceFile, targetPath);
       fs.unlinkSync(sourceFile);
+      return `custom-documents/${path.basename(location)}`;
+    } finally {
+      await this.delete({
+        id: parseInt(fileId),
+        ...(user ? { userId: user.id } : {}),
+        workspaceId: workspace.id,
+      });
+    }
+  },
 
+  /**
+   * Moves a parsed file to the documents and embeds it.
+   * @param {import("@prisma/client").users | null} user - The user performing the operation.
+   * @param {number} fileId - The ID of the parsed file.
+   * @param {import("@prisma/client").workspaces} workspace - The workspace the file belongs to.
+   * @returns {Promise<{ success: boolean, error: string | null, document: import("@prisma/client").workspace_documents | null }>} The result of the operation.
+   */
+  moveToDocumentsAndEmbed: async function (user = null, fileId, workspace) {
+    try {
+      const docpath = await this.moveToDocuments(user, fileId, workspace);
       const {
         failedToEmbed = [],
         errors = [],
         embedded = [],
-      } = await Document.addDocuments(
-        workspace,
-        [`custom-documents/${path.basename(location)}`],
-        parsedFile.userId
-      );
+      } = await Document.addDocuments(workspace, [docpath], user?.id ?? null);
 
       if (failedToEmbed.length > 0)
         throw new Error(errors[0] || "Failed to embed document");
@@ -140,9 +171,19 @@ const WorkspaceParsedFiles = {
     } catch (error) {
       console.error("Failed to move and embed file:", error);
       return { success: false, error: error.message, document: null };
-    } finally {
-      // Always delete the file after processing
-      await this.delete({ id: parseInt(fileId) });
+    }
+  },
+
+  migrateToMultiUser: async function (adminUserId) {
+    try {
+      await prisma.workspace_parsed_files.updateMany({
+        where: { userId: null },
+        data: { userId: adminUserId },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
     }
   },
 

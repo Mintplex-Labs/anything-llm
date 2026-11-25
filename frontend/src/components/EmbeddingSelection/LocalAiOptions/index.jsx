@@ -31,19 +31,69 @@ export default function LocalAiOptions({ settings }) {
           basePath={basePath.value}
         />
         <div className="flex flex-col w-60">
+          <div className="flex flex-col gap-y-1 mb-2">
+            <div className="flex gap-x-1 items-center">
+              <label className="text-white text-sm font-semibold block">
+                Local AI API Key
+              </label>
+              <Info
+                size={16}
+                data-tooltip-id="localai-api-key-tooltip"
+                className="text-theme-text-secondary cursor-pointer"
+              />
+              <Tooltip
+                id="localai-api-key-tooltip"
+                place="top"
+                delayShow={300}
+                className="tooltip !text-xs !opacity-100"
+                style={{
+                  maxWidth: "250px",
+                  whiteSpace: "normal",
+                  wordWrap: "break-word",
+                }}
+              >
+                The API key for the LocalAI server (if applicable).
+              </Tooltip>
+            </div>
+          </div>
+          <input
+            type="password"
+            name="LocalAiApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="sk-mysecretkey"
+            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setApiKeyValue(e.target.value)}
+            onBlur={() => setApiKey(apiKeyValue)}
+          />
+        </div>
+      </div>
+      <div className="w-full flex items-center gap-[36px] mt-1.5">
+        <div className="flex flex-col w-60">
           <div
             data-tooltip-place="top"
             data-tooltip-id="max-embedding-chunk-length-tooltip"
             className="flex gap-x-1 items-center mb-3"
           >
+            <label className="text-white text-sm font-semibold block">
+              Max embedding chunk length
+            </label>
             <Info
               size={16}
               className="text-theme-text-secondary cursor-pointer"
             />
-            <label className="text-white text-sm font-semibold block">
-              Max embedding chunk length
-            </label>
-            <Tooltip id="max-embedding-chunk-length-tooltip">
+            <Tooltip
+              id="max-embedding-chunk-length-tooltip"
+              place="top"
+              delayShow={300}
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            >
               Maximum length of text chunks, in characters, for embedding.
             </Tooltip>
           </div>
@@ -59,23 +109,47 @@ export default function LocalAiOptions({ settings }) {
             autoComplete="off"
           />
         </div>
+
         <div className="flex flex-col w-60">
-          <div className="flex flex-col gap-y-1 mb-2">
-            <label className="text-white text-sm font-semibold flex items-center gap-x-2">
-              Local AI API Key{" "}
-              <p className="!text-xs !italic !font-thin">optional</p>
+          <div
+            data-tooltip-id="embedding-output-dimensions-tooltip"
+            className="flex gap-x-1 items-center mb-3"
+          >
+            <label className="text-white text-sm font-semibold block">
+              Output dimensions
             </label>
+            <Info
+              size={16}
+              className="text-theme-text-secondary cursor-pointer"
+            />
+            <Tooltip
+              id="embedding-output-dimensions-tooltip"
+              place="top"
+              delayShow={300}
+              className="tooltip !text-xs !opacity-100"
+              style={{
+                maxWidth: "250px",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            >
+              The number of dimensions the resulting output embeddings should
+              have if it supports multiple dimensions output.
+              <br />
+              <br /> Leave blank to use the default dimensions for the selected
+              model.
+            </Tooltip>
           </div>
           <input
-            type="password"
-            name="LocalAiApiKey"
+            type="number"
+            name="EmbeddingOutputDimensions"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="sk-mysecretkey"
-            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
+            placeholder="Assume default dimensions"
+            min={1}
+            onScroll={(e) => e.target.blur()}
+            defaultValue={settings?.EmbeddingOutputDimensions}
+            required={false}
             autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setApiKeyValue(e.target.value)}
-            onBlur={() => setApiKey(apiKeyValue)}
           />
         </div>
       </div>

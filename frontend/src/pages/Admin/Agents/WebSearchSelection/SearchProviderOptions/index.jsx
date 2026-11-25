@@ -1,55 +1,3 @@
-export function GoogleSearchOptions({ settings }) {
-  return (
-    <>
-      <p className="text-sm text-white/60 my-2">
-        You can get a free search engine & API key{" "}
-        <a
-          href="https://programmablesearchengine.google.com/controlpanel/create"
-          target="_blank"
-          rel="noreferrer"
-          className="text-blue-300 underline"
-        >
-          from Google here.
-        </a>
-      </p>
-      <div className="flex gap-x-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Search engine ID
-          </label>
-          <input
-            type="text"
-            name="env::AgentGoogleSearchEngineId"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Google Search Engine Id"
-            defaultValue={settings?.AgentGoogleSearchEngineId}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Programmatic Access API Key
-          </label>
-          <input
-            type="password"
-            name="env::AgentGoogleSearchEngineKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Google Search Engine API Key"
-            defaultValue={
-              settings?.AgentGoogleSearchEngineKey ? "*".repeat(20) : ""
-            }
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-      </div>
-    </>
-  );
-}
-
 const SerpApiEngines = [
   { name: "Google Search", value: "google" },
   { name: "Google Images", value: "google_images_light" },
@@ -300,6 +248,43 @@ export function BingSearchOptions({ settings }) {
   );
 }
 
+export function BaiduSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You can get an API key{" "}
+        <a
+          href="https://cloud.baidu.com/doc/qianfan-api/s/Wmbq4z7e5"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from Baidu AI Cloud Qianfan.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentBaiduSearchApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Baidu Search API Key"
+            defaultValue={
+              settings?.AgentBaiduSearchApiKey ? "*".repeat(20) : ""
+            }
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function SerplySearchOptions({ settings }) {
   return (
     <>
@@ -392,12 +377,224 @@ export function TavilySearchOptions({ settings }) {
   );
 }
 
+export function CrwSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You can get an API key{" "}
+        <a
+          href="https://fastcrw.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from fastCRW.
+        </a>
+        You can also{" "}
+        <a
+          href="https://github.com/us/crw"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          self-host.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentCrwApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="fastCRW API Key"
+            defaultValue={settings?.AgentCrwApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Base URL (optional)
+          </label>
+          <input
+            type="url"
+            name="env::AgentCrwApiUrl"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="https://fastcrw.com/api"
+            defaultValue={settings?.AgentCrwApiUrl}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function DuckDuckGoOptions() {
   return (
     <>
       <p className="text-sm text-white/60 my-2">
         DuckDuckGo is ready to use without any additional configuration.
       </p>
+    </>
+  );
+}
+
+export function KeenableSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        Keenable works without an API key required. To lift rate limits, add an
+        API key{" "}
+        <a
+          href="https://keenable.ai/console"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from Keenable.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key (optional)
+          </label>
+          <input
+            type="password"
+            name="env::AgentKeenableApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Keenable API Key"
+            defaultValue={settings?.AgentKeenableApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Base URL (optional)
+          </label>
+          <input
+            type="url"
+            name="env::AgentKeenableApiUrl"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="https://api.keenable.ai"
+            defaultValue={settings?.AgentKeenableApiUrl}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function AnySearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        AnySearch requires a free API key{" "}
+        <a
+          href="https://anysearch.com/console/api-keys"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from the AnySearch console.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentAnySearchApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="AnySearch API Key"
+            required={true}
+            defaultValue={settings?.AgentAnySearchApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function FirecrawlSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        Firecrawl requires a free API key{" "}
+        <a
+          href="https://www.firecrawl.dev/app/api-keys"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from the Firecrawl dashboard.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentFirecrawlApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Firecrawl API Key"
+            required={true}
+            defaultValue={settings?.AgentFirecrawlApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function DeepSeekSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        DeepSeek search is billed per request and uses your{" "}
+        <a
+          href="https://platform.deepseek.com/api_keys"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          DeepSeek API key.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentDeepSeekApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="DeepSeek API Key"
+            required={true}
+            defaultValue={settings?.AgentDeepSeekApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
     </>
   );
 }
@@ -428,6 +625,113 @@ export function ExaSearchOptions({ settings }) {
             placeholder="Exa API Key"
             defaultValue={settings?.AgentExaApiKey ? "*".repeat(20) : ""}
             required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function PerplexitySearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You can get an API key{" "}
+        <a
+          href="https://console.perplexity.ai"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from Perplexity.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentPerplexityApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Perplexity API Key"
+            defaultValue={settings?.AgentPerplexityApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function BraveSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You can get an API key{" "}
+        <a
+          href="https://brave.com/search/api"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from Brave.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentBraveApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Brave API Key"
+            defaultValue={settings?.AgentBraveApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function YouSearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You.com works without an API key (free tier, IP rate-limited). For
+        higher limits, get an API key{" "}
+        <a
+          href="https://you.com/platform"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from You.com
+        </a>
+        .
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key (optional)
+          </label>
+          <input
+            type="password"
+            name="env::AgentYouApiKey"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="You.com API Key"
+            defaultValue={settings?.AgentYouApiKey ? "*".repeat(20) : ""}
+            required={false}
             autoComplete="off"
             spellCheck={false}
           />

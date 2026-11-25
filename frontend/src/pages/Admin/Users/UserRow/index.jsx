@@ -1,10 +1,11 @@
+import moment from "moment";
 import { useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "@/models/admin";
 import EditUserModal from "./EditUserModal";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 
 const ModMap = {
   admin: ["admin", "manager", "default"],
@@ -63,7 +64,7 @@ export default function UserRow({ currUser, user }) {
           {user.username}
         </th>
         <td className="px-6">{titleCase(user.role)}</td>
-        <td className="px-6">{user.createdAt}</td>
+        <td className="px-6">{moment(user.createdAt).format("lll")}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-2">
           {canModify && (
             <button
@@ -91,13 +92,13 @@ export default function UserRow({ currUser, user }) {
           )}
         </td>
       </tr>
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <EditUserModal
           currentUser={currUser}
           user={user}
           closeModal={closeModal}
         />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }

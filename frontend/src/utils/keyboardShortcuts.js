@@ -1,46 +1,46 @@
 import paths from "./paths";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { userFromStorage } from "./request";
 import { TOGGLE_LLM_SELECTOR_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput/LLMSelector/action";
 
 export const KEYBOARD_SHORTCUTS_HELP_EVENT = "keyboard-shortcuts-help";
 export const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+/**
+ * Keyboard shortcut definitions.
+ *
+ * @note Navigating actions MUST use the injected `navigate` (react-router)
+ * rather than `window.location`. Router navigation is interceptable - it lets
+ * ActiveGenerationGuard warn before a shortcut abandons an in-flight response -
+ * and avoids a full page reload of the whole SPA.
+ *
+ * @type {Record<string, {translationKey: string, action: (ctx: {navigate: import("react-router-dom").NavigateFunction}) => void}>}
+ */
 export const SHORTCUTS = {
   "⌘ + ,": {
     translationKey: "settings",
-    action: () => {
-      window.location.href = paths.settings.interface();
-    },
+    action: ({ navigate }) => navigate(paths.settings.interface()),
   },
   "⌘ + H": {
     translationKey: "home",
-    action: () => {
-      window.location.href = paths.home();
-    },
+    action: ({ navigate }) => navigate(paths.home()),
   },
   "⌘ + I": {
     translationKey: "workspaces",
-    action: () => {
-      window.location.href = paths.settings.workspaces();
-    },
+    action: ({ navigate }) => navigate(paths.settings.workspaces()),
   },
   "⌘ + K": {
     translationKey: "apiKeys",
-    action: () => {
-      window.location.href = paths.settings.apiKeys();
-    },
+    action: ({ navigate }) => navigate(paths.settings.apiKeys()),
   },
   "⌘ + L": {
     translationKey: "llmPreferences",
-    action: () => {
-      window.location.href = paths.settings.llmPreference();
-    },
+    action: ({ navigate }) => navigate(paths.settings.llmPreference()),
   },
   "⌘ + Shift + C": {
     translationKey: "chatSettings",
-    action: () => {
-      window.location.href = paths.settings.chat();
-    },
+    action: ({ navigate }) => navigate(paths.settings.chat()),
   },
   "⌘ + Shift + ?": {
     translationKey: "help",
@@ -99,8 +99,12 @@ function getShortcutKey(event) {
   return key;
 }
 
-// Initialize keyboard shortcuts
-export function initKeyboardShortcuts() {
+/**
+ * Initialize keyboard shortcuts.
+ * @param {{navigate: import("react-router-dom").NavigateFunction}} ctx - Context passed to each shortcut action
+ * @returns {() => void} cleanup function that removes the listener
+ */
+export function initKeyboardShortcuts(ctx = {}) {
   function handleKeyDown(event) {
     const shortcutKey = getShortcutKey(event);
     if (!shortcutKey) return;
@@ -108,7 +112,7 @@ export function initKeyboardShortcuts() {
     const action = LISTENERS[shortcutKey];
     if (action) {
       event.preventDefault();
-      action();
+      action(ctx);
     }
   }
 
@@ -117,15 +121,16 @@ export function initKeyboardShortcuts() {
 }
 
 function useKeyboardShortcuts() {
+  const navigate = useNavigate();
   useEffect(() => {
     // If there is a user and the user is not an admin do not register the event listener
     // since some of the shortcuts are only available in multi-user mode as admin
     const user = userFromStorage();
     if (!!user && user?.role !== "admin") return;
-    const cleanup = initKeyboardShortcuts();
+    const cleanup = initKeyboardShortcuts({ navigate });
 
     return () => cleanup();
-  }, []);
+  }, [navigate]);
   return;
 }
 

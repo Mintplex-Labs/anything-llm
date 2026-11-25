@@ -5,7 +5,7 @@ const { v4 } = require("uuid");
 const { SystemSettings } = require("../../models/systemSettings");
 const { normalizePath, isWithin } = require(".");
 const LOGO_FILENAME = "anything-llm.png";
-const LOGO_FILENAME_DARK = "anything-llm-dark.png";
+const LOGO_FILENAME_DARK = "anything-llm-invert.png";
 
 /**
  * Checks if the filename is the default logo filename for dark or light mode.
@@ -38,7 +38,10 @@ async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
   const defaultFilepath = path.join(basePath, defaultFilename);
 
   if (currentLogoFilename && validFilename(currentLogoFilename)) {
-    customLogoPath = path.join(basePath, normalizePath(currentLogoFilename));
+    const customLogoPath = path.join(
+      basePath,
+      normalizePath(currentLogoFilename)
+    );
     if (!isWithin(path.resolve(basePath), path.resolve(customLogoPath)))
       return defaultFilepath;
     return fs.existsSync(customLogoPath) ? customLogoPath : defaultFilepath;

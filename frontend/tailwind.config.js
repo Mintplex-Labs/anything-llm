@@ -1,3 +1,17 @@
+import defaultColors from "tailwindcss/colors"
+
+// Scales a color palette regenerates, see `applyPalette` in src/palettes.
+// Each step falls back to the stock Tailwind color when no palette is active.
+// zinc-925 is the sidebar shade between the page background (950) and content (900).
+function paletteScale(name, extraSteps = {}) {
+  return Object.fromEntries(
+    Object.entries({ ...defaultColors[name], ...extraSteps }).map(([step, hex]) => {
+      const channels = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(" ")
+      return [step, `rgb(var(--palette-${name}-${step}, ${channels}) / <alpha-value>)`]
+    })
+  )
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
@@ -21,6 +35,10 @@ export default {
         "360": "360deg"
       },
       colors: {
+        zinc: paletteScale("zinc", { 925: "#0e0f0f" }),
+        slate: paletteScale("slate"),
+        sky: paletteScale("sky"),
+        blue: paletteScale("blue"),
         "black-900": "#141414",
         accent: "#3D4147",
         "sidebar-button": "#31353A",
@@ -200,7 +218,8 @@ export default {
         "pulse-glow": "pulse-glow 1.5s infinite",
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-up': 'slide-up 0.4s ease-out forwards',
-        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
+        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite',
+        shimmer: 'shimmer 3s linear infinite'
       },
       keyframes: {
         sweep: {
@@ -246,6 +265,10 @@ export default {
         'bounce-subtle': {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-2px)' }
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' }
         }
       }
     }
@@ -291,5 +314,34 @@ export default {
       addVariant('light', '.light &') // Add the `light:` variant
       addVariant('pwa', '.pwa &') // Add the `pwa:` variant
     },
+    // The `animate-in`/`animate-out` enter+exit utilities from `tailwindcss-animate`,
+    // reproduced for the subset of modifiers we use so components copied from
+    // shadcn-based libraries keep their original class strings.
+    function ({ addBase, addUtilities }) {
+      addBase({
+        '@keyframes enter': {
+          from: {
+            opacity: 'var(--tw-enter-opacity, 1)',
+            transform:
+              'translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)'
+          }
+        },
+        '@keyframes exit': {
+          to: {
+            opacity: 'var(--tw-exit-opacity, 1)',
+            transform:
+              'translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)'
+          }
+        }
+      })
+      addUtilities({
+        '.animate-in': { animationName: 'enter', animationDuration: '150ms', animationFillMode: 'both' },
+        '.animate-out': { animationName: 'exit', animationDuration: '150ms', animationFillMode: 'both' },
+        '.fade-in-0': { '--tw-enter-opacity': '0' },
+        '.fade-out-0': { '--tw-exit-opacity': '0' },
+        '.slide-in-from-top-2': { '--tw-enter-translate-y': '-0.5rem' },
+        '.slide-out-to-top-2': { '--tw-exit-translate-y': '-0.5rem' }
+      })
+    }
   ]
 }

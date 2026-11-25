@@ -2,6 +2,7 @@ const { SystemSettings } = require("../../models/systemSettings");
 const { User } = require("../../models/user");
 const { EncryptionManager } = require("../EncryptionManager");
 const { decodeJWT } = require("../http");
+const { UserMetaCache } = require("../userLocale");
 const EncryptionMgr = new EncryptionManager();
 
 async function validatedRequest(request, response, next) {
@@ -17,14 +18,8 @@ async function validatedRequest(request, response, next) {
     !process.env.AUTH_TOKEN ||
     !process.env.JWT_SECRET
   ) {
+    UserMetaCache.setFromRequest(request);
     next();
-    return;
-  }
-
-  if (!process.env.AUTH_TOKEN) {
-    response.status(401).json({
-      error: "You need to set an AUTH_TOKEN environment variable.",
-    });
     return;
   }
 
@@ -38,7 +33,7 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
-  const bcrypt = require("bcrypt");
+  const bcrypt = require("bcryptjs");
   const { p } = decodeJWT(token);
 
   if (p === null || !/\w{32}:\w{32}/.test(p)) {
@@ -51,7 +46,7 @@ async function validatedRequest(request, response, next) {
   // Since the blame of this comment we have been encrypting the `p` property of JWTs with the persistent
   // encryptionManager PEM's. This prevents us from storing the `p` unencrypted in the JWT itself, which could
   // be unsafe. As a consequence, existing JWTs with invalid `p` values that do not match the regex
-  // in ln:44 will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
+  // above will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
   // This kind of methodology only applies to single-user password mode.
   if (
     !bcrypt.compareSync(
@@ -65,6 +60,7 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
+  UserMetaCache.setFromRequest(request);
   next();
 }
 
@@ -103,6 +99,7 @@ async function validateMultiUserRequest(request, response, next) {
   }
 
   response.locals.user = user;
+  UserMetaCache.setFromRequest(request, user.id);
   next();
 }
 

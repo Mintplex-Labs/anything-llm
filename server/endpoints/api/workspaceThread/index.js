@@ -72,7 +72,7 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const wslug = request.params.slug;
         let { userId = null, name = null, slug = null } = reqBody(request);
-        const workspace = await Workspace.get({ slug: wslug });
+        const workspace = await Workspace.get({ slug: String(wslug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -166,14 +166,18 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const { slug, threadSlug } = request.params;
         const { name } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          response.status(404).json({ message: "Workspace not found" });
+          return;
+        }
+
         const thread = await WorkspaceThread.get({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
-
-        if (!workspace || !thread) {
-          response.sendStatus(400).end();
+        if (!thread) {
+          response.status(404).json({ message: "Thread not found" });
           return;
         }
 
@@ -219,7 +223,7 @@ function apiWorkspaceThreadEndpoints(app) {
     */
       try {
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -227,7 +231,7 @@ function apiWorkspaceThreadEndpoints(app) {
         }
 
         await WorkspaceThread.delete({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
         response.sendStatus(200).end();
@@ -288,14 +292,18 @@ function apiWorkspaceThreadEndpoints(app) {
       */
       try {
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          response.status(404).json({ message: "Workspace not found" });
+          return;
+        }
+
         const thread = await WorkspaceThread.get({
-          slug: threadSlug,
+          slug: String(threadSlug),
           workspace_id: workspace.id,
         });
-
-        if (!workspace || !thread) {
-          response.sendStatus(400).end();
+        if (!thread) {
+          response.status(404).json({ message: "Thread not found" });
           return;
         }
 
@@ -385,30 +393,45 @@ function apiWorkspaceThreadEndpoints(app) {
         const { slug, threadSlug } = request.params;
         const {
           message,
-          mode = "query",
+          mode = null,
           userId,
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
-        const thread = await WorkspaceThread.get({
-          slug: threadSlug,
-          workspace_id: workspace.id,
-        });
-
-        if (!workspace || !thread) {
-          response.status(400).json({
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          response.status(404).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: `Workspace ${slug} or thread ${threadSlug} is not valid.`,
+            error: `Workspace ${slug} not found.`,
           });
           return;
         }
 
-        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
+        const thread = await WorkspaceThread.get({
+          slug: String(threadSlug),
+          workspace_id: workspace.id,
+        });
+        if (!thread) {
+          response.status(404).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Thread ${threadSlug} not found.`,
+          });
+          return;
+        }
+
+        const resolvedMode = mode ?? workspace.chatMode;
+        if (
+          (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
+          !reset
+        ) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -417,7 +440,7 @@ function apiWorkspaceThreadEndpoints(app) {
             close: true,
             error: !message?.length
               ? "Message is empty"
-              : `${mode} is not a valid mode.`,
+              : `${resolvedMode} is not a valid mode.`,
           });
           return;
         }
@@ -426,11 +449,17 @@ function apiWorkspaceThreadEndpoints(app) {
         const result = await ApiChatHandler.chatSync({
           workspace,
           message,
-          mode,
+          mode: resolvedMode,
           user,
           thread,
           attachments,
           reset,
+        });
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          prompt: message,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -553,31 +582,44 @@ function apiWorkspaceThreadEndpoints(app) {
         const { slug, threadSlug } = request.params;
         const {
           message,
-          mode = "query",
+          mode = null,
           userId,
           attachments = [],
           reset = false,
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
-        const thread = await WorkspaceThread.get({
-          slug: threadSlug,
-          workspace_id: workspace.id,
-        });
-
-        if (!workspace || !thread) {
-          response.status(400).json({
+        const workspace = await Workspace.get({ slug: String(slug) });
+        if (!workspace) {
+          return response.status(404).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: `Workspace ${slug} or thread ${threadSlug} is not valid.`,
+            error: `Workspace ${slug} not found.`,
           });
-          return;
         }
 
-        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
-          response.status(400).json({
+        const thread = await WorkspaceThread.get({
+          slug: String(threadSlug),
+          workspace_id: workspace.id,
+        });
+        if (!thread) {
+          return response.status(404).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Thread ${threadSlug} not found.`,
+          });
+        }
+
+        const resolvedMode = mode ?? workspace.chatMode;
+        if (
+          (!message?.length || !VALID_CHAT_MODE.includes(resolvedMode)) &&
+          !reset
+        ) {
+          return response.status(400).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -585,9 +627,8 @@ function apiWorkspaceThreadEndpoints(app) {
             close: true,
             error: !message?.length
               ? "Message is empty"
-              : `${mode} is not a valid mode.`,
+              : `${resolvedMode} is not a valid mode.`,
           });
-          return;
         }
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
@@ -602,11 +643,27 @@ function apiWorkspaceThreadEndpoints(app) {
           response,
           workspace,
           message,
-          mode,
+          mode: resolvedMode,
           user,
           thread,
           attachments,
           reset,
+        });
+        // If thread was renamed emit event to the client via special `action` response.
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          prompt: message,
+          onRename: (thread) => {
+            writeResponseChunk(response, {
+              action: "rename_thread",
+              thread: {
+                slug: thread.slug,
+                name: thread.name,
+              },
+            });
+          },
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",

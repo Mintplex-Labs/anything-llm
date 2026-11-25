@@ -16,10 +16,15 @@ async function resetMemory(
       )
     : await WorkspaceChats.markHistoryInvalid(workspace.id, user);
 
+  // If the workspace uses a model router, clear the sticky route and LLM
+  // classification cache so the router re-evaluates from scratch.
+  const { ModelRouterService } = require("../../router");
+  ModelRouterService.resetForWorkspace(workspace, user, thread);
+
   return {
     uuid: msgUUID,
     type: "textResponse",
-    textResponse: "Workspace chat memory was reset!",
+    textResponse: "Chat memory was reset!",
     sources: [],
     close: true,
     error: false,

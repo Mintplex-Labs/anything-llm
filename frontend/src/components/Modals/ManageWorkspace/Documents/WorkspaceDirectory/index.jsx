@@ -1,8 +1,12 @@
 import PreLoader from "@/components/Preloader";
-import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
-import { memo, useEffect, useState } from "react";
-import ModalWrapper from "@/components/ModalWrapper";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalPrimaryButton,
+} from "@/components/lib/Modal";
 import { Eye, PushPin } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
@@ -11,6 +15,14 @@ import Workspace from "@/models/workspace";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
+import { useEmbeddingProgress } from "@/EmbeddingProgressContext";
+import EmbeddingFileRow from "@/components/EmbeddingFileRow";
+import MobileWorkspaceDirectory from "./MobileWorkspaceDirectory";
+import {
+  rowsBetween,
+  isSelectAllShortcut,
+  isClearSelectionKey,
+} from "@/utils/directories";
 
 function WorkspaceDirectory({
   workspace,
@@ -23,23 +35,66 @@ function WorkspaceDirectory({
   fetchKeys,
   hasChanges,
   saveChanges,
-  embeddingCosts,
   movedItems,
+  variant = "default",
 }) {
   const { t } = useTranslation();
+  const { embeddingProgressMap, removeQueuedFile } = useEmbeddingProgress();
+  const embeddingProgress = embeddingProgressMap[workspace.slug] || null;
   const [selectedItems, setSelectedItems] = useState({});
+  const embeddedDocCount = (files?.items ?? []).reduce(
+    (sum, folder) => sum + (folder.items?.length ?? 0),
+    0
+  );
 
-  const toggleSelection = (item) => {
+  // Staged for embedding first, then pinned, then the rest.
+  const orderedFiles = useMemo(() => {
+    const isMoved = (item) =>
+      movedItems.some((movedItem) => movedItem.id === item.id);
+    const isPinned = (item) => item.pinnedWorkspaces?.includes(workspace.id);
+    return files.items
+      .flatMap((folder) => folder.items.map((item) => ({ item, folder })))
+      .sort((a, b) => {
+        if (isMoved(a.item) && !isMoved(b.item)) return -1;
+        if (!isMoved(a.item) && isMoved(b.item)) return 1;
+        if (isPinned(a.item) && !isPinned(b.item)) return -1;
+        if (!isPinned(a.item) && isPinned(b.item)) return 1;
+        return 0;
+      });
+  }, [files, movedItems, workspace.id]);
+  const rangeAnchor = useRef(null);
+
+  const setItems = (items, on) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = { ...prevSelectedItems };
-      if (newSelectedItems[item.id]) {
-        delete newSelectedItems[item.id];
-      } else {
-        newSelectedItems[item.id] = true;
+      for (const item of items) {
+        if (on) newSelectedItems[item.id] = true;
+        else delete newSelectedItems[item.id];
       }
       return newSelectedItems;
     });
   };
+
+  const handleRowClick = (item, event) => {
+    const anchor = rangeAnchor.current;
+    const range =
+      event.shiftKey && anchor
+        ? rowsBetween(
+            orderedFiles.map((row) => row.item),
+            anchor,
+            item.id
+          )
+        : null;
+    if (range) return setItems(range, !!selectedItems[anchor]);
+    rangeAnchor.current = item.id;
+    setItems([item], !selectedItems[item.id]);
+  };
+
+  const selectAll = () =>
+    setItems(
+      files.items.flatMap((folder) => folder.items),
+      true
+    );
 
   const toggleSelectAll = () => {
     const allItems = files.items.flatMap((folder) => folder.items);
@@ -47,19 +102,29 @@ function WorkspaceDirectory({
     if (allSelected) {
       setSelectedItems({});
     } else {
-      const newSelectedItems = {};
-      allItems.forEach((item) => {
-        newSelectedItems[item.id] = true;
-      });
-      setSelectedItems(newSelectedItems);
+      selectAll();
     }
   };
 
-  const removeSelectedItems = async () => {
+  const handleKeyDown = (event) => {
+    if (hasChanges) return;
+    if (isClearSelectionKey(event) && Object.keys(selectedItems).length > 0) {
+      // Otherwise the modal's Escape handler closes the modal.
+      event.stopPropagation();
+      return setSelectedItems({});
+    }
+    if (!isSelectAllShortcut(event)) return;
+    event.preventDefault();
+    selectAll();
+  };
+
+  const removeSelectedItems = () => removeItems(Object.keys(selectedItems));
+
+  const removeItems = async (itemIds) => {
     setLoading(true);
     setLoadingMessage("Removing selected files from workspace");
 
-    const itemsToRemove = Object.keys(selectedItems).map((itemId) => {
+    const itemsToRemove = itemIds.map((itemId) => {
       const folder = files.items.find((f) =>
         f.items.some((i) => i.id === itemId)
       );
@@ -87,6 +152,35 @@ function WorkspaceDirectory({
     saveChanges(e);
   };
 
+  if (variant === "mobile")
+    return (
+      <>
+        <MobileWorkspaceDirectory
+          workspace={workspace}
+          orderedFiles={orderedFiles}
+          loading={loading}
+          loadingMessage={loadingMessage}
+          embeddingProgress={embeddingProgress}
+          onRemoveQueued={(filename) =>
+            removeQueuedFile(workspace.slug, filename)
+          }
+          hasChanges={hasChanges}
+          movedItems={movedItems}
+          selectedItems={selectedItems}
+          allSelected={
+            orderedFiles.length > 0 &&
+            orderedFiles.every(({ item }) => selectedItems[item.id])
+          }
+          onToggleItem={(item) => setItems([item], !selectedItems[item.id])}
+          onToggleSelectAll={toggleSelectAll}
+          onRemoveItems={removeItems}
+          onSave={handleSaveChanges}
+        />
+        <PinAlert />
+        <DocumentWatchAlert />
+      </>
+    );
+
   if (loading) {
     return (
       <div className="px-8">
@@ -96,13 +190,6 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl">
-            <div className="col-span-10 flex items-center gap-x-[4px]">
-              <div className="shrink-0 w-3 h-3" />
-              <p className="ml-[7px] text-theme-text-primary">Name</p>
-            </div>
-            <p className="col-span-2" />
-          </div>
           <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
             <PreLoader />
             <p className="text-theme-text-primary text-sm font-semibold animate-pulse text-center w-1/3">
@@ -110,6 +197,56 @@ function WorkspaceDirectory({
             </p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (embeddingProgress) {
+    return (
+      <div className="px-8">
+        <div className="flex items-center justify-start w-[560px]">
+          <h3 className="text-white text-base font-bold ml-5">
+            {workspace.name}
+          </h3>
+        </div>
+        <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl">
+            <div className="col-span-8 flex items-center gap-x-[4px]">
+              <div className="shrink-0 w-3 h-3" />
+              <p className="ml-[7px] text-theme-text-primary">Name</p>
+            </div>
+            <p className="col-span-4 text-right text-theme-text-primary pr-1">
+              Status
+            </p>
+          </div>
+          <div className="overflow-y-auto h-[calc(100%-40px)]">
+            {Object.entries(embeddingProgress).map(([filename, fileStatus]) => (
+              <EmbeddingFileRow
+                key={filename}
+                filename={filename}
+                status={fileStatus}
+                onRemove={
+                  fileStatus.status === "pending"
+                    ? () => removeQueuedFile(workspace.slug, filename)
+                    : null
+                }
+              />
+            ))}
+          </div>
+        </div>
+        {hasChanges && movedItems.length > 0 && (
+          <div className="flex items-center justify-between w-[560px] mt-3">
+            <p className="text-theme-text-secondary text-sm">
+              {movedItems.length} additional file(s) ready to embed
+            </p>
+            <button
+              onClick={handleSaveChanges}
+              className="border border-slate-200 px-5 py-1.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            >
+              Add to queue
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -128,7 +265,12 @@ function WorkspaceDirectory({
               highlightWorkspace ? "border-4 border-cyan-300/80 z-[999]" : ""
             }`}
           />
-          <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
+          {/* Focusable so shortcuts apply to the last-clicked panel. */}
+          <div
+            className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border outline-none focus-within:border-cyan-300/80"
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
+          >
             <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10">
               <div className="col-span-10 flex items-center gap-x-[4px]">
                 {!hasChanges &&
@@ -157,34 +299,33 @@ function WorkspaceDirectory({
                 )}
                 <p className="ml-[7px] text-theme-text-primary">Name</p>
               </div>
-              <p className="col-span-2" />
+              {embeddedDocCount > 0 && (
+                <p className="col-span-2 text-right text-theme-text-secondary pr-2">
+                  {t(`connectors.directory.total-documents`, {
+                    count: embeddedDocCount,
+                  })}
+                </p>
+              )}
             </div>
-            <div className="overflow-y-auto h-[calc(100%-40px)]">
-              {files.items.some((folder) => folder.items.length > 0) ||
-              movedItems.length > 0 ? (
-                <RenderFileRows
-                  files={files}
-                  movedItems={movedItems}
-                  workspace={workspace}
-                >
-                  {({ item, folder }) => (
-                    <WorkspaceFileRow
-                      key={item.id}
-                      item={item}
-                      folderName={folder.name}
-                      workspace={workspace}
-                      setLoading={setLoading}
-                      setLoadingMessage={setLoadingMessage}
-                      fetchKeys={fetchKeys}
-                      hasChanges={hasChanges}
-                      movedItems={movedItems}
-                      selected={selectedItems[item.id]}
-                      toggleSelection={() => toggleSelection(item)}
-                      disableSelection={hasChanges}
-                      setSelectedItems={setSelectedItems}
-                    />
-                  )}
-                </RenderFileRows>
+            <div className="overflow-y-auto h-[calc(100%-40px)] select-none">
+              {orderedFiles.length > 0 ? (
+                orderedFiles.map(({ item, folder }) => (
+                  <WorkspaceFileRow
+                    key={item.id}
+                    item={item}
+                    folderName={folder.name}
+                    workspace={workspace}
+                    setLoading={setLoading}
+                    setLoadingMessage={setLoadingMessage}
+                    fetchKeys={fetchKeys}
+                    hasChanges={hasChanges}
+                    movedItems={movedItems}
+                    selected={selectedItems[item.id]}
+                    toggleSelection={(event) => handleRowClick(item, event)}
+                    disableSelection={hasChanges}
+                    setSelectedItems={setSelectedItems}
+                  />
+                ))
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-white text-opacity-40 text-sm font-medium">
@@ -223,22 +364,7 @@ function WorkspaceDirectory({
           </div>
         </div>
         {hasChanges && (
-          <div className="flex items-center justify-between py-6">
-            <div className="text-white/80">
-              <p className="text-sm font-semibold">
-                {embeddingCosts === 0
-                  ? ""
-                  : `Estimated Cost: ${
-                      embeddingCosts < 0.01
-                        ? `< $0.01`
-                        : dollarFormat(embeddingCosts)
-                    }`}
-              </p>
-              <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                {t("connectors.directory.costs")}
-              </p>
-            </div>
-
+          <div className="flex items-center justify-end py-6">
             <button
               onClick={(e) => handleSaveChanges(e)}
               className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
@@ -275,48 +401,41 @@ const PinAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert} noPortal={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="flex items-center gap-2">
-            <PushPin
-              className="text-theme-text-primary text-lg w-6 h-6"
-              weight="regular"
+    <Modal isOpen={showAlert} noPortal={true} onClose={dismissAlert}>
+      <ModalHeader
+        title={
+          <span className="flex items-center gap-x-2">
+            <PushPin className="w-6 h-6" weight="regular" />
+            {t("connectors.pinning.what_pinning")}
+          </span>
+        }
+        onClose={dismissAlert}
+      />
+      <ModalBody>
+        <div className="w-full text-zinc-300 light:text-slate-700 text-md flex flex-col gap-y-2">
+          <p>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("connectors.pinning.pin_explained_block1"),
+              }}
             />
-            <h3 className="text-xl font-semibold text-white">
-              {t("connectors.pinning.what_pinning")}
-            </h3>
-          </div>
+          </p>
+          <p>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("connectors.pinning.pin_explained_block2"),
+              }}
+            />
+          </p>
+          <p>{t("connectors.pinning.pin_explained_block3")}</p>
         </div>
-        <div className="py-7 px-9 space-y-2 flex-col">
-          <div className="w-full text-white text-md flex flex-col gap-y-2">
-            <p>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t("connectors.pinning.pin_explained_block1"),
-                }}
-              />
-            </p>
-            <p>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t("connectors.pinning.pin_explained_block2"),
-                }}
-              />
-            </p>
-            <p>{t("connectors.pinning.pin_explained_block3")}</p>
-          </div>
-        </div>
-        <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-          <button
-            onClick={dismissAlert}
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-          >
-            {t("connectors.pinning.accept")}
-          </button>
-        </div>
-      </div>
-    </ModalWrapper>
+      </ModalBody>
+      <ModalFooter className="justify-end">
+        <ModalPrimaryButton onClick={dismissAlert}>
+          {t("connectors.pinning.accept")}
+        </ModalPrimaryButton>
+      </ModalFooter>
+    </Modal>
   );
 });
 
@@ -340,78 +459,46 @@ const DocumentWatchAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert} noPortal={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-          <div className="flex items-center gap-2">
-            <Eye
-              className="text-theme-text-primary text-lg w-6 h-6"
-              weight="regular"
+    <Modal isOpen={showAlert} noPortal={true} onClose={dismissAlert}>
+      <ModalHeader
+        title={
+          <span className="flex items-center gap-x-2">
+            <Eye className="w-6 h-6" weight="regular" />
+            {t("connectors.watching.what_watching")}
+          </span>
+        }
+        onClose={dismissAlert}
+      />
+      <ModalBody>
+        <div className="w-full text-zinc-300 light:text-slate-700 text-md flex flex-col gap-y-2">
+          <p>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("connectors.watching.watch_explained_block1"),
+              }}
             />
-            <h3 className="text-xl font-semibold text-white">
-              {t("connectors.watching.what_watching")}
-            </h3>
-          </div>
+          </p>
+          <p>{t("connectors.watching.watch_explained_block2")}</p>
+          <p>
+            {t("connectors.watching.watch_explained_block3_start")}
+            <Link
+              to={paths.experimental.liveDocumentSync.manage()}
+              className="text-blue-600 underline"
+            >
+              {t("connectors.watching.watch_explained_block3_link")}
+            </Link>
+            {t("connectors.watching.watch_explained_block3_end")}
+          </p>
         </div>
-        <div className="py-7 px-9 space-y-2 flex-col">
-          <div className="w-full text-white text-md flex flex-col gap-y-2">
-            <p>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t("connectors.watching.watch_explained_block1"),
-                }}
-              />
-            </p>
-            <p>{t("connectors.watching.watch_explained_block2")}</p>
-            <p>
-              {t("connectors.watching.watch_explained_block3_start")}
-              <Link
-                to={paths.experimental.liveDocumentSync.manage()}
-                className="text-blue-600 underline"
-              >
-                {t("connectors.watching.watch_explained_block3_link")}
-              </Link>
-              {t("connectors.watching.watch_explained_block3_end")}
-            </p>
-          </div>
-        </div>
-        <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-          <button
-            onClick={dismissAlert}
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-          >
-            {t("connectors.watching.accept")}
-          </button>
-        </div>
-      </div>
-    </ModalWrapper>
+      </ModalBody>
+      <ModalFooter className="justify-end">
+        <ModalPrimaryButton onClick={dismissAlert}>
+          {t("connectors.watching.accept")}
+        </ModalPrimaryButton>
+      </ModalFooter>
+    </Modal>
   );
 });
-
-function RenderFileRows({ files, movedItems, children, workspace }) {
-  function sortMovedItemsAndFiles(a, b) {
-    const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
-    const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
-    if (aIsMovedItem && !bIsMovedItem) return -1;
-    if (!aIsMovedItem && bIsMovedItem) return 1;
-
-    // Sort pinned items to the top
-    const aIsPinned = a.pinnedWorkspaces?.includes(workspace.id);
-    const bIsPinned = b.pinnedWorkspaces?.includes(workspace.id);
-    if (aIsPinned && !bIsPinned) return -1;
-    if (!aIsPinned && bIsPinned) return 1;
-
-    return 0;
-  }
-
-  return files.items
-    .flatMap((folder) => folder.items)
-    .sort(sortMovedItemsAndFiles)
-    .map((item) => {
-      const folder = files.items.find((f) => f.items.includes(item));
-      return children({ item, folder });
-    });
-}
 
 /**
  * Tooltips for the workspace directory components. Renders when the workspace directory is shown

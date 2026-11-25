@@ -141,7 +141,7 @@ async function fetchGitlabFile({
   console.log(
     `-- Working GitLab ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
   );
-  const fileContent = await repo.fetchSingleFile(sourceFilePath);
+  const fileContent = await repo.fetchSingleFileContents(sourceFilePath);
   if (!fileContent) {
     return {
       success: false,
@@ -157,13 +157,80 @@ async function fetchGitlabFile({
   };
 }
 
+async function fetchGitlabIssue({
+  repoUrl,
+  branch,
+  accessToken = null,
+  issueId,
+}) {
+  const repo = new RepoLoader({ repo: repoUrl, branch, accessToken });
+  await repo.init();
+
+  if (!repo.ready)
+    return {
+      success: false,
+      content: null,
+      reason: "Could not prepare GitLab repo for loading! Check URL or PAT.",
+    };
+  console.log(
+    `-- Working GitLab ${repo.author}/${repo.project} issue:${issueId} --`
+  );
+  const issue = await repo.fetchSingleIssue(issueId);
+  if (!issue)
+    return {
+      success: false,
+      reason: "Target issue returned a null content response.",
+      content: null,
+    };
+
+  return { success: true, reason: null, content: issueToMarkdown(issue) };
+}
+
+async function fetchGitlabWiki({ repoUrl, branch, accessToken = null, slug }) {
+  const repo = new RepoLoader({ repo: repoUrl, branch, accessToken });
+  await repo.init();
+
+  if (!repo.ready)
+    return {
+      success: false,
+      content: null,
+      reason: "Could not prepare GitLab repo for loading! Check URL or PAT.",
+    };
+  console.log(
+    `-- Working GitLab ${repo.author}/${repo.project} wiki:${slug} --`
+  );
+  const page = (await repo.fetchWiki()).find(
+    ({ slug: pageSlug }) => pageSlug === slug
+  );
+  if (!page?.content)
+    return {
+      success: false,
+      reason: "Target wiki page returned a null content response.",
+      content: null,
+    };
+
+  return { success: true, reason: null, content: page.content };
+}
+
 function generateChunkSource(repo, doc, encryptionWorker) {
   const payload = {
     projectId: decodeURIComponent(repo.projectId),
     branch: repo.branch,
     path: doc.metadata.source,
     pat: !!repo.accessToken ? repo.accessToken : null,
+    scheme: new URL(repo.repo).protocol.replace(":", ""),
   };
+
+  // Issues and wiki pages are not repository files, so a re-sync has to know which
+  // kind of document it holds and which issue or page to fetch again.
+  if (doc.issue) {
+    payload.kind = "issue";
+    payload.ref = doc.issue.iid;
+  } else if (doc.wiki) {
+    payload.kind = "wiki";
+    payload.ref = doc.wiki.slug;
+  }
+
   return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
   )}`;
@@ -225,7 +292,7 @@ function issueToMarkdown(issue) {
       if (!value || value?.length < 1) {
         return null;
       }
-      let result = `- ${name.replace("_", " ")}:`;
+      let result = `- ${name.replace(/_/g, " ")}:`;
 
       if (!Array.isArray(value)) {
         result += ` ${value}`;
@@ -251,11 +318,18 @@ ${metadataString}`;
 
 ## Activity
 
-${issue.discussions.join("\n\n")}
+${issue.discussions.flat().join("\n\n")}
 `;
   }
 
   return markdown;
 }
 
-module.exports = { loadGitlabRepo, fetchGitlabFile };
+module.exports = {
+  loadGitlabRepo,
+  fetchGitlabFile,
+  fetchGitlabIssue,
+  fetchGitlabWiki,
+  generateChunkSource,
+  issueToMarkdown,
+};

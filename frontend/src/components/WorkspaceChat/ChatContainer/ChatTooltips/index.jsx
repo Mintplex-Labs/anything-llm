@@ -61,6 +61,12 @@ export function ChatTooltips() {
         className="tooltip !text-xs"
       />
       <Tooltip
+        id="routing-details"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+      <Tooltip
         id="expand-cot"
         place="bottom"
         delayShow={300}
@@ -83,6 +89,18 @@ export function ChatTooltips() {
         place="top"
         delayShow={500}
         className="tooltip !text-xs max-w-[350px]"
+      />
+      <Tooltip
+        id="attachment-status-tooltip"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+      <Tooltip
+        id="attach-item-btn"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs"
       />
       <DocumentLevelTooltip />
     </>

@@ -2,12 +2,7 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
-export const DISABLED_PROVIDERS = [
-  "azure",
-  "textgenwebui",
-  "generic-openai",
-  "bedrock",
-];
+export const DISABLED_PROVIDERS = ["azure", "textgenwebui"];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
   gemini: [],
@@ -31,6 +26,7 @@ const PROVIDER_DEFAULT_MODELS = {
   textgenwebui: [],
   "generic-openai": [],
   bedrock: [],
+  vertex: [],
   xai: ["grok-beta"],
 };
 
@@ -52,11 +48,24 @@ const groupedProviders = [
   "novita",
   "openrouter",
   "ppio",
+  "sambanova",
 ];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const downloadedModels = [];
+
+  if (Array.isArray(customModels)) {
+    downloadedModels.push(...customModels.filter((model) => model?.downloaded));
+  } else {
+    // Break out downloaded models from the creator map
+    downloadedModels.push(
+      ...Object.values(customModels)
+        .flat()
+        .filter((model) => model?.downloaded)
+    );
+  }
 
   useEffect(() => {
     async function fetchProviderModels() {
@@ -80,5 +89,5 @@ export default function useGetProviderModels(provider = null) {
     fetchProviderModels();
   }, [provider]);
 
-  return { defaultModels, customModels, loading };
+  return { defaultModels, customModels, loading, downloadedModels };
 }

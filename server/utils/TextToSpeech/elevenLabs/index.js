@@ -1,4 +1,4 @@
-const { ElevenLabsClient, stream } = require("elevenlabs");
+const { ElevenLabsClient } = require("elevenlabs");
 
 class ElevenLabsTTS {
   constructor() {

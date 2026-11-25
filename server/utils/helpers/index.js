@@ -23,7 +23,7 @@
  * @property {ResponseMetrics} metrics - The response metrics
  *
  * @typedef {Object} ChatCompletionOptions
- * @property {number} temperature - The sampling temperature for the LLM response
+ * @property {number} temperature - Per-call override of the connector's temperature (defaults to the instance's `temperature` property)
  * @property {import("@prisma/client").users} user - The user object for the chat completion to send to the LLM provider for user tracking (optional)
  *
  * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
@@ -33,12 +33,15 @@
 
 /**
  * @typedef {Object} BaseLLMProvider - A basic llm provider object
+ * @property {string} className - Provider identifier used in logs and response metrics.
+ * @property {string} model - The active model name for this provider instance.
+ * @property {number|undefined} temperature - Sampling temperature for chat requests. Undefined when unset so the parameter is omitted entirely.
  * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
  * @property {Function} promptWindowLimit - Returns the token limit for the current model.
  * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
  * @property {Function} constructPrompt - Constructs a formatted prompt for the chat completion request.
- * @property {getChatCompletionFunction} getChatCompletion - Gets a chat completion response from OpenAI.
- * @property {streamGetChatCompletionFunction} streamGetChatCompletion - Streams a chat completion response from OpenAI.
+ * @property {getChatCompletionFunction} getChatCompletion - Gets a chat completion response.
+ * @property {streamGetChatCompletionFunction} streamGetChatCompletion - Streams a chat completion response.
  * @property {Function} handleStream - Handles the streaming response.
  * @property {Function} embedTextInput - Embeds the provided text input using the specified embedder.
  * @property {Function} embedChunks - Embeds multiple chunks of text using the specified embedder.
@@ -82,52 +85,91 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
-  const { LanceDb } = require("../vectorDbProviders/lance");
   const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
-      return Pinecone;
+      return new Pinecone();
     case "chroma":
       const { Chroma } = require("../vectorDbProviders/chroma");
-      return Chroma;
+      return new Chroma();
     case "chromacloud":
       const { ChromaCloud } = require("../vectorDbProviders/chromacloud");
-      return ChromaCloud;
+      return new ChromaCloud();
     case "lancedb":
-      return LanceDb;
+      const { LanceDb } = require("../vectorDbProviders/lance");
+      return new LanceDb();
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
-      return Weaviate;
+      return new Weaviate();
     case "qdrant":
       const { QDrant } = require("../vectorDbProviders/qdrant");
-      return QDrant;
+      return new QDrant();
     case "milvus":
       const { Milvus } = require("../vectorDbProviders/milvus");
-      return Milvus;
+      return new Milvus();
     case "zilliz":
       const { Zilliz } = require("../vectorDbProviders/zilliz");
-      return Zilliz;
+      return new Zilliz();
     case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
-      return AstraDB;
+      return new AstraDB();
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
-      return PGVector;
+      return new PGVector();
     default:
       console.error(
         `\x1b[31m[ENV ERROR]\x1b[0m No VECTOR_DB value found in environment! Falling back to LanceDB`
       );
-      return LanceDb;
+      const { LanceDb: DefaultLanceDb } = require("../vectorDbProviders/lance");
+      return new DefaultLanceDb();
   }
 }
 
 /**
+ * Resolves the temperature to apply to a provider's chat requests.
+ * Unset or invalid values resolve to undefined - as do models the provider
+ * class reports as rejecting the parameter - so it is omitted from requests entirely.
+ * @param {string|null} provider - Provider slug (eg: "openai")
+ * @param {string|null} model - The model name the requests will use
+ * @param {number|string|null} value - The stored/user-provided temperature
+ * @returns {number|undefined}
+ */
+function resolveTemperature(provider = null, model = null, value = null) {
+  const temperature = parseFloat(value);
+  if (isNaN(temperature) || temperature < 0) return undefined;
+  const LLMClass = getLLMProviderClass({ provider });
+  if (LLMClass?.modelSupportsTemperature?.(model) === false) return undefined;
+  return temperature;
+}
+
+/**
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
+ * @notice Use resolveProviderConnector instead as this function DOES NOT handle the anythingllm-router provider.
+ * You should only use this function if you are absolutely sure you are not using the anythingllm-router provider ever in your code.
+ * @param {{provider: string | null, model: string | null, temperature: number|string|null} | null} params - Initialize params for LLMs provider
+ * @returns {BaseLLMProvider}
+ */
+function getLLMProvider({
+  provider = null,
+  model = null,
+  temperature = null,
+} = {}) {
+  const connector = getLLMProviderConnector({ provider, model });
+  connector.temperature = resolveTemperature(
+    provider ?? process.env.LLM_PROVIDER ?? "openai",
+    connector.model,
+    temperature
+  );
+  return connector;
+}
+
+/**
+ * Instantiates the raw LLM connector class for a provider selection.
  * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProvider}
  */
-function getLLMProvider({ provider = null, model = null } = {}) {
+function getLLMProviderConnector({ provider = null, model = null } = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
 
@@ -168,9 +210,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return new HuggingFaceLLM(embedder, model);
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
@@ -213,9 +252,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return new MoonshotAiLLM(embedder, model);
-    case "dpais":
-      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
-      return new DellProAiStudioLLM(embedder, model);
     case "cometapi":
       const { CometApiLLM } = require("../AiProviders/cometapi");
       return new CometApiLLM(embedder, model);
@@ -228,6 +264,41 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return new GiteeAILLM(embedder, model);
+    case "llmman":
+      const { LlmmanLLM } = require("../AiProviders/llmman");
+      return new LlmmanLLM(embedder, model);
+    case "privatemode":
+      const { PrivatemodeLLM } = require("../AiProviders/privatemode");
+      return new PrivatemodeLLM(embedder, model);
+    case "sambanova":
+      const { SambaNovaLLM } = require("../AiProviders/sambanova");
+      return new SambaNovaLLM(embedder, model);
+    case "lemonade":
+      const { LemonadeLLM } = require("../AiProviders/lemonade");
+      return new LemonadeLLM(embedder, model);
+    case "embedded_lemonade":
+      const {
+        EmbeddedLemonadeLLM,
+      } = require("../AiProviders/embeddedLemonade");
+      return new EmbeddedLemonadeLLM(embedder, model);
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      return new OMLXLLM(embedder, model);
+    case "minimax":
+      const { MinimaxLLM } = require("../AiProviders/minimax");
+      return new MinimaxLLM(embedder, model);
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      return new CerebrasLLM(embedder, model);
+    case "vertex":
+      const { VertexLLM } = require("../AiProviders/vertex");
+      return new VertexLLM(embedder, model);
+    case "anythingllm-router":
+      // Model router is handled separately in stream.js via AnythingLLMModelRouter.
+      // This case should not be hit directly - if it is, throw a descriptive error.
+      throw new Error(
+        "anythingllm-router provider must be resolved via AnythingLLMModelRouter class, not getLLMProvider directly."
+      );
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -285,8 +356,53 @@ function getEmbeddingEngineSelection() {
     case "openrouter":
       const { OpenRouterEmbedder } = require("../EmbeddingEngines/openRouter");
       return new OpenRouterEmbedder();
+    case "lemonade":
+      const { LemonadeEmbedder } = require("../EmbeddingEngines/lemonade");
+      return new LemonadeEmbedder();
     default:
       return new NativeEmbedder();
+  }
+}
+
+/**
+ * Returns the configured image generation provider instance.
+ * Selected system-wide via the IMAGE_GEN_PROVIDER env, mirroring the
+ * embedder/vector-db subsystem selection.
+ * @returns {import("../ImageGenerators/base").BaseImageGenerator}
+ */
+function getImageGeneratorProvider() {
+  const provider = process.env.IMAGE_GEN_PROVIDER;
+  switch (provider) {
+    case "openai":
+      const { OpenAiImageGenerator } = require("../ImageGenerators/openAi");
+      return new OpenAiImageGenerator();
+    case "ollama":
+      const { OllamaImageGenerator } = require("../ImageGenerators/ollama");
+      return new OllamaImageGenerator();
+    case "lemonade":
+      const { LemonadeImageGenerator } = require("../ImageGenerators/lemonade");
+      return new LemonadeImageGenerator();
+    case "localai":
+      const { LocalAiImageGenerator } = require("../ImageGenerators/localAi");
+      return new LocalAiImageGenerator();
+    case "llmman":
+      const { LlmmanImageGenerator } = require("../ImageGenerators/llmman");
+      return new LlmmanImageGenerator();
+    case "openrouter":
+      const {
+        OpenRouterImageGenerator,
+      } = require("../ImageGenerators/openRouter");
+      return new OpenRouterImageGenerator();
+    case "gemini":
+      const { GeminiImageGenerator } = require("../ImageGenerators/gemini");
+      return new GeminiImageGenerator();
+    case "minimax":
+      const { MinimaxImageGenerator } = require("../ImageGenerators/minimax");
+      return new MinimaxImageGenerator();
+    default:
+      throw new Error(
+        `No valid image generation provider was set. Got: ${provider}`
+      );
   }
 }
 
@@ -333,9 +449,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "huggingface":
-      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return HuggingFaceLLM;
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return GroqLLM;
@@ -375,9 +488,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
-    case "dpais":
-      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
-      return DellProAiStudioLLM;
     case "moonshotai":
       const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
       return MoonshotAiLLM;
@@ -393,6 +503,38 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "giteeai":
       const { GiteeAILLM } = require("../AiProviders/giteeai");
       return GiteeAILLM;
+    case "llmman":
+      const { LlmmanLLM } = require("../AiProviders/llmman");
+      return LlmmanLLM;
+    case "privatemode":
+      const { PrivatemodeLLM } = require("../AiProviders/privatemode");
+      return PrivatemodeLLM;
+    case "sambanova":
+      const { SambaNovaLLM } = require("../AiProviders/sambanova");
+      return SambaNovaLLM;
+    case "lemonade":
+      const { LemonadeLLM } = require("../AiProviders/lemonade");
+      return LemonadeLLM;
+    case "embedded_lemonade":
+      const {
+        EmbeddedLemonadeLLM,
+      } = require("../AiProviders/embeddedLemonade");
+      return EmbeddedLemonadeLLM;
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      return OMLXLLM;
+    case "minimax":
+      const { MinimaxLLM } = require("../AiProviders/minimax");
+      return MinimaxLLM;
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      return CerebrasLLM;
+    case "vertex":
+      const { VertexLLM } = require("../AiProviders/vertex");
+      return VertexLLM;
+    case "anythingllm-router":
+      const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+      return AnythingLLMModelRouter;
     default:
       return null;
   }
@@ -408,7 +550,7 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
     case "openai":
       return process.env.OPEN_MODEL_PREF;
     case "azure":
-      return process.env.OPEN_MODEL_PREF;
+      return process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF;
     case "anthropic":
       return process.env.ANTHROPIC_MODEL_PREF;
     case "gemini":
@@ -429,8 +571,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.OPENROUTER_MODEL_PREF;
     case "mistral":
       return process.env.MISTRAL_MODEL_PREF;
-    case "huggingface":
-      return null;
     case "groq":
       return process.env.GROQ_MODEL_PREF;
     case "koboldcpp":
@@ -457,8 +597,6 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
     case "ppio":
       return process.env.PPIO_MODEL_PREF;
-    case "dpais":
-      return process.env.DPAIS_LLM_MODEL_PREF;
     case "moonshotai":
       return process.env.MOONSHOT_AI_MODEL_PREF;
     case "cometapi":
@@ -469,6 +607,24 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.ZAI_MODEL_PREF;
     case "giteeai":
       return process.env.GITEE_AI_MODEL_PREF;
+    case "llmman":
+      return process.env.LLMMAN_MODEL_PREF;
+    case "privatemode":
+      return process.env.PRIVATEMODE_LLM_MODEL_PREF;
+    case "sambanova":
+      return process.env.SAMBANOVA_LLM_MODEL_PREF;
+    case "lemonade":
+      return process.env.LEMONADE_LLM_MODEL_PREF;
+    case "embedded_lemonade":
+      return process.env.EMBEDDED_LEMONADE_MODEL_PREF;
+    case "omlx":
+      return process.env.OMLX_LLM_MODEL_PREF;
+    case "minimax":
+      return process.env.MINIMAX_MODEL_PREF;
+    case "cerebras":
+      return process.env.CEREBRAS_MODEL_PREF;
+    case "vertex":
+      return process.env.VERTEX_AI_LLM_MODEL_PREF;
     default:
       return null;
   }
@@ -494,12 +650,185 @@ function toChunks(arr, size) {
   );
 }
 
+/**
+ * Report chunk-level embedding progress from any embedder.
+ * Works in both the child worker process (IPC via process.send) and the
+ * main server process (direct SSE emit via EmbeddingWorkerManager).
+ *
+ * Requires `global.__embeddingProgress` to be set by the caller with
+ * { workspaceSlug, filename, userId }.
+ *
+ * @param {number} chunksProcessed
+ * @param {number} totalChunks
+ */
+function reportEmbeddingProgress(chunksProcessed, totalChunks) {
+  if (!global.__embeddingProgress) return;
+  const ctx = global.__embeddingProgress;
+  const event = {
+    type: "chunk_progress",
+    workspaceSlug: ctx.workspaceSlug,
+    filename: ctx.filename,
+    userId: ctx.userId,
+    chunksProcessed,
+    totalChunks,
+    silent: true,
+  };
+
+  if (typeof process.send === "function") {
+    try {
+      process.send(event);
+    } catch {}
+    return;
+  }
+
+  const { emitProgress } = require("../EmbeddingWorkerManager");
+  emitProgress(ctx.workspaceSlug, event);
+}
+
+function humanFileSize(bytes, si = false, dp = 1) {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+
+  const units = si
+    ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u = -1;
+  const r = 10 ** dp;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
+
+  return bytes.toFixed(dp) + " " + units[u];
+}
+
+/**
+ * Async wrapper that resolves the correct LLM connector for a workspace,
+ * handling the anythingllm-router provider transparently. Callers get back
+ * a ready-to-use connector without needing to know about routing internals.
+ *
+ * @param {Object} opts
+ * @param {Object} opts.workspace - The workspace record (required)
+ * @param {string} [opts.prompt] - The current user prompt
+ * @param {Object|null} [opts.user] - The user object
+ * @param {Object|null} [opts.thread] - The thread object
+ * @param {Object[]} [opts.attachments] - Attachments array
+ * @param {Object|null} [opts.chatHistoryOverride] - Pre-fetched chat history
+ * @param {number|null} [opts.messageCountOverride] - Override for message count
+ * @param {string|null} [opts.apiSessionId] - API session scope
+ * @param {number|string|null} [opts.temperature] - Per-request temperature override (defaults to the workspace setting)
+ * @returns {Promise<{connector: BaseLLMProvider, routingMetadata: Object|null, prefetchedContext: Object|null}>}
+ */
+async function resolveProviderConnector({
+  workspace,
+  prompt = "",
+  user = null,
+  thread = null,
+  attachments = [],
+  chatHistoryOverride = null,
+  messageCountOverride = null,
+  apiSessionId = null,
+  temperature = null,
+}) {
+  const effectiveProvider = workspace?.chatProvider || process.env.LLM_PROVIDER;
+  // An override that is not a usable temperature (eg: absent from an API request)
+  // defers to the workspace setting rather than omitting the parameter.
+  const temperatureOverride = parseFloat(temperature) >= 0 ? temperature : null;
+
+  if (effectiveProvider !== "anythingllm-router") {
+    return {
+      connector: getLLMProvider({
+        provider: workspace?.chatProvider,
+        model: workspace?.chatModel,
+        temperature: temperatureOverride ?? workspace?.openAiTemp,
+      }),
+      routingMetadata: null,
+      prefetchedContext: null,
+    };
+  }
+
+  const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+  const { ModelRouterService } = require("../router");
+
+  const routerWorkspace = workspace?.router_id
+    ? workspace
+    : {
+        ...workspace,
+        router_id: process.env.MODEL_ROUTER_ID
+          ? Number(process.env.MODEL_ROUTER_ID)
+          : null,
+      };
+
+  const router = new AnythingLLMModelRouter(
+    routerWorkspace,
+    null,
+    temperatureOverride
+  );
+  const ctx = await ModelRouterService.gatherRoutingContext({
+    workspace,
+    user,
+    thread,
+    message: prompt,
+    chatHistoryOverride,
+    messageCountOverride,
+    apiSessionId,
+  });
+
+  await router.resolve(
+    {
+      prompt,
+      conversationTokenCount: ctx.conversationTokenCount,
+      conversationMessageCount: ctx.conversationMessageCount,
+      attachments,
+    },
+    { user, thread }
+  );
+
+  return {
+    connector: router.delegateProvider,
+    routingMetadata: router.routingMetadata,
+    prefetchedContext: ctx,
+  };
+}
+
+/**
+ * Strips thought/thinking tags from text (e.g., <thinking>...</thinking>)
+ * Useful for cleaning LLM responses before sending notifications.
+ * @param {string} text - The text to strip thoughts from.
+ * @returns {string} - The text with thought tags and their content removed.
+ */
+const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
+const THOUGHT_REGEX_COMPLETE = new RegExp(
+  THOUGHT_KEYWORDS.map(
+    (keyword) =>
+      `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
+  ).join("|"),
+  "gi"
+);
+
+function stripThinkingFromText(text = "") {
+  return text.replace(THOUGHT_REGEX_COMPLETE, "").trim();
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
+  getImageGeneratorProvider,
   maximumChunkLength,
   getVectorDbClass,
   getLLMProviderClass,
   getBaseLLMProviderModel,
   getLLMProvider,
+  resolveTemperature,
+  resolveProviderConnector,
   toChunks,
+  humanFileSize,
+  reportEmbeddingProgress,
+  stripThinkingFromText,
 };

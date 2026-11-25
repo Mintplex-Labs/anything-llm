@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { isAbortError } = require("../../helpers/abortSignals");
 const {
   formatChatHistory,
   writeResponseChunk,
@@ -9,6 +10,14 @@ const { MODEL_MAP } = require("../modelMap");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+  createWithReasoningSummaryFallback,
+} = require("../../helpers/reasoningEffort");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -19,7 +28,8 @@ class OpenAiLLM {
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
     });
-    this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
+    this.model =
+      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-5.6-luna";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -27,7 +37,6 @@ class OpenAiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
@@ -126,40 +135,57 @@ class OpenAiLLM {
   }
 
   /**
+   * Whether the model supports the temperature parameter at all.
+   * @param {string} modelName
+   * @returns {boolean}
+   */
+  static modelSupportsTemperature(modelName = "") {
+    // For models that don't support temperature
+    const NO_TEMP_MODELS = ["o", "gpt-5"];
+    return !NO_TEMP_MODELS.some((prefix) => modelName.startsWith(prefix));
+  }
+
+  /**
    * Determine the appropriate temperature for the model.
    * @param {string} modelName
-   * @param {number} temperature
-   * @returns {number}
+   * @param {number|undefined} temperature
+   * @returns {number|undefined}
    */
   #temperature(modelName, temperature) {
-    // For models that don't support temperature
-    // OpenAI accepts temperature 1
-    const NO_TEMP_MODELS = ["o", "gpt-5"];
-
-    if (NO_TEMP_MODELS.some((prefix) => modelName.startsWith(prefix))) {
-      return 1;
-    }
-
+    if (!OpenAiLLM.modelSupportsTemperature(modelName)) return undefined;
     return temperature;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("openai", this.model);
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.responses
-        .create({
+      createWithReasoningSummaryFallback(
+        (body) => this.openai.responses.create(body),
+        {
           model: this.model,
           input: messages,
           store: false,
-          temperature: this.#temperature(this.model, temperature),
-        })
-        .catch((e) => {
-          throw new Error(e.message);
-        })
+          ...temperatureParam(this.#temperature(this.model, temperature)),
+          ...reasoningParams("openai", reasoningEffort, this.model),
+        }
+      ).catch((e) => {
+        throw new Error(e.message);
+      })
     );
 
     if (!result.output.hasOwnProperty("output_text")) return null;
@@ -175,27 +201,39 @@ class OpenAiLLM {
           ? usage.output_tokens / result.duration
           : 0,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature, reasoningEffort = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.responses.create({
-        model: this.model,
-        stream: true,
-        input: messages,
-        store: false,
-        temperature: this.#temperature(this.model, temperature),
-      }),
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: createWithReasoningSummaryFallback(
+        (body) => this.openai.responses.create(body),
+        {
+          model: this.model,
+          stream: true,
+          input: messages,
+          store: false,
+          ...temperatureParam(this.#temperature(this.model, temperature)),
+          ...reasoningParams("openai", reasoningEffort, this.model),
+        }
+      ),
       messages,
-      false
-    );
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    });
 
     return measuredStreamRequest;
   }
@@ -210,6 +248,25 @@ class OpenAiLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      // Reasoning summaries stream before the answer and are shown as a
+      // <think> block, the same way other providers stream reasoning.
+      let reasoningOpen = false;
+      const writeText = (textResponse) => {
+        fullText += textResponse;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse,
+          close: false,
+          error: false,
+        });
+      };
+      const closeReasoning = () => {
+        if (!reasoningOpen) return;
+        reasoningOpen = false;
+        writeText("</think>");
+      };
 
       const handleAbort = () => {
         stream?.endMeasurement(usage);
@@ -219,22 +276,32 @@ class OpenAiLLM {
 
       try {
         for await (const chunk of stream) {
-          if (chunk.type === "response.output_text.delta") {
+          if (chunk.type === "response.reasoning_summary_text.delta") {
+            if (!chunk.delta) continue;
+            if (!reasoningOpen) {
+              reasoningOpen = true;
+              writeText(`<think>${chunk.delta}`);
+            } else writeText(chunk.delta);
+          } else if (
+            chunk.type === "response.reasoning_summary_part.done" &&
+            reasoningOpen
+          ) {
+            // Separate the summary's parts like paragraphs.
+            writeText("\n\n");
+          } else if (chunk.type === "response.output_text.delta") {
             const token = chunk.delta;
             if (token) {
-              fullText += token;
+              closeReasoning();
               if (!hasUsageMetrics) usage.completion_tokens++;
-
-              writeResponseChunk(response, {
-                uuid,
-                sources: [],
-                type: "textResponseChunk",
-                textResponse: token,
-                close: false,
-                error: false,
-              });
+              writeText(token);
             }
-          } else if (chunk.type === "response.completed") {
+          } else if (
+            chunk.type === "response.completed" ||
+            // Sent instead of `response.completed` when generation stops early,
+            // e.g. `incomplete_details.reason === "max_output_tokens"`.
+            chunk.type === "response.incomplete"
+          ) {
+            closeReasoning();
             const { response: res } = chunk;
             if (res.hasOwnProperty("usage") && !!res.usage) {
               hasUsageMetrics = true;
@@ -261,6 +328,12 @@ class OpenAiLLM {
           }
         }
       } catch (e) {
+        // Cancelling the upstream request rejects the iterator - that is the
+        // client leaving, not a failure, so it is not reported as an error.
+        if (isAbortError(e)) {
+          stream?.endMeasurement(usage);
+          return clientAbortedHandler(resolve, fullText);
+        }
         console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
         writeResponseChunk(response, {
           uuid,

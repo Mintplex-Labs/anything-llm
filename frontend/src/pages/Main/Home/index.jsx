@@ -1,25 +1,396 @@
-import React from "react";
-import QuickLinks from "./QuickLinks";
-import ExploreFeatures from "./ExploreFeatures";
-import Updates from "./Updates";
-import Resources from "./Resources";
-import Checklist from "./Checklist";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { isMobile } from "react-device-detect";
+import { SidebarMobileHeader } from "@/components/Sidebar";
+import PromptInput, {
+  PROMPT_INPUT_EVENT,
+  PROMPT_INPUT_ID,
+} from "@/components/WorkspaceChat/ChatContainer/PromptInput";
+import DnDFileUploaderWrapper, {
+  DndUploaderContext,
+  DnDFileUploaderProvider,
+  PASTE_ATTACHMENT_EVENT,
+} from "@/components/WorkspaceChat/ChatContainer/DnDWrapper";
+import { useTranslation } from "react-i18next";
+import useGreeting from "@/hooks/useGreeting";
+import {
+  LAST_VISITED_WORKSPACE,
+  PENDING_HOME_MESSAGE,
+} from "@/utils/constants";
+import Workspace from "@/models/workspace";
+import paths from "@/utils/paths";
+import showToast from "@/utils/toast";
+import { safeJsonParse } from "@/utils/request";
+import QuickActions from "@/components/lib/QuickActions";
+import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import useUser from "@/hooks/useUser";
+import ChatSettingsMenu from "@/components/WorkspaceChat/ChatContainer/ChatSettingsMenu";
+import WorkspaceModelPicker from "@/components/WorkspaceChat/ChatContainer/WorkspaceModelPicker";
+import { ChatTooltips } from "@/components/WorkspaceChat/ChatContainer/ChatTooltips";
+import { ChatSidebarProvider } from "@/components/WorkspaceChat/ChatContainer/ChatSidebar";
+import {
+  clearPromptInputDraft,
+  movePromptInputDraft,
+} from "@/hooks/usePromptInputStorage";
+import {
+  HOME_DRAFT_SESSION,
+  getSessionReasoningEffort,
+  setSessionReasoningEffort,
+} from "@/utils/chat/reasoningEffort";
+import MemoriesSidebar from "@/components/WorkspaceChat/ChatContainer/MemoriesSidebar";
+
+async function getTargetWorkspace() {
+  const lastVisited = safeJsonParse(
+    localStorage.getItem(LAST_VISITED_WORKSPACE)
+  );
+  if (lastVisited?.slug) {
+    const workspace = await Workspace.bySlug(lastVisited.slug);
+    if (workspace) return workspace;
+  }
+
+  const workspaces = await Workspace.all();
+  return workspaces.length > 0 ? workspaces[0] : null;
+}
+
+async function createDefaultWorkspace(workspaceName = "My Workspace") {
+  const { workspace, message: errorMsg } = await Workspace.new({
+    name: workspaceName,
+  });
+  if (!workspace) {
+    showToast(errorMsg || "Failed to create workspace", "error");
+    return null;
+  }
+  return workspace;
+}
 
 export default function Home() {
+  const { t } = useTranslation();
+  const { user } = useUser();
+  const [workspace, setWorkspace] = useState(null);
+  const [threadSlug, setThreadSlug] = useState(null);
+  const [workspaceLoading, setWorkspaceLoading] = useState(true);
+  const [dragging, setDragging] = useState(false);
+  const pendingFilesRef = useRef([]);
+
+  /**
+   * Creates the thread pending files are uploaded into. The unsent draft is
+   * moved to the new thread first since switching to it remounts PromptInput
+   * under the thread's storage key.
+   * @param {Object} ws - workspace to create the thread in
+   * @param {string} draft - prompt text captured before any workspace was
+   * created, as setting a new workspace re-hydrates the input under its slug
+   */
+  async function createThreadForFiles(ws, draft) {
+    const { thread } = await Workspace.threads.new(ws.slug);
+    if (!thread) return;
+    movePromptInputDraft({ from: ws.slug, to: thread.slug, value: draft });
+    setThreadSlug(thread.slug);
+  }
+
+  function currentDraft() {
+    return document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+  }
+
+  useEffect(() => {
+    async function init() {
+      const ws = await getTargetWorkspace();
+      if (ws) {
+        const [suggestedMessages, { showAgentCommand }] = await Promise.all([
+          Workspace.getSuggestedMessages(ws.slug),
+          Workspace.agentCommandAvailable(ws.slug),
+        ]);
+        setWorkspace({
+          ...ws,
+          suggestedMessages,
+          showAgentCommand,
+        });
+      }
+      setWorkspaceLoading(false);
+    }
+    init();
+  }, []);
+
+  // When workspace/thread becomes available and we have pending files, trigger upload
+  useEffect(() => {
+    if (workspace && threadSlug && pendingFilesRef.current.length > 0) {
+      const files = pendingFilesRef.current;
+      pendingFilesRef.current = [];
+      window.dispatchEvent(
+        new CustomEvent(PASTE_ATTACHMENT_EVENT, { detail: { files } })
+      );
+    }
+  }, [workspace, threadSlug]);
+
+  // Handle paste events when no thread exists yet
+  useEffect(() => {
+    if (threadSlug) return;
+
+    async function handlePaste(e) {
+      const files = e.detail?.files;
+      if (!files?.length) return;
+
+      pendingFilesRef.current = files;
+      const draft = currentDraft();
+      let ws = workspace;
+      if (!ws) {
+        ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
+        if (!ws) return;
+        setWorkspace(ws);
+      }
+      await createThreadForFiles(ws, draft);
+    }
+
+    window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
+    return () =>
+      window.removeEventListener(PASTE_ATTACHMENT_EVENT, handlePaste);
+  }, [workspace, threadSlug]);
+
+  async function handleDropWithoutWorkspace(acceptedFiles) {
+    setDragging(false);
+    pendingFilesRef.current = acceptedFiles;
+    const draft = currentDraft();
+    const ws = await createDefaultWorkspace(t("new-workspace.placeholder"));
+    if (!ws) return;
+    setWorkspace(ws);
+    await createThreadForFiles(ws, draft);
+  }
+
+  async function handleDropWithWorkspace(acceptedFiles) {
+    setDragging(false);
+    pendingFilesRef.current = acceptedFiles;
+    await createThreadForFiles(workspace, currentDraft());
+  }
+
+  if (workspaceLoading) {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
+      />
+    );
+  }
+
+  if (!workspace && user?.role === "default") {
+    return <NoWorkspacesAssigned />;
+  }
+
+  if (workspace && threadSlug) {
+    return (
+      <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
+        <HomeContent
+          workspace={workspace}
+          setWorkspace={setWorkspace}
+          threadSlug={threadSlug}
+          setThreadSlug={setThreadSlug}
+        />
+      </DnDFileUploaderProvider>
+    );
+  }
+
+  return (
+    <DndUploaderContext.Provider
+      value={{
+        files: [],
+        ready: true,
+        dragging,
+        setDragging,
+        onDrop: workspace
+          ? handleDropWithWorkspace
+          : handleDropWithoutWorkspace,
+        parseAttachments: () => [],
+      }}
+    >
+      <HomeContent
+        workspace={workspace}
+        setWorkspace={setWorkspace}
+        threadSlug={null}
+        setThreadSlug={setThreadSlug}
+      />
+    </DndUploaderContext.Provider>
+  );
+}
+
+function HomeContent({ workspace, setWorkspace, threadSlug, setThreadSlug }) {
+  const { t } = useTranslation();
+  const greeting = useGreeting();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const { files, parseAttachments } = useContext(DndUploaderContext);
+
+  useEffect(() => {
+    if (!threadSlug) {
+      window.dispatchEvent(
+        new CustomEvent(PROMPT_INPUT_EVENT, {
+          detail: { messageContent: "", writeMode: "replace" },
+        })
+      );
+    }
+  }, []);
+
+  async function submitMessage(message, attachments = []) {
+    if (!message || loading) return;
+    setLoading(true);
+    try {
+      let targetWorkspace = workspace;
+      let targetThread = threadSlug;
+
+      if (!targetWorkspace) {
+        targetWorkspace = await createDefaultWorkspace(
+          t("new-workspace.placeholder")
+        );
+        if (!targetWorkspace) {
+          setLoading(false);
+          return;
+        }
+        setWorkspace(targetWorkspace);
+      }
+
+      if (!targetThread) {
+        const { thread } = await Workspace.threads.new(targetWorkspace.slug);
+        targetThread = thread?.slug;
+        if (thread) {
+          // Carry the reasoning effort picked before the thread existed over
+          // to the thread the message is sent in.
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            thread.slug,
+            getSessionReasoningEffort(targetWorkspace.slug, HOME_DRAFT_SESSION)
+          );
+          setSessionReasoningEffort(
+            targetWorkspace.slug,
+            HOME_DRAFT_SESSION,
+            null
+          );
+          setThreadSlug(thread.slug);
+        }
+      }
+
+      sessionStorage.setItem(
+        PENDING_HOME_MESSAGE,
+        JSON.stringify({ message, attachments })
+      );
+
+      // The message is replayed via PENDING_HOME_MESSAGE on the thread route -
+      // drop the local draft so the sent text cannot be restored later.
+      if (threadSlug || workspace?.slug)
+        clearPromptInputDraft(threadSlug ?? workspace.slug);
+
+      if (targetThread) {
+        navigate(paths.workspace.thread(targetWorkspace.slug, targetThread));
+      } else {
+        navigate(paths.workspace.chat(targetWorkspace.slug));
+      }
+    } catch (error) {
+      console.error("Error submitting message:", error);
+      showToast("Failed to send message", "error");
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const currentMessage =
+      document.getElementById(PROMPT_INPUT_ID)?.value?.trim() || "";
+    await submitMessage(currentMessage, parseAttachments());
+  }
+
+  function sendCommand({
+    text = "",
+    autoSubmit = false,
+    writeMode = "replace",
+  }) {
+    if (autoSubmit) {
+      if (writeMode === "append") {
+        const currentText =
+          document.getElementById(PROMPT_INPUT_ID)?.value ?? "";
+        text = currentText + text;
+      }
+      if (!text.trim()) return;
+      submitMessage(text.trim());
+      return;
+    }
+    window.dispatchEvent(
+      new CustomEvent(PROMPT_INPUT_EVENT, {
+        detail: { messageContent: text, writeMode },
+      })
+    );
+  }
+
+  async function handleEditWorkspace() {
+    let targetWorkspace = workspace;
+
+    if (!targetWorkspace) {
+      targetWorkspace = await createDefaultWorkspace(
+        t("new-workspace.placeholder")
+      );
+      if (!targetWorkspace) return;
+      setWorkspace(targetWorkspace);
+    }
+
+    navigate(paths.workspace.settings.generalAppearance(targetWorkspace.slug));
+  }
+
+  return (
+    <ChatSidebarProvider>
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="relative flex md:ml-[2px] md:mr-[16px] md:my-[16px] w-full h-full z-[2]"
+      >
+        <ChatSettingsMenu />
+        <div className="flex-1 min-w-0 transition-all duration-500 relative md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden border-none light:border-solid light:border light:border-theme-modal-border">
+          {isMobile && <SidebarMobileHeader />}
+          <WorkspaceModelPicker workspaceSlug={workspace?.slug} />
+          <DnDFileUploaderWrapper>
+            <div className="flex flex-col h-full w-full items-center justify-center">
+              <div className="flex flex-col items-center w-full max-w-[750px]">
+                <h1 className="text-white text-2xl md:text-[32px] md:leading-10 mb-11 text-center">
+                  {greeting}
+                </h1>
+                <PromptInput
+                  workspace={workspace}
+                  submit={handleSubmit}
+                  isStreaming={loading}
+                  sendCommand={sendCommand}
+                  attachments={files}
+                  centered={true}
+                  workspaceSlug={workspace?.slug}
+                  threadSlug={threadSlug}
+                  reasoningSessionSlug={threadSlug ?? HOME_DRAFT_SESSION}
+                />
+                <QuickActions
+                  hasAvailableWorkspace={!!workspace}
+                  onCreateAgent={() => navigate(paths.settings.agentSkills())}
+                  onEditWorkspace={handleEditWorkspace}
+                  onUploadDocument={() =>
+                    document.getElementById("dnd-chat-file-uploader")?.click()
+                  }
+                />
+              </div>
+              <SuggestedMessages
+                suggestedMessages={workspace?.suggestedMessages}
+                sendCommand={sendCommand}
+              />
+            </div>
+          </DnDFileUploaderWrapper>
+          <ChatTooltips />
+        </div>
+        <MemoriesSidebar workspace={workspace} />
+      </div>
+    </ChatSidebarProvider>
+  );
+}
+
+function NoWorkspacesAssigned() {
+  const { t } = useTranslation();
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-container w-full h-full"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-hidden"
     >
-      <div className="w-full h-full flex flex-col items-center overflow-y-auto no-scroll">
-        <div className="w-full max-w-[1200px] flex flex-col gap-y-[24px] p-4 pt-16 md:p-12 md:pt-11">
-          <Checklist />
-          <QuickLinks />
-          <ExploreFeatures />
-          <Updates />
-          <Resources />
-        </div>
+      <div className="flex flex-col h-full w-full items-center justify-center">
+        <p className="text-white/60 text-sm text-center whitespace-pre-line">
+          {t("home.notAssigned")}
+        </p>
       </div>
     </div>
   );

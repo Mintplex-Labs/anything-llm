@@ -1,4 +1,4 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 class OpenRouterEmbedder {
   constructor() {
@@ -37,6 +37,7 @@ class OpenRouterEmbedder {
   async embedChunks(textChunks = []) {
     this.log(`Embedding ${textChunks.length} document chunks...`);
     const embeddingRequests = [];
+    let chunksProcessed = 0;
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
@@ -46,9 +47,13 @@ class OpenRouterEmbedder {
               input: chunk,
             })
             .then((result) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               e.type =
                 e?.response?.data?.error?.code ||
                 e?.response?.status ||

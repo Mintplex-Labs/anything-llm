@@ -28,6 +28,7 @@ const Telemetry = {
     link_uploaded: 30,
     raw_document_uploaded: 30,
     document_parsed: 30,
+    agent_generated_file_downloaded: 30,
   },
 
   id: async function () {

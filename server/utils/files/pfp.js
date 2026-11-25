@@ -3,7 +3,6 @@ const fs = require("fs");
 const { getType } = require("mime");
 const { User } = require("../../models/user");
 const { normalizePath, isWithin } = require(".");
-const { Workspace } = require("../../models/workspace");
 
 function fetchPfp(pfpPath) {
   if (!fs.existsSync(pfpPath)) {
@@ -41,23 +40,7 @@ async function determinePfpFilepath(id) {
   return pfpFilepath;
 }
 
-async function determineWorkspacePfpFilepath(slug) {
-  const workspace = await Workspace.get({ slug });
-  const pfpFilename = workspace?.pfpFilename || null;
-  if (!pfpFilename) return null;
-
-  const basePath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets/pfp")
-    : path.join(__dirname, "../../storage/assets/pfp");
-  const pfpFilepath = path.join(basePath, normalizePath(pfpFilename));
-
-  if (!isWithin(path.resolve(basePath), path.resolve(pfpFilepath))) return null;
-  if (!fs.existsSync(pfpFilepath)) return null;
-  return pfpFilepath;
-}
-
 module.exports = {
   fetchPfp,
   determinePfpFilepath,
-  determineWorkspacePfpFilepath,
 };

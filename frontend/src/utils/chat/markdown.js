@@ -38,7 +38,7 @@ const markdown = markdownIt({
           hljs.highlight(code, { language: lang, ignoreIllegals: true }).value +
           "</pre></div>"
         );
-      } catch (__) {}
+      } catch {}
     }
 
     return (
@@ -63,7 +63,7 @@ markdown.renderer.rules.strong_close = () => "</strong>";
 markdown.renderer.rules.link_open = (tokens, idx) => {
   const token = tokens[idx];
   const href = token.attrs.find((attr) => attr[0] === "href");
-  return `<a href="${href[1]}" target="_blank" rel="noopener noreferrer">`;
+  return `<a href="${HTMLEncode(href[1])}" target="_blank" rel="noopener noreferrer">`;
 };
 
 // Custom renderer for responsive images rendered in markdown
@@ -73,11 +73,61 @@ markdown.renderer.rules.image = function (tokens, idx) {
   const src = token.attrs[srcIndex][1];
   const alt = token.content || "";
 
-  return `<div class="w-full max-w-[800px]"><img src="${src}" alt="${alt}" class="w-full h-auto" /></div>`;
+  return `<div class="w-full max-w-[800px]"><img src="${HTMLEncode(src)}" alt="${HTMLEncode(alt)}" class="w-full h-auto" /></div>`;
 };
+
+markdown.renderer.rules.table_open = () =>
+  '<div class="w-full overflow-x-auto"><table>';
+markdown.renderer.rules.table_close = () => "</table></div>";
 
 markdown.use(markdownItKatexPlugin);
 
 export default function renderMarkdown(text = "") {
   return markdown.render(text);
+}
+
+/**
+ * Chain-of-thought is written loosely: models pad list markers with extra
+ * spaces ("*   item") and indent even top-level lists by 4 spaces. Markdown
+ * reads a 4-space indent as an indented code block, or lazily folds those
+ * lines into the previous paragraph — either way the thought renders as a
+ * jumble of literal asterisks. Halve deep indents (4 -> 2 per level) and
+ * tighten marker padding so the content parses as the lists it was meant to
+ * be. Lines inside fenced ``` blocks pass through untouched.
+ * @param {string} text
+ * @returns {string}
+ */
+function normalizeThoughtIndentation(text = "") {
+  let inFence = false;
+  return text
+    .split("\n")
+    .map((line) => {
+      if (line.trim().startsWith("```")) {
+        inFence = !inFence;
+        return line;
+      }
+      if (inFence) return line;
+      const width = line.match(/^[ \t]*/)[0].replace(/\t/g, "    ").length;
+      const normWidth = width >= 4 ? Math.floor(width / 2) : width;
+      const dedented = " ".repeat(normWidth) + line.trimStart();
+      return dedented.replace(/^(\s*(?:[*+-]|\d+[.)]))\s{2,}/, "$1 ");
+    })
+    .join("\n");
+}
+
+/**
+ * Render for model thoughts. Indented-code parsing is turned off so any
+ * residual indentation can never render as literal monospace text; fenced
+ * ``` blocks still work. The toggle is safe on the shared instance because
+ * rendering is synchronous.
+ * @param {string} text
+ * @returns {string}
+ */
+export function renderThoughtMarkdown(text = "") {
+  markdown.disable("code");
+  try {
+    return markdown.render(normalizeThoughtIndentation(text));
+  } finally {
+    markdown.enable("code");
+  }
 }

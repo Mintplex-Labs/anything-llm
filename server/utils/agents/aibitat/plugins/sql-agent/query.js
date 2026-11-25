@@ -55,9 +55,9 @@ module.exports.SqlAgentQuery = {
                   "The raw SQL query to run. Should be a query which does not modify the table and will return results.",
               },
             },
+            required: ["database_id", "sql_query"],
             additionalProperties: false,
           },
-          required: ["database_id", "table_name"],
           handler: async function ({ database_id = "", sql_query = "" }) {
             this.super.handlerProps.log(`Using the sql-query tool.`);
             try {

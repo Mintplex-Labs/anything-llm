@@ -1,18 +1,37 @@
 import { toast } from "react-toastify";
+import { isMobileOnly } from "react-device-detect";
 
-// Additional Configs (opts)
-// You can also pass valid ReactToast params to override the defaults.
-// clear: false, // Will dismiss all visible toasts before rendering next toast
+/**
+ * Resolves the effective theme (light or dark) using the same logic as useTheme,
+ * but without React hooks so it can be called from plain utility functions.
+ * @returns {"light" | "dark"}
+ */
+function resolveTheme() {
+  const stored = localStorage?.getItem("theme") || "system";
+  if (stored === "default" || stored === "dark") return "dark";
+  if (stored === "light") return "light";
+  return window.matchMedia?.("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+}
+
+/**
+ * Shows a toast notification with the given message and type.
+ * @param {string} message - The message to display in the toast.
+ * @param {'success' | 'error' | 'info' | 'warning' | 'default'} type - The type of toast to display.
+ * @param {Object} opts - Additional options for the toast.
+ * @returns {void}
+ */
 const showToast = (message, type = "default", opts = {}) => {
-  const theme = localStorage?.getItem("theme") || "default";
+  const resolved = resolveTheme();
   const options = {
-    position: "bottom-center",
+    position: isMobileOnly ? "top-center" : "bottom-center",
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    theme: theme === "default" ? "dark" : "light",
+    theme: resolved === "light" ? "light" : "dark",
     ...opts,
   };
 

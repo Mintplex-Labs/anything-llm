@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Plus, MagnifyingGlass } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -20,21 +20,25 @@ export default function SearchBox({ user, showNewWsModal }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState(DEFAULT_SEARCH_RESULTS);
-  const handleSearch = debounce(handleSearchDebounced, 500);
+  const searchSeq = useRef(0);
+  const handleSearch = useMemo(() => debounce(handleSearchDebounced, 500), []);
+  useEffect(() => () => handleSearch.cancel(), [handleSearch]);
 
   async function handleSearchDebounced(e) {
+    const seq = ++searchSeq.current;
     try {
       const searchValue = e.target.value;
       setSearchTerm(searchValue);
       setLoading(true);
       const searchResults =
         await Workspace.searchWorkspaceOrThread(searchValue);
+      if (seq !== searchSeq.current) return;
       setSearchResults(searchResults);
     } catch (error) {
       console.error(error);
       setSearchResults(DEFAULT_SEARCH_RESULTS);
     } finally {
-      setLoading(false);
+      if (seq === searchSeq.current) setLoading(false);
     }
   }
 
@@ -61,7 +65,7 @@ export default function SearchBox({ user, showNewWsModal }) {
           onChange={handleSearch}
           onReset={handleReset}
           onFocus={(e) => e.target.select()}
-          className="border-none w-full h-full rounded-lg bg-theme-sidebar-item-default pl-9 focus:pl-4 pr-1 placeholder:text-theme-settings-input-placeholder outline-none text-white search-input peer text-sm"
+          className="border-none w-full h-full rounded-lg bg-theme-sidebar-item-default pl-9 focus:pl-4 pr-1 placeholder:text-white/50 light:placeholder:text-slate-500 placeholder:font-semibold outline-none text-theme-text-primary search-input peer text-sm"
         />
         <MagnifyingGlass
           size={14}
@@ -172,11 +176,10 @@ function SearchResultItem({ to, name, hint }) {
   return (
     <Link
       to={to}
-      reloadDocument={true}
       onClick={() => window.dispatchEvent(new Event(SEARCH_RESULT_SELECTED))}
       className="hover:bg-[#FFF]/10 light:hover:bg-[#000]/10 transition-all duration-300 rounded-sm px-[8px] py-[2px]"
     >
-      <p className="text-theme-text-primary text-sm truncate w-[80%]">
+      <p className="text-theme-text-primary text-sm truncate w-full">
         {name}
         {hint && (
           <span className="text-theme-text-secondary text-xs ml-[4px]">
@@ -198,9 +201,13 @@ function ShortWidthNewWorkspaceButton({ user, showNewWsModal }) {
         data-tooltip-id="new-workspace-tooltip"
         data-tooltip-content={t("new-workspace.title")}
         onClick={showNewWsModal}
-        className="border-none flex items-center justify-center bg-white rounded-lg p-[8px] hover:bg-white/80 transition-all duration-300"
+        className="border-none flex items-center justify-center bg-white  rounded-lg p-[8px] hover:bg-white/80 light:hover:bg-slate-300 transition-all duration-300"
       >
-        <Plus size={16} weight="bold" className="text-black" />
+        <Plus
+          size={16}
+          weight="bold"
+          className="text-black light:text-slate-500"
+        />
       </button>
       <Tooltip
         id="new-workspace-tooltip"

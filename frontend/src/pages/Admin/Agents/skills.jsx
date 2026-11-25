@@ -1,0 +1,176 @@
+import AgentWebSearchSelection from "./WebSearchSelection";
+import AgentSQLConnectorSelection from "./SQLConnectorSelection";
+import GenericSkillPanel from "./GenericSkillPanel";
+import GenerateImageSkillPanel from "./GenerateImageSkillPanel";
+import DefaultSkillPanel from "./DefaultSkillPanel";
+import FileSystemSkillPanel from "./FileSystemSkillPanel";
+import CreateFileSkillPanel from "./CreateFileSkillPanel";
+import GMailSkillPanel from "./GMailSkillPanel";
+import GoogleCalendarSkillPanel from "./GoogleCalendarSkillPanel";
+import OutlookSkillPanel from "./OutlookSkillPanel";
+import {
+  Brain,
+  File,
+  Browser,
+  ChartBar,
+  FolderOpen,
+  FilePlus,
+  CalendarCheck,
+  ImageSquare,
+} from "@phosphor-icons/react";
+import RAGImage from "@/media/agents/rag-memory.png";
+import SummarizeImage from "@/media/agents/view-summarize.png";
+import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
+import GenerateChartsImage from "@/media/agents/generate-charts.png";
+import GenerateImageImage from "@/media/agents/generate-image.png";
+import GenerateSaveImages from "@/media/agents/generate-save-files.png";
+import FileSystemImage from "@/media/agents/file-system.png";
+import GMailIcon from "./GMailSkillPanel/gmail.png";
+import OutlookIcon from "./OutlookSkillPanel/outlook.png";
+import GoogleCalendarIcon from "./GoogleCalendarSkillPanel/google-calendar.png";
+import ScheduledJobsImage from "@/media/agents/scheduled-jobs.png";
+
+export const getDefaultSkills = (t) => ({
+  "rag-memory": {
+    title: t("agent.skill.rag.title"),
+    description: t("agent.skill.rag.description"),
+    component: DefaultSkillPanel,
+    icon: Brain,
+    image: RAGImage,
+    skill: "rag-memory",
+  },
+  "document-summarizer": {
+    title: t("agent.skill.view.title"),
+    description: t("agent.skill.view.description"),
+    component: DefaultSkillPanel,
+    icon: File,
+    image: SummarizeImage,
+    skill: "document-summarizer",
+  },
+  "web-scraping": {
+    title: t("agent.skill.scrape.title"),
+    description: t("agent.skill.scrape.description"),
+    component: DefaultSkillPanel,
+    icon: Browser,
+    image: ScrapeWebsitesImage,
+    skill: "web-scraping",
+  },
+  "web-browsing": {
+    title: t("agent.skill.web.title"),
+    description: t("agent.skill.web.description"),
+    component: AgentWebSearchSelection,
+    skill: "web-browsing",
+  },
+});
+
+/**
+ * Get the configurable skills for the agent.
+ * @param {function} t - The translation function.
+ * @param {object} options - The options for the configurable skills.
+ * @param {boolean} options.fileSystemAgentAvailable - Whether the file system agent is available.
+ * @param {boolean} options.createFilesAgentAvailable - Whether the create files agent is available.
+ * @param {boolean} options.imageGenerationAvailable - Whether an image generation provider is
+ * configured. Only the in-chat skills menu passes this - the admin page always lists the skill so
+ * it can be enabled before a provider is set up.
+ * @returns {object} The configurable skills.
+ */
+export const getConfigurableSkills = (
+  t,
+  {
+    fileSystemAgentAvailable = true,
+    createFilesAgentAvailable = true,
+    imageGenerationAvailable = true,
+  } = {}
+) => ({
+  ...(fileSystemAgentAvailable && {
+    "filesystem-agent": {
+      title: t("agent.skill.filesystem.title"),
+      description: t("agent.skill.filesystem.description"),
+      component: FileSystemSkillPanel,
+      skill: "filesystem-agent",
+      icon: FolderOpen,
+      image: FileSystemImage,
+    },
+  }),
+  ...(createFilesAgentAvailable && {
+    "create-files-agent": {
+      title: t("agent.skill.createFiles.title"),
+      description: t("agent.skill.createFiles.description"),
+      component: CreateFileSkillPanel,
+      skill: "create-files-agent",
+      icon: FilePlus,
+      image: GenerateSaveImages,
+    },
+  }),
+  "create-chart": {
+    title: t("agent.skill.generate.title"),
+    description: t("agent.skill.generate.description"),
+    component: GenericSkillPanel,
+    skill: "create-chart",
+    icon: ChartBar,
+    image: GenerateChartsImage,
+  },
+  ...(imageGenerationAvailable && {
+    "generate-image": {
+      title: t("agent.skill.generateImage.title"),
+      description: t("agent.skill.generateImage.description"),
+      component: GenerateImageSkillPanel,
+      skill: "generate-image",
+      icon: ImageSquare,
+      image: GenerateImageImage,
+    },
+  }),
+  "sql-agent": {
+    title: t("agent.skill.sql.title"),
+    description: t("agent.skill.sql.description"),
+    component: AgentSQLConnectorSelection,
+    skill: "sql-agent",
+  },
+  "create-scheduled-job": {
+    title: t("agent.skill.scheduledJob.title"),
+    description: t("agent.skill.scheduledJob.description"),
+    component: GenericSkillPanel,
+    skill: "create-scheduled-job",
+    icon: CalendarCheck,
+    image: ScheduledJobsImage,
+    mode: ["singleUserOnly"],
+  },
+});
+
+export const getAppIntegrationSkills = (t) => ({
+  "gmail-agent": {
+    title: t("agent.skill.gmail.title"),
+    description: t("agent.skill.gmail.description"),
+    component: GMailSkillPanel,
+    skill: "gmail-agent",
+    Icon: ({ size }) => (
+      <img src={GMailIcon} alt="GMail" width={size} height={size} />
+    ),
+    mode: ["singleUserOnly"],
+  },
+  "google-calendar-agent": {
+    title: t("agent.skill.googleCalendar.title"),
+    description: t("agent.skill.googleCalendar.description"),
+    component: GoogleCalendarSkillPanel,
+    skill: "google-calendar-agent",
+    Icon: ({ size }) => (
+      <img
+        src={GoogleCalendarIcon}
+        alt="Google Calendar"
+        width={size}
+        height={size}
+      />
+    ),
+    mode: ["singleUserOnly"],
+  },
+  "outlook-agent": {
+    title: t("agent.skill.outlook.title"),
+    description: t("agent.skill.outlook.description"),
+    component: OutlookSkillPanel,
+    skill: "outlook-agent",
+    Icon: ({ size }) => (
+      <img src={OutlookIcon} alt="Outlook" width={size} height={size} />
+    ),
+    mode: ["singleUserOnly"],
+  },
+});

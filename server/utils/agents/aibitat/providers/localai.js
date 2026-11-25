@@ -2,9 +2,18 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const {
+  tooledStream,
+  tooledComplete,
+  temperatureParam,
+} = require("./helpers/tooled.js");
+const { RetryError } = require("../error.js");
+const { LocalAiLLM } = require("../../../AiProviders/localAi/index.js");
 
 /**
  * The agent provider for the LocalAI provider.
+ * Supports native OpenAI-compatible tool calling when enabled via ENV,
+ * falling back to the UnTooled prompt-based approach otherwise.
  */
 class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -15,12 +24,13 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     const client = new OpenAI({
       baseURL: process.env.LOCAL_AI_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
-      maxRetries: 3,
     });
 
+    this.providerTag = "localai";
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this._supportsToolCalling = null;
   }
 
   get client() {
@@ -31,19 +41,36 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     return true;
   }
 
+  /**
+   * Whether the loaded model supports native OpenAI-compatible tool calling.
+   * Checks the LocalAI /v1/models/capabilities endpoint for the `tools` usecase.
+   * Falls back to native tool calling when LocalAI cannot report it (older versions).
+   * @returns {Promise<boolean>}
+   */
+  async supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
+    if (this._supportsToolCalling !== null) return this._supportsToolCalling;
+    const localai = new LocalAiLLM(null, this.model);
+    const capabilities = await localai.getModelCapabilities();
+    this._supportsToolCalling = capabilities.tools !== false;
+    return this._supportsToolCalling;
+  }
+
+  // ---- UnTooled callbacks (used when native tool calling is not supported) ----
+
   async #handleFunctionCallChat({ messages = [] }) {
+    await LocalAiLLM.contextWindows.ensure(this.model);
     return await this.client.chat.completions
       .create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
           throw new Error("LocalAI chat: No results!");
-
         if (result.choices.length === 0)
           throw new Error("LocalAI chat: No results length!");
-
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -52,30 +79,104 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallStream({ messages = [] }) {
+    await LocalAiLLM.contextWindows.ensure(this.model);
     return await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
+      stream_options: { include_usage: true },
       messages,
     });
   }
 
+  /**
+   * Stream a chat completion with tool calling support.
+   * Uses native tool calling when supported, otherwise falls back to UnTooled.
+   */
   async stream(messages, functions = [], eventHandler = null) {
-    return await UnTooled.prototype.stream.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallStream.bind(this),
-      eventHandler
+    const useNative = await this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.stream.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallStream.bind(this),
+        eventHandler
+      );
+    }
+
+    this.providerLog(
+      "Provider.stream (tooled) - will process this chat completion."
     );
+
+    try {
+      await LocalAiLLM.contextWindows.ensure(this.model);
+      return await tooledStream(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        eventHandler,
+        { provider: this }
+      );
+    } catch (error) {
+      console.error(error.message, error);
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
+  /**
+   * Create a non-streaming completion with tool calling support.
+   * Uses native tool calling when supported, otherwise falls back to UnTooled.
+   */
   async complete(messages, functions = []) {
-    return await UnTooled.prototype.complete.call(
-      this,
-      messages,
-      functions,
-      this.#handleFunctionCallChat.bind(this)
-    );
+    const useNative = await this.supportsNativeToolCalling();
+
+    if (!useNative) {
+      return await UnTooled.prototype.complete.call(
+        this,
+        messages,
+        functions,
+        this.#handleFunctionCallChat.bind(this)
+      );
+    }
+
+    try {
+      await LocalAiLLM.contextWindows.ensure(this.model);
+      const result = await tooledComplete(
+        this.client,
+        this.model,
+        messages,
+        functions,
+        this.getCost.bind(this),
+        { provider: this }
+      );
+
+      if (result.retryWithError) {
+        return this.complete([...messages, result.retryWithError], functions);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+      if (
+        error instanceof OpenAI.RateLimitError ||
+        error instanceof OpenAI.InternalServerError ||
+        error instanceof OpenAI.APIError
+      ) {
+        throw new RetryError(error.message);
+      }
+      throw error;
+    }
   }
 
   /**

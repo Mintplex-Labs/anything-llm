@@ -11,9 +11,16 @@ const {
 const {
   StreamableHTTPClientTransport,
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
+const { patchShellEnvironmentPath } = require("../../helpers/shell");
+const { isCloud } = require("../../helpers/runtime");
+const {
+  forwardIdentityFields,
+  identityFetch,
+  stripReservedHeaders,
+} = require("../identity");
 
 /**
- * @typedef {'stdio' | 'http' | 'sse'} MCPServerTypes
+ * @typedef {'stdio' | 'http'} MCPServerTypes
  */
 
 /**
@@ -49,6 +56,8 @@ class MCPHypervisor {
    * @type { { [key: string]: {status: 'success' | 'failed', message: string} } }
    */
   mcpLoadingResults = {};
+  #booted = false;
+  #bootPromise = null;
 
   constructor() {
     if (MCPHypervisor._instance) return MCPHypervisor._instance;
@@ -130,10 +139,137 @@ class MCPHypervisor {
   }
 
   /**
+   * Validate a server definition and write it to the config file under `name`,
+   * replacing any existing definition with that name.
+   * @param {string} name - The name of the MCP server
+   * @param {Object} server - The server definition (same shape as an entry in `mcpServers`)
+   * @returns {{success: boolean, error: string | null}}
+   */
+  writeMCPServerToConfig(name, server) {
+    try {
+      if (typeof name !== "string" || !name.trim() || name === "__proto__")
+        throw new Error("MCP server name is required.");
+      if (!server || typeof server !== "object" || Array.isArray(server))
+        throw new Error("MCP server config must be an object.");
+
+      const serverType = this.#parseServerType(server);
+      if (!serverType)
+        throw new Error("MCP server config must have a command or url.");
+      this.#validateServerDefinitionByType(name, server, serverType);
+
+      const servers = safeJsonParse(
+        fs.readFileSync(this.mcpServerJSONPath, "utf8"),
+        { mcpServers: {} }
+      );
+      servers.mcpServers[name] = server;
+      fs.writeFileSync(
+        this.mcpServerJSONPath,
+        JSON.stringify(servers, null, 2),
+        "utf8"
+      );
+      this.log(`MCP server ${name} written to config file`);
+      return { success: true, error: null };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Update the suppressed tools for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @param {string} toolName - The name of the tool to toggle
+   * @param {boolean} enabled - Whether the tool should be enabled (true) or suppressed (false)
+   * @returns {{success: boolean, error: string | null, suppressedTools: string[]}}
+   */
+  updateSuppressedTools(serverName, toolName, enabled) {
+    const servers = safeJsonParse(
+      fs.readFileSync(this.mcpServerJSONPath, "utf8"),
+      { mcpServers: {} }
+    );
+
+    // Own-key check so names like "constructor" don't resolve to Object built-ins.
+    if (!Object.prototype.hasOwnProperty.call(servers.mcpServers, serverName)) {
+      return {
+        success: false,
+        error: `MCP server ${serverName} not found in config file.`,
+        suppressedTools: [],
+      };
+    }
+
+    const server = servers.mcpServers[serverName];
+    if (!server.anythingllm) server.anythingllm = {};
+    if (!Array.isArray(server.anythingllm.suppressedTools))
+      server.anythingllm.suppressedTools = [];
+
+    const suppressedTools = server.anythingllm.suppressedTools;
+
+    if (enabled) {
+      const index = suppressedTools.indexOf(toolName);
+      if (index > -1) suppressedTools.splice(index, 1);
+    } else {
+      if (!suppressedTools.includes(toolName)) suppressedTools.push(toolName);
+    }
+
+    server.anythingllm.suppressedTools = suppressedTools;
+    servers.mcpServers[serverName] = server;
+
+    fs.writeFileSync(
+      this.mcpServerJSONPath,
+      JSON.stringify(servers, null, 2),
+      "utf8"
+    );
+
+    this.log(
+      `MCP server ${serverName} tool ${toolName} ${enabled ? "enabled" : "suppressed"}`
+    );
+    return { success: true, error: null, suppressedTools };
+  }
+
+  /**
+   * Which identity fields to forward to an MCP server.
+   * Set per server via `anythingllm.forwardIdentity` - true, or a list of
+   * "user", "workspace" and/or single fields like "user.id", "workspace.slug".
+   * @param {string} serverName - The name of the MCP server
+   * @returns {string[]} e.g. ["user.id", "workspace.slug"]
+   */
+  getForwardIdentityFields(serverName) {
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    return forwardIdentityFields(config?.server?.anythingllm?.forwardIdentity);
+  }
+
+  /**
+   * Get the suppressed tools for an MCP server
+   * @param {string} serverName - The name of the MCP server
+   * @returns {string[]} - Array of suppressed tool names
+   */
+  getSuppressedTools(serverName) {
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    return config?.server?.anythingllm?.suppressedTools || [];
+  }
+
+  /**
+   * Get the tool call timeout for an MCP server in milliseconds.
+   * Set per server via `anythingllm.timeout` (in seconds) in the MCP config file.
+   * Falls back to 60 seconds when unset or not a positive number.
+   * @param {string} serverName - The name of the MCP server
+   * @returns {number} - Timeout in milliseconds
+   */
+  getToolCallTimeout(serverName) {
+    const DEFAULT_TIMEOUT_SECONDS = 60;
+    const config = this.mcpServerConfigs.find((s) => s.name === serverName);
+    const timeout = Number(config?.server?.anythingllm?.timeout);
+    if (!Number.isFinite(timeout) || timeout <= 0)
+      return DEFAULT_TIMEOUT_SECONDS * 1000;
+    return timeout * 1000;
+  }
+
+  /**
    * Reload the MCP servers - can be used to reload the MCP servers without restarting the server or app
    * and will also apply changes to the config file if any where made.
    */
   async reloadMCPServers() {
+    // Let an in-flight scan finish before replacing its clients and results.
+    while (this.#bootPromise) await this.#bootPromise.catch(() => {});
     this.pruneMCPServers();
     await this.bootMCPServers();
   }
@@ -202,6 +338,7 @@ class MCPHypervisor {
     this.mcpLoadingResults[name] = {
       status: "failed",
       message: `Server was stopped manually by the administrator.`,
+      manuallyStopped: true,
     };
     return true;
   }
@@ -228,33 +365,7 @@ class MCPHypervisor {
     }
     this.mcps = {};
     this.mcpLoadingResults = {};
-  }
-
-  /**
-   * Load shell environment for desktop applications.
-   * MacOS and Linux don't inherit login shell environment. So this function
-   * fixes the PATH and accessible commands when running AnythingLLM outside of Docker during development on Mac/Linux and in-container (Linux).
-   * @returns {Promise<{[key: string]: string}>} - Environment variables from shell
-   */
-  async #loadShellEnvironment() {
-    try {
-      if (process.platform === "win32") return process.env;
-      const { default: fixPath } = await import("fix-path");
-      const { default: stripAnsi } = await import("strip-ansi");
-      fixPath();
-
-      // Due to node v20 requirement to have a minimum version of fix-path v5, we need to strip ANSI codes manually
-      // which was the only patch between v4 and v5. Here we just apply manually.
-      // https://github.com/sindresorhus/fix-path/issues/6
-      if (process.env.PATH) process.env.PATH = stripAnsi(process.env.PATH);
-      return process.env;
-    } catch (error) {
-      console.warn(
-        "Failed to load shell environment, using process.env:",
-        error.message
-      );
-      return process.env;
-    }
+    this.#booted = false;
   }
 
   /**
@@ -264,7 +375,7 @@ class MCPHypervisor {
    * @returns {Promise<{env: { [key: string]: string } | {}}}> - The environment variables
    */
   async #buildMCPServerENV(server) {
-    const shellEnv = await this.#loadShellEnvironment();
+    const shellEnv = await patchShellEnvironmentPath();
     let baseEnv = {
       PATH:
         shellEnv.PATH ||
@@ -316,7 +427,7 @@ class MCPHypervisor {
       return "http";
     if (Object.prototype.hasOwnProperty.call(server, "command")) return "stdio";
     if (Object.prototype.hasOwnProperty.call(server, "url")) return "http";
-    return "sse";
+    return null;
   }
 
   /**
@@ -328,20 +439,25 @@ class MCPHypervisor {
    * @returns {void}
    */
   #validateServerDefinitionByType(name, server, type) {
-    if (
-      server.type === "sse" ||
-      server.type === "streamable" ||
-      server.type === "http"
-    ) {
+    if (type === "http") {
+      // "type" is optional for http servers - when omitted, SSE is assumed
+      // (see createHttpTransport). An explicit unknown value is a config error.
+      if (
+        server.type !== undefined &&
+        !["sse", "streamable", "http"].includes(server.type)
+      ) {
+        throw new Error("MCP server type must have sse or streamable value.");
+      }
+
       if (!server.url) {
         throw new Error(
-          `MCP server "${name}": missing required "url" for ${server.type} transport`
+          `MCP server "${name}": missing required "url" for ${server.type || "sse"} transport`
         );
       }
 
       try {
         new URL(server.url);
-      } catch (error) {
+      } catch {
         throw new Error(`MCP server "${name}": invalid URL "${server.url}"`);
       }
       return;
@@ -354,12 +470,6 @@ class MCPHypervisor {
       )
         throw new Error("MCP server args must be an array");
     }
-
-    if (type === "http") {
-      if (!["sse", "streamable"].includes(server?.type))
-        throw new Error("MCP server type must have sse or streamable value.");
-    }
-    if (type === "sse") return;
     return;
   }
 
@@ -387,22 +497,26 @@ class MCPHypervisor {
    */
   createHttpTransport(server) {
     const url = new URL(server.url);
+    // Reserved X-AnythingLLM-* config headers are only dropped for servers that
+    // opt in to identity forwarding - other servers send their headers as-is.
+    const forwardsIdentity =
+      forwardIdentityFields(server.anythingllm?.forwardIdentity).length > 0;
+    const options = {
+      requestInit: {
+        headers: forwardsIdentity
+          ? stripReservedHeaders(server.headers, (msg) => this.log(msg))
+          : server.headers,
+      },
+      fetch: identityFetch,
+    };
 
     // If the server block has a type property then use that to determine the transport type
     switch (server.type) {
       case "streamable":
       case "http":
-        return new StreamableHTTPClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
+        return new StreamableHTTPClientTransport(url, options);
       default:
-        return new SSEClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
+        return new SSEClientTransport(url, options);
     }
   }
 
@@ -453,18 +567,28 @@ class MCPHypervisor {
   }
 
   /**
-   * Boot the MCP servers according to the server definitions.
-   * This function will skip booting MCP servers if they are already running.
+   * Scan the MCP server definitions and allow retry if no server could start.
    * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
    */
   async bootMCPServers() {
-    if (Object.keys(this.mcps).length > 0) {
-      this.log("MCP Servers already running, skipping boot.");
-      return this.mcpLoadingResults;
-    }
+    if (isCloud()) return this.mcpLoadingResults; // MCP servers are not offered on cloud
+    if (this.#booted) return this.mcpLoadingResults;
+    this.#bootPromise ??= this.#bootConfiguredMCPServers().finally(() => {
+      this.#bootPromise = null;
+    });
+    return this.#bootPromise;
+  }
 
+  async #bootConfiguredMCPServers() {
     const serverDefinitions = this.mcpServerConfigs;
     for (const { name, server } of serverDefinitions) {
+      // Preserve servers already started or explicitly stopped through the API.
+      if (
+        Object.hasOwn(this.mcps, name) ||
+        this.mcpLoadingResults[name]?.manuallyStopped
+      )
+        continue;
+
       if (
         server.anythingllm?.hasOwnProperty("autoStart") &&
         server.anythingllm.autoStart === false
@@ -509,6 +633,7 @@ class MCPHypervisor {
     }
 
     const runningServers = Object.keys(this.mcps);
+    this.#booted = runningServers.length > 0;
     this.log(
       `Successfully started ${runningServers.length} MCP servers:`,
       runningServers

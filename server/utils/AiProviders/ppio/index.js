@@ -1,6 +1,7 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -8,11 +9,23 @@ const { safeJsonParse } = require("../../http");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "ppio")
     : path.resolve(__dirname, `../../../storage/models/ppio`)
 );
+
+function cachedPPIOModels() {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  if (!fs.existsSync(cacheModelPath)) return {};
+  return safeJsonParse(
+    fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+    {}
+  );
+}
 
 class PPIOLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -40,7 +53,6 @@ class PPIOLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -84,21 +96,21 @@ class PPIOLLM {
   }
 
   models() {
-    if (!fs.existsSync(this.cacheModelPath)) return {};
-    return safeJsonParse(
-      fs.readFileSync(this.cacheModelPath, { encoding: "utf-8" }),
-      {}
-    );
+    return cachedPPIOModels();
   }
 
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
-  promptWindowLimit() {
-    const model = this.models()[this.model];
-    if (!model) return 4096; // Default to 4096 if we cannot find the model
+  static promptWindowLimit(modelName) {
+    const model = cachedPPIOModels()[modelName];
+    if (!model) return 4096;
     return model?.maxLength || 4096;
+  }
+
+  promptWindowLimit() {
+    return PPIOLLM.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(model = "") {
@@ -112,6 +124,7 @@ class PPIOLLM {
    * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
    * @returns {string|object[]}
    */
+  //eslint-disable-next-line
   #generateContent({ userPrompt, attachments = [] }) {
     if (!attachments.length) {
       return userPrompt;
@@ -141,10 +154,17 @@ class PPIOLLM {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory, ({ userPrompt }) => userPrompt),
+      { role: "user", content: userPrompt },
+    ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `PPIO chat: ${this.model} is not valid for chat completion!`
@@ -155,7 +175,7 @@ class PPIOLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
+          ...temperatureParam(temperature),
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -176,25 +196,34 @@ class PPIOLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `PPIO chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: true,
+      modelTag: this.model,
+      provider: this.className,
+    });
     return measuredStreamRequest;
   }
 

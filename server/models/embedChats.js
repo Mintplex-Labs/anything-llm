@@ -47,7 +47,7 @@ const EmbedChats = {
   filterSources: function (chats) {
     return chats.map((chat) => {
       const { response, ...rest } = chat;
-      const { sources, ...responseRest } = safeJsonParse(response);
+      const { sources: _sources, ...responseRest } = safeJsonParse(response);
       return { ...rest, response: JSON.stringify(responseRest) };
     });
   },

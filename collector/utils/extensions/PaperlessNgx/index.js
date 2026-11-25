@@ -33,12 +33,10 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
     };
   }
 
-  const { origin, hostname } = new URL(baseUrl);
-  console.log(`-- Working Paperless-ngx ${origin} --`);
-  const loader = new PaperlessNgxLoader({
-    baseUrl: origin,
-    apiToken,
-  });
+  const loader = new PaperlessNgxLoader({ baseUrl, apiToken });
+  const normalizedBaseUrl = loader.baseUrl;
+  const { hostname } = new URL(normalizedBaseUrl);
+  console.log(`-- Working Paperless-ngx ${normalizedBaseUrl} --`);
 
   const { docs, error } = await loader
     .load()
@@ -72,10 +70,10 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
       url: doc.metadata.url,
       title: doc.metadata.title,
       docAuthor: doc.metadata.correspondent || "Unknown",
-      description: `A document from the Paperless-ngx instance at ${origin}`,
+      description: `A document from the Paperless-ngx instance at ${normalizedBaseUrl}`,
       docSource: `paperless-ngx`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, apiToken },
+        { doc, baseUrl: normalizedBaseUrl, apiToken },
         response.locals.encryptionWorker
       ),
       published: doc.metadata.created,

@@ -1,17 +1,102 @@
 import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
-import { saveAs } from "file-saver";
 import { API_BASE } from "../constants";
 import { useEffect, useState } from "react";
+import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
+import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
+
+// Socket events where the agent execution loop has paused and is waiting on
+// the user to respond (feedback prompt, tool approval, clarifying questions).
+// While one of these is pending the UI should show the send button instead of
+// the stop generation button.
+const AGENT_AWAITING_USER_EVENTS = [
+  "WAITING_ON_INPUT",
+  "toolApprovalRequest",
+  "clarificationRequest",
+  // An inline /img command finished while the session was paused awaiting
+  // feedback - it stays paused, so the send button must come back.
+  "imageGenerationCard",
+];
+
+// Bookkeeping events that never indicate the agent is actively working. Some
+// of these can arrive after the execution loop already finished (e.g.
+// rename_thread fires once the async chat save + thread auto-rename complete),
+// so they must not re-show the stop generation button.
+const AGENT_PASSIVE_EVENTS = ["rename_thread", "pptxSlidePreview"];
+const AGENT_PASSIVE_STREAM_EVENTS = [
+  "chatId",
+  "promptChatId",
+  "usageMetrics",
+  "citations",
+  "removeStatusResponse",
+];
+
+/**
+ * Determine what the chat loading state should become for an incoming agent
+ * socket event: `true` while the agent is actively working (stop generation
+ * button shows), `false` when it has paused to wait on the user (send button
+ * shows), and `null` for passive bookkeeping events that should leave the
+ * loading state untouched.
+ * @param {object|null} data - parsed agent socket event payload
+ * @returns {boolean|null}
+ */
+export function agentEventLoadingState(data) {
+  if (AGENT_AWAITING_USER_EVENTS.includes(data?.type)) return false;
+  if (AGENT_PASSIVE_EVENTS.includes(data?.type)) return null;
+  if (
+    data?.type === "reportStreamEvent" &&
+    AGENT_PASSIVE_STREAM_EVENTS.includes(data?.content?.type)
+  )
+    return null;
+  return true;
+}
+
+// Citations arrive as a terminal websocket event that must match an existing message by
+// uuid. On a thread's first message the empty->chat transition remounts the chat and
+// replays the send, so the citations event can land before its message exists in history.
+// Buffer by uuid (module scope survives the remount) and attach when the message appears.
+const bufferedCitations = new Map();
+function takeBufferedCitations(uuid) {
+  if (!uuid || !bufferedCitations.has(uuid)) return [];
+  const citations = bufferedCitations.get(uuid);
+  bufferedCitations.delete(uuid);
+  return citations;
+}
+
+/**
+ * Set the saved chat id on the latest prompt so it stays editable if the reply
+ * is stopped. Clears the pending placeholder's userMessage so the update does
+ * not resend the prompt.
+ * @param {Object[]} history
+ * @param {number} chatId
+ * @returns {Object[]}
+ */
+function tagPromptChatId(history, chatId) {
+  if (!chatId) return history;
+  const promptIdx = history.findLastIndex((msg) => msg.role === "user");
+  return history.map((msg, i) => {
+    if (i === promptIdx) return { ...msg, chatId };
+    if (msg.pending) return { ...msg, userMessage: null };
+    return msg;
+  });
+}
+
 const handledEvents = [
   "statusResponse",
-  "fileDownload",
+  "fileDownloadCard",
+  "imageGenerationCard",
+  "imageGenerationPending",
+  "scheduledJobCreated",
   "awaitingFeedback",
   "wssFailure",
+  "agentSessionExited",
   "rechartVisualize",
+  "toolApprovalRequest",
+  "clarificationRequest",
+  "pptxSlidePreview",
   // Streaming events
   "reportStreamEvent",
 ];
@@ -25,6 +110,19 @@ export function websocketURI() {
 export default function handleSocketResponse(socket, event, setChatHistory) {
   const data = safeJsonParse(event.data, null);
   if (data === null) return;
+
+  // Handle thread rename
+  if (data.type === "rename_thread") {
+    const { slug, name } = data.content || {};
+    if (slug && name) {
+      window.dispatchEvent(
+        new CustomEvent(THREAD_RENAME_EVENT, {
+          detail: { threadSlug: slug, newName: name },
+        })
+      );
+    }
+    return;
+  }
 
   // No message type is defined then this is a generic message
   // that we need to print to the user as a system response
@@ -41,21 +139,89 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: null,
           animate: false,
           pending: false,
+          metrics: {},
         },
       ];
     });
   }
 
-  if (!handledEvents.includes(data.type) || !data.content) return;
+  // toolApprovalRequest doesn't have content field, so check separately
+  if (data.type === "toolApprovalRequest") {
+    if (!data.requestId || !data.skillName) return;
+  } else if (data.type === "clarificationRequest") {
+    if (!data.requestId || !Array.isArray(data.questions)) return;
+  } else if (data.type === "imageGenerationPending") {
+    // The generate-image skill tags its placeholder with a pendingId and the
+    // prompt so the result card can swap it out by uuid. The inline /img
+    // command sends no content - its empty placeholder is swept up by the
+    // !!msg.content filters when the next message lands.
+    return setChatHistory((prev) => [
+      ...prev.filter((msg) => !!msg.content),
+      {
+        type: "imageGenerationPending",
+        uuid: data.content?.pendingId || v4(),
+        content: data.content?.prompt || "",
+        role: "assistant",
+        sources: [],
+        closed: false,
+        error: null,
+        animate: false,
+        pending: true,
+        metrics: {},
+      },
+    ]);
+  } else if (!handledEvents.includes(data.type) || !data.content) {
+    return;
+  }
 
   if (data.type === "reportStreamEvent") {
+    // Arrives before any reply, so it must not set the streaming flag below.
+    if (data.content.type === "promptChatId")
+      return setChatHistory((prev) =>
+        tagPromptChatId(prev, data.content.chatId)
+      );
+
     // Enable agent streaming for the next message so we can handle streaming or non-streaming responses
     // If we get this message we know the provider supports agentic streaming
     socket.supportsAgentStreaming = true;
 
+    // trigger TTS auto-play
+    if (data.content?.type === "chatId" && data.content?.chatId)
+      emitAssistantMessageCompleteEvent(data.content.chatId);
+
     return setChatHistory((prev) => {
       if (data.content.type === "removeStatusResponse")
         return [...prev.filter((msg) => msg.uuid !== data.content.uuid)];
+
+      if (data.content.type === "modelRouteNotification") {
+        if (!data.content.routedTo) return prev;
+        return [
+          ...prev.filter(
+            (msg) => !(msg.role === "assistant" && msg.pending && !msg.content)
+          ),
+          {
+            uuid: data.content.uuid,
+            type: "modelRouteNotification",
+            content: "modelRouteNotification",
+            routedTo: data.content.routedTo,
+          },
+        ];
+      }
+
+      // Handle citations independently of message creation order. If the target message
+      // exists, attach now or buffer until it is created.
+      if (data.content.type === "citations") {
+        const { uuid, citations } = data.content;
+        if (!citations) return prev;
+        let attached = false;
+        const next = prev.map((msg) => {
+          if (msg.uuid !== uuid) return msg;
+          attached = true;
+          return { ...msg, sources: [...(msg.sources || []), ...citations] };
+        });
+        if (!attached) bufferedCitations.set(uuid, citations);
+        return next;
+      }
 
       const knownMessage = data.content.uuid
         ? prev.find((msg) => msg.uuid === data.content.uuid)
@@ -69,11 +235,12 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               type: "textResponse",
               content: data.content.content,
               role: "assistant",
-              sources: [],
+              sources: takeBufferedCitations(data.content.uuid),
               closed: true,
               error: null,
               animate: false,
               pending: false,
+              metrics: {},
             },
           ];
         }
@@ -83,6 +250,9 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         // Providers like Gemini send large chunks and can complete in a single chunk before the update logic can convert it.
         // Other providers send many small chunks so the second chunk triggers the update logic to fix the type.
         if (data.content.type === "textResponseChunk") {
+          // If this first chunk is just a non-text char (like \n, \t, etc.) then we need to ignore it.
+          // Some providers like LMStudio will do this and it depends on the chat template as well.
+          if (data.content.content.trim() === "") return prev;
           return [
             ...prev.filter((msg) => !!msg.content),
             {
@@ -90,11 +260,12 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
               type: "textResponse",
               content: data.content.content,
               role: "assistant",
-              sources: [],
+              sources: takeBufferedCitations(data.content.uuid),
               closed: true,
               error: null,
               animate: false,
               pending: false,
+              metrics: {},
             },
           ];
         }
@@ -111,6 +282,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             error: null,
             animate: false,
             pending: false,
+            metrics: {},
           },
         ];
       } else {
@@ -125,6 +297,27 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
             ...prev.filter((msg) => msg.uuid !== uuid),
             { ...knownMessage, content },
           ]; // If the message is known, replace it with the new content
+        }
+
+        if (type === "usageMetrics") {
+          if (!data.content.metrics) return prev;
+          return prev.map((msg) =>
+            msg.uuid === uuid ? { ...msg, metrics: data.content.metrics } : msg
+          );
+        }
+
+        if (type === "chatId") {
+          if (!data.content.chatId) return prev;
+          const assistantIdx = prev.findIndex((msg) => msg.uuid === uuid);
+          if (assistantIdx === -1) return prev;
+          const userIdx = prev.findLastIndex(
+            (msg, i) => i < assistantIdx && msg.role === "user"
+          );
+          return prev.map((msg, i) =>
+            i === assistantIdx || i === userIdx
+              ? { ...msg, chatId: data.content.chatId }
+              : msg
+          );
         }
 
         if (type === "textResponseChunk") {
@@ -153,9 +346,104 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     });
   }
 
-  if (data.type === "fileDownload") {
-    saveAs(data.content.b64Content, data.content.filename ?? "unknown.txt");
-    return;
+  // Images of a presentation's slides while it is built: one card per deck
+  // that gains a slide with each event. They live only in this session.
+  if (data.type === "pptxSlidePreview") {
+    const { deckId, index, image, done } = data.content;
+    return setChatHistory((prev) => {
+      const card = prev.find((msg) => msg.uuid === deckId);
+      // A deck that never sent a slide gets no card.
+      if (!card && !image) return prev;
+      const slides = [...(card?.content?.slides || [])];
+      if (
+        Number.isInteger(index) &&
+        typeof image === "string" &&
+        image.startsWith("data:image/")
+      )
+        slides[index] = image;
+      const next = {
+        type: "pptxSlidePreview",
+        uuid: deckId,
+        content: { slides, done: !!done || !!card?.content?.done },
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      };
+      return card
+        ? prev.map((msg) => (msg.uuid === deckId ? next : msg))
+        : [...prev.filter((msg) => !!msg.content), next];
+    });
+  }
+
+  if (data.type === "fileDownloadCard") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "fileDownloadCard",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: data.metrics || {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "imageGenerationCard") {
+    return setChatHistory((prev) => {
+      // Drops the placeholder card this result belongs to, if there was one.
+      const history = prev.filter(
+        (msg) => !!msg.content && msg.uuid !== data.content.pendingId
+      );
+      if (data.content.failed) return history;
+      return [
+        ...history,
+        {
+          uuid: v4(),
+          type: "textResponse",
+          content: data.content.text,
+          outputs: data.content.outputs || [],
+          chatId: data.content.chatId || null,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "scheduledJobCreated") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "scheduledJobCreated",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+          metrics: data.metrics || {},
+        },
+      ];
+    });
   }
 
   if (data.type === "rechartVisualize") {
@@ -172,6 +460,7 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: null,
           animate: false,
           pending: false,
+          metrics: data.metrics || {},
         },
       ];
     });
@@ -190,6 +479,78 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
           error: data.content,
           animate: false,
           pending: false,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  // Sent only when the user ends the session with an exit command - not on
+  // timeouts, aborts, or disconnects. Live only; it is never persisted.
+  if (data.type === "agentSessionExited") {
+    return setChatHistory((prev) => [
+      ...prev.filter((msg) => !!msg.content),
+      {
+        uuid: v4(),
+        type: "agentSessionExited",
+        content: data.content,
+        role: "assistant",
+        sources: [],
+        closed: true,
+        error: null,
+        animate: false,
+        pending: false,
+        metrics: {},
+      },
+    ]);
+  }
+
+  if (data.type === "toolApprovalRequest") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "toolApprovalRequest",
+          requestId: data.requestId,
+          skillName: data.skillName,
+          payload: data.payload,
+          description: data.description,
+          timeoutMs: data.timeoutMs,
+          content: `Approval requested for ${data.skillName}`,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
+          metrics: {},
+        },
+      ];
+    });
+  }
+
+  if (data.type === "clarificationRequest") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          type: "clarifyingQuestion",
+          requestId: data.requestId,
+          questions: data.questions || [],
+          allowSkip: data.allowSkip !== false,
+          timeoutMs: data.timeoutMs,
+          content: `Agent has ${data.questions?.length || 0} question${
+            (data.questions?.length || 0) === 1 ? "" : "s"
+          }`,
+          role: "assistant",
+          sources: [],
+          closed: false,
+          error: null,
+          animate: false,
+          pending: true,
+          metrics: {},
         },
       ];
     });
@@ -208,13 +569,44 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         error: null,
         animate: data?.animate || false,
         pending: false,
+        metrics: data.metrics || {},
       },
     ];
   });
 }
 
+let _agentSessionActive = false;
+export function setAgentSessionActive(value) {
+  _agentSessionActive = value;
+}
+export function getAgentSessionActive() {
+  return _agentSessionActive;
+}
+
+// Live agent-session websocket, used to toggle tools available to the agent mid-session.
+let _agentSessionSocket = null;
+export function setAgentSessionSocket(socket) {
+  _agentSessionSocket = socket;
+}
+
+/**
+ * Toggle a tool/skill on or off for the active agent session over the websocket.
+ * No-op when there is no open agent session.
+ * @param {string} skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
+ * @param {boolean} enabled - Whether the tool should be enabled.
+ * @param {string|null} [serverName] - MCP server name; required to enable an MCP tool mid-session.
+ */
+export function toggleAgentSessionTool(skill, enabled, serverName = null) {
+  if (_agentSessionSocket?.readyState !== WebSocket.OPEN) return;
+  _agentSessionSocket.send(
+    JSON.stringify({ type: "agentToolToggle", skill, enabled, serverName })
+  );
+}
+
 export function useIsAgentSessionActive() {
-  const [activeSession, setActiveSession] = useState(false);
+  const [activeSession, setActiveSession] = useState(
+    () => !!getAgentSessionActive()
+  );
   useEffect(() => {
     function listenForAgentSession() {
       if (!window) return;

@@ -2,13 +2,14 @@ import { useRef, useState } from "react";
 import { DotsThreeOutline } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import Embed from "@/models/embed";
 import paths from "@/utils/paths";
 import { nFormatter } from "@/utils/numbers";
 import EditEmbedModal from "./EditEmbedModal";
 import CodeSnippetModal from "./CodeSnippetModal";
 import moment from "moment";
+import { safeJsonParse } from "@/utils/request";
 
 export default function EmbedRow({ embed }) {
   const rowRef = useRef(null);
@@ -129,32 +130,28 @@ export default function EmbedRow({ embed }) {
           </button>
         </td>
       </tr>
-      <ModalWrapper isOpen={isSettingsOpen}>
+      <Modal isOpen={isSettingsOpen} onClose={closeSettingsModal}>
         <EditEmbedModal embed={embed} closeModal={closeSettingsModal} />
-      </ModalWrapper>
-      <ModalWrapper isOpen={isSnippetOpen}>
+      </Modal>
+      <Modal isOpen={isSnippetOpen} onClose={closeSnippetModal}>
         <CodeSnippetModal embed={embed} closeModal={closeSnippetModal} />
-      </ModalWrapper>
+      </Modal>
     </>
   );
 }
 
 function ActiveDomains({ domainList }) {
-  if (!domainList) return <p>all</p>;
-  try {
-    const domains = JSON.parse(domainList);
-    return (
-      <div className="flex flex-col gap-y-2">
-        {domains.map((domain, index) => {
-          return (
-            <p key={index} className="font-mono !font-normal">
-              {domain}
-            </p>
-          );
-        })}
-      </div>
-    );
-  } catch {
-    return <p>all</p>;
-  }
+  const domains = safeJsonParse(domainList, []);
+  if (domains.length === 0) return <p>all</p>;
+  return (
+    <div className="flex flex-col gap-y-2">
+      {domains.map((domain, index) => {
+        return (
+          <p key={index} className="font-mono !font-normal">
+            {domain}
+          </p>
+        );
+      })}
+    </div>
+  );
 }

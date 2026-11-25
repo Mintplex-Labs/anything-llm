@@ -16,17 +16,51 @@ const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber, safeJsonParse } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
+const { MODEL_PRICING } = require("../../../helpers/modelPricing");
+const { toNonNegativeNumber } = require("../../../helpers/numbers");
+const {
+  watchTokenLimit,
+} = require("../../../helpers/chat/LLMPerformanceMonitor");
+const { maxTokensParam, temperatureParam } = require("./helpers/tooled.js");
 const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { parseOMLXBasePath } = require("../../../AiProviders/omlx");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
 const {
   SystemPromptVariables,
 } = require("../../../../models/systemPromptVariables");
-const {
-  createBedrockChatClient,
-} = require("../../../AiProviders/bedrock/utils");
+const { OllamaAILLM } = require("../../../AiProviders/ollama");
+const { LlmmanLLM } = require("../../../AiProviders/llmman");
+const { bindAbortSignal } = require("../../../helpers/abortSignals");
 
-const DEFAULT_WORKSPACE_PROMPT =
-  "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
+/**
+ * @typedef {Object} ProviderUsageMetrics
+ * @property {number} prompt_tokens - Number of tokens in the prompt/input
+ * @property {number} completion_tokens - Number of tokens in the completion/output
+ * @property {number} total_tokens - Total tokens used
+ * @property {number} duration - Duration in seconds
+ * @property {number} outputTps - Output tokens per second
+ * @property {string|null} model - Model name
+ * @property {string|null} provider - Provider class name
+ * @property {Date|null} timestamp - Timestamp of the completion
+ * @property {number} [inputCost] - USD cost of the prompt tokens. Absent when pricing is unknown.
+ * @property {number} [outputCost] - USD cost of the completion tokens. Absent when pricing is unknown.
+ * @property {number} [totalCost] - USD sum of input and output costs. Absent when pricing is unknown.
+ */
+
+/**
+ * @typedef {Object} AgentProviderInstance
+ * @property {string} model - The model identifier string.
+ * @property {boolean} [verbose] - Whether to log verbose introspection messages.
+ * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
+ * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {(signal: AbortSignal|null) => void} attachAbortSignal - Bind the session abort signal to the provider's SDK client(s).
+ * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
+ * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
+ * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
+ * @property {() => ProviderUsageMetrics} getCumulativeUsage - Get usage metrics accumulated across all completions in the current run.
+ * @property {() => void} resetCumulativeUsage - Reset the accumulated usage metrics (call at the start of a run).
+ */
 
 class Provider {
   _client;
@@ -45,6 +79,82 @@ class Provider {
    * @type {string}
    */
   executingUserId = "";
+
+  /**
+   * Stores the usage metrics from the last completion call.
+   * @type {ProviderUsageMetrics}
+   */
+  lastUsage = Provider.#emptyUsage();
+
+  /**
+   * Stores the usage metrics accumulated across every completion call in the
+   * current run. An agent loop makes one completion per tool call plus a final
+   * one for the response - this is the sum of all of them, whereas `lastUsage`
+   * only ever reflects the most recent call.
+   * @type {ProviderUsageMetrics}
+   */
+  cumulativeUsage = Provider.#emptyUsage();
+
+  /**
+   * Whether the latest completion stopped at the max output token limit.
+   * @type {boolean}
+   */
+  truncated = false;
+
+  /**
+   * Zeroed usage metrics for initializing/resetting an accumulator.
+   * @returns {ProviderUsageMetrics}
+   */
+  static #emptyUsage() {
+    return {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      duration: 0,
+      outputTps: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
+
+  /**
+   * Timestamp when the current request started (for duration calculation).
+   * @type {number}
+   */
+  _requestStartTime = 0;
+
+  /**
+   * Tag identifying this provider for ENV-based opt-out of tool calling.
+   * Subclasses should set this in their constructor.
+   * @type {string|null}
+   */
+  providerTag = null;
+
+  /**
+   * The AnythingLLM provider slug this instance was built for (eg: "openai",
+   * "anthropic") - set by AIbitat when the provider is instantiated. Unlike
+   * `providerTag` or `constructor.name`, this matches the slugs used for
+   * model pricing lookups. Null when the origin of the instance is unknown.
+   * @type {string|null}
+   */
+  providerSlug = null;
+
+  /**
+   * Abort signal for the active agent session, attached by AIbitat. Bound to the
+   * SDK client so every request this provider makes is cancelled when the session
+   * is aborted (stop button, socket close, bail command).
+   * @type {AbortSignal|null}
+   */
+  abortSignal = null;
+
+  /**
+   * Sampling temperature for chat requests, assigned by AIbitat when the
+   * provider is instantiated. Undefined when unset or when the model rejects
+   * the parameter, so it is omitted from requests entirely.
+   * @type {number|undefined}
+   */
+  temperature = undefined;
 
   constructor(client) {
     if (this.constructor == Provider) {
@@ -73,8 +183,65 @@ class Provider {
       : "";
   }
 
+  /**
+   * Attach the session abort signal and bind it to this provider's SDK client(s)
+   * so every request they make is cancelled when the session aborts. Binding is
+   * done once per client; the wrappers read `this.abortSignal` at call time, so
+   * re-attaching a new signal needs no re-binding.
+   * @param {AbortSignal|null} signal
+   */
+  attachAbortSignal(signal = null) {
+    this.abortSignal = signal;
+    this.abortableClients().forEach((client) => bindAbortSignal(this, client));
+  }
+
+  /**
+   * The SDK clients that should honor the session abort signal. Providers holding
+   * more than one client (ex: Bedrock) override this.
+   * Must stay a method, not a getter - `InheritMultiple` flattens getters.
+   * @returns {Array<object>}
+   */
+  abortableClients() {
+    return [this._client];
+  }
+
   get client() {
     return this._client;
+  }
+
+  /**
+   * Checks if the provider is disabled via the PROVIDER_DISABLE_NATIVE_TOOL_CALLING env.
+   * @param {string} providerTag - The tag of the provider to check.
+   * @returns {boolean}
+   */
+  optsOutOfNativeToolCallingViaEnv(providerTag = null) {
+    if (!providerTag) return false;
+    if (!("PROVIDER_DISABLE_NATIVE_TOOL_CALLING" in process.env)) return false;
+    const disabledProviders =
+      process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING.split(",").map(
+        (provider) => provider.trim()
+      );
+    return disabledProviders.includes(providerTag);
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * Defaults to true (opt-out via PROVIDER_DISABLE_NATIVE_TOOL_CALLING env).
+   * Override in subclass and return false only if the provider genuinely cannot support tools.
+   * @returns {boolean|Promise<boolean>}
+   */
+  supportsNativeToolCalling() {
+    if (!this.providerTag) return true;
+    return !this.optsOutOfNativeToolCallingViaEnv(this.providerTag);
+  }
+
+  /**
+   * Whether the model is loaded into memory on the inference server.
+   * Local providers override this; overrides should resolve true on error.
+   * @returns {Promise<boolean>}
+   */
+  async isModelLoaded() {
+    return true;
   }
 
   /**
@@ -138,6 +305,10 @@ class Provider {
             baseURL: "https://api.together.xyz/v1",
           },
           apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...maxTokensParam(
+            toValidNumber(process.env.TOGETHER_AI_MAX_TOKENS, null),
+            "maxTokens"
+          ),
           ...config,
         });
       case "generic-openai":
@@ -146,14 +317,50 @@ class Provider {
             baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
           },
           apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
-          maxTokens: toValidNumber(
-            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
-            1024
+          ...maxTokensParam(
+            toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024),
+            "maxTokens"
           ),
           ...config,
         });
       case "bedrock":
-        return createBedrockChatClient(config);
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: `https://bedrock-mantle.${process.env.AWS_BEDROCK_LLM_REGION}.api.aws/v1`,
+          },
+          apiKey: process.env.AWS_BEDROCK_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "vertex": {
+        // Vertex only accepts the API key via `x-goog-api-key` and rejects
+        // any request that also carries an Authorization header, so the
+        // client's own bearer header must be removed (a null default header
+        // deletes it). Google publisher models are requested as
+        // `google/<model>` on the OpenAI-compatible endpoint.
+        const { VertexLLM } = require("../../../AiProviders/vertex");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: VertexLLM.openaiBaseURL(),
+            defaultHeaders: {
+              Authorization: null,
+              "x-goog-api-key": process.env.VERTEX_AI_LLM_API_KEY ?? null,
+            },
+          },
+          apiKey: "anythingllm",
+          ...config,
+          model: VertexLLM.apiModelId(config.model),
+        });
+      }
+      case "azure":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: AzureOpenAiLLM.formatBaseUrl(
+              process.env.AZURE_OPENAI_ENDPOINT
+            ),
+          },
+          apiKey: process.env.AZURE_OPENAI_KEY,
+          ...config,
+        });
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -239,6 +446,46 @@ class Provider {
           apiKey: process.env.GITEE_AI_API_KEY ?? null,
           ...config,
         });
+      case "cohere":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cohere.ai/compatibility/v1",
+          },
+          apiKey: process.env.COHERE_API_KEY ?? null,
+          ...config,
+        });
+      case "privatemode":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.PRIVATEMODE_LLM_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
+      case "sambanova":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.sambanova.ai/v1",
+          },
+          apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "minimax":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.minimax.io/v1",
+          },
+          apiKey: process.env.MINIMAX_API_KEY || null,
+          ...config,
+        });
+      case "cerebras":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cerebras.ai/v1",
+          },
+          apiKey: process.env.CEREBRAS_API_KEY || null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
@@ -246,18 +493,17 @@ class Provider {
       //     ...config,
       //   });
       case "ollama":
-        return new ChatOllama({
-          baseUrl: process.env.OLLAMA_BASE_PATH,
-          ...config,
-        });
-      case "lmstudio":
+        return OllamaLangchainChatModel.create(config);
+      case "lmstudio": {
+        const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
         return new ChatOpenAI({
           configuration: {
             baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
           },
-          apiKey: "not-used", // Needs to be specified or else will assume OpenAI
+          apiKey: apiKey || "not-used",
           ...config,
         });
+      }
       case "koboldcpp":
         return new ChatOpenAI({
           configuration: {
@@ -307,9 +553,41 @@ class Provider {
           ...config,
         });
       }
-
+      case "llmman":
+        return LlmmanLangchainChatModel.create(config);
+      case "lemonade":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LEMONADE_LLM_BASE_PATH,
+          },
+          apiKey: process.env.LEMONADE_LLM_API_KEY || null,
+          ...config,
+        });
+      case "embedded_lemonade": {
+        const {
+          EmbeddedLemonadeLLM,
+        } = require("../../../AiProviders/embeddedLemonade");
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: EmbeddedLemonadeLLM.openaiBasePath(),
+            fetch: EmbeddedLemonadeLLM.bootingFetch(config?.model),
+          },
+          apiKey: "not-used",
+          ...config,
+        });
+      }
+      case "omlx":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseOMLXBasePath(process.env.OMLX_LLM_BASE_PATH),
+          },
+          apiKey: process.env.OMLX_LLM_API_KEY || null,
+          ...config,
+        });
       default:
-        throw new Error(`Unsupported provider ${provider} for this task.`);
+        throw new Error(
+          `Unsupported provider ${JSON.stringify(provider)} for this task.`
+        );
     }
   }
 
@@ -320,39 +598,49 @@ class Provider {
    * @returns {number}
    */
   static contextLimit(provider = "openai", modelName) {
+    if (typeof provider !== "string") {
+      console.log(
+        `\x1b[43m\x1b[30m[.contextLimit warning] A non-string provider for .contextLimit was given — Returning fallback context limit of 8000.\x1b[0m\n\x1b[43m\x1b[30mThis is a bug and should be reported so that context windows are properly managed by AnythingLLM.\x1b[0m`
+      );
+      console.trace();
+      return 8_000;
+    }
+
     const llm = getLLMProviderClass({ provider });
-    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) return 8_000;
+    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) {
+      console.warn(
+        `\x1b[33m[.contextLimit warning]\x1b[0m Could not determine .promptWindowLimit for provider ${provider}. This could lead to incorrect context window management by AnythingLLM since we cannot determine the context window limit for this provider/model combination.`
+      );
+      return 8_000;
+    }
     return llm.promptWindowLimit(modelName);
   }
 
-  static defaultSystemPromptForProvider(provider = null) {
-    switch (provider) {
-      case "lmstudio":
-        return "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions. Tools will be handled by another assistant and you will simply receive their responses to help answer the user prompt - always try to answer the user's prompt the best you can with the context available to you and your general knowledge.";
-      default:
-        return DEFAULT_WORKSPACE_PROMPT;
-    }
-  }
-
   /**
-   * Get the system prompt for a provider.
-   * @param {string} provider
-   * @param {import("@prisma/client").workspaces | null} workspace
-   * @param {import("@prisma/client").users | null} user
+   * Get the system prompt for a provider, with memories appended (when enabled).
+   * @param {object} opts
+   * @param {import("@prisma/client").workspaces | null} opts.workspace
+   * @param {import("@prisma/client").users | null} opts.user
+   * @param {string} [opts.prompt] - current user message, used for reranking injected memories
    * @returns {Promise<string>}
    */
-  static async systemPrompt({
-    provider = null,
-    workspace = null,
-    user = null,
-  }) {
-    if (!workspace?.openAiPrompt)
-      return Provider.defaultSystemPromptForProvider(provider);
-    return await SystemPromptVariables.expandSystemPromptVariables(
-      workspace.openAiPrompt,
-      user?.id || null,
-      workspace.id
-    );
+  static async systemPrompt({ workspace = null, user = null, prompt = "" }) {
+    const { SystemSettings } = require("../../../../models/systemSettings");
+    const { promptWithMemories } = require("../../../memories");
+    const basePrompt =
+      workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
+    const systemPrompt =
+      await SystemPromptVariables.expandSystemPromptVariables(
+        basePrompt,
+        user?.id || null,
+        workspace?.id || null
+      );
+    return promptWithMemories({
+      systemPrompt,
+      userId: user?.id ?? null,
+      workspaceId: workspace?.id,
+      prompt,
+    });
   }
 
   /**
@@ -363,6 +651,193 @@ class Provider {
    */
   get supportsAgentStreaming() {
     return false;
+  }
+
+  /**
+   * Format a single message with attachments (images) for multimodal content.
+   * Transforms a message with attachments into the OpenAI-compatible multimodal format.
+   * Can be overridden by provider subclasses for provider-specific formats.
+   * @param {Object} message - The message to format
+   * @returns {Object} - Message formatted for the API
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    // Transform message with attachments into multimodal format
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+
+    // Return message without attachments property, with content as array
+    const { attachments: _, ...rest } = message;
+    return {
+      ...rest,
+      content,
+    };
+  }
+
+  /**
+   * Resets the usage metrics to zero and starts the request timer.
+   * Call this before each completion to ensure accurate per-call metrics.
+   */
+  resetUsage() {
+    this._requestStartTime = Date.now();
+    this.lastUsage = {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      outputTps: 0,
+      duration: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
+
+  /**
+   * Formats an array of messages to handle attachments (images) for multimodal content.
+   * @param {Array<{role: string, content: string, attachments?: Array}>} messages
+   * @returns {Array} - Messages formatted for the API
+   */
+  formatMessagesWithAttachments(messages = []) {
+    return messages.map((message) =>
+      this.formatMessageWithAttachments(message)
+    );
+  }
+
+  /**
+   * Updates the stored usage metrics from a provider response.
+   * Override in subclasses to handle provider-specific usage formats.
+   * @param {Object} usage - The usage object from the provider response
+   */
+  recordUsage(usage = {}) {
+    let duration = 0;
+    if (this._requestStartTime > 0) {
+      duration = (Date.now() - this._requestStartTime) / 1000;
+    }
+
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = toNonNegativeNumber(
+      safeUsage.prompt_tokens || safeUsage.input_tokens
+    );
+    const completionTokens = toNonNegativeNumber(
+      safeUsage.completion_tokens || safeUsage.output_tokens
+    );
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+
+    this.applyUsage({
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: totalTokens || promptTokens + completionTokens,
+      duration,
+    });
+  }
+
+  /**
+   * Stores a normalized usage record for the completion that just finished and
+   * adds it to the run-level accumulated totals. Subclasses that override
+   * `recordUsage` should normalize their provider-specific usage format and
+   * call this so accumulation still happens in one place.
+   * Every value is coerced to a safe number so a malformed payload from any
+   * provider cannot crash the run or corrupt the accumulated totals.
+   * @param {{prompt_tokens?: number, completion_tokens?: number, total_tokens?: number, duration?: number}} usage
+   */
+  applyUsage(usage = {}) {
+    const safeUsage = usage && typeof usage === "object" ? usage : {};
+    const promptTokens = toNonNegativeNumber(safeUsage.prompt_tokens);
+    const completionTokens = toNonNegativeNumber(safeUsage.completion_tokens);
+    const totalTokens = toNonNegativeNumber(safeUsage.total_tokens);
+    const duration = toNonNegativeNumber(safeUsage.duration);
+
+    const timestamp = new Date();
+    // Cost is priced per-call (not derived from the summed totals) so the
+    // accumulated cost stays correct even if the model changes mid-run.
+    // A null breakdown (unknown pricing) leaves the cost fields absent.
+    const cost = MODEL_PRICING.getCostBreakdown(this.providerSlug, this.model, {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+    });
+
+    this.lastUsage = {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: totalTokens,
+      outputTps:
+        completionTokens && duration > 0 ? completionTokens / duration : 0,
+      duration,
+      model: this.model,
+      provider: this.constructor.name,
+      timestamp,
+      ...(cost ?? {}),
+    };
+
+    const totals = this.cumulativeUsage;
+    totals.prompt_tokens += promptTokens;
+    totals.completion_tokens += completionTokens;
+    totals.total_tokens += totalTokens;
+    totals.duration += duration;
+    totals.outputTps =
+      totals.completion_tokens && totals.duration > 0
+        ? totals.completion_tokens / totals.duration
+        : 0;
+    totals.model = this.model;
+    totals.provider = this.constructor.name;
+    totals.timestamp = timestamp;
+    if (cost) {
+      totals.inputCost = (totals.inputCost ?? 0) + cost.inputCost;
+      totals.outputCost = (totals.outputCost ?? 0) + cost.outputCost;
+      totals.totalCost = (totals.totalCost ?? 0) + cost.totalCost;
+    }
+  }
+
+  /**
+   * Resets the accumulated usage metrics. Call this at the start of an agent
+   * run so the totals only cover that run's completions.
+   */
+  resetCumulativeUsage() {
+    this.cumulativeUsage = Provider.#emptyUsage();
+    this.truncated = false;
+  }
+
+  /**
+   * Watches a completion stream or response for the max output token limit.
+   * Each completion replaces the previous result, so after a run the flag
+   * describes the final reply.
+   * @template T
+   * @param {T} streamOrResponse
+   * @returns {T} the same object, so the call can wrap stream creation
+   */
+  watchTokenLimit(streamOrResponse) {
+    this.truncated = false;
+    return watchTokenLimit(streamOrResponse, () => (this.truncated = true));
+  }
+
+  /**
+   * Get the usage metrics from the last completion.
+   * @returns {ProviderUsageMetrics} The usage metrics
+   */
+  getUsage() {
+    return { ...this.lastUsage };
+  }
+
+  /**
+   * Get the usage metrics accumulated across all completions in the current
+   * run - one completion per tool call plus the final response.
+   * @returns {ProviderUsageMetrics} The accumulated usage metrics
+   */
+  getCumulativeUsage() {
+    return {
+      ...this.cumulativeUsage,
+      ...(this.truncated ? { truncated: true } : {}),
+    };
   }
 
   /**
@@ -377,14 +852,17 @@ class Provider {
   async stream(messages, functions = [], eventHandler = null) {
     this.providerLog("Provider.stream - will process this chat completion.");
     const msgUUID = v4();
+    const formattedMessages = this.formatMessagesWithAttachments(messages);
     const stream = await this.client.chat.completions.create({
       model: this.model,
+      ...temperatureParam(this.temperature),
       stream: true,
-      messages,
+      messages: formattedMessages,
       ...(Array.isArray(functions) && functions?.length > 0
         ? { functions }
         : {}),
     });
+    this.watchTokenLimit(stream);
 
     const result = {
       functionCall: null,
@@ -428,6 +906,52 @@ class Provider {
     return {
       textResponse: result.textResponse,
       functionCall: result.functionCall,
+    };
+  }
+}
+
+// Langchain Wrappers
+
+/**
+ * Langchain chat model for llmman, which serves the Ollama API, so the same
+ * client is reused. Passes context window options through so preferences are
+ * respected between chat/agent and Langchain tooling.
+ */
+class LlmmanLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.LLMMAN_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.LLMMAN_MODEL_PREF;
+    return {
+      num_ctx: LlmmanLLM.promptWindowLimit(model),
+    };
+  }
+}
+
+/**
+ * Ollama Langchain Chat Model that supports passing in context window options
+ * so that context window preferences are respected between Ollama chat/agent and in
+ * Langchain tooling.
+ */
+class OllamaLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.OLLAMA_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.OLLAMA_MODEL_PREF;
+    return {
+      num_ctx: OllamaAILLM.promptWindowLimit(model),
     };
   }
 }

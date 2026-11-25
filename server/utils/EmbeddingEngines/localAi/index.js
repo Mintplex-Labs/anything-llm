@@ -1,4 +1,8 @@
-const { toChunks, maximumChunkLength } = require("../../helpers");
+const {
+  toChunks,
+  maximumChunkLength,
+  reportEmbeddingProgress,
+} = require("../../helpers");
 
 class LocalAiEmbedder {
   constructor() {
@@ -7,7 +11,9 @@ class LocalAiEmbedder {
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
 
+    this.className = "LocalAiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
+    this.model = process.env.EMBEDDING_MODEL_PREF;
     this.openai = new OpenAIApi({
       baseURL: process.env.EMBEDDING_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
@@ -16,6 +22,27 @@ class LocalAiEmbedder {
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 50;
     this.embeddingMaxChunkLength = maximumChunkLength();
+
+    this.log(
+      `Initialized with ${this.model} - Max Size: ${this.embeddingMaxChunkLength}` +
+        (this.outputDimensions
+          ? ` - Output Dimensions: ${this.outputDimensions}`
+          : " Assuming default output dimensions")
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  get outputDimensions() {
+    if (
+      process.env.EMBEDDING_OUTPUT_DIMENSIONS &&
+      !isNaN(process.env.EMBEDDING_OUTPUT_DIMENSIONS) &&
+      process.env.EMBEDDING_OUTPUT_DIMENSIONS > 0
+    )
+      return parseInt(process.env.EMBEDDING_OUTPUT_DIMENSIONS);
+    return null;
   }
 
   async embedTextInput(textInput) {
@@ -27,18 +54,28 @@ class LocalAiEmbedder {
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
+    let chunksProcessed = 0;
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
+          // Dev: LocalAI versions < v2.29 ignored encoding_format and always returned float arrays,
+          // causing the OpenAI SDK's default base64 decode to silently produce dims/4 zero vectors.
+          // Fixed in LocalAI PR #9135 (Mar 2026). Pinning "float" here for safety with older versions.
           this.openai.embeddings
             .create({
-              model: process.env.EMBEDDING_MODEL_PREF,
+              model: this.model,
               input: chunk,
+              dimensions: this.outputDimensions,
+              encoding_format: "float",
             })
             .then((result) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               e.type =
                 e?.response?.data?.error?.code ||
                 e?.response?.status ||

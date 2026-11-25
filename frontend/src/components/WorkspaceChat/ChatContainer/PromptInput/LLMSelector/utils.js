@@ -1,4 +1,4 @@
-import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
+import { ALL_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { DISABLED_PROVIDERS } from "@/hooks/useGetProvidersModels";
 
 export function autoScrollToSelectedLLMProvider(
@@ -38,15 +38,14 @@ export function validatedModelSelection(model) {
 
     // If the model is in the dropdown, return the model as is
     return model;
-  } catch (error) {
+  } catch {
     return null; // If the dropdown was empty or something else went wrong, return null to abort the save
   }
 }
 
 export function hasMissingCredentials(settings, provider) {
-  const providerEntry = AVAILABLE_LLM_PROVIDERS.find(
-    (p) => p.value === provider
-  );
+  if (!settings) return false;
+  const providerEntry = ALL_LLM_PROVIDERS.find((p) => p.value === provider);
   if (!providerEntry) return false;
 
   for (const requiredKey of providerEntry.requiredConfig) {
@@ -56,6 +55,6 @@ export function hasMissingCredentials(settings, provider) {
   return false;
 }
 
-export const WORKSPACE_LLM_PROVIDERS = AVAILABLE_LLM_PROVIDERS.filter(
+export const WORKSPACE_LLM_PROVIDERS = ALL_LLM_PROVIDERS.filter(
   (provider) => !DISABLED_PROVIDERS.includes(provider.value)
 );

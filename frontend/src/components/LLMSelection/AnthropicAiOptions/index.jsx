@@ -20,7 +20,7 @@ export default function AnthropicAiOptions({ settings }) {
             type="password"
             name="AnthropicApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Anthropic Claude-2 API Key"
+            placeholder="Anthropic API Key"
             defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
@@ -90,47 +90,8 @@ export default function AnthropicAiOptions({ settings }) {
   );
 }
 
-const DEFAULT_MODELS = [
-  {
-    id: "claude-3-7-sonnet-20250219",
-    name: "Claude 3.7 Sonnet",
-  },
-  {
-    id: "claude-3-5-sonnet-20241022",
-    name: "Claude 3.5 Sonnet (New)",
-  },
-  {
-    id: "claude-3-5-haiku-20241022",
-    name: "Claude 3.5 Haiku",
-  },
-  {
-    id: "claude-3-5-sonnet-20240620",
-    name: "Claude 3.5 Sonnet (Old)",
-  },
-  {
-    id: "claude-3-haiku-20240307",
-    name: "Claude 3 Haiku",
-  },
-  {
-    id: "claude-3-opus-20240229",
-    name: "Claude 3 Opus",
-  },
-  {
-    id: "claude-3-sonnet-20240229",
-    name: "Claude 3 Sonnet",
-  },
-  {
-    id: "claude-2.1",
-    name: "Claude 2.1",
-  },
-  {
-    id: "claude-2.0",
-    name: "Claude 2.0",
-  },
-];
-
 function AnthropicModelSelection({ apiKey, settings }) {
-  const [models, setModels] = useState(DEFAULT_MODELS);
+  const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,38 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Trash } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
-
-const DELETE_EVENT = "delete-message";
+import {
+  useMessageActionsContext,
+  DELETE_EVENT,
+} from "@/components/WorkspaceChat/ChatContainer/ChatHistory/MessageActionsContext";
 
 export function useWatchDeleteMessage({ chatId = null, role = "user" }) {
-  const [isDeleted, setIsDeleted] = useState(false);
+  const context = useMessageActionsContext();
   const [completeDelete, setCompleteDelete] = useState(false);
+  const deleteCalled = useRef(false);
+  const isDeleted = context?.isDeleted(chatId) ?? false;
 
   useEffect(() => {
-    function listenForEvent() {
-      if (!chatId) return;
-      window.addEventListener(DELETE_EVENT, onDeleteEvent);
+    if (isDeleted && !deleteCalled.current) {
+      deleteCalled.current = true;
+      if (role === "assistant") {
+        Workspace.deleteChat(chatId);
+      }
     }
-    listenForEvent();
-    return () => {
-      window.removeEventListener(DELETE_EVENT, onDeleteEvent);
-    };
-  }, [chatId]);
+  }, [isDeleted, chatId, role]);
 
   function onEndAnimation() {
     if (!isDeleted) return;
     setCompleteDelete(true);
-  }
-
-  async function onDeleteEvent(e) {
-    if (e.detail.chatId === chatId) {
-      setIsDeleted(true);
-      // Do this to prevent double-emission of the PUT/DELETE api call
-      // because then there will be a race condition and it will make an error log for nothing
-      // as one call will complete and the other will fail.
-      if (role === "assistant") await Workspace.deleteChat(chatId);
-      return false;
-    }
   }
 
   return { isDeleted, completeDelete, onEndAnimation };

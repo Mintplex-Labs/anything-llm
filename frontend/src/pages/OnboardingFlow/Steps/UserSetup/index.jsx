@@ -6,6 +6,9 @@ import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
+import { USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH } from "@/utils/username";
+import { PW_REGEX } from "@/pages/GeneralSettings/Security";
+import PasswordInput from "@/components/lib/PasswordInput";
 
 export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const { t } = useTranslation();
@@ -121,6 +124,15 @@ const JustMe = ({
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+
+    if (!PW_REGEX.test(formData.get("password"))) {
+      showToast(
+        `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`,
+        "error"
+      );
+      return;
+    }
+
     const { error } = await System.updateSystemPassword({
       usePassword: true,
       newPassword: formData.get("password"),
@@ -205,9 +217,8 @@ const JustMe = ({
             >
               {t("onboarding.userSetup.instancePassword")}
             </label>
-            <input
+            <PasswordInput
               name="password"
-              type="password"
               className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-secondary"
               placeholder="Your admin password"
               minLength={6}
@@ -267,7 +278,9 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
   const handlePasswordChange = debounce(setNewPassword, 500);
 
   useEffect(() => {
-    if (username.length >= 6 && password.length >= 8) {
+    // Enable button if there's any input, allowing users to attempt submission
+    // Validation errors will be shown via toast in handleSubmit
+    if (username.trim().length > 0 && password.length > 0) {
       setMultiUserLoginValid(true);
     } else {
       setMultiUserLoginValid(false);
@@ -291,14 +304,15 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   type="text"
                   className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin username"
-                  minLength={6}
+                  minLength={USERNAME_MIN_LENGTH}
+                  maxLength={USERNAME_MAX_LENGTH}
                   required={true}
                   autoComplete="off"
                   onChange={handleUsernameChange}
                 />
               </div>
               <p className=" text-white text-opacity-80 text-xs font-base">
-                {t("onboarding.userSetup.adminUsernameReq")}
+                {t("common.username_requirements")}
               </p>
               <div className="mt-4">
                 <label
@@ -307,9 +321,8 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 >
                   {t("onboarding.userSetup.adminPassword")}
                 </label>
-                <input
+                <PasswordInput
                   name="password"
-                  type="password"
                   className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin password"
                   minLength={8}

@@ -22,6 +22,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
   };
 
   useEffect(() => {
+    if (!open) return;
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setOpen(false);
@@ -32,7 +33,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [open]);
 
   if (!chatId || isEditing || role === "user") return null;
 
@@ -40,7 +41,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     <div className="mt-2 -ml-0.5 relative" ref={menuRef}>
       <button
         onClick={toggleMenu}
-        className="border-none text-[var(--theme-sidebar-footer-icon-fill)] hover:text-[var(--theme-sidebar-footer-icon-fill)] transition-colors duration-200"
+        className="border-none text-zinc-300 light:text-slate-500 transition-colors duration-200"
         data-tooltip-id="action-menu"
         data-tooltip-content={t("chat_window.more_actions")}
         aria-label={t("chat_window.more_actions")}
@@ -48,7 +49,10 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
         <DotsThreeVertical size={24} weight="bold" />
       </button>
       {open && (
-        <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+        <div
+          data-action-menu-open
+          className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99"
+        >
           <button
             onClick={handleFork}
             className="border-none rounded-t-lg flex items-center text-white gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"

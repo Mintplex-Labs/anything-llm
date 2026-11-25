@@ -90,6 +90,7 @@ export default forwardRef(function ChatPromptHistory(
             <PromptHistoryItem
               key={item.id}
               id={item.id}
+              workspaceSlug={workspaceSlug}
               {...item}
               onRestore={() => onRestore(item.prompt)}
               onPublishClick={onPublishClick}

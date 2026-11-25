@@ -20,7 +20,7 @@ async function asImage({
 
   if (!content?.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
-    trashFile(fullFilePath);
+    if (!options.absolutePath) trashFile(fullFilePath);
     return {
       success: false,
       reason: `No text content found in ${filename}.`,
@@ -48,7 +48,7 @@ async function asImage({
     filename: `${slugify(filename)}-${data.id}`,
     options: { parseOnly: options.parseOnly },
   });
-  trashFile(fullFilePath);
+  if (!options.absolutePath) trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
   return { success: true, reason: null, documents: [document] };
 }

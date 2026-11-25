@@ -1,10 +1,10 @@
 const { EncryptionWorker } = require("../utils/EncryptionWorker");
 const { CommunicationKey } = require("../utils/comKey");
 
-/** 
+/**
  * Express Response Object interface with defined encryptionWorker attached to locals property.
  * @typedef {import("express").Response & import("express").Response['locals'] & {encryptionWorker: EncryptionWorker} } ResponseWithSigner
-*/
+ */
 
 // You can use this middleware to assign the EncryptionWorker to the response locals
 // property so that if can be used to encrypt/decrypt arbitrary data via response object.
@@ -20,15 +20,18 @@ const { CommunicationKey } = require("../utils/comKey");
 // collector out into its own service this would still work without SSL/TLS.
 
 /**
- * 
- * @param {import("express").Request} request 
- * @param {import("express").Response} response 
- * @param {import("express").NextFunction} next 
+ *
+ * @param {import("express").Request} request
+ * @param {import("express").Response} response
+ * @param {import("express").NextFunction} next
  */
 function setDataSigner(request, response, next) {
   const comKey = new CommunicationKey();
   const encryptedPayloadSigner = request.header("X-Payload-Signer");
-  if (!encryptedPayloadSigner) console.log('Failed to find signed-payload to set encryption worker! Encryption calls will fail.');
+  if (!encryptedPayloadSigner)
+    console.log(
+      "Failed to find signed-payload to set encryption worker! Encryption calls will fail."
+    );
 
   const decryptedPayloadSignerKey = comKey.decrypt(encryptedPayloadSigner);
   const encryptionWorker = new EncryptionWorker(decryptedPayloadSignerKey);
@@ -37,5 +40,5 @@ function setDataSigner(request, response, next) {
 }
 
 module.exports = {
-  setDataSigner
-}
+  setDataSigner,
+};

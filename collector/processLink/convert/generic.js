@@ -1,7 +1,5 @@
 const { v4 } = require("uuid");
-const {
-  PuppeteerWebBaseLoader,
-} = require("langchain/document_loaders/web/puppeteer");
+const { PuppeteerLoader } = require("../../utils/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -14,6 +12,8 @@ const {
   loadYouTubeTranscript,
 } = require("../../utils/extensions/YoutubeTranscript");
 const RuntimeSettings = require("../../utils/runtimeSettings");
+const { htmlToMarkdown } = require("../helpers/htmlToMarkdown");
+const { decodePathname } = require("../../utils/url");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -22,6 +22,7 @@ const RuntimeSettings = require("../../utils/runtimeSettings");
  * @param {('html' | 'text')} config.captureAs - The format to capture the page content as. Default is 'text'
  * @param {{[key: string]: string}} config.scraperHeaders - Custom headers to use when making the request
  * @param {{[key: string]: string}} config.metadata - Metadata to use when creating the document
+ * @param {Object} config.options - The collector options sent by the server, used when the link is a file
  * @param {boolean} config.saveAsDocument - Whether to save the content as a document. Default is true
  * @returns {Promise<Object>} - The content of the page
  */
@@ -30,6 +31,7 @@ async function scrapeGenericUrl({
   captureAs = "text",
   scraperHeaders = {},
   metadata = {},
+  options = {},
   saveAsDocument = true,
 }) {
   /** @type {'web' | 'file' | 'youtube'} */
@@ -43,7 +45,12 @@ async function scrapeGenericUrl({
    * so we can return the content immediately.
    */
   if (processVia === "file")
-    return await processAsFile({ uri: link, saveAsDocument });
+    return await processAsFile({
+      uri: link,
+      saveAsDocument,
+      metadata,
+      options,
+    });
   else if (processVia === "youtube")
     return await loadYouTubeTranscript(
       { url: link },
@@ -78,12 +85,12 @@ async function scrapeGenericUrl({
 
   // Save the content as a document from the URL
   const url = new URL(link);
-  const decodedPathname = decodeURIComponent(url.pathname);
+  const decodedPathname = decodePathname(url.pathname);
   const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
   const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
-    title: metadata.title || slugify(filename) + ".html",
+    title: metadata.title || `${filename}${url.search}.html`,
     docAuthor: metadata.docAuthor || "no author found",
     description: metadata.description || "No description found.",
     docSource: metadata.docSource || "URL link uploaded by the user.",
@@ -158,7 +165,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       launchConfig.headless = "false";
     }
 
-    const loader = new PuppeteerWebBaseLoader(link, {
+    const loader = new PuppeteerLoader(link, {
       launchOptions: {
         headless: launchConfig.headless,
         ignoreHTTPSErrors: true,
@@ -167,45 +174,15 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
       gotoOptions: {
         waitUntil: "networkidle2",
       },
-      async evaluate(page, browser) {
-        const result = await page.evaluate((captureAs) => {
-          if (captureAs === "text") return document.body.innerText;
-          if (captureAs === "html") return document.documentElement.innerHTML;
-          return document.body.innerText;
-        }, captureAs);
-        await browser.close();
-        return result;
+      headers: validatedHeaders(headers),
+      async evaluate(page) {
+        const innerHTML = await page.evaluate(
+          () => document.documentElement.innerHTML
+        );
+        if (captureAs === "html") return innerHTML;
+        return htmlToMarkdown(innerHTML, link);
       },
     });
-
-    // Override scrape method if headers are available
-    let overrideHeaders = validatedHeaders(headers);
-    if (Object.keys(overrideHeaders).length > 0) {
-      loader.scrape = async function () {
-        const { launch } = await PuppeteerWebBaseLoader.imports();
-        const browser = await launch({
-          headless: "new",
-          defaultViewport: null,
-          ignoreDefaultArgs: ["--disable-extensions"],
-          ...this.options?.launchOptions,
-        });
-        const page = await browser.newPage();
-        await page.setExtraHTTPHeaders(overrideHeaders);
-
-        await page.goto(this.webPath, {
-          timeout: 180000,
-          waitUntil: "networkidle2",
-          ...this.options?.gotoOptions,
-        });
-
-        const bodyHTML = this.options?.evaluate
-          ? await this.options.evaluate(page, browser)
-          : await page.evaluate(() => document.body.innerHTML);
-
-        await browser.close();
-        return bodyHTML;
-      };
-    }
 
     const docs = await loader.load();
     for (const doc of docs) pageContents.push(doc.pageContent);
@@ -227,7 +204,8 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         ...validatedHeaders(headers),
       },
     }).then((res) => res.text());
-    return pageText;
+    if (captureAs === "html") return pageText;
+    return htmlToMarkdown(pageText, link);
   } catch (error) {
     console.error("getPageContent failed to be fetched by any method.", error);
   }

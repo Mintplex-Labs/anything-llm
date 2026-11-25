@@ -4,15 +4,16 @@ import useLogo from "@/hooks/useLogo";
 import {
   House,
   List,
-  Robot,
   Flask,
   Gear,
   UserCircleGear,
   PencilSimpleLine,
   Nut,
   Toolbox,
-  Globe,
+  Plugs,
 } from "@phosphor-icons/react";
+import AgentIcon from "@/media/animations/agent-static.png";
+import CommunityHubIcon from "@/media/illustrations/community-hub.png";
 import useUser from "@/hooks/useUser";
 import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
@@ -48,7 +49,7 @@ export default function SettingsSidebar() {
   if (isMobile) {
     return (
       <>
-        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-theme-text-secondary shadow-lg h-16">
+        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-zinc-925 light:bg-white text-theme-text-secondary shadow-lg h-16">
           <button
             onClick={() => setShowSidebar(true)}
             className="rounded-md p-2 flex items-center justify-center text-theme-text-secondary"
@@ -69,19 +70,19 @@ export default function SettingsSidebar() {
           style={{
             transform: showSidebar ? `translateX(0vw)` : `translateX(-100vw)`,
           }}
-          className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
+          className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh] supports-[height:100dvh]:h-[100dvh]`}
         >
           <div
             className={`${
               showBgOverlay
                 ? "transition-all opacity-1"
                 : "transition-none opacity-0"
-            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-[100vh] supports-[height:100dvh]:h-[100dvh]`}
             onClick={() => setShowSidebar(false)}
           />
           <div
             ref={sidebarRef}
-            className="h-[100vh] fixed top-0 left-0 rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px]"
+            className="h-[100vh] supports-[height:100dvh]:h-[100dvh] fixed top-0 left-0 rounded-r-[26px] bg-zinc-925 light:bg-slate-200 w-[80%] p-[18px]"
           >
             <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
               {/* Header Information */}
@@ -124,7 +125,7 @@ export default function SettingsSidebar() {
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-zinc-925/80 light:bg-slate-200/80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>
@@ -139,7 +140,7 @@ export default function SettingsSidebar() {
       <div>
         <Link
           to={paths.home()}
-          className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+          className="flex shrink-0 items-center justify-start mx-[20.5px] my-[18px]"
         >
           <img
             src={logo}
@@ -150,7 +151,7 @@ export default function SettingsSidebar() {
         </Link>
         <div
           ref={sidebarRef}
-          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-zinc-925 light:bg-slate-200 border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
@@ -175,7 +176,7 @@ export default function SettingsSidebar() {
                 </div>
               </div>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-zinc-925/80 light:bg-slate-200/80 backdrop-filter backdrop-blur-md z-10">
               <Footer />
             </div>
           </div>
@@ -245,6 +246,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.image-generation"),
+              href: paths.settings.imageGenerationPreference(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.voice-speech"),
               href: paths.settings.audioPreference(),
               flex: true,
@@ -253,6 +260,12 @@ const SidebarOptions = ({ user = null, t }) => (
             {
               btnText: t("settings.transcription"),
               href: paths.settings.transcriptionPreference(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: t("settings.model-router"),
+              href: paths.settings.modelRouters(),
               flex: true,
               roles: ["admin"],
             },
@@ -295,30 +308,43 @@ const SidebarOptions = ({ user = null, t }) => (
         />
         <Option
           btnText={t("settings.agent-skills")}
-          icon={<Robot className="h-5 w-5 flex-shrink-0" />}
+          icon={
+            <img
+              src={AgentIcon}
+              alt="Agent"
+              className="h-5 w-5 flex-shrink-0 light:invert"
+            />
+          }
           href={paths.settings.agentSkills()}
           user={user}
           flex={true}
           roles={["admin"]}
         />
         <Option
-          btnText="Community Hub"
-          icon={<Globe className="h-5 w-5 flex-shrink-0" />}
+          btnText={t("settings.community-hub.title")}
+          icon={
+            <img
+              src={CommunityHubIcon}
+              alt="Community Hub"
+              className="h-5 w-5 flex-shrink-0 light:invert"
+            />
+          }
+          user={user}
           childOptions={[
             {
-              btnText: "Explore Trending",
+              btnText: t("settings.community-hub.trending"),
               href: paths.communityHub.trending(),
               flex: true,
               roles: ["admin"],
             },
             {
-              btnText: "Your Account",
+              btnText: t("settings.community-hub.your-account"),
               href: paths.communityHub.authentication(),
               flex: true,
               roles: ["admin"],
             },
             {
-              btnText: "Import Item",
+              btnText: t("settings.community-hub.import-item"),
               href: paths.communityHub.importItem(),
               flex: true,
               roles: ["admin"],
@@ -351,6 +377,19 @@ const SidebarOptions = ({ user = null, t }) => (
           ]}
         />
         <Option
+          btnText={t("settings.channels")}
+          icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
+          user={user}
+          childOptions={[
+            {
+              btnText: t("settings.available-channels.telegram"),
+              href: paths.settings.telegram(),
+              flex: true,
+              hidden: !!user,
+            },
+          ]}
+        />
+        <Option
           btnText={t("settings.tools")}
           icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
           user={user}
@@ -369,6 +408,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.scheduled-jobs"),
+              href: paths.settings.scheduledJobs(),
+              flex: true,
+              hidden: !!user,
+            },
+            {
               btnText: t("settings.api-keys"),
               href: paths.settings.apiKeys(),
               flex: true,
@@ -385,6 +430,12 @@ const SidebarOptions = ({ user = null, t }) => (
               href: paths.settings.browserExtension(),
               flex: true,
               roles: ["admin", "manager"],
+            },
+            {
+              btnText: t("settings.mobile-app"),
+              href: paths.settings.mobile(),
+              flex: true,
+              roles: ["admin"],
             },
           ]}
         />
@@ -463,7 +514,7 @@ function HoldToReveal({ children, holdForMs = 3_000 }) {
 
 function AppVersion() {
   const { version, isLoading } = useAppVersion();
-  if (isLoading) return null;
+  if (isLoading || !version) return null;
   return (
     <Link
       to={`https://github.com/Mintplex-Labs/anything-llm/releases/tag/v${version}`}

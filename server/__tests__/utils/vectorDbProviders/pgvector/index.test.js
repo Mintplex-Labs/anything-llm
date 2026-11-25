@@ -1,4 +1,6 @@
-const { PGVector } = require("../../../../utils/vectorDbProviders/pgvector");
+const { PGVector: PGVectorClass } = require("../../../../utils/vectorDbProviders/pgvector");
+
+const PGVector = new PGVectorClass();
 
 describe("PGVector.sanitizeForJsonb", () => {
   it("returns null/undefined as-is", () => {
@@ -72,5 +74,26 @@ describe("PGVector.sanitizeForJsonb", () => {
     // Results are sanitized copies
     expect(resultObj).toEqual({ a: "bad", nested: { b: "ok" } });
     expect(resultArr).toEqual(["", { c: "bad" }]);
+  });
+});
+
+describe("PGVector.performSimilaritySearch", () => {
+  it("rejects with the original error and still closes the connection", async () => {
+    const pgvector = new PGVectorClass();
+    const client = { end: jest.fn() };
+    jest.spyOn(pgvector, "connect").mockResolvedValue(client);
+    jest.spyOn(pgvector, "namespaceExists").mockResolvedValue(true);
+    const LLMConnector = {
+      embedTextInput: jest.fn().mockRejectedValue(new Error("embedder down")),
+    };
+
+    await expect(
+      pgvector.performSimilaritySearch({
+        namespace: "workspace",
+        input: "hello",
+        LLMConnector,
+      })
+    ).rejects.toThrow("embedder down");
+    expect(client.end).toHaveBeenCalledTimes(1);
   });
 });

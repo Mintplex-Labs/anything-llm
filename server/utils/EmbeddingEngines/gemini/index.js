@@ -1,9 +1,8 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, reportEmbeddingProgress } = require("../../helpers");
 
 const MODEL_MAP = {
-  "embedding-001": 2048,
-  "text-embedding-004": 2048,
-  "gemini-embedding-exp-03-07": 8192,
+  "gemini-embedding-001": 2048,
+  "gemini-embedding-2": 8192,
 };
 
 class GeminiEmbedder {
@@ -13,7 +12,7 @@ class GeminiEmbedder {
 
     this.className = "GeminiEmbedder";
     const { OpenAI: OpenAIApi } = require("openai");
-    this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-004";
+    this.model = process.env.EMBEDDING_MODEL_PREF || "gemini-embedding-001";
     this.openai = new OpenAIApi({
       apiKey: process.env.GEMINI_EMBEDDING_API_KEY,
       // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
@@ -25,12 +24,25 @@ class GeminiEmbedder {
     // https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding-and-embedding
     this.embeddingMaxChunkLength = MODEL_MAP[this.model] || 2_048;
     this.log(
-      `Initialized with ${this.model} - Max Size: ${this.embeddingMaxChunkLength}`
+      `Initialized with ${this.model} - Max Size: ${this.embeddingMaxChunkLength}` +
+        (this.outputDimensions
+          ? ` - Output Dimensions: ${this.outputDimensions}`
+          : " Assuming default output dimensions")
     );
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.className}]\x1b[0m ${text}`, ...args);
+  }
+
+  get outputDimensions() {
+    if (
+      process.env.EMBEDDING_OUTPUT_DIMENSIONS &&
+      !isNaN(process.env.EMBEDDING_OUTPUT_DIMENSIONS) &&
+      process.env.EMBEDDING_OUTPUT_DIMENSIONS > 0
+    )
+      return parseInt(process.env.EMBEDDING_OUTPUT_DIMENSIONS);
+    return null;
   }
 
   /**
@@ -57,6 +69,7 @@ class GeminiEmbedder {
     // we concurrently execute each max batch of text chunks possible.
     // Refer to constructor maxConcurrentChunks for more info.
     const embeddingRequests = [];
+    let chunksProcessed = 0;
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
@@ -64,11 +77,16 @@ class GeminiEmbedder {
             .create({
               model: this.model,
               input: chunk,
+              dimensions: this.outputDimensions,
             })
             .then((result) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
+              chunksProcessed += chunk.length;
+              reportEmbeddingProgress(chunksProcessed, textChunks.length);
               e.type =
                 e?.response?.data?.error?.code ||
                 e?.response?.status ||

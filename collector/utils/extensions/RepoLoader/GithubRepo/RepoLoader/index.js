@@ -1,6 +1,7 @@
 /**
  * @typedef {Object} RepoLoaderArgs
- * @property {string} repo - The GitHub repository URL.
+ * @property {string} repo - The GitHub repository URL. Can be github.com, a GitHub
+ * Enterprise Server instance, or a GHE.com data-residency subdomain.
  * @property {string} [branch] - The branch to load from (optional).
  * @property {string} [accessToken] - GitHub access token for authentication (optional).
  * @property {string[]} [ignorePaths] - Array of paths to ignore when loading (optional).
@@ -23,6 +24,7 @@ class GitHubRepoLoader {
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
 
+    this.apiBase = "https://api.github.com";
     this.author = null;
     this.project = null;
     this.branches = [];
@@ -30,6 +32,7 @@ class GitHubRepoLoader {
 
   /**
    * Processes a repository URL to ensure it is in the correct format
+   * - keep only the origin and path, dropping any query or hash
    * - remove the .git suffix if present
    * - ensure the url is valid
    * @param {string} repoUrl - The repository URL to process.
@@ -39,9 +42,7 @@ class GitHubRepoLoader {
     if (!repoUrl) return repoUrl;
     try {
       const url = new URL(repoUrl);
-      if (url.pathname.endsWith(".git"))
-        url.pathname = url.pathname.slice(0, -4);
-      return url.toString();
+      return `${url.origin}${url.pathname.replace(/\.git$/, "")}`;
     } catch (e) {
       console.error(
         `[GitHub Loader]: Error processing repository URL ${this.repo}: ${e.message}`
@@ -51,35 +52,52 @@ class GitHubRepoLoader {
   }
 
   /**
+   * Resolves the REST API root for the host the repository lives on. Every flavor
+   * of GitHub serves the same REST API v3 endpoints - only the root differs.
+   * - github.com -> https://api.github.com
+   * - GHE.com data residency -> https://api.{subdomain}.ghe.com
+   * - GitHub Enterprise Server -> {origin}/api/v3
+   * @param {URL} url - The parsed repository URL.
+   * @returns {string} The API root, without a trailing slash.
+   */
+  #resolveApiBase(url) {
+    if (["github.com", "www.github.com"].includes(url.hostname))
+      return "https://api.github.com";
+    // Checked before .ghe.com so an api.* host is never doubled up.
+    if (url.hostname.startsWith("api.")) return url.origin;
+    if (url.hostname.endsWith(".ghe.com"))
+      return `${url.protocol}//api.${url.host}`;
+    return `${url.origin}/api/v3`;
+  }
+
+  /**
    * Validates the GitHub URL format.
-   * - ensure the url is valid
-   * - ensure the hostname is github.com
-   * - ensure the pathname is in the format of github.com/{author}/{project}
-   * - sets the author and project properties of class instance
+   * - ensure the url is valid and http(s)
+   * - ensure the pathname is in the format of {host}/{author}/{project}
+   * - sets the apiBase, author and project properties of class instance
    * @returns {boolean} True if the URL is valid, false otherwise.
    */
   #validGithubUrl() {
     try {
       const url = new URL(this.repo);
-
-      // Not a github url at all.
-      if (url.hostname !== "github.com") {
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
         console.log(
-          `[GitHub Loader]: Invalid GitHub URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! Protocol must be http or https. Got ${url.protocol}`
         );
         return false;
       }
 
-      // Assume the url is in the format of github.com/{author}/{project}
+      // Assume the url is in the format of {host}/{author}/{project}
       // Remove the first slash from the pathname so we can split it properly.
       const [author, project, ..._rest] = url.pathname.slice(1).split("/");
       if (!author || !project) {
         console.log(
-          `[GitHub Loader]: Invalid GitHub URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! URL must be in the format of '{host}/{author}/{project}'. Got ${url.pathname}`
         );
         return false;
       }
 
+      this.apiBase = this.#resolveApiBase(url);
       this.author = author;
       this.project = project;
       return true;
@@ -91,23 +109,29 @@ class GitHubRepoLoader {
     }
   }
 
-  // Ensure the branch provided actually exists
-  // and if it does not or has not been set auto-assign to primary branch.
+  // Ensure the branch provided actually exists and if it does not or has not
+  // been set auto-assign to the repository default branch.
   async #validBranch() {
-    await this.getRepoBranches();
+    await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
+    await this.#fetchBranches();
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
     console.log(
       "[GitHub Loader]: Branch not set! Auto-assigning to a default branch."
     );
-    this.branch = this.branches.includes("main") ? "main" : "master";
+    const defaultBranch = await this.fetchDefaultBranch();
+    if (defaultBranch) {
+      this.branch = defaultBranch;
+    } else {
+      this.branch = this.branches.includes("main") ? "main" : "master";
+    }
     console.log(`[GitHub Loader]: Branch auto-assigned to ${this.branch}.`);
     return;
   }
 
   async #validateAccessToken() {
     if (!this.accessToken) return;
-    const valid = await fetch("https://api.github.com/octocat", {
+    const valid = await fetch(`${this.apiBase}/octocat`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
@@ -159,6 +183,8 @@ class GitHubRepoLoader {
       );
 
     const loader = new LCGithubLoader(this.repo, {
+      baseUrl: new URL(this.repo).origin,
+      apiUrl: this.apiBase,
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
@@ -172,8 +198,13 @@ class GitHubRepoLoader {
     return docs;
   }
 
-  // Sort branches to always show either main or master at the top of the result.
-  #branchPrefSort(branches = []) {
+  // Sort branches so the repository default branch is at the top of the result,
+  // since the first branch is the one preselected in the UI. When the default
+  // branch is unknown, main or master is shown at the top instead.
+  #branchPrefSort(branches = [], defaultBranch = null) {
+    if (defaultBranch && branches.includes(defaultBranch))
+      return [defaultBranch, ...branches.filter((b) => b !== defaultBranch)];
+
     const preferredSort = ["main", "master"];
     return branches.reduce((acc, branch) => {
       if (preferredSort.includes(branch)) return [branch, ...acc];
@@ -182,13 +213,49 @@ class GitHubRepoLoader {
   }
 
   /**
-   * Retrieves all branches for the repository.
+   * Retrieves the default branch of the repository from its metadata.
+   * @returns {Promise<string|null>} The default branch name, or null if it could not be resolved.
+   */
+  async fetchDefaultBranch() {
+    return fetch(`${this.apiBase}/repos/${this.author}/${this.project}`, {
+      method: "GET",
+      headers: {
+        ...(this.accessToken
+          ? { Authorization: `Bearer ${this.accessToken}` }
+          : {}),
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error(`Invalid request to Github API: ${res.statusText}`);
+      })
+      .then((metadata) => metadata?.default_branch || null)
+      .catch((err) => {
+        console.log(`RepoLoader.fetchDefaultBranch`, err);
+        return null;
+      });
+  }
+
+  /**
+   * Retrieves all branches for the repository, with the default branch first.
    * @returns {Promise<string[]>} An array of branch names.
    */
   async getRepoBranches() {
     if (!this.#validGithubUrl() || !this.author || !this.project) return [];
     await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
+    await this.#fetchBranches();
+    if (this.branches.length === 0) return [];
 
+    const defaultBranch = await this.fetchDefaultBranch();
+    return this.#branchPrefSort(this.branches, defaultBranch);
+  }
+
+  /**
+   * Pages through the branches endpoint and stores every branch name on `this.branches`.
+   * @returns {Promise<void>}
+   */
+  async #fetchBranches() {
     let page = 0;
     let polling = true;
     const branches = [];
@@ -196,7 +263,7 @@ class GitHubRepoLoader {
     while (polling) {
       console.log(`Fetching page ${page} of branches for ${this.project}`);
       await fetch(
-        `https://api.github.com/repos/${this.author}/${this.project}/branches?per_page=100&page=${page}`,
+        `${this.apiBase}/repos/${this.author}/${this.project}/branches?per_page=100&page=${page}`,
         {
           method: "GET",
           headers: {
@@ -223,7 +290,6 @@ class GitHubRepoLoader {
     }
 
     this.branches = [...new Set(branches.flat())];
-    return this.#branchPrefSort(this.branches);
   }
 
   /**
@@ -233,8 +299,14 @@ class GitHubRepoLoader {
    */
   async fetchSingleFile(sourceFilePath) {
     try {
+      const encodedFilePath = String(sourceFilePath)
+        .split("/")
+        .map((segment) => encodeURIComponent(segment))
+        .join("/");
       return fetch(
-        `https://api.github.com/repos/${this.author}/${this.project}/contents/${sourceFilePath}?ref=${this.branch}`,
+        `${this.apiBase}/repos/${this.author}/${
+          this.project
+        }/contents/${encodedFilePath}?ref=${encodeURIComponent(this.branch)}`,
         {
           method: "GET",
           headers: {
@@ -253,7 +325,11 @@ class GitHubRepoLoader {
         .then((json) => {
           if (json.hasOwnProperty("status") || !json.hasOwnProperty("content"))
             throw new Error(json?.message || "missing content");
-          return atob(json.content);
+          // TextDecoder also strips a leading BOM, matching the `response.text()`
+          // decode the initial import uses.
+          return new TextDecoder("utf-8").decode(
+            Buffer.from(json.content, "base64")
+          );
         });
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFile`, e);

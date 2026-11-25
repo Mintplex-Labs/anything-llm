@@ -5,21 +5,22 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BookOpen } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
+import System from "@/models/system";
 import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminWorkspaces() {
   const { isOpen, openModal, closeModal } = useModal();
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
@@ -45,9 +46,9 @@ export default function AdminWorkspaces() {
             <WorkspacesContainer />
           </div>
         </div>
-        <ModalWrapper isOpen={isOpen}>
+        <Modal isOpen={isOpen} onClose={closeModal}>
           <NewWorkspaceModal closeModal={closeModal} />
-        </ModalWrapper>
+        </Modal>
       </div>
     </div>
   );
@@ -57,13 +58,18 @@ function WorkspacesContainer() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);
+  const [deletionProtected, setDeletionProtected] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const _users = await Admin.users();
-      const _workspaces = await Admin.workspaces();
+      const [_users, _workspaces, _settings] = await Promise.all([
+        Admin.users(),
+        Admin.workspaces(),
+        System.keys(),
+      ]);
       setUsers(_users);
       setWorkspaces(_workspaces);
+      setDeletionProtected(_settings?.WorkspaceDeletionProtection === true);
       setLoading(false);
     }
     fetchData();
@@ -110,6 +116,7 @@ function WorkspacesContainer() {
             key={workspace.id}
             workspace={workspace}
             users={users}
+            deletionProtected={deletionProtected}
           />
         ))}
       </tbody>

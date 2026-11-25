@@ -1,10 +1,11 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { v4, validate } = require("uuid");
 const { User } = require("../../models/user");
 const {
   RecoveryCode,
   PasswordResetToken,
 } = require("../../models/passwordRecovery");
+const { dummyHashCompare } = require("../helpers/dummyHashCompare");
 
 async function generateRecoveryCodes(userId) {
   const newRecoveryCodes = [];
@@ -31,31 +32,43 @@ async function generateRecoveryCodes(userId) {
 }
 
 async function recoverAccount(username = "", recoveryCodes = []) {
-  const user = await User.get({ username: String(username) });
-  if (!user) return { success: false, error: "Invalid recovery codes." };
-
-  // If hashes do not exist for a user
-  // because this is a user who has not logged out and back in since upgrade.
-  const allUserHashes = await RecoveryCode.hashesForUser(user.id);
-  if (allUserHashes.length < 4)
-    return { success: false, error: "Invalid recovery codes" };
-
-  // If they tried to send more than two unique codes, we only take the first two
-  const uniqueRecoveryCodes = [...new Set(recoveryCodes)]
-    .map((code) => code.trim())
-    .filter((code) => validate(code)) // we know that any provided code must be a uuid v4.
-    .slice(0, 2);
+  const uniqueRecoveryCodes = [
+    ...new Set(
+      recoveryCodes
+        .map((code) => (typeof code === "string" ? code.trim() : ""))
+        .filter((code) => validate(code))
+    ),
+  ].slice(0, 2);
   if (uniqueRecoveryCodes.length !== 2)
     return { success: false, error: "Invalid recovery codes." };
 
+  // A user without 4 hashes has not logged out and back in since recovery codes were added.
+  // Unknown users and users without codes run the same 4 comparisons a wrong first code costs
+  // a real user, so the response time does not reveal whether the username exists.
+  const user = await User.get({ username: String(username) });
+
+  // Suspended users get the same response so recovery cannot be used to change their password.
+  if (user?.suspended) {
+    dummyHashCompare(uniqueRecoveryCodes[0], 4);
+    return { success: false, error: "Invalid recovery codes." };
+  }
+
+  const allUserHashes = user ? await RecoveryCode.hashesForUser(user.id) : [];
+  if (allUserHashes.length < 4) {
+    dummyHashCompare(uniqueRecoveryCodes[0], 4);
+    return { success: false, error: "Invalid recovery codes." };
+  }
+
+  const unmatchedHashes = [...allUserHashes];
   const validCodes = uniqueRecoveryCodes.every((code) => {
-    let valid = false;
-    allUserHashes.forEach((hash) => {
-      if (bcrypt.compareSync(code, hash)) valid = true;
-    });
-    return valid;
+    const index = unmatchedHashes.findIndex((hash) =>
+      bcrypt.compareSync(code, hash)
+    );
+    if (index === -1) return false;
+    unmatchedHashes.splice(index, 1);
+    return true;
   });
-  if (!validCodes) return { success: false, error: "Invalid recovery codes" };
+  if (!validCodes) return { success: false, error: "Invalid recovery codes." };
 
   const { passwordResetToken, error } = await PasswordResetToken.create(
     user.id
@@ -76,6 +89,11 @@ async function resetPassword(token, _newPassword = "", confirmPassword = "") {
   if (!resetToken || resetToken.expiresAt < new Date()) {
     return { success: false, message: "Invalid reset token" };
   }
+
+  // A token issued before the user was suspended must not be redeemable after.
+  const user = await User.get({ id: resetToken.user_id });
+  if (!user || user.suspended)
+    return { success: false, message: "Invalid reset token" };
 
   // JOI password rules will be enforced inside .update.
   const { error } = await User.update(resetToken.user_id, {

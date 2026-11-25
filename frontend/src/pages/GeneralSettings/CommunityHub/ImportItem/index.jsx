@@ -77,7 +77,7 @@ export default function CommunityHubImportItemFlow() {
   return (
     <CommunityHubImportItemLayout setStep={setStep}>
       {(settings, setSettings, setStep) => (
-        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
+        <div className="flex flex-col w-full px-1 md:px-6 2xl:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
             <div className="items-center">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
@@ -89,12 +89,12 @@ export default function CommunityHubImportItemFlow() {
               instance with community-created prompts, skills, and commands.
             </p>
           </div>
-          <div className="flex-1 flex h-full">
-            <div className="flex flex-col gap-y-[18px] mt-10 w-[360px] flex-shrink-0">
+          <div className="flex-1 flex flex-col 2xl:flex-row h-full">
+            <div className="flex flex-col gap-y-[18px] mt-10 w-full 2xl:w-[360px] 2xl:flex-shrink-0">
               <SideBarSelection setStep={setStep} currentStep={step} />
             </div>
-            <div className="overflow-y-auto pb-[200px] h-screen no-scroll">
-              <div className="ml-8">
+            <div className="flex-1 min-w-0 overflow-y-auto pb-[200px] 2xl:h-screen no-scroll">
+              <div className="2xl:ml-8">
                 {StepPage.component({ settings, setSettings, setStep })}
               </div>
             </div>

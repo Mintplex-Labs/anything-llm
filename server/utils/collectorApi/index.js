@@ -6,6 +6,9 @@ const { Agent } = require("undici");
  * @property {string} whisperProvider - The provider to use for whisper, defaults to "local"
  * @property {string} WhisperModelPref - The model to use for whisper if set.
  * @property {string} openAiKey - The API key to use for OpenAI interfacing, mostly passed to OAI Whisper provider.
+ * @property {string} WhisperGenericOpenAiBaseUrl - The base URL of the OpenAI compatible endpoint used by the generic Whisper provider.
+ * @property {string} WhisperGenericOpenAiApiKey - The API key used by the generic (OpenAI compatible) Whisper provider.
+ * @property {string} WhisperGenericOpenAiModel - The transcription model used by the generic (OpenAI compatible) Whisper provider.
  * @property {Object} ocr - The OCR options
  * @property {{allowAnyIp: "true"|null|undefined}} runtimeSettings - The runtime settings that are passed to the collector. Persisted across requests.
  */
@@ -15,6 +18,9 @@ const { Agent } = require("undici");
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
 class CollectorApi {
+  /** @type {number} - The default collector port */
+  static DEFAULT_COLLECTOR_PORT = 8888;
+
   /** @type {number} - The maximum timeout for extension requests in milliseconds */
   extensionRequestTimeout = 15 * 60_000; // 15 minutes
   /** @type {Agent} - The agent for extension requests */
@@ -23,10 +29,29 @@ class CollectorApi {
     bodyTimeout: this.extensionRequestTimeout,
   });
 
+  /**
+   * Gets the collector port from the environment variables.
+   * If the port is not set, it will fall back to the default port.
+   * If the port is invalid, it will log a warning and return the default port.
+   * @returns {number}
+   */
+  static getCollectorPort() {
+    if (!("COLLECTOR_PORT" in process.env)) return this.DEFAULT_COLLECTOR_PORT;
+    const port = Number(
+      process.env.COLLECTOR_PORT || this.DEFAULT_COLLECTOR_PORT
+    );
+    if (Number.isInteger(port) && port > 0 && port <= 65535) return port;
+
+    console.warn(
+      `Invalid COLLECTOR_PORT "${process.env.COLLECTOR_PORT}". Falling back to ${this.DEFAULT_COLLECTOR_PORT}.`
+    );
+    return this.DEFAULT_COLLECTOR_PORT;
+  }
+
   constructor() {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
-    this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
+    this.endpoint = `http://127.0.0.1:${CollectorApi.getCollectorPort()}`;
   }
 
   log(text, ...args) {
@@ -42,6 +67,12 @@ class CollectorApi {
       whisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref: process.env.WHISPER_MODEL_PREF,
       openAiKey: process.env.OPEN_AI_KEY || null,
+      WhisperGenericOpenAiBaseUrl:
+        process.env.WHISPER_GENERIC_OPEN_AI_BASE_URL || null,
+      WhisperGenericOpenAiApiKey:
+        process.env.WHISPER_GENERIC_OPEN_AI_API_KEY || null,
+      WhisperGenericOpenAiModel:
+        process.env.WHISPER_GENERIC_OPEN_AI_MODEL || null,
       ocr: {
         langList: process.env.TARGET_OCR_LANG || "eng",
       },
@@ -76,15 +107,20 @@ class CollectorApi {
    * - Will append the options and optional metadata to the request body
    * @param {string} filename - The filename of the document to process
    * @param {Object} metadata - Optional metadata key:value pairs
+   * @param {Object} processOptions - Additional options for processing
+   * @param {string} processOptions.originalFilename - The user-facing filename when `filename` is a unique hotdir name
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processDocument(filename = "", metadata = {}) {
+  async processDocument(filename = "", metadata = {}, processOptions = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
       metadata,
-      options: this.#attachOptions(),
+      options: {
+        ...this.#attachOptions(),
+        originalFilename: processOptions.originalFilename || null,
+      },
     });
 
     return await fetch(`${this.endpoint}/process`, {
@@ -185,6 +221,44 @@ class CollectorApi {
       });
   }
 
+  /**
+   * Convert an audio file in the shared hotdir to WAV via the collector's
+   * FFMPEG wrapper. The source file is trashed by the collector; caller must
+   * read and trash the resulting wav file.
+   * @param {string} filename - The filename of the source audio in the hotdir
+   * @returns {Promise<{success: boolean, reason: string|null, wavFilename: string|null}>}
+   */
+  async convertAudioToWav(filename = "") {
+    if (!filename)
+      return {
+        success: false,
+        reason: "No filename provided.",
+        wavFilename: null,
+      };
+
+    const data = JSON.stringify({ filename });
+    return await fetch(`${this.endpoint}/util/convert-audio-to-wav`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
+      },
+      body: data,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Response could not be completed");
+        return res.json();
+      })
+      .then((json) => json)
+      .catch((e) => {
+        this.log(e.message);
+        return { success: false, reason: e.message, wavFilename: null };
+      });
+  }
+
   // We will not ever expose the document processor to the frontend API so instead we relay
   // all requests through the server. You can use this function to directly expose a specific endpoint
   // on the document processor.
@@ -256,14 +330,21 @@ class CollectorApi {
    * Parse a document without processing it
    * - Will append the options to the request body
    * @param {string} filename - The filename of the document to parse
+   * @param {Object} parseOptions - Additional options for parsing
+   * @param {string} parseOptions.absolutePath - If provided, use this absolute path instead of looking in the hotdir
+   * @param {string} parseOptions.originalFilename - The user-facing filename when `filename` is a unique hotdir name
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async parseDocument(filename = "") {
+  async parseDocument(filename = "", parseOptions = {}) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
-      options: this.#attachOptions(),
+      options: {
+        ...this.#attachOptions(),
+        absolutePath: parseOptions.absolutePath || null,
+        originalFilename: parseOptions.originalFilename || null,
+      },
     });
 
     return await fetch(`${this.endpoint}/parse`, {

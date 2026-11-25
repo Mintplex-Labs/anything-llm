@@ -2,30 +2,56 @@ const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
-  viewLocalFiles,
   findDocumentInDocuments,
   getDocumentsByFolder,
   normalizePath,
   isWithin,
+  moveProcessedDocsToFolder,
+  normalizeFolderName,
+  isFolderFilePath,
+  viewLocalFiles,
 } = require("../../../utils/files");
-const { reqBody, safeJsonParse } = require("../../../utils/http");
+const { reqBody, safeJsonParse, queryParams } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
+const createFilesLib = require("../../../utils/agents/aibitat/plugins/create-files/lib");
 const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../storage/documents")
     : path.resolve(process.env.STORAGE_DIR, `documents`);
+
+/**
+ * Runs a simple validation check on the addToWorkspaces query parameter to ensure it is a string of comma-separated workspace slugs.
+ * @param {*} request
+ * @param {*} response
+ * @param {*} next
+ * @returns
+ */
+function validateWorkspaceSlugQuery(request, response, next) {
+  const { addToWorkspaces = "" } = reqBody(request);
+  if (!addToWorkspaces) return next();
+  if (typeof addToWorkspaces !== "string") {
+    return response
+      .status(422)
+      .json({
+        success: false,
+        error: `addToWorkspaces must be a string of comma-separated workspace slugs. Got ${typeof addToWorkspaces}`,
+      })
+      .end();
+  }
+  next();
+}
 
 function apiDocumentEndpoints(app) {
   if (!app) return;
 
   app.post(
     "/v1/document/upload",
-    [validApiKey, handleAPIFileUpload],
+    [validApiKey, handleAPIFileUpload, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -95,7 +121,7 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const { addToWorkspaces = "", metadata: _metadata = {} } =
           reqBody(request);
         const metadata =
@@ -116,8 +142,9 @@ function apiDocumentEndpoints(app) {
         }
 
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
 
         if (!success) {
@@ -135,11 +162,16 @@ function apiDocumentEndpoints(app) {
           documentName: originalname,
         });
 
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
+        if (!!addToWorkspaces) {
+          const embedded = await Document.api.uploadToWorkspace(
             addToWorkspaces,
-            documents?.[0].location
+            documents.map((document) => document.location)
           );
+          if (!embedded.success)
+            return response
+              .status(embedded.partial ? 200 : 500)
+              .json({ success: false, error: embedded.error, documents });
+        }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -150,7 +182,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload/:folderName",
-    [validApiKey, handleAPIFileUpload],
+    [validApiKey, handleAPIFileUpload, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
       #swagger.tags = ['Documents']
@@ -237,7 +269,7 @@ function apiDocumentEndpoints(app) {
       }
       */
       try {
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const { addToWorkspaces = "", metadata: _metadata = {} } =
           reqBody(request);
         const metadata =
@@ -245,17 +277,7 @@ function apiDocumentEndpoints(app) {
             ? safeJsonParse(_metadata, {})
             : _metadata;
 
-        let folder = request.params?.folderName || "custom-documents";
-        folder = normalizePath(folder);
-        const targetFolderPath = path.join(documentsPath, folder);
-
-        if (
-          !isWithin(path.resolve(documentsPath), path.resolve(targetFolderPath))
-        )
-          throw new Error("Invalid folder name");
-        if (!fs.existsSync(targetFolderPath))
-          fs.mkdirSync(targetFolderPath, { recursive: true });
-
+        const folderName = request.params?.folderName || "custom-documents";
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
         if (!processingOnline) {
@@ -270,8 +292,9 @@ function apiDocumentEndpoints(app) {
 
         // Process the uploaded document with metadata
         const { success, reason, documents } = await Collector.processDocument(
-          originalname,
-          metadata
+          hotdirFilename,
+          metadata,
+          { originalFilename: originalname }
         );
         if (!success) {
           return response
@@ -282,29 +305,7 @@ function apiDocumentEndpoints(app) {
 
         // For each processed document, check if it is already in the desired folder.
         // If not, move it using similar logic as in the move-files endpoint.
-        for (const doc of documents) {
-          const currentFolder = path.dirname(doc.location);
-          if (currentFolder !== folder) {
-            const sourcePath = path.join(
-              documentsPath,
-              normalizePath(doc.location)
-            );
-            const destinationPath = path.join(
-              targetFolderPath,
-              path.basename(doc.location)
-            );
-
-            if (
-              !isWithin(documentsPath, sourcePath) ||
-              !isWithin(documentsPath, destinationPath)
-            )
-              throw new Error("Invalid file location");
-
-            fs.renameSync(sourcePath, destinationPath);
-            doc.location = path.join(folder, path.basename(doc.location));
-            doc.name = path.basename(doc.location);
-          }
-        }
+        const folder = moveProcessedDocsToFolder(documents, folderName);
 
         Collector.log(
           `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
@@ -316,11 +317,16 @@ function apiDocumentEndpoints(app) {
           folder,
         });
 
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
+        if (!!addToWorkspaces) {
+          const embedded = await Document.api.uploadToWorkspace(
             addToWorkspaces,
-            documents?.[0].location
+            documents.map((document) => document.location)
           );
+          if (!embedded.success)
+            return response
+              .status(embedded.partial ? 200 : 500)
+              .json({ success: false, error: embedded.error, documents });
+        }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -331,13 +337,13 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload-link",
-    [validApiKey],
+    [validApiKey, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
+    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. The link property can be a single URL string or an array of URL strings. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
     #swagger.requestBody = {
-      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata.',
+      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload, and optional metadata. The link property also accepts an array of links to process in a single request.',
       required: true,
       content: {
           "application/json": {
@@ -399,11 +405,31 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const {
-          link,
+          link = "",
           addToWorkspaces = "",
           scraperHeaders = {},
           metadata: _metadata = {},
         } = reqBody(request);
+
+        // `link` can be a single URL string or an array of URL strings.
+        // Drop any non-string or empty entries - URL validation itself is
+        // handled by the collector when each link is processed.
+        const links = (Array.isArray(link) ? link : [link])
+          .filter((url) => typeof url === "string" && url.trim().length > 0)
+          .map((url) => url.trim());
+
+        if (links.length === 0) {
+          return response
+            .status(422)
+            .json({
+              success: false,
+              error:
+                "link must be a non-empty string or an array of non-empty strings.",
+              documents: [],
+            })
+            .end();
+        }
+
         const metadata =
           typeof _metadata === "string"
             ? safeJsonParse(_metadata, {})
@@ -415,37 +441,75 @@ function apiDocumentEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
+              error: `Document processing API is not online. Link(s) ${links.join(", ")} will not be processed automatically.`,
+              documents: [],
             })
             .end();
         }
 
-        const { success, reason, documents } = await Collector.processLink(
-          link,
-          scraperHeaders,
-          metadata
+        const results = await Promise.all(
+          links.map(async (url) => ({
+            url,
+            ...(await Collector.processLink(url, scraperHeaders, metadata)),
+          }))
         );
-        if (!success) {
+
+        const documents = [];
+        const failures = [];
+        for (const result of results) {
+          const {
+            url,
+            success,
+            reason,
+            documents: linkDocuments = [],
+          } = result;
+          if (!success) {
+            failures.push({ url, reason: reason || "Failed to process link." });
+            continue;
+          }
+
+          Collector.log(
+            `Link ${url} uploaded processed and successfully. It is now available in documents.`
+          );
+          await Telemetry.sendTelemetry("link_uploaded");
+          await EventLogs.logEvent("api_link_uploaded", { link: url });
+          documents.push(...linkDocuments);
+        }
+
+        let embedded = { success: true, partial: false, error: null };
+        if (!!addToWorkspaces && documents.length > 0)
+          embedded = await Document.api.uploadToWorkspace(
+            addToWorkspaces,
+            documents.map((document) => document.location)
+          );
+
+        const linkError =
+          failures.length === 0
+            ? null
+            : links.length === 1
+              ? failures[0].reason
+              : failures
+                  .map(({ url, reason }) => `${url}: ${reason}`)
+                  .join("; ");
+        const error =
+          [linkError, embedded.error].filter(Boolean).join("; ") || null;
+
+        // Nothing reached the documents folder, or nothing reached the workspace.
+        if (
+          (documents.length === 0 && failures.length > 0) ||
+          (!embedded.success && !embedded.partial)
+        ) {
           return response
             .status(500)
-            .json({ success: false, error: reason, documents })
+            .json({ success: false, error, documents })
             .end();
         }
 
-        Collector.log(
-          `Link ${link} uploaded processed and successfully. It is now available in documents.`
-        );
-        await Telemetry.sendTelemetry("link_uploaded");
-        await EventLogs.logEvent("api_link_uploaded", {
-          link,
+        response.status(200).json({
+          success: failures.length === 0 && embedded.success,
+          error,
+          documents,
         });
-
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
-            addToWorkspaces,
-            documents?.[0].location
-          );
-        response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -455,7 +519,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/raw-text",
-    [validApiKey],
+    [validApiKey, validateWorkspaceSlugQuery],
     async (request, response) => {
       /*
      #swagger.tags = ['Documents']
@@ -584,11 +648,16 @@ function apiDocumentEndpoints(app) {
         await Telemetry.sendTelemetry("raw_document_uploaded");
         await EventLogs.logEvent("api_raw_document_uploaded");
 
-        if (!!addToWorkspaces)
-          await Document.api.uploadToWorkspace(
+        if (!!addToWorkspaces) {
+          const embedded = await Document.api.uploadToWorkspace(
             addToWorkspaces,
-            documents?.[0].location
+            documents.map((document) => document.location)
           );
+          if (!embedded.success)
+            return response
+              .status(embedded.partial ? 200 : 500)
+              .json({ success: false, error: embedded.error, documents });
+        }
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -597,10 +666,10 @@ function apiDocumentEndpoints(app) {
     }
   );
 
-  app.get("/v1/documents", [validApiKey], async (_, response) => {
+  app.get("/v1/documents", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'List of all locally-stored documents in instance'
+    #swagger.description = 'List of all locally-stored documents in instance. Optionally, pass ?folder=name to fetch the contents of a single folder, paginated with offset and limit (limit=all returns every document in that folder).'
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -633,8 +702,20 @@ function apiDocumentEndpoints(app) {
     }
     */
     try {
-      const localFiles = await viewLocalFiles();
-      response.status(200).json({ localFiles });
+      const { folder, offset, limit } = queryParams(request);
+      if (folder) {
+        // Additive opt-in. Pagination is passed through as-is:
+        // getDocumentsByFolder clamps the window and understands `limit=all`.
+        const result = await getDocumentsByFolder(folder, { offset, limit });
+        response.status(result.code).json(result);
+      } else {
+        // Deliberately the full tree, unchanged from before folder support
+        // existed. This parses every document on disk and is slow on large
+        // instances, but silently returning empty `items` arrays to existing
+        // integrations would be worse. New callers should use ?folder=.
+        const localFiles = await viewLocalFiles();
+        response.status(200).json({ localFiles });
+      }
     } catch (e) {
       console.error(e.message, e);
       response.sendStatus(500).end();
@@ -647,11 +728,23 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Get all documents stored in a specific folder.'
+    #swagger.description = 'Get all documents stored in a specific folder. Returns every document by default; pass offset and limit to paginate.'
     #swagger.parameters['folderName'] = {
       in: 'path',
       description: 'Name of the folder to retrieve documents from',
       required: true,
+      type: 'string'
+    }
+    #swagger.parameters['offset'] = {
+      in: 'query',
+      description: 'Number of documents to skip. Defaults to 0.',
+      required: false,
+      type: 'integer'
+    }
+    #swagger.parameters['limit'] = {
+      in: 'query',
+      description: "Max documents to return, capped at 1000. Defaults to all, which returns every document in the folder.",
+      required: false,
       type: 'string'
     }
     #swagger.responses[200] = {
@@ -692,10 +785,19 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const { folderName } = request.params;
-        const result = await getDocumentsByFolder(folderName);
+        const { offset, limit = "all" } = queryParams(request);
+        // Defaults to every document: this endpoint has never paginated and
+        // silently truncating to a page would break existing consumers.
+        // offset/limit are opt-in for callers that do want to page.
+        const result = await getDocumentsByFolder(folderName, {
+          offset,
+          limit,
+        });
         response.status(result.code).json({
           folder: result.folder,
           documents: result.documents,
+          totalCount: result.totalCount,
+          hasMore: result.hasMore,
           error: result.error,
         });
       } catch (e) {
@@ -911,7 +1013,15 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { name } = reqBody(request);
-        const storagePath = path.join(documentsPath, normalizePath(name));
+        let folder;
+        try {
+          folder = normalizeFolderName(name);
+        } catch (e) {
+          response.status(400).json({ success: false, message: e.message });
+          return;
+        }
+
+        const storagePath = path.join(documentsPath, folder);
         if (!isWithin(path.resolve(documentsPath), path.resolve(storagePath)))
           throw new Error("Invalid path name");
 
@@ -1041,6 +1151,15 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { files } = reqBody(request);
+        const invalidMove = files.find(({ to }) => !isFolderFilePath(to));
+        if (invalidMove) {
+          response.status(400).json({
+            success: false,
+            message: `Invalid destination "${invalidMove.to}". Files can only be moved into a top-level folder (folder/file.json).`,
+          });
+          return;
+        }
+
         const docpaths = files.map(({ from }) => from);
         const documents = await Document.where({ docpath: { in: docpaths } });
         const embeddedFiles = documents.map((doc) => doc.docpath);
@@ -1093,6 +1212,128 @@ function apiDocumentEndpoints(app) {
         response
           .status(500)
           .json({ success: false, message: "Failed to move files." });
+      }
+    }
+  );
+
+  app.get(
+    "/v1/document/generated-files/:filename",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Documents']
+      #swagger.description = 'Download a file generated by an agent skill (e.g., PDF, DOCX, XLSX, PPTX) or a generated image (img-*.png). The filename is returned in the `outputs` array of a chat response when an agent generates a file or image. Use the `storageFilename` value from that response to download the file.'
+      #swagger.parameters['filename'] = {
+        in: 'path',
+        description: 'The storage filename returned in the chat response outputs array (e.g., pdf-e9e14f28-d6b6-4f49-91a0-dd331517f567.pdf)',
+        required: true,
+        type: 'string'
+      }
+      #swagger.responses[200] = {
+        description: 'File downloaded successfully',
+        content: {
+          "application/octet-stream": {
+            schema: {
+              type: 'string',
+              format: 'binary'
+            }
+          }
+        }
+      }
+      #swagger.responses[400] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                error: "Invalid filename format"
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                error: "File not found"
+              }
+            }
+          }
+        }
+      }
+      */
+      try {
+        const { filename } = request.params;
+        if (!filename)
+          return response.status(400).json({ error: "Filename is required" });
+
+        // Generated images live in their own storage directory, separate from
+        // the create-files output directory the block below reads from.
+        const {
+          generatedImagesPath,
+          GENERATED_IMAGE_FILENAME_PATTERN,
+        } = require("../../../utils/files");
+        if (GENERATED_IMAGE_FILENAME_PATTERN.test(filename)) {
+          const imagePath = path.resolve(generatedImagesPath, filename);
+          if (
+            !isWithin(generatedImagesPath, imagePath) ||
+            !fs.existsSync(imagePath)
+          )
+            return response.status(404).json({ error: "File not found" });
+
+          const imageBuffer = await fs.promises.readFile(imagePath);
+          response.setHeader("Content-Type", "image/png");
+          response.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${createFilesLib.sanitizeFilenameForHeader(filename)}"`
+          );
+          response.setHeader("Content-Length", imageBuffer.length);
+          response.send(imageBuffer);
+          Telemetry.sendTelemetry("agent_generated_file_downloaded", {
+            type: "image/png",
+          }).catch(() => {});
+          return;
+        }
+
+        const parsed = createFilesLib.parseFilename(filename);
+        if (!parsed) {
+          return response
+            .status(400)
+            .json({ error: "Invalid filename format" });
+        }
+
+        const fileData = await createFilesLib.getGeneratedFile(filename);
+        if (!fileData) {
+          return response.status(404).json({ error: "File not found" });
+        }
+
+        const mimeType = createFilesLib.getMimeType(`.${parsed.extension}`);
+        const safeFilename = createFilesLib.sanitizeFilenameForHeader(filename);
+        response.setHeader("Content-Type", mimeType);
+        response.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${safeFilename}"`
+        );
+        response.setHeader("Content-Length", fileData.buffer.length);
+        response.send(fileData.buffer);
+
+        Telemetry.sendTelemetry("agent_generated_file_downloaded", {
+          type: mimeType,
+        }).catch(() => {});
+      } catch (error) {
+        console.error(
+          "[document/generated-files] Download error:",
+          error.message
+        );
+        return response.status(500).json({ error: "Failed to download file" });
       }
     }
   );

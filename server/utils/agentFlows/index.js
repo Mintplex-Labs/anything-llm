@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const { FlowExecutor, FLOW_TYPES } = require("./executor");
-const { normalizePath } = require("../files");
+const { normalizePath, isWithin } = require("../files");
 const { safeJsonParse } = require("../http");
 
 /**
@@ -71,7 +71,12 @@ class AgentFlows {
       const flowJsonPath = normalizePath(
         path.join(AgentFlows.flowsDir, `${uuid}.json`)
       );
-      if (!uuid || !fs.existsSync(flowJsonPath)) return null;
+      if (
+        !uuid ||
+        !fs.existsSync(flowJsonPath) ||
+        !isWithin(AgentFlows.flowsDir, flowJsonPath)
+      )
+        return null;
       const flow = safeJsonParse(fs.readFileSync(flowJsonPath, "utf8"), null);
       if (!flow) return null;
 
@@ -100,6 +105,7 @@ class AgentFlows {
       if (!uuid) uuid = uuidv4();
       const normalizedUuid = normalizePath(`${uuid}.json`);
       const filePath = path.join(AgentFlows.flowsDir, normalizedUuid);
+      if (!isWithin(AgentFlows.flowsDir, filePath)) return null;
 
       // Prevent saving flows with unsupported blocks or importing
       // flows with unsupported blocks (eg: file writing or code execution on Desktop importing to Docker)
@@ -151,7 +157,8 @@ class AgentFlows {
       const filePath = normalizePath(
         path.join(AgentFlows.flowsDir, `${uuid}.json`)
       );
-      if (!fs.existsSync(filePath)) throw new Error(`Flow ${uuid} not found`);
+      if (!fs.existsSync(filePath) || !isWithin(AgentFlows.flowsDir, filePath))
+        throw new Error(`Flow ${uuid} not found`);
       fs.rmSync(filePath);
       return { success: true };
     } catch (error) {
@@ -186,6 +193,24 @@ class AgentFlows {
   }
 
   /**
+   * Sanitize a flow name into a valid OpenAI-compatible tool name.
+   * Must match ^[a-zA-Z0-9_-]{1,64}$
+   * @param {string} flowName - The human-readable flow name
+   * @returns {string|null} Sanitized tool name, or null if empty after sanitization
+   */
+  static sanitizeToolName(flowName) {
+    const sanitized = flowName
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_-]/g, "")
+      .replace(/_+/g, "_")
+      .replace(/^[-_]+|[-_]+$/g, "");
+    if (!sanitized) return null;
+    return sanitized.slice(0, 64);
+  }
+
+  /**
    * Load a flow plugin by its UUID
    * @param {string} uuid - The UUID of the flow to load
    * @returns {Object|null} Plugin configuration or null if not found
@@ -196,40 +221,66 @@ class AgentFlows {
 
     const startBlock = flow.config.steps?.find((s) => s.type === "start");
     const variables = startBlock?.config?.variables || [];
+    const toolName = AgentFlows.sanitizeToolName(flow.name) || `flow_${uuid}`;
+
+    // Variables with no `type` predate categories and behave as "optional".
+    // Only required/optional variables are exposed to the LLM - "static"
+    // variables are fixed at design time and invisible to the model.
+    const llmVariables = variables.filter(
+      (v) => v.name && (v.type || "optional") !== "static"
+    );
+    const requiredNames = llmVariables
+      .filter((v) => v.type === "required")
+      .map((v) => v.name);
 
     return {
-      name: `flow_${uuid}`,
+      name: toolName,
       description: `Execute agent flow: ${flow.name}`,
       plugin: (_runtimeArgs = {}) => ({
-        name: `flow_${uuid}`,
+        name: toolName,
         description:
           flow.config.description || `Execute agent flow: ${flow.name}`,
         setup: (aibitat) => {
           aibitat.function({
-            name: `flow_${uuid}`,
+            name: toolName,
             description:
               flow.config.description || `Execute agent flow: ${flow.name}`,
             parameters: {
               type: "object",
-              properties: variables.reduce((acc, v) => {
-                if (v.name) {
-                  acc[v.name] = {
-                    type: "string",
-                    description:
-                      v.description || `Value for variable ${v.name}`,
-                  };
-                }
+              properties: llmVariables.reduce((acc, v) => {
+                acc[v.name] = {
+                  type: "string",
+                  description: v.description || `Value for variable ${v.name}`,
+                };
                 return acc;
               }, {}),
+              required: requiredNames,
             },
-            handler: async (args) => {
+            handler: async (args = {}) => {
+              // Drop any args the LLM hallucinated for variables it should not
+              // control, and enforce required variables ourselves since not all
+              // provider paths honor the JSON-schema `required` array.
+              const flowArgs = Object.fromEntries(
+                Object.entries(args).filter(([key]) =>
+                  llmVariables.some((v) => v.name === key)
+                )
+              );
+              const missing = requiredNames.filter(
+                (name) => flowArgs[name] === undefined || flowArgs[name] === ""
+              );
+              if (missing.length > 0)
+                return `Flow execution failed: missing required parameter(s): ${missing.join(", ")}`;
+
               aibitat.introspect(`Executing flow: ${flow.name}`);
-              const result = await AgentFlows.executeFlow(uuid, args, aibitat);
+              const result = await AgentFlows.executeFlow(
+                uuid,
+                flowArgs,
+                aibitat
+              );
               if (!result.success) {
-                aibitat.introspect(
-                  `Flow failed: ${result.results[0]?.error || "Unknown error"}`
-                );
-                return `Flow execution failed: ${result.results[0]?.error || "Unknown error"}`;
+                const error = result.results.at(-1)?.error || "Unknown error";
+                aibitat.introspect(`Flow failed: ${error}`);
+                return `Flow execution failed: ${error}`;
               }
               aibitat.introspect(`${flow.name} completed successfully`);
 

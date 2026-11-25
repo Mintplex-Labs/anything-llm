@@ -1,0 +1,2155 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
+const TRANSLATIONS = {
+  onboarding: {
+    home: {
+      welcome: "Benvingut",
+      getStarted: "Comença",
+    },
+    llm: {
+      title: "Preferència de LLM",
+      description:
+        "AnythingLLM pot treballar amb molts proveïdors de LLM. Aquest serà el servei que gestionarà les converses.",
+    },
+    userSetup: {
+      title: "Configuració d'usuari",
+      description: "Configura els paràmetres d'usuari.",
+      howManyUsers: "Quants usuaris faran servir aquesta instància?",
+      justMe: "Només jo",
+      myTeam: "El meu equip",
+      instancePassword: "Contrasenya de la instància",
+      setPassword: "Vols configurar una contrasenya?",
+      passwordReq: "Les contrasenyes han de tenir almenys 8 caràcters.",
+      passwordWarn:
+        "És important guardar aquesta contrasenya, ja que no hi ha cap mètode de recuperació.",
+      adminUsername: "Nom d'usuari del compte d'administrador",
+      adminPassword: "Contrasenya del compte d'administrador",
+      adminPasswordReq: "Les contrasenyes han de tenir almenys 8 caràcters.",
+      teamHint:
+        "Per defecte, seràs l'únic administrador. Un cop completat l'onboarding, podràs crear i convidar altres persones com a usuaris o administradors. No perdis la contrasenya, ja que només els administradors poden restablir contrasenyes.",
+    },
+    data: {
+      title: "Gestió de dades i privadesa",
+      description:
+        "Estem compromesos amb la transparència i el control de les teves dades personals.",
+      settingsHint:
+        "Aquests paràmetres es poden reconfigurar en qualsevol moment a la configuració.",
+    },
+    survey: {
+      title: "Benvingut a AnythingLLM",
+      description:
+        "Ajuda'ns a fer que AnythingLLM s'adapti a les teves necessitats. Opcional.",
+      email: "Quin és el teu correu electrònic?",
+      useCase: "Per a què faràs servir AnythingLLM?",
+      useCaseWork: "Per a la feina",
+      useCasePersonal: "Per a ús personal",
+      useCaseOther: "Altres",
+      comment: "Com has sabut d'AnythingLLM?",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube, etc. - Fes-nos saber com ens has trobat!",
+      skip: "Omet l'enquesta",
+      thankYou: "Gràcies pels teus comentaris!",
+    },
+  },
+  common: {
+    "workspaces-name": "Nom de l'espai de treball",
+    selection: "Selecció de model",
+    saving: "Desant...",
+    saved: "Desat",
+    save: "Desa els canvis",
+    previous: "Pàgina anterior",
+    next: "Pàgina següent",
+    optional: "Opcional",
+    yes: "Sí",
+    no: "No",
+    on: "Activat",
+    none: "Cap",
+    stopped: "Aturat",
+    search: "Cerca",
+    username_requirements:
+      "El nom d'usuari ha de tenir entre 2 i 64 caràcters, començar amb una lletra minúscula i només pot contenir lletres minúscules, números, guions baixos, guions i punts.",
+    loading: "Carregant",
+    refresh: "Actualitza",
+    noResults: "No s'han trobat resultats",
+  },
+  home: {
+    welcome: "Benvingut",
+    chooseWorkspace: "Tria un espai de treball per començar a xatejar!",
+    notAssigned:
+      "Actualment, no estàs assignat a cap espai de treball.\nPosa't en contacte amb el teu administrador per sol·licitar accés a un espai de treball.",
+    goToWorkspace: 'Ves a "{{workspace}}"',
+  },
+  settings: {
+    title: "Configuració de la instància",
+    invites: "Invitacions",
+    users: "Usuaris",
+    workspaces: "Espais de treball",
+    "workspace-chats": "Xats de l'espai de treball",
+    customization: "Personalització",
+    interface: "Preferències d'interfície",
+    branding: "Marca i etiqueta blanca",
+    chat: "Xat",
+    "api-keys": "API per a desenvolupadors",
+    llm: "LLM",
+    transcription: "Transcripció",
+    embedder: "Embolicador",
+    "text-splitting": "Divisor i segmentador de text",
+    "voice-speech": "Veu i parla",
+    "vector-database": "Base de dades vectorial",
+    embeds: "Widget de xat incrustat",
+    security: "Seguretat",
+    "event-logs": "Registres d'esdeveniments",
+    privacy: "Privadesa i dades",
+    "ai-providers": "Proveïdors d'IA",
+    "agent-skills": "Habilitats de l'agent",
+    "community-hub": {
+      title: "Centre de la comunitat",
+      trending: "Explora les tendències",
+      "your-account": "El teu compte",
+      "import-item": "Importa un element",
+    },
+    admin: "Administrador",
+    tools: "Eines",
+    "system-prompt-variables": "Variables del missatge del sistema",
+    "experimental-features": "Funcions experimentals",
+    contact: "Contacta el suport",
+    "browser-extension": "Extensió del navegador",
+    "mobile-app": "AnythingLLM Mòbil",
+    channels: "Canals",
+    "available-channels": {
+      telegram: "Telegram",
+    },
+    "scheduled-jobs": "Tasques programades",
+    "model-router": "Rúter de model",
+    "image-generation": "Generació d'imatges",
+  },
+  login: {
+    "multi-user": {
+      welcome: "Benvingut",
+      "placeholder-username": "Nom d'usuari",
+      "placeholder-password": "Contrasenya",
+      login: "Inicia sessió",
+      validating: "Validant...",
+      "forgot-pass": "Contrasenya oblidada",
+      reset: "Restableix",
+    },
+    "sign-in":
+      "Introdueix el teu nom d'usuari i contrasenya per accedir a la teva instància de {{appName}}.",
+    "password-reset": {
+      title: "Restabliment de contrasenya",
+      description:
+        "Proporciona la informació necessària a continuació per restablir la teva contrasenya.",
+      "recovery-codes": "Codis de recuperació",
+      "back-to-login": "Torna a l'inici de sessió",
+    },
+  },
+  "main-page": {
+    greeting: "Com et puc ajudar avui?",
+    quickActions: {
+      createAgent: "Crea un agent",
+      editWorkspace: "Edita l'espai de treball",
+      uploadDocument: "Puja un document",
+    },
+    greetings: {
+      anytime: {
+        working_on: "En què estem treballant?",
+        on_your_mind: "Què tens al cap?",
+        where_to_start: "Per on comencem?",
+        ready: "A punt quan tu ho estiguis.",
+        think_it_through: "Pensem-hi bé.",
+      },
+      morning: {
+        good_morning: "Bon dia",
+        first_today: "Bon dia. Què fem primer avui?",
+        fresh_start: "Un nou començament. Per on comencem?",
+      },
+      afternoon: {
+        good_afternoon: "Bona tarda",
+        tackling: "Bona tarda. Què abordem?",
+        next_on_list: "Què toca ara de la llista?",
+        keep_moving: "Seguim endavant.",
+      },
+      evening: {
+        good_evening: "Bon vespre",
+        finish_strong: "Bon vespre. Acabem amb força.",
+      },
+      night: {
+        midnight_oil: "Treballant fins tard?",
+        late_one: "Nit llarga? Pensem-hi bé.",
+        still_up: "Encara per aquí? A punt quan tu ho estiguis.",
+      },
+    },
+  },
+  "new-workspace": {
+    title: "Nou espai de treball",
+    placeholder: "El meu espai de treball",
+  },
+  "workspaces—settings": {
+    general: "Configuració general",
+    chat: "Configuració del xat",
+    vector: "Base de dades vectorial",
+    members: "Membres",
+    agent: "Configuració de l'agent",
+  },
+  general: {
+    vector: {
+      title: "Recompte de vectors",
+      description: "Nombre total de vectors a la teva base de dades vectorial.",
+    },
+    names: {
+      description:
+        "Això només canviarà el nom visible del teu espai de treball.",
+    },
+    message: {
+      title: "Missatges de xat suggerits",
+      description:
+        "Personalitza els missatges que se suggeriran als usuaris del teu espai de treball.",
+      add: "Afegeix un missatge nou",
+      save: "Desa els missatges",
+      heading: "Explica'm",
+      body: "els beneficis d'AnythingLLM",
+    },
+    delete: {
+      title: "Elimina l'espai de treball",
+      description:
+        "Elimina aquest espai de treball i totes les seves dades. Això eliminarà l'espai de treball per a tots els usuaris.",
+      delete: "Elimina l'espai de treball",
+      deleting: "Eliminant l'espai de treball...",
+      "confirm-start": "Estàs a punt d'eliminar el teu",
+      "confirm-end":
+        "espai de treball. Això eliminarà tots els embeddings vectorials de la teva base de dades vectorial.\n\nEls fitxers originals no es modificaran. Aquesta acció és irreversible.",
+    },
+  },
+  chat: {
+    llm: {
+      title: "Proveïdor de LLM de l'espai de treball",
+      description:
+        "El proveïdor de LLM i el model específics que s'usaran per a aquest espai de treball. Per defecte, utilitza el proveïdor i la configuració del sistema de LLM.",
+      search: "Cerca tots els proveïdors de LLM",
+    },
+    model: {
+      title: "Model de xat de l'espai de treball",
+      description:
+        "El model de xat específic que s'usarà per a aquest espai de treball. Si és buit, s'usarà la preferència de LLM del sistema.",
+    },
+    mode: {
+      title: "Mode de xat",
+      automatic: {
+        description:
+          "usarà eines automàticament si el model i el proveïdor suporten crida d'eines nativa.<br />Si no s'admet l'ús d'eines natiu, hauràs d'usar l'ordre @agent per fer servir eines.",
+        title: "Agent",
+      },
+      chat: {
+        title: "Xat",
+        description:
+          "proporcionarà respostes amb el coneixement general del LLM <b>i</b> el context del document trobat.<br />Hauràs d'usar l'ordre @agent per fer servir eines.",
+      },
+      query: {
+        title: "Consulta",
+        description:
+          "proporcionarà respostes <b>només</b> si es troba context del document.<br />Hauràs d'usar l'ordre @agent per fer servir eines.",
+      },
+    },
+    history: {
+      title: "Historial de xat",
+      "desc-start":
+        "El nombre de xats anteriors que s'inclouran a la memòria a curt termini de la resposta.",
+      recommend: "Se'n recomanen 20. ",
+    },
+    prompt: {
+      title: "Missatge del sistema",
+      description:
+        "El missatge que s'usarà en aquest espai de treball. Defineix el context i les instruccions perquè la IA generi una resposta. Has de proporcionar un missatge ben elaborat perquè la IA pugui generar una resposta rellevant i precisa.",
+      history: {
+        title: "Historial del missatge del sistema",
+        clearAll: "Esborra-ho tot",
+        noHistory: "No hi ha historial de missatges del sistema disponible",
+        restore: "Restaura",
+        delete: "Elimina",
+        publish: "Publica al Centre de la comunitat",
+        deleteConfirm:
+          "Estàs segur que vols eliminar aquest element de l'historial?",
+        clearAllConfirm:
+          "Estàs segur que vols esborrar tot l'historial? Aquesta acció no es pot desfer.",
+        expand: "Expandeix",
+      },
+    },
+    refusal: {
+      title: "Resposta de rebuig en mode consulta",
+      "desc-start": "En mode",
+      query: "consulta",
+      "desc-end":
+        "pot ser que vulguis retornar una resposta de rebuig personalitzada quan no es trobi context.",
+      "tooltip-title": "Per què veig això?",
+      "tooltip-description":
+        "Estàs en mode consulta, que només usa informació dels teus documents. Canvia al mode xat per a converses més flexibles, o fes clic aquí per visitar la nostra documentació per saber més sobre els modes de xat.",
+    },
+    temperature: {
+      title: "Temperatura del LLM",
+      "desc-end":
+        "Com més alt sigui el número, més creatiu serà. Per a alguns models, això pot provocar respostes incoherents si és massa alt.",
+      placeholder: "Valor per defecte del proveïdor",
+    },
+    reasoning_effort: {
+      title: "Esforç de raonament",
+      default: "Valor per defecte del proveïdor",
+      cannot_disable: "Aquest model no pot desactivar el raonament.",
+      levels: {
+        off: "Desactivat",
+        on: "Activat",
+        minimal: "Mínim",
+        low: "Baix",
+        medium: "Mitjà",
+        high: "Alt",
+        xhigh: "Molt alt",
+        max: "Màxim",
+      },
+    },
+    token_limit_reached:
+      "La resposta ha arribat al límit de tokens de sortida. Augmenta el nombre màxim de tokens de sortida del model per permetre respostes més llargues.",
+    no_response: "El model no ha pogut respondre.",
+    agent_session_exited: "Has finalitzat la sessió de l'agent.",
+  },
+  "vector-workspace": {
+    identifier: "Identificador de la base de dades vectorial",
+    snippets: {
+      title: "Fragments de context màxims",
+      description:
+        "Aquesta configuració controla el nombre màxim de fragments de context que s'enviaran al LLM per cada xat o consulta.",
+      recommend: "Recomanat: 4",
+    },
+    doc: {
+      title: "Llindar de similitud del document",
+      description:
+        "La puntuació de similitud mínima requerida perquè una font es consideri relacionada amb el xat. Com més alt sigui el número, més similar ha de ser la font al xat.",
+      zero: "Sense restricció",
+      low: "Baix (puntuació de similitud ≥ .25)",
+      medium: "Mitjà (puntuació de similitud ≥ .50)",
+      high: "Alt (puntuació de similitud ≥ .75)",
+    },
+    reset: {
+      reset: "Restableix la base de dades vectorial",
+      resetting: "Esborrant vectors...",
+      confirm:
+        "Estàs a punt de restablir la base de dades vectorial d'aquest espai de treball. Això eliminarà tots els embeddings vectorials actuals.\n\nEls fitxers originals no es modificaran. Aquesta acció és irreversible.",
+      error:
+        "No s'ha pogut restablir la base de dades vectorial de l'espai de treball!",
+      success:
+        "La base de dades vectorial de l'espai de treball s'ha restablert!",
+    },
+  },
+  agent: {
+    "performance-warning":
+      "El rendiment dels LLM que no suporten explícitament la crida d'eines depèn molt de les capacitats i la precisió del model. Algunes funcionalitats poden ser limitades o no funcionals.",
+    provider: {
+      title: "Proveïdor de LLM de l'agent de l'espai de treball",
+      description:
+        "El proveïdor de LLM i el model específics que s'usaran per a l'agent @agent d'aquest espai de treball.",
+    },
+    mode: {
+      chat: {
+        title: "Model de xat de l'agent de l'espai de treball",
+        description:
+          "El model de xat específic que s'usarà per a l'agent @agent d'aquest espai de treball.",
+      },
+      title: "Model de l'agent de l'espai de treball",
+      description:
+        "El model de LLM específic que s'usarà per a l'agent @agent d'aquest espai de treball.",
+      wait: "-- esperant models --",
+    },
+    skill: {
+      rag: {
+        title: "RAG i memòria a llarg termini",
+        description:
+          "Permet que l'agent aprofiti els teus documents locals per respondre una consulta o demana a l'agent que \"recordi\" fragments de contingut per a la recuperació de memòria a llarg termini.",
+      },
+      view: {
+        title: "Visualitza i resumeix documents",
+        description:
+          "Permet que l'agent llisti i resumeixi el contingut dels fitxers de l'espai de treball incrustats actualment.",
+      },
+      scrape: {
+        title: "Extreu llocs web",
+        description:
+          "Permet que l'agent visiti i extregui el contingut de llocs web.",
+      },
+      generate: {
+        title: "Genera gràfics",
+        description:
+          "Permet que l'agent predeterminat generi diversos tipus de gràfics a partir de les dades proporcionades o donades al xat.",
+      },
+      web: {
+        title: "Cerca web",
+        description:
+          "Permet que el teu agent cerqui a la web per respondre les teves preguntes connectant-se a un proveïdor de cerca web (SERP).",
+      },
+      sql: {
+        title: "Connector SQL",
+        description:
+          "Permet que el teu agent pugui fer servir SQL per respondre les teves preguntes connectant-se a diversos proveïdors de bases de dades SQL.",
+      },
+      filesystem: {
+        title: "Accés al sistema de fitxers",
+        description:
+          "Permet que el teu agent llegeixi, escrigui, cerqui i gestioni fitxers dins d'un directori designat. Admet l'edició de fitxers, la navegació per directoris i la cerca de contingut.",
+        learnMore: "Aprèn més sobre com usar aquesta habilitat",
+        configuration: "Configuració",
+        readActions: "Accions de lectura",
+        writeActions: "Accions d'escriptura",
+        warning:
+          "L'accés al sistema de fitxers pot ser perillós, ja que pot modificar o eliminar fitxers. Consulta la <a>documentació</a> abans d'activar-ho.",
+        skills: {
+          "read-text-file": {
+            title: "Llegeix fitxer",
+            description:
+              "Llegeix el contingut de fitxers (text, codi, PDF, imatges, etc.)",
+          },
+          "read-multiple-files": {
+            title: "Llegeix múltiples fitxers",
+            description: "Llegeix múltiples fitxers alhora",
+          },
+          "list-directory": {
+            title: "Llista directori",
+            description: "Llista fitxers i directoris d'una carpeta",
+          },
+          "search-files": {
+            title: "Cerca fitxers",
+            description: "Cerca fitxers per nom o contingut",
+          },
+          "get-file-info": {
+            title: "Obté informació del fitxer",
+            description: "Obté metadades detallades sobre fitxers",
+          },
+          "write-text-file": {
+            title: "Escriu fitxer de text",
+            description:
+              "Crea fitxers de text nous o sobreescriu fitxers de text existents",
+          },
+          "edit-file": {
+            title: "Edita fitxer",
+            description: "Fes edicions basades en línies a fitxers de text",
+          },
+          "create-directory": {
+            title: "Crea directori",
+            description: "Crea directoris nous",
+          },
+          "copy-file": {
+            title: "Copia fitxer",
+            description: "Copia fitxers i directoris",
+          },
+          "move-file": {
+            title: "Mou/reanomena fitxer",
+            description: "Mou o reanomena fitxers i directoris",
+          },
+        },
+      },
+      createFiles: {
+        title: "Creació de documents",
+        description:
+          "Permet que el teu agent creï formats de documents binaris com presentacions de PowerPoint, fulls de càlcul d'Excel, documents de Word i PDF. Els fitxers es poden descarregar directament des de la finestra de xat.",
+        configuration: "Tipus de documents disponibles",
+        skills: {
+          "create-text-file": {
+            title: "Fitxers de text",
+            description:
+              "Crea fitxers de text amb qualsevol contingut i extensió (.txt, .md, .json, .csv, etc.)",
+          },
+          "create-pptx": {
+            title: "Presentacions de PowerPoint",
+            description:
+              "Crea presentacions de PowerPoint noves amb diapositives, títols i punts",
+          },
+          "create-pdf": {
+            title: "Documents PDF",
+            description:
+              "Crea documents PDF a partir de markdown o text pla amb estil bàsic",
+          },
+          "create-xlsx": {
+            title: "Fulls de càlcul d'Excel",
+            description:
+              "Crea documents d'Excel per a dades tabulars amb fulls i estil",
+          },
+          "create-docx": {
+            title: "Documents de Word",
+            description: "Crea documents de Word amb estil i format bàsics",
+          },
+        },
+      },
+      gmail: {
+        title: "Connector de Gmail",
+        description:
+          "Permet que el teu agent interaccioni amb Gmail: cerca correus, llegeix fils, redacta esborranys, envia correus i gestiona la teva safata d'entrada. <a>Llegeix la documentació</a>.",
+        multiUserWarning:
+          "La integració de Gmail no està disponible en mode multiusuari per raons de seguretat. Desactiva el mode multiusuari per usar aquesta funció.",
+        configuration: "Configuració de Gmail",
+        deploymentId: "ID de desplegament",
+        deploymentIdHelp:
+          "L'ID de desplegament de la teva aplicació web de Google Apps Script",
+        apiKey: "Clau API",
+        apiKeyHelp:
+          "La clau API que has configurat al teu desplegament de Google Apps Script",
+        configurationRequired:
+          "Configura l'ID de desplegament i la clau API per activar les habilitats de Gmail.",
+        configured: "Configurat",
+        searchSkills: "Cerca habilitats...",
+        noSkillsFound:
+          "No hi ha habilitats que coincideixin amb la teva cerca.",
+        categories: {
+          search: {
+            title: "Cerca i llegeix correus",
+            description:
+              "Cerca i llegeix correus de la teva safata d'entrada de Gmail",
+          },
+          drafts: {
+            title: "Esborranys de correus",
+            description: "Crea, edita i gestiona esborranys de correus",
+          },
+          send: {
+            title: "Envia i respon correus",
+            description: "Envia correus i respon a fils immediatament",
+          },
+          threads: {
+            title: "Gestiona fils de correus",
+            description:
+              "Gestiona fils de correus: marca com a llegit/no llegit, arxiva, mou a la paperera",
+          },
+          account: {
+            title: "Estadístiques d'integració",
+            description:
+              "Visualitza estadístiques de la safata i informació del compte",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Obté la safata d'entrada",
+            description:
+              "Manera simplificada d'obtenir els correus de la safata d'entrada de Gmail",
+          },
+          search: {
+            title: "Cerca correus",
+            description: "Cerca correus usant la sintaxi de consulta de Gmail",
+          },
+          readThread: {
+            title: "Llegeix fil",
+            description: "Llegeix un fil de correu complet per ID",
+          },
+          createDraft: {
+            title: "Crea esborrany",
+            description: "Crea un nou esborrany de correu",
+          },
+          createDraftReply: {
+            title: "Crea resposta en esborrany",
+            description: "Crea un esborrany de resposta a un fil existent",
+          },
+          updateDraft: {
+            title: "Actualitza esborrany",
+            description: "Actualitza un esborrany de correu existent",
+          },
+          getDraft: {
+            title: "Obté esborrany",
+            description: "Recupera un esborrany específic per ID",
+          },
+          listDrafts: {
+            title: "Llista esborranys",
+            description: "Llista tots els esborranys de correus",
+          },
+          deleteDraft: {
+            title: "Elimina esborrany",
+            description: "Elimina un esborrany de correu",
+          },
+          sendDraft: {
+            title: "Envia esborrany",
+            description: "Envia un esborrany de correu existent",
+          },
+          sendEmail: {
+            title: "Envia correu",
+            description: "Envia un correu immediatament",
+          },
+          replyToThread: {
+            title: "Respon al fil",
+            description: "Respon a un fil de correu immediatament",
+          },
+          markRead: {
+            title: "Marca com a llegit",
+            description: "Marca un fil com a llegit",
+          },
+          markUnread: {
+            title: "Marca com a no llegit",
+            description: "Marca un fil com a no llegit",
+          },
+          moveToTrash: {
+            title: "Mou a la paperera",
+            description: "Mou un fil a la paperera",
+          },
+          moveToArchive: {
+            title: "Arxiva",
+            description: "Arxiva un fil",
+          },
+          moveToInbox: {
+            title: "Mou a la safata d'entrada",
+            description: "Mou un fil a la safata d'entrada",
+          },
+          getMailboxStats: {
+            title: "Estadístiques de la safata",
+            description:
+              "Obté el recompte de no llegits i estadístiques de la safata",
+          },
+        },
+      },
+      outlook: {
+        title: "Connector per a Outlook",
+        description:
+          "Permet que el teu agent interactuï amb Microsoft Outlook: cerca correus electrònics, llegeix converses, redacta esborranys, envia correus electrònics i gestiona la teva caixa de correu electrònic a través de l'API de Microsoft Graph. <a>Consulteu la documentació</a>.",
+        multiUserWarning:
+          "La integració d'Outlook no està disponible en mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
+        configuration: "Configuració d'Outlook",
+        authType: "Tipus de compte",
+        authTypeHelp:
+          "Seleccioneu quins tipus de comptes de Microsoft poden autenticar-se. \"Tots els comptes\" admet tant comptes personals com comptes per a l'ús laboral/escolar. \"Només comptes personals\" limita l'opció a comptes personals de Microsoft. \"Només comptes d'organització\" limita l'opció a comptes per a l'ús laboral/escolar d'un tenant específic d'Azure AD.",
+        authTypeCommon: "Totes les comptes (personals i laborals/escolars)",
+        authTypeConsumers: "Només comptes personals de Microsoft",
+        authTypeOrganization:
+          "Només comptes d'organitzacions (requereix l'ID del llogater)",
+        clientId: "Identificador (Client)",
+        clientIdHelp:
+          "L'ID de l'aplicació (Client) del vostre registre d'aplicació a Azure AD",
+        tenantId: "Identificador (del llogater)",
+        tenantIdHelp:
+          "L'ID del \"Tenant\" (inquilí) del vostre registre d'aplicació a Azure AD. És obligatori només per a l'autenticació dins de l'organització.",
+        clientSecret: "Secret del client",
+        clientSecretHelp:
+          "El valor secret de l'aplicació registrada a Azure AD.",
+        configurationRequired:
+          "Si us plau, configureu l'ID del client i el secret del client per habilitar les funcionalitats d'Outlook.",
+        authRequired:
+          "Primer, guarda les teves credencials, i després autentica't amb Microsoft per completar la configuració.",
+        authenticateWithMicrosoft: "Autentica't amb Microsoft",
+        authenticated: "He estat autentificat amb èxit amb Microsoft Outlook.",
+        revokeAccess: "Revocar l'accés",
+        configured: "Configurat",
+        searchSkills: "Habilitats de cerca...",
+        noSkillsFound:
+          "No s'han trobat perfils que coincideixin amb la vostra cerca.",
+        categories: {
+          search: {
+            title: "Cerca i llegeix correus electrònics",
+            description:
+              "Cerca i llegeix correus electrònics des de la teva pestanya de correus d'Outlook.",
+          },
+          drafts: {
+            title: "Esborranys de correu electrònic",
+            description:
+              "Crea, edita i gestiona els esborranys de correu electrònic.",
+          },
+          send: {
+            title: "Enviar correus electrònics",
+            description:
+              "Envieu correus electrònics nous o respondre als missatges immediatament.",
+          },
+          account: {
+            title: "Estadístiques d'integració",
+            description:
+              "Visualitza les estadístiques de la caixa de correu i la informació del compte.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Accedeix a la caixa de correu",
+            description:
+              "Obteniu els correus electrònics més recents de la vostra pestanya de correu d'Outlook.",
+          },
+          search: {
+            title: "Cerca correus electrònics",
+            description:
+              "Cerca correus electrònics utilitzant la sintaxi de cerca de Microsoft",
+          },
+          readThread: {
+            title: "Llegir la conversa",
+            description:
+              "Llegeix la totalitat d'una conversa per correu electrònic.",
+          },
+          createDraft: {
+            title: "Crea un esborrany",
+            description:
+              "Crea un nou esborrany de correu electrònic o una resposta a un missatge existent.",
+          },
+          updateDraft: {
+            title: "Actualitza un esborrany",
+            description:
+              "Actualitza un esborrany de correu electrònic existent.",
+          },
+          listDrafts: {
+            title: "Llista d'esborranys",
+            description: "Mostra tots els esborranys de correu electrònic.",
+          },
+          deleteDraft: {
+            title: "Elimina un esborrany",
+            description: "Elimina un esborrany de correu electrònic.",
+          },
+          sendDraft: {
+            title: "Enviar esborrany",
+            description: "Envia un correu electrònic existent.",
+          },
+          sendEmail: {
+            title: "Enviar correu electrònic",
+            description:
+              "Envieu un correu electrònic nou o respondreu a un missatge existent immediatament.",
+          },
+          getMailboxStats: {
+            title: "Estadístiques de la caixa de correu",
+            description:
+              "Obteniu el nombre de carpetes i les estadístiques de la caixa de correu.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Connector per a Google Calendar",
+        description:
+          "Permet que el teu agent interactuï amb Google Calendar: visualitza calendaris, obté esdeveniments, crea i actualitza esdeveniments, i gestiona les confirmacions de participació. <a>Consulteu la documentació</a>.",
+        multiUserWarning:
+          "La integració amb Google Calendar no està disponible en el mode multiusuari per raons de seguretat. Per utilitzar aquesta funció, feu que el mode multiusuari estigui desactivat.",
+        configuration: "Configuració de Google Calendar",
+        deploymentId: "Identificador de desplegament",
+        deploymentIdHelp:
+          "L'ID de desplegament de la vostra aplicació web de Google Apps Script",
+        apiKey: "Clau API",
+        apiKeyHelp:
+          "La clau API que has configurat en la implementació del teu Google Apps Script",
+        configurationRequired:
+          "Si us plau, configureu l'ID del desplegament i la clau API per activar les funcionalitats de Google Calendar.",
+        configured: "Configurat",
+        searchSkills: "Habilitats de cerca...",
+        noSkillsFound:
+          "No s'han trobat perfils que coincideixin amb la vostra cerca.",
+        categories: {
+          calendars: {
+            title: "Calendari",
+            description: "Visualitza i gestiona els teus calendaris de Google.",
+          },
+          readEvents: {
+            title: "Consulta els esdeveniments",
+            description: "Visualitza i cerca esdeveniments del calendari",
+          },
+          writeEvents: {
+            title: "Crear i actualitzar esdeveniments",
+            description: "Crea esdeveniments nous i modifica els existents.",
+          },
+          rsvp: {
+            title: "Gestió de confirmacions de participació",
+            description: "Gestiona l'estat de resposta per als esdeveniments.",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Calendari de dates",
+            description:
+              "Enumera tots els calendaris que poseu al dia o als quals esteu subscrit.",
+          },
+          getCalendar: {
+            title: "Obteniu detalls del calendari",
+            description:
+              "Obteniu informació detallada sobre un calendari específic.",
+          },
+          getEvent: {
+            title: "Obtenir informació sobre l'esdeveniment",
+            description:
+              "Obteniu informació detallada sobre un esdeveniment específic.",
+          },
+          getEventsForDay: {
+            title: "Troba esdeveniments per a un dia concret",
+            description:
+              "Obteniu tots els esdeveniments programats per a un dia concret.",
+          },
+          getEvents: {
+            title: "Obtenir esdeveniments (interval de dates)",
+            description:
+              "Obtenir esdeveniments dins d'un interval de dates personalitzat",
+          },
+          getUpcomingEvents: {
+            title: "Consulta els esdeveniments pròxims",
+            description:
+              "Troba esdeveniments per avui, aquesta setmana o aquest mes utilitzant paraules clau senzilles.",
+          },
+          quickAdd: {
+            title: "Afegir esdeveniment de forma ràpida",
+            description:
+              'Crea un esdeveniment a partir d\'un text natural (per exemple, "Reunió demà a les 15:00")',
+          },
+          createEvent: {
+            title: "Crear esdeveniment",
+            description:
+              "Crea un esdeveniment nou amb control total sobre totes les propietats.",
+          },
+          updateEvent: {
+            title: "Actualització d'esdeveniments",
+            description: "Actualitza un esdeveniment existent en el calendari",
+          },
+          setMyStatus: {
+            title: "Estat de confirmació de participació",
+            description:
+              "Acceptar, rebutjar o acceptar de manera provisional un esdeveniment.",
+          },
+        },
+      },
+      scheduledJob: {
+        title: "Crea tasques programades",
+        description:
+          'Permet que l\'agent creï tasques programades recurrents a partir del missatge (per exemple, "cada dia de dilluny a les 9 del matí, resumeix la meva caixa de correu i envia un correu electrònic"). Només disponible en mode per a un usuari.',
+      },
+      generateImage: {
+        title: "Generar imatges",
+        description:
+          "Permet que l'agent generi imatges a partir del xat, o editi les imatges adjuntes a la conversa, utilitzant el proveïdor de generació d'imatges configurat.",
+        noProvider:
+          "No hi ha cap proveïdor de generació d'imatges configurat, de manera que aquesta habilitat fallarà quan l'agent la utilitzi. <a>Configura un proveïdor</a> primer.",
+      },
+    },
+    mcp: {
+      title: "Servidors MCP",
+      "loading-from-config":
+        "Carregant servidors MCP des del fitxer de configuració",
+      "learn-more": "Aprèn més sobre els servidors MCP.",
+      "no-servers-found": "No s'han trobat servidors MCP",
+      "tool-warning":
+        "Per obtenir el millor rendiment, considera desactivar les eines no desitjades per conservar el context.",
+      "tools-enabled": "eines activades",
+      "stop-server": "Atura el servidor MCP",
+      "start-server": "Inicia el servidor MCP",
+      "delete-server": "Elimina el servidor MCP",
+      "tool-count-warning":
+        "Aquest servidor MCP té <b>{{count}} eines activades</b> que consumiran context en cada xat.<br />Considera desactivar les eines no desitjades per conservar el context.",
+      "startup-command": "Ordre d'inici",
+      command: "Ordre",
+      arguments: "Arguments",
+      "not-running-warning":
+        "Aquest servidor MCP no s'està executant: pot estar aturat o tenir un error a l'inici.",
+      "tool-call-arguments": "Arguments de la crida a l'eina",
+    },
+    settings: {
+      title: "Configuració de les habilitats de l'agent",
+      "max-tool-calls": {
+        title: "Màxim de crides a eines per resposta",
+        description:
+          "El nombre màxim d'eines que un agent pot encadenar per generar una sola resposta. Això evita crides a eines descontrolades i bucles infinits.",
+      },
+      "intelligent-skill-selection": {
+        title: "Selecció intel·ligent d'habilitats",
+        description:
+          "Activa eines il·limitades i redueix l'ús de tokens fins a un 80% per consulta: AnythingLLM selecciona automàticament les habilitats adequades per a cada missatge.",
+        "max-tools": {
+          title: "Màxim d'eines",
+          description:
+            "El nombre màxim d'eines a seleccionar per a cada consulta. Recomanem valors més alts per a models amb contextos més grans.",
+        },
+      },
+      "clarifying-questions": {
+        title: "Permetre que l'agent faci preguntes per aclarir aspectes.",
+        "beta-badge": "Versió beta",
+        description:
+          "Quan estiguin activades, els agents poden fer una pausa per fer preguntes breus i clares si la vostra petició és ambigua.",
+        "max-per-turn": {
+          title: "Nombre màxim de preguntes per ronda",
+          description:
+            "Quantes preguntes d'aclariment pot fer l'agent en una sola ronda.",
+        },
+      },
+    },
+  },
+  recorded: {
+    title: "Xats de l'espai de treball",
+    description:
+      "Aquests són tots els xats i missatges registrats que han enviat els usuaris ordenats per data de creació.",
+    export: "Exporta",
+    table: {
+      id: "ID",
+      by: "Enviat per",
+      workspace: "Espai de treball",
+      prompt: "Missatge",
+      response: "Resposta",
+      at: "Enviat el",
+    },
+  },
+  customization: {
+    interface: {
+      title: "Preferències d'interfície",
+      description:
+        "Estableix les teves preferències d'interfície per a AnythingLLM.",
+    },
+    branding: {
+      title: "Marca i etiqueta blanca",
+      description:
+        "Personalitza la teva instància d'AnythingLLM amb una marca pròpia.",
+      tabs: {
+        identity: "Identitat",
+        colors: "Colors",
+        sidebar: "Barre lateral",
+        browser: "Navegador",
+      },
+    },
+    chat: {
+      title: "Xat",
+      description: "Estableix les teves preferències de xat per a AnythingLLM.",
+      auto_submit: {
+        title: "Envia automàticament l'entrada de veu",
+        description:
+          "Envia automàticament l'entrada de veu després d'un període de silenci",
+      },
+      auto_speak: {
+        title: "Llegeix les respostes automàticament",
+        description: "Llegeix automàticament les respostes de la IA",
+      },
+      spellcheck: {
+        title: "Activa la correcció ortogràfica",
+        description:
+          "Activa o desactiva la correcció ortogràfica al camp d'entrada del xat",
+      },
+    },
+    items: {
+      theme: {
+        title: "Tema",
+        description:
+          "Selecciona el teu tema de colors preferit per a l'aplicació.",
+      },
+      "show-scrollbar": {
+        title: "Mostra la barra de desplaçament",
+        description:
+          "Activa o desactiva la barra de desplaçament a la finestra de xat.",
+      },
+      "support-email": {
+        title: "Correu electrònic de suport",
+        description:
+          "Estableix l'adreça de correu electrònic de suport que hauran de poder consultar els usuaris quan necessitin ajuda.",
+      },
+      "app-name": {
+        title: "Nom",
+        description:
+          "Estableix un nom que es mostri a la pàgina d'inici de sessió per a tots els usuaris.",
+      },
+      "display-language": {
+        title: "Idioma de visualització",
+        description:
+          "Selecciona l'idioma preferit per mostrar la interfície d'AnythingLLM, quan les traduccions estiguin disponibles.",
+      },
+      logo: {
+        title: "Logotip de la marca",
+        description:
+          "Puja el teu logotip personalitzat per mostrar-lo a totes les pàgines.",
+        add: "Afegeix un logotip personalitzat",
+        recommended: "Mida recomanada: 800 x 200",
+        remove: "Elimina",
+        replace: "Substitueix",
+      },
+      "browser-appearance": {
+        title: "Aparença del navegador",
+        description:
+          "Personalitza l'aparença de la pestanya i el títol del navegador quan l'aplicació està oberta.",
+        tab: {
+          title: "Títol",
+          description:
+            "Estableix un títol de pestanya personalitzat quan l'aplicació està oberta en un navegador.",
+        },
+        favicon: {
+          title: "Favicon",
+          description:
+            "Usa un favicon personalitzat per a la pestanya del navegador.",
+        },
+      },
+      "sidebar-footer": {
+        title: "Elements del peu de la barra lateral",
+        description:
+          "Personalitza els elements del peu que es mostren a la part inferior de la barra lateral.",
+        icon: "Icona",
+        link: "Enllaç",
+      },
+      "render-html": {
+        title: "Renderitza HTML al xat",
+        description:
+          "Renderitza l'HTML a les respostes de l'assistent.\nAixò pot donar com a resultat una qualitat de resposta molt més alta, però també pot comportar riscos potencials de seguretat.",
+      },
+      "disable-auto-scroll": {
+        title: "Desactivar el desplaçament automàtic",
+        description:
+          "Desactivar el recorregut automàtic fins al final del missatge quan s'arriben a rebre nous missatges.",
+      },
+      palette: {
+        title: "Paleta de colors",
+        description:
+          "Seleccioneu una paleta de colors. Aquesta s'aplica tant al mode clar com al mode fosc.",
+        enforced:
+          "L'administrador ha configurat la paleta de colors per a aquesta instància.",
+        "default-badge": "Per defecte",
+      },
+      "instance-palettes": {
+        title: "Paletes de colors",
+        description:
+          "Feu clic en una paleta per establir-la com a predeterminada per a tots els usuaris d'aquesta instància. Les paletes personalitzades inclouen un color principal, que afecta el fons, la barra lateral i el contingut, i un color d'accent per als botons i els enllaços.",
+        new: "Nova paleta",
+        edit: "Edita la paleta",
+        delete: "Eliminar paleta",
+        name: "Nom de la paleta",
+        "name-required": "Posa un nom a la paleta.",
+        colors: {
+          main: "Color principal",
+          accent: "Color d'accent",
+        },
+        "preview-note":
+          'Els canvis es previsualitzen a tota l\'aplicació i es desen quan feu clic a "Fet".',
+        done: "Fet",
+        cancel: "Cancel·lar",
+        enforce: "Aplica la paleta per defecte",
+        "enforce-description":
+          "Tothom en aquesta instància fa servir la paleta per defecte i no la pot canviar.",
+        "save-failed": "No s'han pogut desar les paletes de colors: {{error}}",
+      },
+    },
+  },
+  api: {
+    title: "Claus API",
+    description:
+      "Les claus API permeten al titular accedir i gestionar programàticament aquesta instància d'AnythingLLM.",
+    link: "Llegeix la documentació de l'API",
+    generate: "Genera una nova clau API",
+    empty: "No s'han trobat claus API",
+    actions: "Accions",
+    messages: {
+      error: "Error: {{error}}",
+    },
+    modal: {
+      title: "Crea una nova clau API",
+      cancel: "Cancel·la",
+      close: "Tanca",
+      create: "Crea la clau API",
+      helper:
+        "Un cop creada, la clau API es pot usar per accedir i configurar programàticament aquesta instància d'AnythingLLM.",
+      name: {
+        label: "Nom",
+        placeholder: "Integració de producció",
+        helper:
+          "Opcional. Usa un nom descriptiu perquè puguis identificar aquesta clau més tard.",
+      },
+    },
+    row: {
+      copy: "Copia la clau API",
+      copied: "Copiada",
+      unnamed: "--",
+      deleteConfirm:
+        "Estàs segur que vols desactivar aquesta clau API?\nDesprés d'això, ja no es podrà usar.\n\nAquesta acció és irreversible.",
+    },
+    table: {
+      name: "Nom",
+      key: "Clau API",
+      by: "Creada per",
+      created: "Creada",
+    },
+  },
+  llm: {
+    title: "Preferència de LLM",
+    description:
+      "Aquestes són les credencials i la configuració del teu proveïdor preferit de xat i embedding de LLM. És important que aquestes claus siguin actuals i correctes, o bé AnythingLLM no funcionarà correctament.",
+    provider: "Proveïdor de LLM",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: "Punt final del servei d'Azure",
+        api_key: "Clau API",
+        chat_deployment_name: "Nom del desplegament del xat",
+        chat_model_token_limit: "Límit de tokens del model de xat",
+        model_type: "Tipus de model",
+        model_type_tooltip:
+          'Si el teu desplegament usa un model de raonament (o1, o1-mini, o3-mini, etc.), estableix-ho com a "Raonament". En cas contrari, les teves sol·licituds de xat poden fallar.',
+        default: "Per defecte",
+        reasoning: "Raonament",
+        agent_api: "API de l'agent",
+        agent_api_tooltip:
+          "L'API que s'utilitza per a les crides de l'agent. Manteniu Chat Completions tret que el vostre desplegament requereixi la Responses API (p. ex. GPT-6 amb eines). No tots els models ni regions admeten la Responses API.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
+      },
+    },
+  },
+  transcription: {
+    title: "Preferència del model de transcripció",
+    description:
+      "Aquestes són les credencials i la configuració del teu proveïdor de model de transcripció preferit. És important que aquestes claus siguin actuals i correctes, o bé els fitxers multimèdia i d'àudio no es transcriuran.",
+    provider: "Proveïdor de transcripció",
+    "warn-start":
+      "L'ús del model whisper local en màquines amb poca RAM o CPU pot bloquejar AnythingLLM en processar fitxers multimèdia.",
+    "warn-recommend":
+      "Recomanem almenys 2 GB de RAM i pujar fitxers de menys de 10 MB.",
+    "warn-end":
+      "El model integrat es descarregarà automàticament en el primer ús.",
+  },
+  embedding: {
+    title: "Preferència d'embedding",
+    "desc-start":
+      "Quan s'usa un LLM que no admet de manera nativa un motor d'embedding, pot ser que hagis d'especificar addicionalment les credencials per a l'embedding de text.",
+    "desc-end":
+      "L'embedding és el procés de convertir text en vectors. Aquestes credencials són necessàries per convertir els teus fitxers i missatges en un format que AnythingLLM pugui processar.",
+    provider: {
+      title: "Proveïdor d'embedding",
+    },
+  },
+  text: {
+    title: "Preferències de divisió i segmentació de text",
+    "desc-start":
+      "De vegades, pot ser que vulguis canviar la manera predeterminada en què els nous documents es divideixen i segmenten abans d'inserir-se a la teva base de dades vectorial.",
+    "desc-end":
+      "Hauries de modificar aquesta configuració només si entens com funciona la divisió de text i els seus efectes secundaris.",
+    size: {
+      title: "Mida del fragment de text",
+      description:
+        "Aquesta és la longitud màxima de caràcters que pot tenir un únic vector.",
+      recommend: "La longitud màxima del model d'embedding és",
+    },
+    overlap: {
+      title: "Superposició del fragment de text",
+      description:
+        "Aquesta és la superposició màxima de caràcters que es produeix durant la segmentació entre dos fragments de text adjacents.",
+    },
+  },
+  vector: {
+    title: "Base de dades vectorial",
+    description:
+      "Aquestes són les credencials i la configuració de com funcionarà la teva instància d'AnythingLLM. És important que aquestes claus siguin actuals i correctes.",
+    provider: {
+      title: "Proveïdor de la base de dades vectorial",
+      description: "No cal cap configuració per a LanceDB.",
+    },
+  },
+  embeddable: {
+    title: "Widgets de xat incrustables",
+    description:
+      "Els widgets de xat incrustables són interfícies de xat públiques vinculades a un únic espai de treball. Permeten crear espais de treball que pots publicar al món.",
+    create: "Crea un widget incrustat",
+    table: {
+      workspace: "Espai de treball",
+      chats: "Xats enviats",
+      active: "Dominis actius",
+      created: "Creat",
+    },
+  },
+  "embed-chats": {
+    title: "Historial de xats incrustats",
+    export: "Exporta",
+    description:
+      "Aquests són tots els xats i missatges registrats de qualsevol widget incrustat que hagis publicat.",
+    table: {
+      embed: "Widget incrustat",
+      sender: "Remitent",
+      message: "Missatge",
+      response: "Resposta",
+      at: "Enviat el",
+    },
+  },
+  telegram: {
+    title: "Bot de Telegram",
+    description:
+      "Connecta la teva instància d'AnythingLLM a Telegram per poder xatejar amb els teus espais de treball des de qualsevol dispositiu.",
+    setup: {
+      step1: {
+        title: "Pas 1: Crea el teu bot de Telegram",
+        description:
+          "Obre @BotFather a Telegram, envia <code>/newbot</code> a <code>@BotFather</code>, segueix les instruccions i copia el token de l'API.",
+        "open-botfather": "Obre BotFather",
+        "instruction-1": "1. Obre l'enllaç o escaneja el codi QR",
+        "instruction-2":
+          "2. Envia <code>/newbot</code> a <code>@BotFather</code>",
+        "instruction-3": "3. Tria un nom i un nom d'usuari per al teu bot",
+        "instruction-4": "4. Copia el token de l'API que rebràs",
+      },
+      step2: {
+        title: "Pas 2: Connecta el teu bot",
+        description:
+          "Enganxa el token de l'API que has rebut de @BotFather per connectar el teu bot.",
+        "bot-token": "Token del bot",
+        connecting: "Connectant...",
+        "connect-bot": "Connecta el bot",
+      },
+      security: {
+        title: "Configuració de seguretat recomanada",
+        description:
+          "Per a més seguretat, configura aquests paràmetres a @BotFather.",
+        "disable-groups": "— Impedeix afegir el bot a grups",
+        "disable-inline": "— Impedeix usar el bot en cerques en línia",
+        "obscure-username":
+          "Usa un nom d'usuari del bot no obvi per reduir la visibilitat",
+      },
+      "toast-enter-token": "Introdueix un token del bot.",
+      "toast-connect-failed": "No s'ha pogut connectar el bot.",
+    },
+    connected: {
+      status: "Connectat",
+      "status-disconnected":
+        "Desconnectat: el token pot haver caducat o ser invàlid",
+      "placeholder-token": "Enganxa el nou token del bot...",
+      reconnect: "Reconnecta",
+      workspace: "Espai de treball",
+      "bot-link": "Enllaç del bot",
+      "voice-response": "Resposta de veu",
+      disconnecting: "Desconnectant...",
+      disconnect: "Desconnecta",
+      "voice-text-only": "Només text",
+      "voice-mirror": "Mirror (respon amb veu quan l'usuari envia veu)",
+      "voice-always": "Sempre veu (envia àudio amb cada resposta)",
+      "toast-disconnect-failed": "No s'ha pogut desconnectar el bot.",
+      "toast-reconnect-failed": "No s'ha pogut reconnectar el bot.",
+      "toast-voice-failed": "No s'ha pogut actualitzar el mode de veu.",
+      "toast-approve-failed": "No s'ha pogut aprovar l'usuari.",
+      "toast-deny-failed": "No s'ha pogut denegar l'usuari.",
+      "toast-revoke-failed": "No s'ha pogut revocar l'usuari.",
+    },
+    users: {
+      "pending-description":
+        "Usuaris que esperen ser verificats. Fes coincidir el codi d'emparellament que es mostra aquí amb el que es mostra al seu xat de Telegram.",
+      unknown: "Desconegut",
+    },
+  },
+  security: {
+    title: "Seguretat",
+    multiuser: {
+      title: "Mode multiusuari",
+      description:
+        "Configura la teva instància per donar suport al teu equip activant el mode multiusuari.",
+      enable: {
+        "is-enable": "El mode multiusuari està activat",
+        enable: "Activa el mode multiusuari",
+        description:
+          "Per defecte, seràs l'únic administrador. Com a administrador, hauràs de crear comptes per a tots els usuaris i administradors nous. No perdis la contrasenya, ja que només un usuari administrador pot restablir contrasenyes.",
+        username: "Nom d'usuari del compte d'administrador",
+        password: "Contrasenya del compte d'administrador",
+      },
+    },
+    password: {
+      title: "Protecció per contrasenya",
+      description:
+        "Protegeix la teva instància d'AnythingLLM amb una contrasenya. Si l'oblides, no hi ha cap mètode de recuperació, per la qual cosa assegura't de guardar-la.",
+      "password-label": "Contrasenya de la instància",
+    },
+  },
+  event: {
+    title: "Registres d'esdeveniments",
+    description:
+      "Visualitza totes les accions i esdeveniments que passen en aquesta instància per al seguiment.",
+    clear: "Esborra els registres d'esdeveniments",
+    table: {
+      type: "Tipus d'esdeveniment",
+      user: "Usuari",
+      occurred: "Ocorregut el",
+    },
+  },
+  privacy: {
+    title: "Privadesa i gestió de dades",
+    description:
+      "Aquesta és la teva configuració de com els proveïdors de tercers connectats i AnythingLLM gestionen les teves dades.",
+    anonymous: "Telemetria anònima activada",
+  },
+  connectors: {
+    "search-placeholder": "Cerca connectors de dades",
+    "no-connectors": "No s'han trobat connectors de dades.",
+    obsidian: {
+      vault_location: "Ubicació del dipòsit",
+      vault_description:
+        "Selecciona la carpeta del teu dipòsit d'Obsidian per importar totes les notes i les seves connexions.",
+      selected_files: "S'han trobat {{count}} fitxers markdown",
+      importing: "Important el dipòsit...",
+      import_vault: "Importa el dipòsit",
+      processing_time:
+        "Això pot trigar una estona depenent de la mida del teu dipòsit.",
+      vault_warning:
+        "Per evitar conflictes, assegura't que el teu dipòsit d'Obsidian no estigui obert en aquest moment.",
+    },
+    github: {
+      name: "Repositori de GitHub",
+      description:
+        "Importa un repositori públic o privat sencer de GitHub en un sol clic.",
+      URL: "URL del repositori de GitHub",
+      URL_explained: "URL del repositori de GitHub que vols recollir.",
+      token: "Token d'accés de GitHub",
+      optional: "opcional",
+      token_explained: "Token d'accés per evitar limitació de velocitat.",
+      token_explained_start: "Sense un ",
+      token_explained_link1: "Token d'accés personal",
+      token_explained_middle:
+        ", l'API de GitHub pot limitar el nombre de fitxers que es poden recollir a causa de limitacions de velocitat. Pots ",
+      token_explained_link2: "crear un Token d'accés temporal",
+      token_explained_end: " per evitar aquest problema.",
+      ignores: "Fitxers ignorats",
+      git_ignore:
+        "Llista en format .gitignore per ignorar fitxers específics durant la recollida. Prem Intro després de cada entrada que vulguis desar.",
+      task_explained:
+        "Un cop completat, tots els fitxers estaran disponibles per incrustar-los als espais de treball al selector de documents.",
+      branch: "Branca des de la qual vols recollir fitxers.",
+      branch_loading: "-- carregant branques disponibles --",
+      branch_explained: "Branca des de la qual vols recollir fitxers.",
+      token_information:
+        "Sense omplir el <b>Token d'accés de GitHub</b>, aquest connector de dades només podrà recollir els fitxers del <b>nivell superior</b> del repositori a causa dels límits de velocitat de l'API pública de GitHub.",
+      token_personal:
+        "Obtén un Token d'accés personal gratuït amb un compte de GitHub aquí.",
+    },
+    gitlab: {
+      name: "Repositori de GitLab",
+      description:
+        "Importa un repositori públic o privat sencer de GitLab en un sol clic.",
+      URL: "URL del repositori de GitLab",
+      URL_explained: "URL del repositori de GitLab que vols recollir.",
+      token: "Token d'accés de GitLab",
+      optional: "opcional",
+      token_description:
+        "Selecciona entitats addicionals per obtenir de l'API de GitLab.",
+      token_explained_start: "Sense un ",
+      token_explained_link1: "Token d'accés personal",
+      token_explained_middle:
+        ", l'API de GitLab pot limitar el nombre de fitxers que es poden recollir a causa de limitacions de velocitat. Pots ",
+      token_explained_link2: "crear un Token d'accés temporal",
+      token_explained_end: " per evitar aquest problema.",
+      fetch_issues: "Obtén incidències com a documents",
+      ignores: "Fitxers ignorats",
+      git_ignore:
+        "Llista en format .gitignore per ignorar fitxers específics durant la recollida. Prem Intro després de cada entrada que vulguis desar.",
+      task_explained:
+        "Un cop completat, tots els fitxers estaran disponibles per incrustar-los als espais de treball al selector de documents.",
+      branch: "Branca des de la qual vols recollir fitxers",
+      branch_loading: "-- carregant branques disponibles --",
+      branch_explained: "Branca des de la qual vols recollir fitxers.",
+      token_information:
+        "Sense omplir el <b>Token d'accés de GitLab</b>, aquest connector de dades només podrà recollir els fitxers del <b>nivell superior</b> del repositori a causa dels límits de velocitat de l'API pública de GitLab.",
+      token_personal:
+        "Obtén un Token d'accés personal gratuït amb un compte de GitLab aquí.",
+    },
+    youtube: {
+      name: "Transcripció de YouTube",
+      description:
+        "Importa la transcripció d'un vídeo sencer de YouTube des d'un enllaç.",
+      URL: "URL del vídeo de YouTube",
+      URL_explained_start:
+        "Introdueix l'URL de qualsevol vídeo de YouTube per obtenir la seva transcripció. El vídeo ha de tenir ",
+      URL_explained_link: "subtítols tancats",
+      URL_explained_end: " disponibles.",
+      task_explained:
+        "Un cop completat, la transcripció estarà disponible per incrustar-la als espais de treball al selector de documents.",
+    },
+    "website-depth": {
+      name: "Extractor massiu d'enllaços",
+      description:
+        "Extreu un lloc web i els seus subenllaços fins a una certa profunditat.",
+      URL: "URL del lloc web",
+      URL_explained: "URL del lloc web que vols extreure.",
+      depth: "Profunditat de rastreig",
+      depth_explained:
+        "Aquest és el nombre d'enllaços fills que el treballador ha de seguir des de l'URL d'origen.",
+      max_pages: "Màxim de pàgines",
+      max_pages_explained: "Nombre màxim d'enllaços a extreure.",
+      task_explained:
+        "Un cop completat, tot el contingut extret estarà disponible per incrustar-lo als espais de treball al selector de documents.",
+    },
+    confluence: {
+      name: "Confluence",
+      description: "Importa una pàgina sencera de Confluence en un sol clic.",
+      deployment_type: "Tipus de desplegament de Confluence",
+      deployment_type_explained:
+        "Determina si la teva instància de Confluence està allotjada al núvol d'Atlassian o és autogestionada.",
+      base_url: "URL base de Confluence",
+      base_url_explained: "Aquesta és l'URL base del teu espai de Confluence.",
+      space_key: "Clau de l'espai de Confluence",
+      space_key_explained:
+        "Aquesta és la clau de l'espai de la teva instància de Confluence que s'usarà. Normalment comença per ~",
+      username: "Nom d'usuari de Confluence",
+      username_explained: "El teu nom d'usuari de Confluence",
+      auth_type: "Tipus d'autenticació de Confluence",
+      auth_type_explained:
+        "Selecciona el tipus d'autenticació que vols usar per accedir a les teves pàgines de Confluence.",
+      auth_type_username: "Nom d'usuari i token d'accés",
+      auth_type_personal: "Token d'accés personal",
+      token: "Token d'accés de Confluence",
+      token_explained_start:
+        "Has de proporcionar un token d'accés per a l'autenticació. Pots generar un token d'accés",
+      token_explained_link: "aquí",
+      token_desc: "Token d'accés per a l'autenticació",
+      pat_token: "Token d'accés personal de Confluence",
+      pat_token_explained: "El teu token d'accés personal de Confluence.",
+      bypass_ssl: "Omet la validació del certificat SSL",
+      bypass_ssl_explained:
+        "Activa aquesta opció per ometre la validació del certificat SSL per a instàncies de Confluence autogestionades amb certificat autosignat",
+      task_explained:
+        "Un cop completat, el contingut de la pàgina estarà disponible per incrustar-lo als espais de treball al selector de documents.",
+    },
+    manage: {
+      documents: "Documents",
+      "data-connectors": "Connectors de dades",
+    },
+    directory: {
+      "my-documents": "Els meus documents",
+      "new-folder": "Nova carpeta",
+      "total-documents_one": "{{count}} document",
+      "total-documents_other": "{{count}} documents",
+      "search-document": "Cerca un document",
+      "no-documents": "Sense documents",
+      "move-workspace": "Mou a l'espai de treball",
+      "delete-confirmation":
+        "Estàs segur que vols eliminar aquests fitxers i carpetes?\nAixò eliminarà els fitxers del sistema i els traurà automàticament de qualsevol espai de treball existent.\nAquesta acció no és reversible.",
+      "removing-message":
+        "Eliminant {{count}} documents i {{folderCount}} carpetes. Si us plau, espera.",
+      "move-success": "S'han mogut correctament {{count}} documents.",
+      no_docs: "Sense documents",
+      select_all: "Selecciona-ho tot",
+      deselect_all: "Desselecciona-ho tot",
+      remove_selected: "Elimina la selecció",
+      save_embed: "Desa i incrusta",
+      "search-results_one": "{{count}} resultat",
+      "search-results_other": "{{count}} resultats",
+      "in-workspace": "En l'espai de treball",
+      "upload-files": "Carregar fitxers",
+      "add-link": "Afegir enllaç",
+      "selected-count_one": "{{count}} s'ha seleccionat",
+      "selected-count_other": "{{count}} seleccionat",
+      "move-to-folder": "Mou a la carpeta",
+      "ready-to-embed_one": "{{count}} arxiu preparat per a la incorporació",
+      "ready-to-embed_other": "{{count}} arxius preparats per incorporar-los",
+      "add-to-queue": "Afegir a la cua",
+      staged: "Preparat per incorporar",
+      pinned: "Marcat",
+      watching: "Observar",
+      pin: "Arrossega per emportar-lo al espai de treball",
+      unpin: "Eliminar de la zona de treball",
+      watch: "Esteu atents als canvis.",
+      unwatch: "Deu deixar d'estar observant canvis",
+      "remove-from-workspace": "Eliminar de l'espai de treball",
+    },
+    upload: {
+      "processor-offline": "Processador de documents no disponible",
+      "processor-offline-desc":
+        "No podem pujar els teus fitxers ara mateix perquè el processador de documents està desconnectat. Torna-ho a intentar més tard.",
+      "click-upload": "Fes clic per pujar o arrossega i deixa anar",
+      "file-types":
+        "admet fitxers de text, CSV, fulls de càlcul, fitxers d'àudio i molt més!",
+      "or-submit-link": "o envia un enllaç",
+      "placeholder-link": "https://example.com",
+      fetching: "Obtenint...",
+      "fetch-website": "Obtén el lloc web",
+      "privacy-notice":
+        "Aquests fitxers es pujaran al processador de documents que s'executa en aquesta instància d'AnythingLLM. Aquests fitxers no s'envien ni es comparteixen amb tercers.",
+    },
+    pinning: {
+      what_pinning: "Què és l'ancoratge de documents?",
+      pin_explained_block1:
+        "Quan <b>ancore</b>s un document a AnythingLLM, injectarem tot el contingut del document a la teva finestra de missatge perquè el teu LLM el comprengui completament.",
+      pin_explained_block2:
+        "Funciona millor amb <b>models de context gran</b> o fitxers petits que siguin crítics per a la seva base de coneixement.",
+      pin_explained_block3:
+        "Si per defecte no obtens les respostes que desitges d'AnythingLLM, l'ancoratge és una manera excel·lent d'obtenir respostes de major qualitat amb un sol clic.",
+      accept: "D'acord, entès",
+    },
+    watching: {
+      what_watching: "Què fa observar un document?",
+      watch_explained_block1:
+        "Quan <b>observes</b> un document a AnythingLLM, sincronitzarem <i>automàticament</i> el contingut del document des de la seva font original a intervals regulars. Això actualitzarà automàticament el contingut a cada espai de treball on es gestioni aquest fitxer.",
+      watch_explained_block2:
+        "Aquesta funció admet actualment contingut en línia i no estarà disponible per a documents pujats manualment.",
+      watch_explained_block3_start:
+        "Pots gestionar quins documents s'observen des de la vista d'administrador del ",
+      watch_explained_block3_link: "Gestor de fitxers",
+      watch_explained_block3_end: ".",
+      accept: "D'acord, entès",
+    },
+    gitea: {
+      name: "Repos de Gitea",
+      description:
+        "Importar un repositori públic o privat complet des de qualsevol instància de Gitea amb un sol clic.",
+      URL: "URL del repositori de Gitea",
+      URL_explained:
+        "URL del repositori que voleu obtenir a la vostra instància de Gitea – s'adrecen les instàncies autohospedades.",
+      token: "Token d'accés de Gitea",
+      optional: "opcional",
+      token_explained:
+        "S'requereix un token d'accés per accedir a repositoris privats o a repositoris en instàncies que requereixen autenticació.",
+      token_explained_start: "Sense",
+      token_explained_link1: "Token d'accés",
+      token_explained_end:
+        "Només es poden obtenir repositoris que la vostra instal·lació de Gitea exposi públicament.",
+      ignores: "El fitxer és ignorat",
+      git_ignore:
+        'Crea un fitxer amb el format ".gitignore" per ignorar els fitxers específics durant la recopilació. Prem "Enter" després de cada entrada que vulguis guardar.',
+      task_explained:
+        "Un cop estiguin complets, tots els fitxers estaran disponibles per incorporar-los a les àrees de treball dins del selector de documents.",
+      branch: "La branca des d'on voleu obtenir els fitxers.",
+      branch_loading: "— Carregant branques disponibles —",
+      branch_explained: "La branca des d'on voleu obtenir els fitxers.",
+      token_information:
+        "Sense introduir el token d'accés de Gitea, aquest connector de dades només podrà obtenir fitxers de repositoris que siguin accessibles per a tots els usuaris en la vostra instància de Gitea.",
+    },
+  },
+  chat_window: {
+    loading_chat_history: "S'està carregant l'historial del xat...",
+    loading_chat_recalling: "Recuperant la nostra conversa...",
+    loading_chat_remembering: "Recordant de què vam parlar...",
+    attachments_processing:
+      "Els adjunts s'estan processant. Si us plau, espera...",
+    send_message: "Envia un missatge",
+    attach_file: "Adjunta un fitxer a aquest xat",
+    text_size: "Canvia la mida del text.",
+    microphone: "Parla el teu missatge.",
+    send: "Envia el missatge a l'espai de treball",
+    tts_speak_message: "TTS Llegeix el missatge",
+    copy: "Copia",
+    regenerate: "Regenera",
+    regenerate_response: "Regenera la resposta",
+    good_response: "Bona resposta",
+    more_actions: "Més accions",
+    sources: "Fonts",
+    source_count_one: "{{count}} referència",
+    source_count_other: "{{count}} referències",
+    document: "Document",
+    similarity_match: "coincidència",
+    fork: "Bifurca",
+    delete: "Elimina",
+    cancel: "Cancel·la",
+    submit: "Envia",
+    edit_prompt: "Edita el missatge",
+    edit_response: "Edita la resposta",
+    edit_info_user:
+      '"Envia" regenera la resposta de la IA. "Desa" actualitza només el teu missatge.',
+    edit_info_assistant:
+      "Els teus canvis es desaran directament en aquesta resposta.",
+    see_less: "Veu menys",
+    see_more: "Veu més",
+    preset_reset_description:
+      "Esborra l'historial del xat i comença un xat nou",
+    add_new_preset: " Afegeix una nova ordre predefinida",
+    add_new: "Afegeix nou",
+    edit: "Edita",
+    publish: "Publica",
+    stop_generating: "Atura la generació de la resposta",
+    command: "Ordre",
+    your_command: "la-teva-ordre",
+    placeholder_prompt:
+      "Aquest és el contingut que s'injectarà davant del teu missatge.",
+    description: "Descripció",
+    placeholder_description: "Respon amb un poema sobre els LLM.",
+    save: "Desa",
+    small: "Petit",
+    normal: "Normal",
+    large: "Gran",
+    tools: "Eines",
+    text_size_label: "Mida del text",
+    select_model: "Selecciona el model",
+    slash_commands: "Ordres de barra",
+    agent_skills: "Habilitats de l'agent",
+    manage_agent_skills: "Gestiona les habilitats de l'agent",
+    start_agent_session: "Inicia la sessió de l'agent",
+    agent_skills_disabled_in_session:
+      "No es poden modificar les habilitats durant una sessió de l'agent activa. Usa /exit per acabar la sessió primer.",
+    use_agent_session_to_use_tools:
+      "Pots usar eines al xat iniciant una sessió de l'agent amb '@agent' al principi del teu missatge.",
+    workspace_llm_manager: {
+      search: "Cerca",
+      loading_workspace_settings:
+        "Carregant la configuració de l'espai de treball...",
+      available_models: "Models disponibles per a {{provider}}",
+      available_models_description:
+        "Selecciona un model per usar en aquest espai de treball.",
+      save: "Usa aquest model",
+      saving: "Establint el model com a predeterminat de l'espai de treball...",
+      missing_credentials: "Falta les credencials d'aquest proveïdor!",
+      missing_credentials_description: "Configura ara",
+    },
+    agent_invocation: {
+      model_wants_to_call: "El model vol cridar",
+      approve: "Aprova",
+      reject: "Rebutja",
+      always_allow: "Permet sempre {{skillName}}",
+      tool_call_was_approved: "La crida a l'eina ha estat aprovada",
+      tool_call_was_rejected: "La crida a l'eina ha estat rebutjada",
+      clarifying_skip: "Deixeu que l'agent decideixi.",
+      clarifying_submit: "Enviar",
+      clarifying_skipped: "Deixeu que l'agent prengui la decisió.",
+      clarifying_timeout: "No s'ha entregat la resposta a temps.",
+      clarifying_pagination: "{{current}} de {{total}}",
+      clarifying_prev_aria: "Pregunta anterior",
+      clarifying_next_aria: "Següent pregunta",
+      clarifying_close_aria: "Tancar i saltar",
+      clarifying_other: "Altres",
+      clarifying_other_placeholder: "Escriu la teva resposta",
+      batch_progress: "{{answered}} de {{total}} ha respost",
+      batch_skip_this: "Saltar",
+      batch_submit_all: "Enviar-ho tot",
+      batch_next: "Següent",
+      answer_skipped: "[l'usuari va saltar]",
+      email: {
+        send_title: "Envia el correu",
+        reply_title: "Envia la resposta",
+        draft_title: "Crea un esborrany",
+        draft_reply_title: "Crea un esborrany de resposta",
+        update_draft_title: "Actualitza l'esborrany",
+        send_draft_title: "Envia l'esborrany",
+        via_provider: "via {{provider}}",
+        to: "Per a:",
+        subject: "Assumpte:",
+        add_recipient: "Afegeix un destinatari",
+        remove_recipient: "Elimina {{email}}",
+        edit: "Edita",
+        done: "Fet",
+        deny: "Rebutja",
+        sent_to: "Per a {{recipients}}",
+        sent: "Enviat",
+        saved_to: "Esborrany desat · Per a {{recipients}}",
+        saved: "Esborrany desat",
+        attachment_one: "{{count}} fitxer adjunt",
+        attachment_other: "{{count}} fitxers adjunts",
+        not_sent_denied: "No enviat · s'ha indicat a l'agent que s'aturi",
+        not_sent_timeout: "No enviat · sense resposta a temps",
+        not_saved_denied: "No desat · s'ha indicat a l'agent que s'aturi",
+        not_saved_timeout: "No desat · sense resposta a temps",
+        show_preview: "Mostra el correu",
+        hide_preview: "Amaga el correu",
+      },
+    },
+    custom_skills: "Habilitats personalitzades",
+    agent_flows: "Fluxos d'agents",
+    no_tools_found: "No s'han trobat eines corresponents.",
+    loading_mcp_servers: "Carregant servidors MCP...",
+    app_integrations: "Integracions d'aplicacions",
+    sub_skills: "Habilitats específiques",
+    memories: {
+      title: "Records",
+      empty:
+        "Aquesta és la primera interacció. Amb més interaccions amb el bot, es podran afegir més records.",
+      empty_cta: "crear un nou record",
+      tab_workspace: "Espai de treball",
+      tab_global: "Global",
+      toggle: {
+        label: "Activar la personalització",
+        description:
+          "Permeteu que el vostre assistent recordi fets sobre vosaltres o sobre aquest espai de treball i els utilitzi en les converses.",
+      },
+      auto_extraction: {
+        label: "Memòries automàtiques",
+        description:
+          "Deixa que el teu assistent creï automàticament memòries de fons.",
+      },
+      menu: {
+        edit: "Editar",
+        delete: "Eliminar",
+        move_to_global: "Mou a l'àmbit global",
+        move_to_workspace: "Canviar a l'espai de treball",
+      },
+      modal: {
+        create_title: "Crea un record",
+        edit_title: "Editar memòria",
+        create_description:
+          'Els records han de ser una única declaració concisa. Per exemple: "L\'usuari prefereix Python a JavaScript".',
+        edit_description: "Actualitza el contingut d'aquesta memòria.",
+        label: "Memòria",
+        placeholder:
+          "Per exemple, el nom de l'usuari és Jordi, l'usuari treballa a AnythingLLM, etc.",
+        create: "Crear",
+        save: "Guarda",
+        cancel: "Cancel·lar",
+      },
+    },
+    stt_unsupported:
+      "L'accés al micròfon no està suportat en aquest navegador.",
+    stt_mic_denied:
+      "No s'ha pogut accedir al micròfon. Si us plau, concedeix l'autorització i prova de nou.",
+    stt_transcription_failed: "No s'ha pogut transmetre: {{error}}",
+    export: "Exporta la conversa com a...",
+    exporting: "Exportant…",
+    preset_img_description: "Generar una imatge a partir d'un text",
+    generating_response: "Generar resposta",
+    response_failed: "No he pogut respondre al missatge.",
+    response_failed_reason: "Motiu: {{reason}}",
+    thought_in_progress: "L'entrenament continua...",
+    thoughts: "Pensaments",
+    leave_generating: {
+      title: "Deu deixar de generar respostes?",
+      description:
+        "Estàs a punt de tancar aquesta conversa; això farà que el model deixi d'elaborar la resposta i no es podrà recuperar.",
+      cancel: "Cancelar",
+      confirm: "Segueix",
+    },
+  },
+  profile_settings: {
+    edit_account: "Edita el compte",
+    profile_picture: "Foto de perfil",
+    remove_profile_picture: "Elimina la foto de perfil",
+    username: "Nom d'usuari",
+    new_password: "Nova contrasenya",
+    password_description: "La contrasenya ha de tenir almenys 8 caràcters",
+    cancel: "Cancel·la",
+    update_account: "Actualitza el compte",
+    theme: "Preferència de tema",
+    language: "Idioma preferit",
+    failed_upload: "No s'ha pogut pujar la foto de perfil: {{error}}",
+    upload_success: "Foto de perfil pujada.",
+    failed_remove: "No s'ha pogut eliminar la foto de perfil: {{error}}",
+    profile_updated: "Perfil actualitzat.",
+    failed_update_user: "No s'ha pogut actualitzar l'usuari: {{error}}",
+    account: "Compte",
+    support: "Suport",
+    signout: "Tanca la sessió",
+  },
+  "keyboard-shortcuts": {
+    title: "Dreceres de teclat",
+    shortcuts: {
+      settings: "Obre la configuració",
+      workspaceSettings: "Obre la configuració de l'espai de treball actual",
+      home: "Ves a l'inici",
+      workspaces: "Gestiona els espais de treball",
+      apiKeys: "Configuració de les claus API",
+      llmPreferences: "Preferències de LLM",
+      chatSettings: "Configuració del xat",
+      help: "Mostra l'ajuda de dreceres de teclat",
+      showLLMSelector: "Mostra el selector de LLM de l'espai de treball",
+    },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: "Correcte!",
+        success_description:
+          "El teu missatge del sistema s'ha publicat al Centre de la comunitat!",
+        success_thank_you: "Gràcies per compartir amb la comunitat!",
+        view_on_hub: "Visualitza al Centre de la comunitat",
+        modal_title: "Publica el missatge del sistema",
+        name_label: "Nom",
+        name_description:
+          "Aquest és el nom visible del teu missatge del sistema.",
+        name_placeholder: "El meu missatge del sistema",
+        description_label: "Descripció",
+        description_description:
+          "Aquesta és la descripció del teu missatge del sistema. Usa-la per descriure el propòsit del teu missatge del sistema.",
+        tags_label: "Etiquetes",
+        tags_description:
+          "Les etiquetes s'usen per etiquetar el teu missatge del sistema per a una cerca més fàcil. Pots afegir múltiples etiquetes. Màxim 5 etiquetes. Màxim 20 caràcters per etiqueta.",
+        tags_placeholder: "Escriu i prem Intro per afegir etiquetes",
+        visibility_label: "Visibilitat",
+        public_description:
+          "Els missatges del sistema públics són visibles per a tothom.",
+        private_description:
+          "Els missatges del sistema privats només són visibles per a tu.",
+        publish_button: "Publica al Centre de la comunitat",
+        submitting: "Publicant...",
+        prompt_label: "Missatge",
+        prompt_description:
+          "Aquest és el missatge del sistema real que s'usarà per guiar el LLM.",
+        prompt_placeholder: "Introdueix el teu missatge del sistema aquí...",
+      },
+      agent_flow: {
+        success_title: "Correcte!",
+        success_description:
+          "El teu flux d'agent s'ha publicat al Centre de la comunitat!",
+        success_thank_you: "Gràcies per compartir amb la comunitat!",
+        view_on_hub: "Visualitza al Centre de la comunitat",
+        modal_title: "Publica el flux d'agent",
+        name_label: "Nom",
+        name_description: "Aquest és el nom visible del teu flux d'agent.",
+        name_placeholder: "El meu flux d'agent",
+        description_label: "Descripció",
+        description_description:
+          "Aquesta és la descripció del teu flux d'agent. Usa-la per descriure el propòsit del teu flux d'agent.",
+        tags_label: "Etiquetes",
+        tags_description:
+          "Les etiquetes s'usen per etiquetar el teu flux d'agent per a una cerca més fàcil. Pots afegir múltiples etiquetes. Màxim 5 etiquetes. Màxim 20 caràcters per etiqueta.",
+        tags_placeholder: "Escriu i prem Intro per afegir etiquetes",
+        visibility_label: "Visibilitat",
+        submitting: "Publicant...",
+        submit: "Publica al Centre de la comunitat",
+        privacy_note:
+          "Els fluxos d'agent sempre es pugen com a privats per protegir qualsevol dada sensible. Pots canviar la visibilitat al Centre de la comunitat després de publicar. Verifica que el teu flux no contingui cap informació sensible o privada abans de publicar.",
+      },
+      slash_command: {
+        success_title: "Correcte!",
+        success_description:
+          "La teva ordre de barra s'ha publicat al Centre de la comunitat!",
+        success_thank_you: "Gràcies per compartir amb la comunitat!",
+        view_on_hub: "Visualitza al Centre de la comunitat",
+        modal_title: "Publica l'ordre de barra",
+        name_label: "Nom",
+        name_description: "Aquest és el nom visible de la teva ordre de barra.",
+        name_placeholder: "La meva ordre de barra",
+        description_label: "Descripció",
+        description_description:
+          "Aquesta és la descripció de la teva ordre de barra. Usa-la per descriure el propòsit de la teva ordre de barra.",
+        tags_label: "Etiquetes",
+        tags_description:
+          "Les etiquetes s'usen per etiquetar la teva ordre de barra per a una cerca més fàcil. Pots afegir múltiples etiquetes. Màxim 5 etiquetes. Màxim 20 caràcters per etiqueta.",
+        tags_placeholder: "Escriu i prem Intro per afegir etiquetes",
+        visibility_label: "Visibilitat",
+        public_description:
+          "Les ordres de barra públiques són visibles per a tothom.",
+        private_description:
+          "Les ordres de barra privades només són visibles per a tu.",
+        publish_button: "Publica al Centre de la comunitat",
+        submitting: "Publicant...",
+        prompt_label: "Missatge",
+        prompt_description:
+          "Aquest és el missatge que s'usarà quan es dispari l'ordre de barra.",
+        prompt_placeholder: "Introdueix el teu missatge aquí...",
+      },
+      generic: {
+        unauthenticated: {
+          title: "Autenticació requerida",
+          description:
+            "Has d'autenticar-te amb el Centre de la comunitat d'AnythingLLM abans de publicar elements.",
+          button: "Connecta al Centre de la comunitat",
+        },
+      },
+    },
+  },
+  scheduledJobs: {
+    title: "Tasques programades",
+    enableNotifications:
+      "Activa les notificacions del navegador per als resultats de les tasques.",
+    description:
+      "Crea tasques d'IA recurrents que s'executen segons un horari. Cada tasca executa una consulta amb eines opcionals i guarda el resultat per a la seva revisió.",
+    newJob: "Nova tasca",
+    loading: "Carregant...",
+    emptyTitle: "No hi ha tasques programades.",
+    emptySubtitle: "Creeu un per començar.",
+    table: {
+      name: "Nom",
+      schedule: "Horari",
+      status: "Estat",
+      lastRun: "Última sortida",
+      nextRun: "Proper següent",
+      actions: "Accions",
+    },
+    confirmDelete: "Estàs segur que vols eliminar aquesta tasca programada?",
+    toast: {
+      deleted: "Tasca eliminada",
+      triggered: "La tasca s'ha completat amb èxit.",
+      triggerFailed: "No s'ha pogut iniciar la tasca.",
+      triggerSkipped: "Ja hi ha una execució en curs per a aquesta tasca.",
+      killed: "Tasca aturada amb èxit.",
+      killFailed: "No s'ha pogut aturar la tasca.",
+    },
+    row: {
+      neverRun: "Mai no corres",
+      viewRuns: "Horaris de funcionament",
+      runNow: "Corre ara",
+      enable: "Activa",
+      disable: "Desactiva",
+      edit: "Edita",
+      delete: "Elimina",
+    },
+    modal: {
+      titleEdit: "Modificar tasca programada",
+      titleNew: "Nova tasca programada",
+      nameLabel: "Nom",
+      namePlaceholder: 'Per exemple, "Resum diari de notícies"',
+      promptLabel: "Indicació",
+      promptPlaceholder: "La instrucció per executar-se en cada execució...",
+      scheduleLabel: "Horari",
+      modeBuilder: "Constructor",
+      modeCustom: "Personalitzat",
+      cronPlaceholder: "Execució de la tasca (per exemple, 0 9 * * *)",
+      currentSchedule: "Horari actual:",
+      toolsLabel: "Eines (opcional)",
+      toolsDescription:
+        "Seleccioneu quines eines d'agent pot utilitzar aquesta tasca. Si no en seleccioneu cap, la tasca s'executarà sense cap eina.",
+      toolsSearch: "Cerca",
+      toolsNoResults: "No hi ha cap eina que coincideixi.",
+      required: "Obligatori",
+      requiredFieldsBanner:
+        "Si us plau, ompliu tots els camps obligatoris per crear la tasca.",
+      cancel: "Cancel·la",
+      saving: "Guardant...",
+      updateJob: "Actualitza la tasca",
+      createJob: "Crea una tasca",
+      jobUpdated: "Tasca actualitzada",
+      jobCreated: "Tasca creada",
+    },
+    builder: {
+      fallbackWarning:
+        "Aquesta expressió no es pot modificar visualment. Per mantenir-la, utilitzeu l'opció \"Personalitzat\". Si voleu, podeu modificar qualsevol element de sota per sobreescriure'l.",
+      run: "Corre",
+      frequency: {
+        minute: "cada minut",
+        hour: "per hora",
+        day: "diari",
+        week: "setmanal",
+        month: "mensual",
+      },
+      every: "Cada",
+      minuteOne: "1 minut",
+      minuteOther: "{{count}} minuts",
+      atMinute: "En el moment",
+      pastEveryHour: "cada hora",
+      at: "A",
+      on: "Sobre",
+      onDay: "En un dia",
+      ofEveryMonth: "de cada mes",
+      weekdays: {
+        sun: "Diumenge",
+        mon: "Dilluns",
+        tue: "Dimarts",
+        wed: "Dimecres",
+        thu: "Dijous",
+        fri: "Divendres",
+        sat: "Dissabte",
+      },
+    },
+    runHistory: {
+      back: "Torna a les tasques",
+      title: "Històric de curses: {{name}}",
+      schedule: "Horari:",
+      emptyTitle: "Encara no hi ha execucions per a aquesta tasca.",
+      emptySubtitle: "Executa la tasca ara i consulta els resultats.",
+      runNow: "Comença ara",
+      table: {
+        status: "Estat",
+        started: "Començat",
+        duration: "Durada",
+        error: "Error",
+      },
+      stopJob: "Atura la tasca",
+    },
+    runDetail: {
+      loading: "Càrrec detalls de la sessió...",
+      notFound: "No s'ha trobat la sortida.",
+      back: "Cap endavant",
+      unknownJob: "Tasca desconeguda",
+      runHeading: "{{name}} — Executar la tasca {{id}}",
+      duration: "Durada: {{value}}",
+      creating: "Creant...",
+      threadFailed: "No s'ha pogut crear el fil.",
+      sections: {
+        prompt: "Indicació",
+        error: "Error",
+        thinking: "Pensaments ({{count}})",
+        toolCalls: "Crides a les eines ({{count}})",
+        files: "Fitxers ({{count}})",
+        response: "Resposta",
+        metrics: "Mètriques",
+      },
+      metrics: {
+        promptTokens: "Tokens de desencadenament:",
+        completionTokens: "Tokens de finalització:",
+      },
+      stopJob: "Atura la tasca",
+      killing: "Aturar...",
+      continueInThread: "Continua la conversa",
+    },
+    toolCall: {
+      arguments: "Argumentacions:",
+      showResult: "Mostrar resultat",
+      hideResult: "Ocultar resultat",
+    },
+    file: {
+      unknown: "Fitxer desconegut",
+      download: "Descarregar",
+      downloadFailed: "No s'ha pogut descarregar el fitxer.",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "Document en format PDF",
+        word: "Document de text",
+        spreadsheet: "Full de càlcul",
+        generic: "Fitxer",
+      },
+    },
+    status: {
+      completed: "Complet",
+      failed: "Fallit",
+      timed_out: "Ha expirat el temps",
+      running: "Correu",
+      queued: "En la fila d'espera",
+    },
+  },
+  "model-router": {
+    title: "Rúter de model",
+    description:
+      "Els rúters de model et permeten definir regles per enviar automàticament missatges de xat a diferents proveïdors i models d'LLM, segons determinades condicions.",
+    table: {
+      name: "Nom",
+      fallback: "Solució alternativa",
+      rules: "Regles",
+      workspaces: "Espais de treball",
+    },
+    "no-routers": "Encara no hi ha models de rúters disponibles.",
+    "empty-description":
+      "No hi ha rúters configurats encara. Creeu-ne un per començar.",
+    "new-router-button": "Nou rúter",
+    "delete-confirm":
+      'Estàs segur que vols eliminar el rúter "{{name}}"?\nAixò eliminarà totes les seves regles i desconnectarà qualsevol espai de treball que l\'utilitzi.\n\nAquesta acció és irreversible.',
+    "toast-deleted": "Rúter eliminat",
+    "toast-delete-failed": "No s'ha pogut eliminar el rúter: {{error}}",
+    "new-router": {
+      title: "Crear un nou rúter",
+      name: "Nom",
+      "name-placeholder": "p. ex., Optimitzador de costos",
+      description: "Descripció",
+      "description-placeholder": "Descripció opcional",
+      "fallback-label": "Proveïdor principal i model",
+      "fallback-description":
+        "Es fa servir quan cap regla de ruteig coincideix. També s'utilitza per avaluar les regles classificades per models de llenguatge.",
+      "cooldown-label": "Temps de refredament (segons)",
+      "cooldown-help":
+        "Durant quant temps es guarda la decisió de ruteig abans de reavaluar les regles. Per desactivar la memòria, configureu-lo a 0.",
+      "name-required": "És obligatori indicar el nom.",
+      "fallback-required": "Es requereix el proveïdor principal i el model.",
+      cancel: "Cancel·la",
+      create: "Configura rúter",
+    },
+    "edit-router": {
+      "back-to-routers": "Cap al model de rúters",
+      title: "Editar en el rúter: {{name}}",
+      save: "Desar",
+      "toast-update-failed": "No s'ha pogut actualitzar el rúter.",
+    },
+    rules: {
+      title: "Regles de ruteig",
+      "title-with-name": "Regles del rúter: {{name}}",
+      description:
+        "Estableix les regles que determinen quan i com s'envien els missatges de xat a determinats proveïdors i models.",
+      "add-rule": "Afegir regla",
+      "delete-confirm": 'Eliminar la regla "{{title}}"?',
+      "toast-delete-failed": "No s'ha pogut eliminar la regla.",
+      "toast-reorder-failed": "No s'ha pogut reordenar les regles.",
+      "no-rules": "Aquesta situació encara no té cap regla.",
+      "empty-description":
+        "Afegiu una regla per enviar els missatges de xat a proveïdors i models específics.",
+      "new-rule-button": "Nova norma",
+      "calculated-section-label":
+        "Regles calculades – avaluades primer, en ordre de prioritat",
+      "llm-section-label":
+        "Regles LLM — s'han d'analitzar en lots si cap regla calculada no coincideix",
+      "llm-rule-body":
+        'Si coincideix <desc>"{{description}}"</desc>, dirigeix a <route>{{route}}</route>',
+      "calculated-no-conditions":
+        "Sense condicions — dirigeix a <route>{{route}}</route>",
+      "calculated-single-condition":
+        'Si <prop>{{property}}</prop> {{comparator}} <val>"{{value}}"</val>, dirigeix a <route>{{route}}</route>',
+      "calculated-multi-condition":
+        "Si {{quantifier}} de <cond>{{conditions}}</cond>, dirigeix a <route>{{route}}</route>",
+      "comparator-contains": "conté",
+      "comparator-matches": "coincideix",
+      "comparator-between": "entre",
+      "badge-llm": "LLM",
+      "badge-calculated": "Calculat",
+      "aria-drag-to-reorder": "Arrossega per reordenar",
+      "aria-edit-rule": "Regla d'edició",
+      "aria-delete-rule": "Eliminar regla",
+      "quantifier-any": "QUALSEVOL",
+      "quantifier-all": "TOT",
+    },
+    "rule-form": {
+      "title-label": "Títol",
+      "rule-type": "Tipus de regla",
+      "property-label": "Propietat",
+      "property-select": "Selecciona",
+      "comparator-label": "Comparador",
+      "comparator-select": "Selecciona",
+      "value-label": "Valor",
+      "add-condition": "Afegeix condició",
+      "remove-condition": "Elimina la condició",
+      "conditions-incomplete":
+        "L'estat {{index}} és incomplet - ompliu les propietats, el comparador i el valor.",
+      "match-description-label": "Descripció de la coincidència",
+      "match-description-placeholder":
+        "Per exemple, l'usuari està preguntant sobre temes legals, contractes o sobre el compliment de les normatives.",
+      "match-description-help":
+        "Descriu la situació en què vols que aquesta regla s'apliqui. El teu model de llenguatge (LLM) l'avaluarà per determinar si cal utilitzar-la.",
+      "route-to-label": "Ruta cap al proveïdor i model",
+      "route-to-description":
+        "Quan aquesta regla es compleixi, utilitzeu aquest proveïdor/model.",
+      cancel: "Cancel·la",
+      saving: "Guardant...",
+      "update-rule": "Regla d'actualització",
+      "create-rule": "Crear regla",
+      "title-required": "El títol és obligatori.",
+      "toast-save-failed": "No s'ha pogut guardar la regla.",
+      "type-calculated-label": "Calculat",
+      "type-calculated-description":
+        "Comparar segons propietats del missatge, com el contingut, el nombre de tokens o l'hora del dia.",
+      "type-llm-label": "Classificació de LLM",
+      "type-llm-description":
+        "Utilitzeu un model de llenguatge per classificar el missatge en funció de la descripció que proporcioneu.",
+      "prop-prompt-content": "Contingut de la petició",
+      "prop-token-count": "Nombre de tokens de conversa",
+      "prop-message-count": "Nombre de missatges de conversa",
+      "prop-current-hour": "Hora actual (0-23)",
+      "prop-has-image": "Inclou una imatge",
+      "cmp-contains": "conté",
+      "cmp-matches-regex": "expressions regulars (regex)",
+      "cmp-equals": "és igual a",
+      "cmp-not-equals": "no és igual a",
+      "cmp-greater-than": "major que",
+      "cmp-greater-than-or-equal": "major o igual",
+      "cmp-less-than": "menys de",
+      "cmp-less-than-or-equal": "menys o igual",
+      "cmp-between": "entre (inclosos)",
+      "placeholder-between-hour":
+        "p. ex., 9:17 (de 9 del matí a 5 de la tarda)",
+      "placeholder-between-numeric": "per exemple, 10,50",
+      "placeholder-hour": "Per exemple, 18 (0-23)",
+      "placeholder-message-count": "p. ex. 10",
+      "placeholder-numeric": "p. ex., 4000",
+      "placeholder-contains": "p. ex., codi, Python, Rust",
+      "placeholder-matches": "p. ex. /\\bpython\\b/i",
+      "placeholder-default": "p. ex., codi",
+      "help-contains":
+        "Llista separada per comes — coincideix si la consulta conté algun dels valors (sense diferenciar majúscules i minúscules).",
+      "help-matches":
+        "Patró de regex. Utilitzeu `/patró/flags` per a tenir en compte la distinció entre majúscules i minúscules (per defecte, no la tenen en compte).",
+      "bool-true": "Veritable",
+      "bool-false": "Fals",
+    },
+    "provider-picker": {
+      "select-provider": "Selecciona proveïdor",
+      "setup-required": "(requereix una configuració)",
+      "loading-models": "Carregant models...",
+      "select-model": "Selecciona model",
+      "enter-model": "Introduïu el nom del model",
+      "select-provider-first": "Seleccioneu un proveïdor primer.",
+      "configure-to-continue": "Configureu {{name}} per continuar",
+      "configure-provider": "Configureu {{name}}",
+      "setup-credentials":
+        "Introduïu les credencials necessàries per utilitzar {{name}} com a destinació de la ruta.",
+      cancel: "Cancel·lar",
+      "save-settings": "Guardar configuració",
+      "toast-save-failed":
+        "No s'ha pogut guardar les configuracions: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Carregant els rúters personalitzats...",
+      "no-routers-prefix-settings": "No s'ha configurat encara cap rúter.",
+      "no-routers-prefix-workspace":
+        "No s'han configurat els enllaços de xarxa.",
+      "no-routers-link": "Creeu-ne un a les configuracions del rúter de model.",
+      "model-router-label": "Rúter de model",
+      "select-router": "Seleccioneu un rúter",
+      "select-description":
+        "Seleccioneu el rúter que vulgueu utilitzar per a aquesta zona de treball.",
+      "no-routers-chat":
+        "No s'han configurat cap enllaç. Creeu un nou enllaç a les opcions > Proveïdors d'IA > Rúter de model.",
+      "rule-count": "({{count}} normes)",
+    },
+    metrics: {
+      "model-router-default": "Rúter de model",
+    },
+    chat: {
+      "select-router-error": "Seleccioneu un rúter",
+      "invalid-model": "Selecció de model incorrecta",
+      "routed-to": "Enviat a <route>{{model}}</route>",
+      "routed-to-rule":
+        "Enviat a través de <route>{{model}}</route> a través de <rule>{{ruleTitle}}</rule>",
+    },
+  },
+  imageGeneration: {
+    title: "Preferència per la generació d'imatges",
+    description:
+      "Configura el proveïdor que s'utilitza per generar imatges a partir del comandament `/img`.",
+    provider: "Proveïdor de generació d'imatges",
+    card: {
+      "failed-to-load": "No s'ha pogut carregar la imatge.",
+      "alt-text": "Imatge generada",
+      edit: "Editar",
+      download: "Descarregar",
+    },
+    pending: {
+      heading: "Generant la vostra imatge…",
+      description:
+        "Aquest procés pot prendre un temps. Apareixerà aquí tan aviat com estigui disponible.",
+      aborted: "La generació d'imatges va ser interrompuda.",
+    },
+  },
+};
+
+export default TRANSLATIONS;

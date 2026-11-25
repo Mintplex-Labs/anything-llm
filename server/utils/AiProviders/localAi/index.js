@@ -6,26 +6,155 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const { ContextWindowCache } = require("../../helpers/contextWindowCache");
 
 class LocalAiLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
 
+    this.className = "LocalAiLLM";
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       baseURL: process.env.LOCAL_AI_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
+
+    this.embedder = embedder ?? new NativeEmbedder();
+
+    // Limits are resolved in assertModelContextLimits; start the lookup now.
+    this.limits = null;
+    LocalAiLLM.contextWindows.ensure(this.model);
+    this.#log(`initialized with model: ${this.model}`);
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[LocalAI]\x1b[0m ${text}`, ...args);
+  }
+
+  static #slog(text, ...args) {
+    console.log(`\x1b[32m[LocalAI]\x1b[0m ${text}`, ...args);
+  }
+
+  async assertModelContextLimits() {
+    if (this.limits !== null) return;
+    await LocalAiLLM.contextWindows.ensure(this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+    this.#log(
+      `${this.model} is using a max context window of ${this.promptWindowLimit()} tokens.`
+    );
+  }
 
-    this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
+  /** @see ContextWindowCache */
+  static contextWindows = new ContextWindowCache({
+    connection: () =>
+      `${process.env.LOCAL_AI_BASE_PATH}|${process.env.LOCAL_AI_API_KEY ?? ""}`,
+    fetchAll: () => LocalAiLLM.#fetchContextWindows(),
+    log: (...args) => LocalAiLLM.#slog(...args),
+  });
+
+  /**
+   * Refresh the context windows of every available model.
+   * @param {boolean} force - Refresh even if the cached inventory has not expired.
+   * @returns {Promise<void>}
+   */
+  static async cacheContextWindows(force = false) {
+    await LocalAiLLM.contextWindows.refresh({ force });
+  }
+
+  /** @returns {Promise<Record<string, number>>} Context window by model id. */
+  static async #fetchContextWindows() {
+    const apiKey = process.env.LOCAL_AI_API_KEY ?? null;
+    const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
+    const { origin } = new URL(process.env.LOCAL_AI_BASE_PATH);
+    const res = await fetch(`${origin}/v1/models`, { headers });
+    if (!res.ok) throw new Error(`LocalAI:/v1/models ${res.statusText}`);
+    const { data: models = [] } = await res.json();
+    if (!models.length) return {};
+
+    // /v1/models/capabilities reports the resolved context_size (and the
+    // capabilities/modalities) of each model. Older LocalAI versions do not
+    // have it, so those fall back to the VRAM-estimate endpoint, which
+    // returns the context_length auto-detected from GGUF metadata.
+    const capabilities = await LocalAiLLM.#fetchModelCapabilities();
+    const needsEstimate = models.filter(
+      ({ id }) => !capabilities.find((m) => m.id === id)?.context_size
+    );
+    const estimates = await Promise.all(
+      needsEstimate.map(({ id }) =>
+        fetch(`${origin}/api/models/vram-estimate`, {
+          method: "POST",
+          headers: { ...headers, "Content-Type": "application/json" },
+          body: JSON.stringify({ model: id }),
+        })
+          .then((res) => (res.ok ? res.json() : {}))
+          .then((est) => ({ id, context_size: est.context_length }))
+          .catch(() => ({ id }))
+      )
+    );
+    const limits = {};
+    for (const { id, context_size } of [...capabilities, ...estimates])
+      if (context_size) limits[id] = Number(context_size);
+    return limits;
+  }
+
+  /**
+   * Fetch the per-model capabilities LocalAI exposes.
+   * @see https://localai.io/docs/features/api-discovery/#model-capabilities
+   * @returns {Promise<{id: string, capabilities?: string[], input_modalities?: string[], context_size?: number}[]>}
+   * Empty when the endpoint is unavailable (older LocalAI versions).
+   */
+  static async #fetchModelCapabilities() {
+    try {
+      const apiKey = process.env.LOCAL_AI_API_KEY ?? null;
+      const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
+      const { origin } = new URL(process.env.LOCAL_AI_BASE_PATH);
+      const res = await fetch(`${origin}/v1/models/capabilities`, { headers });
+      if (!res.ok) return [];
+      const { data = [] } = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Returns the capabilities of the model.
+   * LocalAI reports usecase strings (`chat`, `vision`, `tools`, `thinking`, ...)
+   * and the input modalities per model on /v1/models/capabilities.
+   * @returns {Promise<{tools: 'unknown' | boolean, reasoning: 'unknown' | boolean, reasoningOptions: string[], imageGeneration: 'unknown' | boolean, vision: 'unknown' | boolean}>}
+   */
+  async getModelCapabilities() {
+    const unknown = {
+      tools: "unknown",
+      reasoning: "unknown",
+      reasoningOptions: [],
+      imageGeneration: "unknown",
+      vision: "unknown",
+    };
+    const model = (await LocalAiLLM.#fetchModelCapabilities()).find(
+      ({ id }) => id === this.model
+    );
+    if (!model) return unknown;
+
+    const capabilities = model.capabilities ?? [];
+    return {
+      tools: capabilities.includes("tools"),
+      reasoning: capabilities.includes("thinking"),
+      reasoningOptions: [],
+      imageGeneration: capabilities.includes("image"),
+      vision:
+        capabilities.includes("vision") ||
+        (model.input_modalities ?? []).includes("image"),
+    };
   }
 
   #appendContext(contextTexts = []) {
@@ -44,20 +173,34 @@ class LocalAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(_modelName) {
-    const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LocalAi token context limit was set.");
-    return Number(limit);
+  static promptWindowLimit(modelName) {
+    if (LocalAiLLM.contextWindows.size === 0) {
+      this.#slog(
+        "No context windows cached - Context window may be inaccurately reported."
+      );
+      return Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT) || 8192;
+    }
+
+    let userDefinedLimit = null;
+    const systemDefinedLimit =
+      Number(LocalAiLLM.contextWindows.get(modelName)) || 8192;
+
+    if (
+      process.env.LOCAL_AI_MODEL_TOKEN_LIMIT &&
+      !isNaN(Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT)) &&
+      Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT) > 0
+    )
+      userDefinedLimit = Number(process.env.LOCAL_AI_MODEL_TOKEN_LIMIT);
+
+    // The user defined limit is always higher priority than the context window limit, but it cannot be higher than the context window limit
+    // so we return the minimum of the two, if there is no user defined limit, we return the system defined limit as-is.
+    if (userDefinedLimit !== null)
+      return Math.min(userDefinedLimit, systemDefinedLimit);
+    return systemDefinedLimit;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LocalAi token context limit was set.");
-    return Number(limit);
+    return this.constructor.promptWindowLimit(this.model);
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -112,7 +255,10 @@ class LocalAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `LocalAI chat: ${this.model} is not valid for chat completion!`
@@ -122,7 +268,7 @@ class LocalAiLLM {
       this.openai.chat.completions.create({
         model: this.model,
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       })
     );
 
@@ -145,25 +291,35 @@ class LocalAiLLM {
         total_tokens: promptTokens + completionTokens,
         outputTps: completionTokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = this.temperature } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `LocalAi chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
+        stream_options: { include_usage: true },
         messages,
-        temperature,
+        ...temperatureParam(temperature),
       }),
-      messages
-    );
+      messages,
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    });
     return measuredStreamRequest;
   }
 
@@ -180,6 +336,7 @@ class LocalAiLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
+    await this.assertModelContextLimits();
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);

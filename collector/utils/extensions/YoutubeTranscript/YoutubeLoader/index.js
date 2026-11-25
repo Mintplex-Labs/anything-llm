@@ -1,4 +1,23 @@
+const { parse } = require("node-html-parser");
 const { validYoutubeVideoUrl } = require("../../../url");
+
+/**
+ * Joins transcript segments into one string. YouTube's caption XML escapes
+ * the text twice (an apostrophe arrives as &amp;#39;) and youtube-transcript-plus
+ * returns it as-is, so each segment is decoded twice.
+ * @param {Array<string|{text: string}>} transcriptSegments
+ * @returns {string}
+ */
+function transcriptSegmentsToText(transcriptSegments = []) {
+  return transcriptSegments
+    .map((segment) =>
+      typeof segment === "string" ? segment : segment.text || ""
+    )
+    .map((text) => parse(parse(text).text).text)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 /*
  * This is just a custom implementation of the Langchain JS YouTubeLoader class
@@ -54,13 +73,15 @@ class YoutubeLoader {
       source: this.#videoId,
     };
     try {
-      const { YoutubeTranscript } = require("./youtube-transcript");
-      transcript = await YoutubeTranscript.fetchTranscript(this.#videoId, {
+      const fetchTranscript = await import("youtube-transcript-plus").then(
+        (module) => module.fetchTranscript
+      );
+      const transcriptSegments = await fetchTranscript(this.#videoId, {
         lang: this.#language,
       });
-      if (!transcript) {
+      if (!transcriptSegments || transcriptSegments.length === 0)
         throw new Error("Transcription not found");
-      }
+      transcript = transcriptSegmentsToText(transcriptSegments);
       if (this.#addVideoInfo) {
         const { Innertube } = require("youtubei.js");
         const youtube = await Innertube.create();

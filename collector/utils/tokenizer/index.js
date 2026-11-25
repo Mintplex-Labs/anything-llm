@@ -2,7 +2,7 @@ const { getEncoding } = require("js-tiktoken");
 
 class TikTokenTokenizer {
   static MAX_KB_ESTIMATE = 10;
-  static DIVISOR = 8;
+  static DIVISOR = 4;
 
   constructor() {
     if (TikTokenTokenizer.instance) {

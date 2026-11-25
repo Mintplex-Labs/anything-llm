@@ -3,6 +3,7 @@ const {
 } = require("../../models/browserExtensionApiKey");
 const { SystemSettings } = require("../../models/systemSettings");
 const { User } = require("../../models/user");
+const { ROLES } = require("./multiUserProtected");
 
 async function validBrowserExtensionApiKey(request, response, next) {
   const multiUserMode = await SystemSettings.isMultiUserMode();
@@ -26,7 +27,29 @@ async function validBrowserExtensionApiKey(request, response, next) {
   }
 
   if (multiUserMode) {
-    response.locals.user = await User.get({ id: apiKey.user_id });
+    const user = await User.get({ id: apiKey.user_id });
+    if (!user) {
+      response.status(403).json({
+        error: "User not found.",
+      });
+      return;
+    }
+
+    if (user.suspended) {
+      response.status(401).json({
+        error: "User is suspended from system",
+      });
+      return;
+    }
+
+    if (![ROLES.admin, ROLES.manager].includes(user.role)) {
+      response.status(403).json({
+        error: "User does not have permission to use this API key.",
+      });
+      return;
+    }
+
+    response.locals.user = user;
   }
 
   response.locals.apiKey = apiKey;

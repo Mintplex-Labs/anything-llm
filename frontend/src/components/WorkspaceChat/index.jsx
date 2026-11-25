@@ -1,28 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Workspace from "@/models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
 import paths from "@/utils/paths";
-import ModalWrapper from "../ModalWrapper";
-import { useParams } from "react-router-dom";
-import { DnDFileUploaderProvider } from "./ChatContainer/DnDWrapper";
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@/components/lib/Modal";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  DnDFileUploaderProvider,
+  DndUploaderContext,
+  PASTE_ATTACHMENT_EVENT,
+} from "./ChatContainer/DnDWrapper";
 import { WarningCircle } from "@phosphor-icons/react";
 import {
   TTSProvider,
   useWatchForAutoPlayAssistantTTSResponse,
 } from "../contexts/TTSProvider";
+import { PENDING_HOME_MESSAGE } from "@/utils/constants";
+import { PROMPT_INPUT_ID } from "./ChatContainer/PromptInput";
+import { movePromptInputDraft } from "@/hooks/usePromptInputStorage";
+import useDelayedFlag from "@/hooks/useDelayedFlag";
 
 export default function WorkspaceChat({ loading, workspace }) {
   useWatchForAutoPlayAssistantTTSResponse();
   const { threadSlug = null } = useParams();
-  const [history, setHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(true);
+  const navigate = useNavigate();
+  // Stores { key, workspace, history } currently rendered. Lags the props so
+  // the previous chat stays mounted while the next one's history loads,
+  // avoiding a loader flash on fast workspace/thread switches. Slow
+  // switches show the loader after a short delay (see `showSwitchLoader`).
+  const [loaded, setLoaded] = useState(null);
+  const [dragging, setDragging] = useState(false);
+  const pendingFilesRef = useRef([]);
+  // True while the rendered chat is not the one the route asks for.
+  const switching =
+    loading ||
+    (loaded !== null && loaded.key !== chatKey(workspace, threadSlug));
+  const showSwitchLoader = useDelayedFlag(switching);
+
+  // When the thread becomes available and we have pending files, trigger upload
+  useEffect(() => {
+    if (loaded?.threadSlug && pendingFilesRef.current.length > 0) {
+      const files = pendingFilesRef.current;
+      pendingFilesRef.current = [];
+      window.dispatchEvent(
+        new CustomEvent(PASTE_ATTACHMENT_EVENT, { detail: { files } })
+      );
+    }
+  }, [loaded?.threadSlug]);
+
+  async function handleDropWithoutThread(acceptedFiles) {
+    setDragging(false);
+    pendingFilesRef.current = acceptedFiles;
+    const { thread } = await Workspace.threads.new(workspace.slug);
+    if (!thread) return;
+    // The thread route remounts PromptInput under the thread's storage key,
+    // so carry the unsent draft over with the files.
+    movePromptInputDraft({
+      from: workspace.slug,
+      to: thread.slug,
+      value: document.getElementById(PROMPT_INPUT_ID)?.value ?? "",
+    });
+    navigate(paths.workspace.thread(workspace.slug, thread.slug));
+  }
 
   useEffect(() => {
+    let cancelled = false;
+
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
-        setLoadingHistory(false);
+        setLoaded({ key: chatKey(null), workspace: null, history: [] });
         return false;
       }
 
@@ -30,46 +81,59 @@ export default function WorkspaceChat({ loading, workspace }) {
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
 
-      setHistory(chatHistory);
-      setLoadingHistory(false);
+      if (cancelled) return;
+
+      setLoaded({
+        key: chatKey(workspace, threadSlug),
+        workspace,
+        threadSlug,
+        history: chatHistory,
+      });
     }
     getHistory();
-  }, [workspace, loading]);
 
-  if (loadingHistory) return <LoadingChat />;
-  if (!loading && !loadingHistory && !workspace) {
+    return () => {
+      cancelled = true;
+    };
+  }, [workspace, loading, threadSlug]);
+
+  const hasPendingMessage = !!sessionStorage.getItem(PENDING_HOME_MESSAGE);
+  if (loaded === null || showSwitchLoader) {
+    if (hasPendingMessage) {
+      return (
+        <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full" />
+      );
+    }
+    return <LoadingChat />;
+  }
+  if (!loading && !workspace) {
     return (
       <>
         {loading === false && !workspace && (
-          <ModalWrapper isOpen={true}>
-            <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-              <div className="relative p-6 border-b rounded-t border-theme-modal-border">
-                <div className="w-full flex gap-x-2 items-center">
-                  <WarningCircle
-                    className="text-red-500 w-6 h-6"
-                    weight="fill"
-                  />
-                  <h3 className="text-xl font-semibold text-red-500 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                    Workspace not found
-                  </h3>
-                </div>
-              </div>
-              <div className="py-7 px-9 space-y-2 flex-col">
-                <p className="text-white text-sm">
-                  The workspace you're looking for is not available. It may have
-                  been deleted or you may not have access to it.
-                </p>
-              </div>
-              <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-                <a
-                  href={paths.home()}
-                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-                >
-                  Return to homepage
-                </a>
-              </div>
-            </div>
-          </ModalWrapper>
+          <Modal isOpen={true} size="md">
+            <ModalHeader
+              title={
+                <span className="flex items-center gap-x-2 text-red-500">
+                  <WarningCircle className="w-5 h-5" weight="fill" />
+                  Workspace not found
+                </span>
+              }
+            />
+            <ModalBody>
+              <p className="text-zinc-300 light:text-slate-700 text-sm">
+                The workspace you're looking for is not available. It may have
+                been deleted or you may not have access to it.
+              </p>
+            </ModalBody>
+            <ModalFooter className="justify-end">
+              <a
+                href={paths.home()}
+                className="flex items-center justify-center h-[34px] px-4 rounded-lg text-sm font-medium border-none bg-zinc-50 light:bg-slate-900 text-zinc-950 light:text-white hover:opacity-80 transition-all duration-200"
+              >
+                Return to homepage
+              </a>
+            </ModalFooter>
+          </Modal>
         )}
         <LoadingChat />
       </>
@@ -77,12 +141,52 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
+
   return (
     <TTSProvider>
-      <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
-        <ChatContainer workspace={workspace} knownHistory={history} />
-      </DnDFileUploaderProvider>
+      <DnDWrapper
+        loaded={loaded}
+        opts={{
+          files: [],
+          ready: true,
+          dragging,
+          setDragging,
+          onDrop: handleDropWithoutThread,
+          parseAttachments: () => [],
+        }}
+      >
+        <ChatContainer
+          key={loaded.key}
+          workspace={loaded.workspace}
+          threadSlug={loaded.threadSlug}
+          knownHistory={loaded.history}
+        />
+      </DnDWrapper>
     </TTSProvider>
+  );
+}
+
+// Identifies which chat is rendered: workspace plus thread, or "none".
+function chatKey(workspace, threadSlug = null) {
+  if (!workspace?.slug) return "none";
+  return `${workspace.slug}:${threadSlug ?? "default"}`;
+}
+
+function DnDWrapper({ children, loaded, opts }) {
+  if (!loaded?.threadSlug) {
+    return (
+      <DndUploaderContext.Provider value={opts}>
+        {children}
+      </DndUploaderContext.Provider>
+    );
+  }
+  return (
+    <DnDFileUploaderProvider
+      workspace={loaded.workspace}
+      threadSlug={loaded.threadSlug}
+    >
+      {children}
+    </DnDFileUploaderProvider>
   );
 }
 
@@ -112,7 +216,10 @@ function copyCodeSnippet(uuid) {
 }
 
 // Listens and hunts for all data-code-snippet clicks.
+let _codeSnippetDelegatorRegistered = false;
 export function setEventDelegatorForCodeSnippets() {
+  if (_codeSnippetDelegatorRegistered) return;
+  _codeSnippetDelegatorRegistered = true;
   document?.addEventListener("click", function (e) {
     const target = e.target.closest("[data-code-snippet]");
     const uuidCode = target?.dataset?.code;

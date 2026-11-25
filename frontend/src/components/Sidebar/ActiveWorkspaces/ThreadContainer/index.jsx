@@ -4,14 +4,21 @@ import showToast from "@/utils/toast";
 import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import useHoverMetaKey from "./hooks";
 export const THREAD_RENAME_EVENT = "renameThread";
+export const THREAD_FORK_EVENT = "forkToThread";
 
-export default function ThreadContainer({ workspace }) {
+export default function ThreadContainer({
+  workspace,
+  isVirtualThread = false,
+}) {
+  const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
+  const [defaultThreadHasChats, setDefaultThreadHasChats] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [ctrlPressed, setCtrlPressed] = useState(false);
+  const { containerRef, ctrlPressed } = useHoverMetaKey(setThreads, !loading);
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -33,46 +40,36 @@ export default function ThreadContainer({ workspace }) {
     };
   }, []);
 
+  // Handle new fork events from chat actions. Forking navigates via the router
+  // now, so a blocked/cancelled navigation would otherwise leave the new thread
+  // missing from this list until the next refetch.
+  useEffect(() => {
+    const forkHandler = () => {
+      if (!workspace?.slug) return;
+      Workspace.threads
+        .all(workspace.slug)
+        .then(({ threads }) => setThreads(threads))
+        .catch((e) => console.error(e));
+    };
+
+    window.addEventListener(THREAD_FORK_EVENT, forkHandler);
+    return () => {
+      window.removeEventListener(THREAD_FORK_EVENT, forkHandler);
+    };
+  }, [workspace?.slug]);
+
   useEffect(() => {
     async function fetchThreads() {
       if (!workspace.slug) return;
-      const { threads } = await Workspace.threads.all(workspace.slug);
+      const { threads, defaultThreadChatCount } = await Workspace.threads.all(
+        workspace.slug
+      );
       setLoading(false);
       setThreads(threads);
+      setDefaultThreadHasChats(defaultThreadChatCount > 0);
     }
     fetchThreads();
-  }, [workspace.slug]);
-
-  // Enable toggling of bulk-deletion by holding meta-key (ctrl on win and cmd/fn on others)
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (["Control", "Meta"].includes(event.key)) {
-        setCtrlPressed(true);
-      }
-    };
-
-    const handleKeyUp = (event) => {
-      if (["Control", "Meta"].includes(event.key)) {
-        setCtrlPressed(false);
-        // when toggling, unset bulk progress so
-        // previously marked threads that were never deleted
-        // come back to life.
-        setThreads((prev) =>
-          prev.map((t) => {
-            return { ...t, deleted: false };
-          })
-        );
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
+  }, [workspace.slug, threadSlug]);
 
   const toggleForDeletion = (id) => {
     setThreads((prev) =>
@@ -88,9 +85,10 @@ export default function ThreadContainer({ workspace }) {
     await Workspace.threads.deleteBulk(workspace.slug, slugs);
     setThreads((prev) => prev.filter((t) => !t.deleted));
 
-    // Only redirect if current thread is being deleted
+    // Only redirect if current thread is being deleted. Use router navigation
+    // so ActiveGenerationGuard can intercept if a response is generating.
     if (slugs.includes(threadSlug)) {
-      window.location.href = paths.workspace.chat(workspace.slug);
+      navigate(paths.workspace.chat(workspace.slug));
     }
   };
 
@@ -109,6 +107,18 @@ export default function ThreadContainer({ workspace }) {
     }, 500);
   }
 
+  function getActiveThreadIdx() {
+    if (isVirtualThread)
+      return threads.length + (defaultThreadHasChats ? 1 : 0);
+    // On a bare workspace route with no default chats, show virtual thread as active
+    if (!threadSlug && !defaultThreadHasChats)
+      return threads.length + (defaultThreadHasChats ? 1 : 0);
+    const idx = threads.findIndex((t) => t?.slug === threadSlug);
+    if (idx >= 0) return idx + (defaultThreadHasChats ? 1 : 0);
+    if (!threadSlug && defaultThreadHasChats) return 0;
+    return -1;
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
@@ -117,46 +127,69 @@ export default function ThreadContainer({ workspace }) {
     );
   }
 
-  const activeThreadIdx = !!threads.find(
-    (thread) => thread?.slug === threadSlug
-  )
-    ? threads.findIndex((thread) => thread?.slug === threadSlug) + 1
-    : 0;
+  const activeThreadIdx = getActiveThreadIdx();
+
+  // Show a virtual thread when on a bare workspace route (no threadSlug) and
+  // the default thread has no chats — mimics the Home page virtual thread behavior.
+  const showVirtualThread =
+    isVirtualThread || (!threadSlug && !defaultThreadHasChats);
 
   return (
-    <div className="flex flex-col" role="list" aria-label="Threads">
-      <ThreadItem
-        idx={0}
-        activeIdx={activeThreadIdx}
-        isActive={activeThreadIdx === 0}
-        thread={{ slug: null, name: "default" }}
-        hasNext={threads.length > 0}
-      />
+    <div
+      ref={containerRef}
+      className="flex flex-col"
+      role="list"
+      aria-label="Threads"
+    >
+      {defaultThreadHasChats && (
+        <ThreadItem
+          idx={0}
+          activeIdx={activeThreadIdx}
+          isActive={activeThreadIdx === 0}
+          workspace={workspace}
+          thread={{ slug: null, name: "default" }}
+          hasNext={threads.length > 0 || showVirtualThread}
+        />
+      )}
       {threads.map((thread, i) => (
         <ThreadItem
           key={thread.slug}
-          idx={i + 1}
+          idx={i + (defaultThreadHasChats ? 1 : 0)}
           ctrlPressed={ctrlPressed}
           toggleMarkForDeletion={toggleForDeletion}
           activeIdx={activeThreadIdx}
-          isActive={activeThreadIdx === i + 1}
+          isActive={activeThreadIdx === i + (defaultThreadHasChats ? 1 : 0)}
           workspace={workspace}
           onRemove={removeThread}
           thread={thread}
-          hasNext={i !== threads.length - 1}
+          hasNext={i !== threads.length - 1 || showVirtualThread}
         />
       ))}
+      {showVirtualThread && (
+        <ThreadItem
+          idx={activeThreadIdx}
+          activeIdx={activeThreadIdx}
+          isActive={true}
+          workspace={workspace}
+          thread={{ slug: null, name: "*New Thread", virtual: true }}
+          hasNext={false}
+        />
+      )}
       <DeleteAllThreadButton
         ctrlPressed={ctrlPressed}
         threads={threads}
         onDelete={handleDeleteAll}
       />
-      <NewThreadButton workspace={workspace} />
+      <NewThreadButton
+        workspace={workspace}
+        onNewThread={(thread) => setThreads((prev) => [...prev, thread])}
+      />
     </div>
   );
 }
 
-function NewThreadButton({ workspace }) {
+function NewThreadButton({ workspace, onNewThread }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const onClick = async () => {
     setLoading(true);
@@ -166,18 +199,24 @@ function NewThreadButton({ workspace }) {
       setLoading(false);
       return;
     }
-    window.location.replace(
-      paths.workspace.thread(workspace.slug, thread.slug)
-    );
+    // Show the new thread in the sidebar immediately - if the navigation below
+    // gets blocked (ActiveGenerationGuard) and cancelled, the thread still
+    // exists and remains reachable. Router navigation also ensures the guard
+    // can intercept and the button never wedges in its loading state.
+    onNewThread?.(thread);
+    navigate(paths.workspace.thread(workspace.slug, thread.slug), {
+      replace: true,
+    });
+    setLoading(false);
   };
 
   return (
     <button
       onClick={onClick}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-[var(--theme-sidebar-thread-selected)] light:hover:bg-slate-300 hover:light:bg-theme-sidebar-subitem-hover rounded-lg"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-white/20 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-zinc-800 light:bg-slate-50 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           {loading ? (
             <CircleNotch
               weight="bold"
@@ -198,7 +237,7 @@ function NewThreadButton({ workspace }) {
             Starting Thread...
           </p>
         ) : (
-          <p className="text-left text-white light:text-theme-text-primary text-sm">
+          <p className="text-left text-white light:text-theme-text-primary text-sm font-semibold">
             New Thread
           </p>
         )}

@@ -1,5 +1,7 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
+const { temperatureParam } = require("./helpers/tooled.js");
 const { RetryError } = require("../error.js");
 const { safeJsonParse } = require("../../../http");
 const { v4 } = require("uuid");
@@ -12,17 +14,37 @@ class GeminiProvider extends Provider {
   model;
 
   constructor(config = {}) {
-    const { model = "gemini-2.0-flash-lite" } = config;
+    const { model = "gemini-3.1-flash-lite", reasoningEffort = null } = config;
     super();
+    this.providerTag = "gemini";
     this.className = "GeminiProvider";
     const client = new OpenAI({
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
       apiKey: process.env.GEMINI_API_KEY,
-      maxRetries: 0,
+      fetch: async (url, init) => {
+        const res = await globalThis.fetch(url, init);
+        if (!res.ok) {
+          const cloned = res.clone();
+          const text = await cloned.text().catch(() => "(unreadable)");
+          this.providerLog(
+            `[Gemini.fetch] ${res.status} from ${typeof url === "string" ? url : url?.toString()}\n` +
+              `  Response body: ${text}`
+          );
+          try {
+            const json = safeJsonParse(text, {});
+            const errorObj = Array.isArray(json) ? json[0] : json;
+            this._lastErrorMessage = errorObj?.error?.message || null;
+          } catch {
+            this._lastErrorMessage = text?.slice(0, 200) || null;
+          }
+        }
+        return res;
+      },
     });
 
     this._client = client;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.verbose = true;
   }
 
@@ -30,14 +52,22 @@ class GeminiProvider extends Provider {
     return this._client;
   }
 
-  get supportsToolCalling() {
-    if (!this.model.startsWith("gemini")) return false;
-    return true;
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("gemini", this.reasoningEffort, this.model);
   }
 
+  /**
+   * Whether this provider supports agent streaming.
+   * - Tool call streaming results in a 400/503 error for all non-gemini models
+   * using the compatible v1beta/openai/ endpoint
+   * @returns {boolean}
+   */
   get supportsAgentStreaming() {
-    // Tool call streaming results in a 400/503 error for all non-gemini models
-    // using the compatible v1beta/openai/ endpoint
     if (!this.model.startsWith("gemini")) {
       this.providerLog(
         `Gemini: ${this.model} does not support tool call streaming.`
@@ -45,6 +75,21 @@ class GeminiProvider extends Provider {
       return false;
     }
     return true;
+  }
+
+  get supportsToolCalling() {
+    if (!this.model.startsWith("gemini")) return false;
+    return true;
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Gemini only supports tool calling for Gemini models.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    if (this.optsOutOfNativeToolCallingViaEnv(this.providerTag)) return false;
+    return this.supportsToolCalling;
   }
 
   /**
@@ -83,6 +128,10 @@ class GeminiProvider extends Provider {
    * Format the messages to the Gemini API Responses format.
    * - Gemini has some loosely documented format for tool calls and it can change at any time.
    * - We need to map the function call to the correct id and Gemini will throw an error if it does not.
+   * - Gemini requires a `thought_signature` (via `extra_content.google.thought_signature`) on function call
+   *   parts in multi-turn tool conversations. This is an encrypted token Gemini attaches to every tool call
+   *   it makes, and it must be passed back when sending tool results or Gemini rejects the request with a 400.
+   *   See: https://ai.google.dev/gemini-api/docs/thought-signatures
    * @param {any[]} messages - The messages to format.
    * @returns {OpenAI.OpenAI.Responses.ResponseInput[]} The formatted messages.
    */
@@ -101,17 +150,27 @@ class GeminiProvider extends Provider {
           return;
         }
 
+        const prefixedName = this.prefixToolCall(
+          message.originalFunctionCall.name,
+          "add"
+        );
         formattedMessages.push(
           {
             role: "assistant",
+            content: "",
             tool_calls: [
               {
                 type: "function",
+                ...(message.originalFunctionCall.extra_content
+                  ? {
+                      extra_content: message.originalFunctionCall.extra_content,
+                    }
+                  : {}),
                 function: {
                   arguments: JSON.stringify(
                     message.originalFunctionCall.arguments
                   ),
-                  name: message.originalFunctionCall.name,
+                  name: prefixedName,
                 },
                 id: message.originalFunctionCall.id,
               },
@@ -120,9 +179,28 @@ class GeminiProvider extends Provider {
           {
             role: "tool",
             tool_call_id: message.originalFunctionCall.id,
+            name: prefixedName,
             content: message.content,
           }
         );
+        return;
+      }
+
+      // Handle messages with attachments (images) for multimodal support
+      if (message.attachments && message.attachments.length > 0) {
+        const content = [{ type: "text", text: message.content }];
+        for (const attachment of message.attachments) {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: attachment.contentString,
+            },
+          });
+        }
+        formattedMessages.push({
+          role: message.role,
+          content,
+        });
         return;
       }
 
@@ -133,6 +211,38 @@ class GeminiProvider extends Provider {
     });
 
     return formattedMessages;
+  }
+
+  #logAPIError(error) {
+    const allProps = {};
+    for (const key of Object.getOwnPropertyNames(error)) {
+      try {
+        const val = error[key];
+        if (typeof val === "function") continue;
+        allProps[key] = val;
+      } catch {
+        // ignore
+      }
+    }
+    for (const key of [
+      "status",
+      "code",
+      "type",
+      "error",
+      "body",
+      "param",
+      "headers",
+      "cause",
+      "response",
+      "request_id",
+    ]) {
+      try {
+        if (error[key] !== undefined) allProps[key] = error[key];
+      } catch {
+        // ignore
+      }
+    }
+    this.providerLog("[Gemini API Error]", allProps);
   }
 
   #formatFunctions(functions) {
@@ -150,17 +260,29 @@ class GeminiProvider extends Provider {
     if (!this.supportsToolCalling)
       throw new Error(`Gemini: ${this.model} does not support tool calling.`);
     this.providerLog("Gemini.stream - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const msgUUID = v4();
       /** @type {OpenAI.OpenAI.Chat.ChatCompletion} */
       const response = await this.client.chat.completions.create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         messages: this.#formatMessages(messages),
         stream: true,
+        stream_options: { include_usage: true },
+        ...this.reasoningConfig,
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
+          ? {
+              tools: this.#formatFunctions(functions),
+              tool_choice: "auto",
+              // AIbitat runs one tool per turn; parallel calls cause a 400
+              // on the next request due to a tool call/result count mismatch.
+              parallel_tool_calls: false,
+            }
           : {}),
       });
+      this.watchTokenLimit(response);
 
       const completion = {
         content: "",
@@ -168,9 +290,17 @@ class GeminiProvider extends Provider {
         functionCall: null,
       };
 
+      // Gemini can attach usage to more than one chunk, so capture the latest
+      // and record exactly once after the stream ends - recordUsage accumulates
+      // into run totals, so calling it per-chunk would inflate them.
+      let usage = null;
+
       for await (const streamEvent of response) {
         /** @type {OpenAI.OpenAI.Chat.ChatCompletionChunk} */
         const chunk = streamEvent;
+
+        // Capture usage from final chunk (when stream_options.include_usage is true)
+        if (chunk?.usage) usage = chunk.usage;
         const { content, tool_calls } = chunk?.choices?.[0]?.delta || {};
 
         if (content) {
@@ -184,10 +314,20 @@ class GeminiProvider extends Provider {
 
         if (tool_calls) {
           const toolCall = tool_calls[0];
+          // Defensive fallback if Gemini ignores parallel_tool_calls: false.
+          // Keep the first call only; extra calls would cause a 400 next request.
+          if (completion.functionCall) {
+            this.providerLog(
+              `Discarding parallel tool call (only one tool per turn is supported): ${toolCall?.function?.name}`
+            );
+            continue;
+          }
           completion.functionCall = {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             call_id: toolCall.id,
             arguments: toolCall.function.arguments,
+            // Preserve Gemini's thought_signature so it can be passed back in #formatMessages
+            extra_content: toolCall.extra_content ?? null,
           };
           eventHandler?.("reportStreamEvent", {
             type: "toolCallInvocation",
@@ -196,6 +336,8 @@ class GeminiProvider extends Provider {
           });
         }
       }
+
+      if (usage) this.recordUsage(usage);
 
       if (completion.functionCall) {
         completion.functionCall.arguments = safeJsonParse(
@@ -208,8 +350,10 @@ class GeminiProvider extends Provider {
             id: completion.functionCall.call_id,
             name: completion.functionCall.name,
             arguments: completion.functionCall.arguments,
+            extra_content: completion.functionCall.extra_content,
           },
           cost: this.getCost(),
+          uuid: msgUUID,
         };
       }
 
@@ -217,15 +361,21 @@ class GeminiProvider extends Provider {
         textResponse: completion.content,
         functionCall: null,
         cost: this.getCost(),
+        uuid: msgUUID,
       };
     } catch (error) {
+      this.#logAPIError(error);
+      const errorMsg = this._lastErrorMessage
+        ? `Gemini error: ${this._lastErrorMessage}`
+        : error.message;
+      this._lastErrorMessage = null;
       if (error instanceof OpenAI.AuthenticationError) throw error;
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
         error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
       ) {
-        throw new RetryError(error.message);
+        throw new RetryError(errorMsg);
       }
 
       throw error;
@@ -243,15 +393,28 @@ class GeminiProvider extends Provider {
     if (!this.supportsToolCalling)
       throw new Error(`Gemini: ${this.model} does not support tool calling.`);
     this.providerLog("Gemini.complete - will process this chat completion.");
+    this.resetUsage();
+
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
+        ...temperatureParam(this.temperature),
         stream: false,
         messages: this.#formatMessages(messages),
+        ...this.reasoningConfig,
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { tools: this.#formatFunctions(functions), tool_choice: "auto" }
+          ? {
+              tools: this.#formatFunctions(functions),
+              tool_choice: "auto",
+              // AIbitat runs one tool per turn; parallel calls cause a 400
+              // on the next request due to a tool call/result count mismatch.
+              parallel_tool_calls: false,
+            }
           : {}),
       });
+      this.watchTokenLimit(response);
+
+      if (response.usage) this.recordUsage(response.usage);
 
       /** @type {OpenAI.OpenAI.Chat.ChatCompletionMessage} */
       const completion = response.choices[0].message;
@@ -265,16 +428,25 @@ class GeminiProvider extends Provider {
             name: this.prefixToolCall(toolCall.function.name, "strip"),
             arguments: functionArgs,
             id: toolCall.id,
+            // Preserve Gemini's thought_signature so it can be passed back in #formatMessages
+            extra_content: toolCall.extra_content ?? null,
           },
           cost,
+          usage: this.getUsage(),
         };
       }
 
       return {
         textResponse: completion.content,
         cost,
+        usage: this.getUsage(),
       };
     } catch (error) {
+      this.#logAPIError(error);
+      const errorMsg = this._lastErrorMessage
+        ? `Gemini error: ${this._lastErrorMessage}`
+        : error.message;
+      this._lastErrorMessage = null;
       // If invalid Auth error we need to abort because no amount of waiting
       // will make auth better.
       if (error instanceof OpenAI.AuthenticationError) throw error;
@@ -284,7 +456,7 @@ class GeminiProvider extends Provider {
         error instanceof OpenAI.InternalServerError ||
         error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
       ) {
-        throw new RetryError(error.message);
+        throw new RetryError(errorMsg);
       }
 
       throw error;

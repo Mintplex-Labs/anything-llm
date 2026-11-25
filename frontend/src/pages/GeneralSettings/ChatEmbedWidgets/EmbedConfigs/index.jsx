@@ -6,7 +6,7 @@ import { CodeBlock } from "@phosphor-icons/react";
 import EmbedRow from "./EmbedRow";
 import NewEmbedModal from "./NewEmbedModal";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import Embed from "@/models/embed";
 import CTAButton from "@/components/lib/CTAButton";
 
@@ -89,9 +89,9 @@ export default function EmbedConfigsView() {
           </tbody>
         </table>
       </div>
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <NewEmbedModal closeModal={closeModal} />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

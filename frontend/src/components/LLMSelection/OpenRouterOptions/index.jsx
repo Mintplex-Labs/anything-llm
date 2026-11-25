@@ -1,6 +1,7 @@
 import System from "@/models/system";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Info } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
+import { Tooltip } from "react-tooltip";
 
 export default function OpenRouterOptions({ settings }) {
   return (
@@ -48,21 +49,24 @@ function AdvancedControls({ settings }) {
         )}
       </button>
       <div hidden={!showAdvancedControls}>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Stream Timeout (ms)
-          </label>
-          <input
-            type="number"
-            name="OpenRouterTimeout"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Timeout value between token responses to auto-timeout the stream"
-            defaultValue={settings?.OpenRouterTimeout ?? 3_000}
-            autoComplete="off"
-            onScroll={(e) => e.target.blur()}
-            min={500}
-            step={1}
-          />
+        <div className="flex gap-[36px]">
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              Stream Timeout (ms)
+            </label>
+            <input
+              type="number"
+              name="OpenRouterTimeout"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Timeout value between token responses to auto-timeout the stream"
+              defaultValue={settings?.OpenRouterTimeout ?? 3_000}
+              autoComplete="off"
+              onScroll={(e) => e.target.blur()}
+              min={500}
+              step={1}
+            />
+          </div>
+          <ServiceTierSelection settings={settings} />
         </div>
       </div>
     </div>
@@ -136,6 +140,50 @@ function OpenRouterModelSelection({ settings }) {
               ))}
             </optgroup>
           ))}
+      </select>
+    </div>
+  );
+}
+
+function ServiceTierSelection({ settings }) {
+  return (
+    <div className="flex flex-col w-60">
+      <div className="flex items-center gap-1 mb-3">
+        <label className="text-white text-sm font-semibold block">
+          Service Tier
+        </label>
+        <Tooltip
+          id="openrouter-service-tier"
+          place="top"
+          delayShow={300}
+          className="tooltip !text-xs !opacity-100"
+          style={{
+            maxWidth: "250px",
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+          }}
+        />
+        <div
+          type="button"
+          className="text-theme-text-secondary cursor-pointer hover:bg-theme-bg-primary flex items-center justify-center rounded-full"
+          data-tooltip-id="openrouter-service-tier"
+          data-tooltip-place="top"
+          data-tooltip-content="Not every model honors every tier. Unsupported tiers are usually ignored, but some providers reject them and the request will error."
+        >
+          <Info size={18} className="text-theme-text-secondary" />
+        </div>
+      </div>
+      <select
+        name="OpenRouterServiceTier"
+        defaultValue={settings?.OpenRouterServiceTier ?? "default"}
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+      >
+        <option value="auto">Auto</option>
+        <option value="default">Default</option>
+        <option value="fast">Fast</option>
+        <option value="flex">Flex</option>
+        <option value="priority">Priority</option>
+        <option value="scale">Scale</option>
       </select>
     </div>
   );

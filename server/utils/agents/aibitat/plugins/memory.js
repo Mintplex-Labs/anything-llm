@@ -1,5 +1,8 @@
 const { v4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../../../helpers");
+const {
+  getVectorDbClass,
+  resolveProviderConnector,
+} = require("../../../helpers");
 const { Deduplicator } = require("../utils/dedupe");
 
 const memory = {
@@ -16,13 +19,13 @@ const memory = {
           tracker: new Deduplicator(),
           name: this.name,
           description:
-            "Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. Storing information should only be done when the user specifically requests for information to be remembered or saved to long-term memory. You should use this tool before search the internet for information. Do not use this tool unless you are explicitly told to 'remember' or 'store' information.",
+            "Search your local documents and workspace files for relevant information, or store information to long-term memory. Use search to find answers in uploaded documents, embedded files, or previously stored memories. Use store only when explicitly asked to remember or save something.",
           examples: [
             {
-              prompt: "What is AnythingLLM?",
+              prompt: "Check my files for information about the project",
               call: JSON.stringify({
                 action: "search",
-                content: "What is AnythingLLM?",
+                content: "<project information to search for>",
               }),
             },
             {
@@ -37,13 +40,6 @@ const memory = {
               call: JSON.stringify({
                 action: "store",
                 content: "I am a robot, the user told me that i am.",
-              }),
-            },
-            {
-              prompt: "Save that to memory please.",
-              call: JSON.stringify({
-                action: "store",
-                content: "<insert summary of conversation until now>",
               }),
             },
           ],
@@ -88,16 +84,18 @@ const memory = {
           search: async function (query = "") {
             try {
               const workspace = this.super.handlerProps.invocation.workspace;
-              const LLMConnector = getLLMProvider({
-                provider: workspace?.chatProvider,
-                model: workspace?.chatModel,
-              });
+              const { connector: LLMConnector } =
+                await resolveProviderConnector({
+                  workspace,
+                  prompt: query,
+                });
               const vectorDB = getVectorDbClass();
-              const { contextTexts = [] } =
+              const { contextTexts = [], sources = [] } =
                 await vectorDB.performSimilaritySearch({
                   namespace: workspace.slug,
                   input: query,
                   LLMConnector,
+                  similarityThreshold: workspace?.similarityThreshold ?? 0.25,
                   topN: workspace?.topN ?? 4,
                   rerank: workspace?.vectorSearchMode === "rerank",
                 });
@@ -112,6 +110,8 @@ const memory = {
               this.super.introspect(
                 `${this.caller}: Found ${contextTexts.length} additional piece of context to help answer this question.`
               );
+
+              this.super.addCitation?.(sources);
 
               let combinedText = "Additional context for query:\n";
               for (const text of contextTexts) combinedText += text + "\n\n";

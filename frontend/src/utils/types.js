@@ -1,7 +1,7 @@
 export function castToType(key, value) {
   const definitions = {
     openAiTemp: {
-      cast: (value) => Number(value),
+      cast: (value) => (value === "" ? null : Number(value)),
     },
     openAiHistory: {
       cast: (value) => Number(value),
@@ -11,6 +11,9 @@ export function castToType(key, value) {
     },
     topN: {
       cast: (value) => Number(value),
+    },
+    router_id: {
+      cast: (value) => (value ? Number(value) : null),
     },
   };
 

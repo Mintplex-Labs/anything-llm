@@ -9,15 +9,33 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
 const {
+  serviceTierParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  temperatureParam,
+} = require("../../agents/aibitat/providers/helpers/tooled");
+const {
+  modelsDevReasoningCapabilities,
+  reasoningParams,
+} = require("../../helpers/reasoningEffort");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
     : path.resolve(__dirname, `../../../storage/models/openrouter`)
 );
-
 class OpenRouterLLM {
+  static SERVICE_TIERS = [
+    "auto",
+    "default",
+    "fast",
+    "flex",
+    "priority",
+    "scale",
+  ];
+
   /**
    * Some openrouter models never send a finish_reason and thus leave the stream open in the UI.
    * However, because OR is a middleware it can also wait an inordinately long time between chunks so we need
@@ -45,6 +63,12 @@ class OpenRouterLLM {
     });
     this.model =
       modelPreference || process.env.OPENROUTER_MODEL_PREF || "openrouter/auto";
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -52,13 +76,8 @@ class OpenRouterLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
     this.timeout = this.#parseTimeout();
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+    this.serviceTier = process.env.OPENROUTER_SERVICE_TIER;
     this.log("Initialized with model:", this.model);
   }
 
@@ -238,7 +257,30 @@ class OpenRouterLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7, user = null }) {
+  /**
+   * Returns the reasoning capabilities models.dev lists for the model.
+   * @returns {Promise<{reasoning: 'unknown' | boolean, reasoningOptions: string[]}>}
+   */
+  async getModelCapabilities() {
+    return modelsDevReasoningCapabilities("openrouter", this.model);
+  }
+
+  /**
+   * The reasoning portion of the request body. Without an effort the legacy
+   * `include_reasoning` flag is sent, which OpenRouter treats as
+   * `reasoning: {}` - so the reasoning text is returned either way.
+   * @param {string|null} reasoningEffort - Validated reasoning effort
+   * @returns {object}
+   */
+  #reasoningBody(reasoningEffort = null) {
+    const params = reasoningParams("openrouter", reasoningEffort, this.model);
+    return params.reasoning ? params : { include_reasoning: true };
+  }
+
+  async getChatCompletion(
+    messages = null,
+    { temperature = this.temperature, user = null, reasoningEffort = null } = {}
+  ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
@@ -249,10 +291,9 @@ class OpenRouterLLM {
         .create({
           model: this.model,
           messages,
-          temperature,
-          // This is an OpenRouter specific option that allows us to get the reasoning text
-          // before the token text.
-          include_reasoning: true,
+          ...temperatureParam(temperature),
+          ...this.#reasoningBody(reasoningEffort),
+          ...serviceTierParam(this.serviceTier, this.log.bind(this)),
           user: user?.id ? `user_${user.id}` : "",
         })
         .catch((e) => {
@@ -276,44 +317,47 @@ class OpenRouterLLM {
         total_tokens: result.output.usage.total_tokens || 0,
         outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
+        model: this.model,
+        provider: this.className,
+        timestamp: new Date(),
       },
     };
   }
 
   async streamGetChatCompletion(
     messages = null,
-    { temperature = 0.7, user = null }
+    { temperature = this.temperature, user = null, reasoningEffort = null } = {}
   ) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
       );
 
-    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
+      func: this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature,
-        // This is an OpenRouter specific option that allows us to get the reasoning text
-        // before the token text.
-        include_reasoning: true,
+        ...temperatureParam(temperature),
+        ...this.#reasoningBody(reasoningEffort),
+        ...serviceTierParam(this.serviceTier, this.log.bind(this)),
         user: user?.id ? `user_${user.id}` : "",
       }),
-      messages
-      // We have to manually count the tokens
-      // OpenRouter has a ton of providers and they all can return slightly differently
-      // some return chunk.usage on STOP, some do it after stop, its inconsistent.
-      // So it is possible reported metrics are inaccurate since we cannot reliably
-      // catch the metrics before resolving the stream - so we just pretend this functionality
-      // is not available.
-    );
+      messages,
+      // OpenRouter returns the usage in the stream as the very last chunk **after** the finish reason.
+      // so we don't need to run the prompt token calculation.
+      runPromptTokenCalculation: false,
+      modelTag: this.model,
+      provider: this.className,
+    });
 
     return measuredStreamRequest;
   }
 
   /**
    * Handles the default stream response for a chat.
+   * - Handle weird OR timeout behavior where the stream never self-closes.
+   * - Handle the usage metrics being returned in the stream as the very last chunk **after** the finish reason.
    * @param {import("express").Response} response
    * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream
    * @param {Object} responseProps
@@ -322,6 +366,8 @@ class OpenRouterLLM {
   handleStream(response, stream, responseProps) {
     const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
+    let hasUsageMetrics = false;
+    let usage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
 
     return new Promise(async (resolve) => {
       let fullText = "";
@@ -330,14 +376,8 @@ class OpenRouterLLM {
       let pplxCitations = []; // Array of inline citations for Perplexity models (if applicable)
       let isPerplexity = this.isPerplexityModel;
 
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
       const handleAbort = () => {
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
+        stream?.endMeasurement(usage);
         clientAbortedHandler(resolve, fullText);
       };
       response.on("close", handleAbort);
@@ -369,9 +409,7 @@ class OpenRouterLLM {
           });
           clearInterval(timeoutCheck);
           response.removeListener("close", handleAbort);
-          stream?.endMeasurement({
-            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-          });
+          stream?.endMeasurement(usage);
           resolve(fullText);
         }
       }, 500);
@@ -382,6 +420,15 @@ class OpenRouterLLM {
           const token = message?.delta?.content;
           const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
+
+          if (chunk.hasOwnProperty("usage") && !hasUsageMetrics) {
+            hasUsageMetrics = true;
+            usage = {
+              prompt_tokens: chunk.usage.prompt_tokens,
+              completion_tokens: chunk.usage.completion_tokens,
+              total_tokens: chunk.usage.total_tokens,
+            };
+          }
 
           // Some models will return citations (e.g. Perplexity) - we should preserve them for inline citations if applicable.
           if (
@@ -458,7 +505,7 @@ class OpenRouterLLM {
             });
           }
 
-          if (message.finish_reason !== null) {
+          if (message?.finish_reason) {
             writeResponseChunk(response, {
               uuid,
               sources,
@@ -467,14 +514,14 @@ class OpenRouterLLM {
               close: true,
               error: false,
             });
-            response.removeListener("close", handleAbort);
-            clearInterval(timeoutCheck);
-            stream?.endMeasurement({
-              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-            });
-            resolve(fullText);
           }
         }
+
+        // Stream completed naturally - resolve with final metrics
+        response.removeListener("close", handleAbort);
+        clearInterval(timeoutCheck);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
       } catch (e) {
         writeResponseChunk(response, {
           uuid,
@@ -486,9 +533,7 @@ class OpenRouterLLM {
         });
         response.removeListener("close", handleAbort);
         clearInterval(timeoutCheck);
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
+        stream?.endMeasurement(usage);
         resolve(fullText);
       }
     });

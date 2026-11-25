@@ -8,7 +8,7 @@ import showToast from "@/utils/toast";
 import { numberWithCommas } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
+import Modal from "@/components/lib/Modal";
 import ChangeWarningModal from "@/components/ChangeWarning";
 
 function isNullOrNaN(value) {
@@ -63,7 +63,7 @@ export default function EmbeddingTextSplitterPreference() {
       setHasChanges(false);
       closeModal();
       showToast("Text chunking strategy settings saved.", "success");
-    } catch (error) {
+    } catch {
       showToast("Failed to save text chunking strategy settings.", "error");
     } finally {
       setSaving(false);
@@ -72,7 +72,13 @@ export default function EmbeddingTextSplitterPreference() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const _settings = (await Admin.systemPreferences())?.settings;
+      const _settings = (
+        await Admin.systemPreferencesByFields([
+          "text_splitter_chunk_size",
+          "text_splitter_chunk_overlap",
+          "max_embed_chunk_size",
+        ])
+      )?.settings;
       setSettings(_settings ?? {});
       setLoading(false);
     }
@@ -80,12 +86,12 @@ export default function EmbeddingTextSplitterPreference() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-zinc-950 light:bg-slate-50 flex">
       <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -94,7 +100,7 @@ export default function EmbeddingTextSplitterPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-zinc-900 light:bg-white w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <form
             onSubmit={handleSubmit}
@@ -187,13 +193,13 @@ export default function EmbeddingTextSplitterPreference() {
         </div>
       )}
 
-      <ModalWrapper isOpen={isOpen}>
+      <Modal isOpen={isOpen} onClose={closeModal} size="lg">
         <ChangeWarningModal
           warningText="Changing text splitter settings will clear any previously cached documents.\n\nThese new settings will be applied to all documents when embedding them into a workspace."
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />
-      </ModalWrapper>
+      </Modal>
     </div>
   );
 }

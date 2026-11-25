@@ -45,7 +45,7 @@ app.ws("/ws", function (ws, _response) {
         })
       );
     });
-  } catch (error) {}
+  } catch {}
 });
 
 app.all("*", function (_, response) {
@@ -61,7 +61,7 @@ async function runAIbitat(socket) {
 
   const aibitat = new AIbitat({
     provider: "openai",
-    model: "gpt-4",
+    model: "gpt-5.6-luna",
   })
     .use(websocket.plugin({ socket }))
     .use(webBrowsing.plugin())

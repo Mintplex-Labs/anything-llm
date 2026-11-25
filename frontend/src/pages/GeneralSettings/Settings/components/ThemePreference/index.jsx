@@ -1,5 +1,6 @@
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "react-i18next";
+import PalettePicker from "@/palettes/PalettePicker";
 
 export default function ThemePreference() {
   const { t } = useTranslation();
@@ -26,6 +27,13 @@ export default function ThemePreference() {
           ))}
         </select>
       </div>
+      <p className="text-sm leading-6 font-semibold text-white mt-4">
+        {t("customization.items.palette.title")}
+      </p>
+      <p className="text-xs text-white/60">
+        {t("customization.items.palette.description")}
+      </p>
+      <PalettePicker />
     </div>
   );
 }

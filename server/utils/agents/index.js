@@ -3,22 +3,41 @@ const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { User } = require("../../models/user");
+const { Workspace } = require("../../models/workspace");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
-const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
+const {
+  USER_AGENT,
+  WORKSPACE_AGENT,
+  resolveAgentSkill,
+} = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const {
+  getAndClearInvocationAttachments,
+  getAndClearInvocationReasoningEffort,
+} = require("../chats/agents");
+const {
+  resolveReasoningEffort,
+  usesModelRouter,
+} = require("../helpers/reasoningEffort");
+const { DocumentManager } = require("../DocumentManager");
 
 class AgentHandler {
   #invocationUUID;
   #funcsToLoad = [];
+  // Startup args (socket, etc.) retained so tools toggled on mid-session can be
+  // loaded with the same options used at session start.
+  #args = null;
   invocation = null;
   aibitat = null;
   channel = null;
   provider = null;
   model = null;
+  attachments = [];
 
   constructor({ uuid }) {
     this.#invocationUUID = uuid;
@@ -30,6 +49,41 @@ class AgentHandler {
 
   closeAlert() {
     this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
+  }
+
+  /**
+   * Determine if the message should invoke the agent handler.
+   * This is true when the user explicitly invokes an agent (via @agent prefix)
+   * or when the workspace is in automatic mode **and** the provider supports native tool calling.
+   * @param {object} parameters
+   * @param {string} parameters.message - The message to check for agent invocation.
+   * @param { import("@prisma/client").workspaces} parameters.workspace - The workspace to check for agent invocation.
+   * @param {string} parameters.chatMode - The chat mode to check for agent invocation.
+   * @returns {Promise<boolean>}
+   */
+  static async isAgentInvocation({
+    message,
+    workspace = null,
+    chatMode = null,
+  }) {
+    if (this.#isAgentCommandInvocation({ message })) return true;
+    if (chatMode === "automatic") {
+      if (!workspace) return false;
+      if (await Workspace.supportsNativeToolCalling(workspace)) return true;
+      return false;
+    }
+    return false;
+  }
+
+  /**
+   * Determine if the message provided is an agent invocation.
+   * @param {{message:string}} parameters
+   * @returns {boolean}
+   */
+  static #isAgentCommandInvocation({ message }) {
+    const agentHandles = WorkspaceAgentInvocation.parseAgents(message);
+    if (agentHandles.length > 0) return true;
+    return false;
   }
 
   async #chatHistory(limit = 10) {
@@ -48,19 +102,26 @@ class AgentHandler {
         )
       ).reverse();
 
+      const { chatHistoryAttachments } = require("../files");
       const agentHistory = [];
       rawHistory.forEach((chatLog) => {
+        const response = safeJsonParse(chatLog.response, {});
+        // A prompt that never got a response is left out of the agent history -
+        // some providers (ex: Bedrock) reject a blank assistant message.
+        if (!response?.text) return;
+        const attachments = chatHistoryAttachments(response);
         agentHistory.push(
           {
             from: USER_AGENT.name,
             to: WORKSPACE_AGENT.name,
             content: chatLog.prompt,
             state: "success",
+            ...(attachments.length > 0 ? { attachments } : {}),
           },
           {
             from: WORKSPACE_AGENT.name,
             to: USER_AGENT.name,
-            content: safeJsonParse(chatLog.response)?.text || "",
+            content: response?.text || "",
             state: "success",
           }
         );
@@ -139,14 +200,7 @@ class AgentHandler {
           );
         break;
       case "bedrock":
-        if (
-          !process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID ||
-          !process.env.AWS_BEDROCK_LLM_ACCESS_KEY ||
-          !process.env.AWS_BEDROCK_LLM_REGION
-        )
-          throw new Error(
-            "AWS Bedrock Access Keys and region must be provided to use agents."
-          );
+        // No validations since there are many possible authentication methods
         break;
       case "fireworksai":
         if (!process.env.FIREWORKS_AI_LLM_API_KEY)
@@ -194,16 +248,6 @@ class AgentHandler {
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
         break;
-      case "dpais":
-        if (!process.env.DPAIS_LLM_BASE_PATH)
-          throw new Error(
-            "Dell Pro AI Studio base path must be provided to use agents."
-          );
-        if (!process.env.DPAIS_LLM_MODEL_PREF)
-          throw new Error(
-            "Dell Pro AI Studio model must be set to use agents."
-          );
-        break;
       case "moonshotai":
         if (!process.env.MOONSHOT_AI_MODEL_PREF)
           throw new Error("Moonshot AI model must be set to use agents.");
@@ -219,6 +263,57 @@ class AgentHandler {
       case "giteeai":
         if (!process.env.GITEE_AI_API_KEY)
           throw new Error("GiteeAI API Key must be provided to use agents.");
+        break;
+      case "cohere":
+        if (!process.env.COHERE_API_KEY)
+          throw new Error("Cohere API key must be provided to use agents.");
+        break;
+      case "llmman":
+        if (!process.env.LLMMAN_BASE_PATH)
+          throw new Error("llmman base path must be provided to use agents.");
+        break;
+      case "privatemode":
+        if (!process.env.PRIVATEMODE_LLM_BASE_PATH)
+          throw new Error(
+            "Privatemode base path must be provided to use agents."
+          );
+        break;
+      case "sambanova":
+        if (!process.env.SAMBANOVA_LLM_API_KEY)
+          throw new Error("SambaNova API key must be provided to use agents.");
+        break;
+      case "lemonade":
+        if (!process.env.LEMONADE_LLM_BASE_PATH)
+          throw new Error("Lemonade base path must be provided to use agents.");
+        break;
+      case "embedded_lemonade":
+        // lemond is booted on demand by the provider - it only has to be enabled on this instance.
+        if (!require("../AiProviders/embeddedLemonade/config").isEnabled())
+          throw new Error(
+            "The built-in LLM engine is not enabled. Set ENABLE_BUILT_IN_LLM=true when starting the AnythingLLM Docker container."
+          );
+        break;
+      case "omlx":
+        if (!process.env.OMLX_LLM_BASE_PATH)
+          throw new Error("OMLX base path must be provided to use agents.");
+        break;
+      case "minimax":
+        if (!process.env.MINIMAX_API_KEY)
+          throw new Error("Minimax API key must be provided to use agents.");
+        break;
+      case "cerebras":
+        if (!process.env.CEREBRAS_API_KEY)
+          throw new Error("Cerebras API key must be provided to use agents.");
+        break;
+      case "vertex":
+        if (
+          !process.env.VERTEX_AI_LLM_API_KEY ||
+          !process.env.VERTEX_AI_LLM_PROJECT_ID
+        )
+          throw new Error(
+            "Vertex AI API key and project ID must be provided to use agents."
+          );
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -235,11 +330,11 @@ class AgentHandler {
   providerDefault(provider = this.provider) {
     switch (provider) {
       case "openai":
-        return process.env.OPEN_MODEL_PREF ?? "gpt-4o";
+        return process.env.OPEN_MODEL_PREF ?? "gpt-5.6-luna";
       case "anthropic":
-        return process.env.ANTHROPIC_MODEL_PREF ?? "claude-3-sonnet-20240229";
+        return process.env.ANTHROPIC_MODEL_PREF ?? "claude-sonnet-4-6";
       case "lmstudio":
-        return process.env.LMSTUDIO_MODEL_PREF ?? "server-default";
+        return process.env.LMSTUDIO_MODEL_PREF ?? null;
       case "ollama":
         return process.env.OLLAMA_MODEL_PREF ?? "llama3:latest";
       case "groq":
@@ -250,7 +345,9 @@ class AgentHandler {
           "mistralai/Mixtral-8x7B-Instruct-v0.1"
         );
       case "azure":
-        return process.env.OPEN_MODEL_PREF;
+        return (
+          process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF
+        );
       case "koboldcpp":
         return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
       case "localai":
@@ -270,7 +367,7 @@ class AgentHandler {
       case "fireworksai":
         return process.env.FIREWORKS_AI_LLM_MODEL_PREF ?? null;
       case "deepseek":
-        return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-chat";
+        return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-flash";
       case "litellm":
         return process.env.LITE_LLM_MODEL_PREF ?? null;
       case "moonshotai":
@@ -288,15 +385,33 @@ class AgentHandler {
       case "ppio":
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       case "gemini":
-        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
-      case "dpais":
-        return process.env.DPAIS_LLM_MODEL_PREF;
+        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-3.1-flash-lite";
       case "cometapi":
         return process.env.COMETAPI_LLM_MODEL_PREF ?? "gpt-5-mini";
       case "foundry":
         return process.env.FOUNDRY_MODEL_PREF ?? null;
       case "giteeai":
         return process.env.GITEE_AI_MODEL_PREF ?? null;
+      case "cohere":
+        return process.env.COHERE_MODEL_PREF ?? "command-r-08-2024";
+      case "llmman":
+        return process.env.LLMMAN_MODEL_PREF ?? null;
+      case "privatemode":
+        return process.env.PRIVATEMODE_LLM_MODEL_PREF ?? null;
+      case "sambanova":
+        return process.env.SAMBANOVA_LLM_MODEL_PREF ?? null;
+      case "lemonade":
+        return process.env.LEMONADE_LLM_MODEL_PREF ?? null;
+      case "embedded_lemonade":
+        return process.env.EMBEDDED_LEMONADE_MODEL_PREF ?? null;
+      case "omlx":
+        return process.env.OMLX_LLM_MODEL_PREF ?? null;
+      case "minimax":
+        return process.env.MINIMAX_MODEL_PREF ?? "MiniMax-M2.7";
+      case "cerebras":
+        return process.env.CEREBRAS_MODEL_PREF ?? "gpt-oss-120b";
+      case "vertex":
+        return process.env.VERTEX_AI_LLM_MODEL_PREF ?? "gemini-2.5-flash";
       default:
         return null;
     }
@@ -311,6 +426,12 @@ class AgentHandler {
    * @returns {object|null} - An object with provider and model keys.
    */
   #getFallbackProvider() {
+    // If workspace chat uses the model router, fall back to it.
+    // Model is null here since the router determines it at resolve time.
+    if (this.invocation.workspace.chatProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     // First, fallback to the workspace chat provider and model if they exist
     if (
       this.invocation.workspace.chatProvider &&
@@ -325,6 +446,10 @@ class AgentHandler {
     // If workspace does not have chat provider and model fallback
     // to system provider and try to load provider default model
     const systemProvider = process.env.LLM_PROVIDER;
+    if (systemProvider === "anythingllm-router") {
+      return { provider: "anythingllm-router", model: null };
+    }
+
     const systemModel = this.providerDefault(systemProvider);
     if (systemProvider && systemModel) {
       return {
@@ -362,14 +487,78 @@ class AgentHandler {
     return this.providerDefault();
   }
 
-  #providerSetupAndCheck() {
+  async #providerSetupAndCheck(prompt = null) {
     this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
 
+    // If provider resolved to model router, resolve the actual provider/model
+    if (this.provider === "anythingllm-router") {
+      await this.#resolveRouterProvider(prompt);
+    }
+
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
+  }
+
+  async #resolveRouterProvider(prompt = null) {
+    const { AnythingLLMModelRouter } = require("../AiProviders/modelRouter");
+    const routerWorkspace = this.invocation.workspace.router_id
+      ? this.invocation.workspace
+      : {
+          ...this.invocation.workspace,
+          router_id: process.env.MODEL_ROUTER_ID
+            ? Number(process.env.MODEL_ROUTER_ID)
+            : null,
+        };
+
+    // Resolve the thread slug from the numeric thread_id so the route cache key
+    // matches the key used everywhere else.
+    let thread = null;
+    if (this.invocation.thread_id) {
+      if (!this._threadSlug) {
+        const { WorkspaceThread } = require("../../models/workspaceThread");
+        const threadRecord = await WorkspaceThread.get({
+          id: this.invocation.thread_id,
+        });
+        this._threadSlug = threadRecord?.slug || null;
+      }
+      thread = this._threadSlug ? { slug: this._threadSlug } : null;
+    }
+
+    const router = new AnythingLLMModelRouter(routerWorkspace);
+    const { ModelRouterService } = require("../router");
+    const workspace = this.invocation.workspace;
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const effectivePrompt = prompt || this.invocation.prompt;
+    const ctx = await ModelRouterService.gatherRoutingContext({
+      workspace,
+      user,
+      thread: this.invocation.thread_id
+        ? { id: this.invocation.thread_id }
+        : null,
+      message: effectivePrompt,
+    });
+
+    await router.resolve(
+      {
+        prompt: effectivePrompt,
+        conversationTokenCount: ctx.conversationTokenCount,
+        conversationMessageCount: ctx.conversationMessageCount,
+        attachments: this.attachments || [],
+      },
+      { user, thread }
+    );
+
+    this.provider = router.resolvedRoute.provider;
+    this.model = router.resolvedRoute.model;
+    this.routingMetadata = router.routingMetadata;
+    // Held so the model-router-cooldown plugin can restart the cooldown when
+    // the agent stops responding. Routing re-resolves per turn, so this always
+    // points at the router for the current route.
+    this._modelRouter = router;
   }
 
   async #validInvocation() {
@@ -378,6 +567,21 @@ class AgentHandler {
     });
     if (invocation?.closed)
       throw new Error("This agent invocation is already closed");
+    if (invocation && !invocation.workspace)
+      throw new Error("This agent invocation has no valid workspace");
+
+    if (invocation?.user_id) {
+      const user = await User.get({ id: Number(invocation.user_id) });
+      if (!user || user.suspended)
+        throw new Error("User is not permitted to use this agent invocation");
+
+      const workspace = await Workspace.getWithUser(user, {
+        id: invocation.workspace_id,
+      });
+      if (!workspace)
+        throw new Error("User does not have access to this workspace");
+    }
+
     this.invocation = invocation ?? null;
   }
 
@@ -402,131 +606,176 @@ class AgentHandler {
   }
 
   async #attachPlugins(args) {
-    for (const name of this.#funcsToLoad) {
-      // Load child plugin
-      if (name.includes("#")) {
-        const [parent, childPluginName] = name.split("#");
-        if (!Object.prototype.hasOwnProperty.call(AgentPlugins, parent)) {
-          this.log(
-            `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
+    for (const name of this.#funcsToLoad)
+      await this.#attachPluginByName(name, args);
+  }
 
-        const childPlugin = AgentPlugins[parent].plugin.find(
-          (child) => child.name === childPluginName
-        );
-        if (!childPlugin) {
-          this.log(
-            `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        const callOpts = this.parseCallOptions(
-          args,
-          childPlugin?.startupConfig?.params,
-          name
-        );
-        this.aibitat.use(childPlugin.plugin(callOpts));
+  /**
+   * Load a single plugin (by its funcsToLoad-style identifier) onto the live
+   * aibitat instance. Used both at session start by #attachPlugins and when a
+   * tool is toggled on mid-session.
+   * @param {string} name - The plugin identifier (plain, `parent#child`, `@@flow_<uuid>`, `@@mcp_<server>`, or `@@<hubId>`).
+   * @param {object} args - Startup args (socket, etc.) used to resolve call options.
+   */
+  async #attachPluginByName(name, args) {
+    // Load child plugin
+    if (name.includes("#")) {
+      const [parent, childPluginName] = name.split("#");
+      if (!Object.prototype.hasOwnProperty.call(AgentPlugins, parent)) {
         this.log(
-          `Attached ${parent}:${childPluginName} plugin to Agent cluster`
+          `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
         );
-        continue;
+        return;
       }
 
-      // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
-      if (name.startsWith("@@flow_")) {
-        const uuid = name.replace("@@flow_", "");
-        const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
-        if (!plugin) {
-          this.log(
-            `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        this.aibitat.use(plugin.plugin());
+      const childPlugin = AgentPlugins[parent].plugin.find(
+        (child) => child.name === childPluginName
+      );
+      if (!childPlugin) {
         this.log(
-          `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+          `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`
         );
-        continue;
-      }
-
-      // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
-      // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
-      // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
-      // can be called directly by the agent when invoked.
-      // Since to get to this point, the `activeMCPServers` method has already been called, we can
-      // safely assume that the MCP server is running and the tools are available/loaded.
-      if (name.startsWith("@@mcp_")) {
-        const mcpPluginName = name.replace("@@mcp_", "");
-        const plugins =
-          await new MCPCompatibilityLayer().convertServerToolsToPlugins(
-            mcpPluginName,
-            this.aibitat
-          );
-        if (!plugins) {
-          this.log(
-            `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        // Remove the old function from the agent functions directly
-        // and push the new ones onto the end of the array so that they are loaded properly.
-        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
-          .get("@agent")
-          .functions.filter((f) => f.name !== name);
-        for (const plugin of plugins)
-          this.aibitat.agents.get("@agent").functions.push(plugin.name);
-
-        plugins.forEach((plugin) => {
-          this.aibitat.use(plugin.plugin());
-          this.log(
-            `Attached MCP::${plugin.toolName} MCP tool to Agent cluster`
-          );
-        });
-        continue;
-      }
-
-      // Load imported plugin. This is marked by `@@` in the array of functions to load.
-      // and is the @@hubID of the plugin.
-      if (name.startsWith("@@")) {
-        const hubId = name.replace("@@", "");
-        const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
-        if (!valid) {
-          this.log(
-            `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
-          );
-          continue;
-        }
-
-        const plugin = ImportedPlugin.loadPluginByHubId(hubId);
-        const callOpts = plugin.parseCallOptions();
-        this.aibitat.use(plugin.plugin(callOpts));
-        this.log(
-          `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
-        );
-        continue;
-      }
-
-      // Load single-stage plugin.
-      if (!Object.prototype.hasOwnProperty.call(AgentPlugins, name)) {
-        this.log(
-          `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
-        );
-        continue;
+        return;
       }
 
       const callOpts = this.parseCallOptions(
         args,
-        AgentPlugins[name].startupConfig.params
+        childPlugin?.startupConfig?.params,
+        name
       );
-      const AIbitatPlugin = AgentPlugins[name];
-      this.aibitat.use(AIbitatPlugin.plugin(callOpts));
-      this.log(`Attached ${name} plugin to Agent cluster`);
+      this.aibitat.use(childPlugin.plugin(callOpts));
+      this.log(`Attached ${parent}:${childPluginName} plugin to Agent cluster`);
+      return;
     }
+
+    // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+    // Replace the @@flow_ placeholder in the agent's function list with the actual
+    // tool name so the function lookup in reply() can find it.
+    if (name.startsWith("@@flow_")) {
+      const uuid = name.replace("@@flow_", "");
+      const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
+      if (!plugin) {
+        this.log(
+          `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
+        );
+        return;
+      }
+
+      this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+        .get("@agent")
+        .functions.filter((f) => f !== name);
+      this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+      this.aibitat.use(plugin.plugin());
+      this.log(
+        `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+      );
+      return;
+    }
+
+    // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
+    // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
+    // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
+    // can be called directly by the agent when invoked.
+    // Since to get to this point, the `activeMCPServers` method has already been called, we can
+    // safely assume that the MCP server is running and the tools are available/loaded.
+    if (name.startsWith("@@mcp_")) {
+      const mcpPluginName = name.replace("@@mcp_", "");
+      const plugins =
+        await new MCPCompatibilityLayer().convertServerToolsToPlugins(
+          mcpPluginName,
+          this.aibitat
+        );
+      if (!plugins) {
+        this.log(
+          `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
+        );
+        return;
+      }
+
+      // Remove the old function from the agent functions directly
+      // and push the new ones onto the end of the array so that they are loaded properly.
+      this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+        .get("@agent")
+        .functions.filter((f) => f.name !== name);
+      for (const plugin of plugins)
+        this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+      plugins.forEach((plugin) => {
+        this.aibitat.use(plugin.plugin());
+        this.log(`Attached MCP::${plugin.toolName} MCP tool to Agent cluster`);
+      });
+      return;
+    }
+
+    // Load imported plugin. This is marked by `@@` in the array of functions to load.
+    // and is the @@hubID of the plugin.
+    if (name.startsWith("@@")) {
+      const hubId = name.replace("@@", "");
+      const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
+      if (!valid) {
+        this.log(
+          `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
+        );
+        return;
+      }
+
+      const plugin = ImportedPlugin.loadPluginByHubId(hubId);
+      const callOpts = plugin.parseCallOptions();
+      this.aibitat.use(plugin.plugin(callOpts));
+      this.log(
+        `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
+      );
+      return;
+    }
+
+    // Load single-stage plugin.
+    if (!Object.prototype.hasOwnProperty.call(AgentPlugins, name)) {
+      this.log(
+        `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
+      );
+      return;
+    }
+
+    const callOpts = this.parseCallOptions(
+      args,
+      AgentPlugins[name].startupConfig.params
+    );
+    const AIbitatPlugin = AgentPlugins[name];
+    this.aibitat.use(AIbitatPlugin.plugin(callOpts));
+    this.log(`Attached ${name} plugin to Agent cluster`);
+  }
+
+  /**
+   * Toggle a tool/skill on or off for the running agent mid-session. Enabling
+   * loads the plugin(s) via aibitat.use() and ensures the agent can reference
+   * them; disabling pops the registered function(s) off the aibitat functions
+   * Map. Changes apply on the agent's next turn. Registered on the aibitat
+   * instance as `toggleAgentTool` so the websocket plugin can call it.
+   * @param {object} params
+   * @param {string} params.skill - Skill key, `@@flow_<uuid>`, MCP `<server>-<tool>`, hubId, or sub-skill name.
+   * @param {boolean} [params.enabled=true] - Whether the tool should be enabled.
+   * @param {string|null} [params.serverName=null] - MCP server name; required to enable an MCP tool.
+   */
+  async #toggleAgentTool({ skill, enabled = true, serverName = null }) {
+    if (!skill || !this.aibitat?.agents.has(WORKSPACE_AGENT.name)) return;
+    const { loadable, registered } = resolveAgentSkill(skill, { serverName });
+    const agent = () => this.aibitat.agents.get(WORKSPACE_AGENT.name);
+
+    if (enabled) {
+      for (const entry of loadable) {
+        if (!agent().functions.includes(entry)) agent().functions.push(entry);
+        await this.#attachPluginByName(entry, this.#args);
+      }
+      // Dedupe in case re-enabling a flow/MCP tool re-pushed a name already
+      // resolved into the agent's function list at session start.
+      agent().functions = [...new Set(agent().functions)];
+      this.log(`Enabled tool(s) [${registered.join(", ")}] mid-session.`);
+      return;
+    }
+
+    for (const name of registered) this.aibitat.removeFunction(name);
+    this.log(`Disabled tool(s) [${registered.join(", ")}] mid-session.`);
   }
 
   async #loadAgents() {
@@ -539,7 +788,8 @@ class AgentHandler {
     const workspaceAgentDef = await WORKSPACE_AGENT.getDefinition(
       this.provider,
       this.invocation.workspace,
-      user
+      user,
+      this.invocation.prompt
     );
 
     this.aibitat.agent(USER_AGENT.name, userAgentDef);
@@ -552,24 +802,199 @@ class AgentHandler {
 
   async init() {
     await this.#validInvocation();
-    this.#providerSetupAndCheck();
+    await this.#providerSetupAndCheck();
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
+
+    // Retrieve cached attachments (images, etc.) from the HTTP request
+    this.attachments = getAndClearInvocationAttachments(this.#invocationUUID);
+    this.sessionReasoningEffort = getAndClearInvocationReasoningEffort(
+      this.#invocationUUID
+    );
+
     return this;
+  }
+
+  /**
+   * Fetch fresh parsed files and pinned documents, format them for injection into user messages.
+   * Called on every chat turn to ensure context is always up-to-date.
+   * @returns {Promise<string>} Formatted context string to append to user message
+   */
+  async #fetchParsedFileContext() {
+    const user = this.invocation.user_id
+      ? { id: this.invocation.user_id }
+      : null;
+    const thread = this.invocation.thread_id
+      ? { id: this.invocation.thread_id }
+      : null;
+    const documentManager = new DocumentManager({
+      workspace: this.invocation.workspace,
+    });
+
+    return Promise.all([
+      WorkspaceParsedFiles.getContextFiles(
+        this.invocation.workspace,
+        thread,
+        user
+      ),
+      documentManager.pinnedDocs(),
+    ])
+      .then(([parsedFiles, pinnedDocs]) => {
+        const allDocuments = [
+          ...(parsedFiles || []).map((doc) => ({
+            name: doc.title || "Uploaded Document",
+            content: doc.pageContent,
+            metadata: doc,
+          })),
+          ...(pinnedDocs || []).map((doc) => ({
+            name: doc.title || doc.metadata?.title || "Pinned Document",
+            content: doc.pageContent,
+            metadata: doc.metadata || doc,
+          })),
+        ];
+
+        if (allDocuments.length === 0) return "";
+        if (parsedFiles?.length > 0)
+          this.log(
+            `Injecting ${parsedFiles.length} parsed file(s) into user message`
+          );
+        if (pinnedDocs?.length > 0)
+          this.log(
+            `Injecting ${pinnedDocs.length} pinned document(s) into user message`
+          );
+
+        this.aibitat?.addDocumentCitations(allDocuments);
+
+        return (
+          "\n\n<attached_documents>\n" +
+          allDocuments
+            .map((doc, i) => {
+              const filename = doc.name || `Document ${i + 1}`;
+              return `<document name="${filename}">\n${doc.content}\n</document>`;
+            })
+            .join("\n") +
+          "\n</attached_documents>"
+        );
+      })
+      .catch((e) => {
+        this.log("Error fetching parsed file context", e.message);
+        return "";
+      });
+  }
+
+  /**
+   * Reasoning effort for the current provider + model, validated against the
+   * model's live capabilities. Re-run whenever the route changes, since an
+   * effort valid for one model can be rejected by another.
+   * @returns {Promise<string|null>}
+   */
+  async #reasoningEffortForRoute() {
+    if (usesModelRouter(this.invocation.workspace)) return null;
+    const { getLLMProvider } = require("../helpers");
+    return await resolveReasoningEffort(
+      () => getLLMProvider({ provider: this.provider, model: this.model }),
+      this.sessionReasoningEffort
+    );
+  }
+
+  /**
+   * Switches the session's reasoning effort mid-session. The new effort is
+   * validated against the current route's model and used from the next turn.
+   * @param {string|null} sessionEffort - null uses the provider default
+   */
+  async #updateReasoningEffort(sessionEffort = null) {
+    const effort = typeof sessionEffort === "string" ? sessionEffort : null;
+    if (effort === this.sessionReasoningEffort) return;
+    this.sessionReasoningEffort = effort;
+    this.aibitat.defaultProvider.reasoningEffort =
+      await this.#reasoningEffortForRoute();
+    this.log(
+      `Reasoning effort for ${this.provider}:${this.model} is now ${this.aibitat.defaultProvider.reasoningEffort ?? "provider default"}.`
+    );
   }
 
   async createAIbitat(
     args = {
-      socket,
+      socket: null,
     }
   ) {
+    this.#args = args;
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-4o",
+      model: this.model ?? "gpt-5.6-luna",
+      temperature: this.invocation.workspace?.openAiTemp,
+      reasoningEffort: await this.#reasoningEffortForRoute(),
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
         log: this.log,
+        routingMetadata: this.routingMetadata || null,
       },
     });
+
+    // Register callback to fetch fresh parsed file context on each chat turn
+    // This injects parsed files into user messages instead of system prompt
+    this.aibitat.fetchParsedFileContext = () => this.#fetchParsedFileContext();
+
+    // Register callback so the websocket plugin can toggle tools on/off for the
+    // running agent mid-session.
+    this.aibitat.toggleAgentTool = (payload) => this.#toggleAgentTool(payload);
+
+    // Register callback so the websocket plugin can apply the reasoning effort
+    // the chat session sends with each message to the agent's next turn.
+    this.aibitat.updateReasoningEffort = (effort) =>
+      this.#updateReasoningEffort(effort);
+
+    // Re-read the workspace and re-resolve the provider/model on every agent turn
+    // so model changes and router rules apply mid-session, not only at initialization.
+    // Skip the first invocation since the route was already resolved during init()
+    // and re-resolving would cause shouldNotify to return false (route already recorded).
+    let isFirstCall = true;
+    this.aibitat.resolveRoute = async (prompt) => {
+      if (isFirstCall) {
+        isFirstCall = false;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: this.aibitat.defaultProvider.reasoningEffort,
+        };
+      }
+      try {
+        const { provider, model } = this;
+        this.invocation.workspace =
+          (await Workspace._findFirst({
+            where: { id: this.invocation.workspace.id },
+          })) ?? this.invocation.workspace;
+        this.routingMetadata = null;
+        this._modelRouter = null;
+        await this.#providerSetupAndCheck(prompt);
+        if (this.provider !== provider || this.model !== model)
+          this.log(
+            `Route changed ${this.#invocationUUID}::${this.provider}:${this.model}`
+          );
+        this.aibitat.handlerProps.routingMetadata =
+          this.routingMetadata || null;
+        return {
+          provider: this.provider,
+          model: this.model,
+          reasoningEffort: await this.#reasoningEffortForRoute(),
+        };
+      } catch (e) {
+        this.log(
+          "Route re-resolution failed, keeping current route",
+          e.message
+        );
+        return null;
+      }
+    };
+
+    this.log(
+      `Attached ${AgentPlugins.modelRouterCooldown.name} plugin to Agent cluster`
+    );
+    this.aibitat.use(
+      AgentPlugins.modelRouterCooldown.plugin(() =>
+        this._modelRouter?.onInferenceComplete()
+      )
+    );
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
@@ -578,6 +1003,7 @@ class AgentHandler {
         socket: args.socket,
         muteUserReply: true,
         introspection: true,
+        userId: this.invocation.user_id || null,
       })
     );
 
@@ -594,11 +1020,28 @@ class AgentHandler {
     await this.#attachPlugins(args);
   }
 
+  /**
+   * Strip the @agent command from the message if it exists.
+   * Prevents hallucination by the agent when the @agent command is used from the model thinking
+   * it is an agent or something itself.
+   * If the user sent nothing after the @agent command - assume its a greeting.
+   * @param {string} message - The message to strip the @agent command from.
+   * @returns {string} The message with the @agent command stripped.
+   */
+  #stripAgentCommand(message = "") {
+    const stripped = String(message)
+      .replace(/^@agent\s*/, "")
+      .trim();
+    if (!stripped) return "Hello!";
+    return stripped;
+  }
+
   startAgentCluster() {
     return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
-      content: this.invocation.prompt,
+      content: this.#stripAgentCommand(this.invocation.prompt),
+      attachments: this.attachments,
     });
   }
 }

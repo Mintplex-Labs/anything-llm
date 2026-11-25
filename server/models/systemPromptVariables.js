@@ -23,6 +23,13 @@ const SystemPromptVariables = {
       multiUserRequired: false,
     },
     {
+      key: "time_24",
+      value: () => moment().format("HH:mm:ss"),
+      description: "Current time (24-hour format)",
+      type: "system",
+      multiUserRequired: false,
+    },
+    {
       key: "date",
       value: () => moment().format("LL"),
       description: "Current date",
@@ -33,6 +40,13 @@ const SystemPromptVariables = {
       key: "datetime",
       value: () => moment().format("LLLL"),
       description: "Current date and time",
+      type: "system",
+      multiUserRequired: false,
+    },
+    {
+      key: "datetime_24",
+      value: () => moment().format("YYYY-MM-DD HH:mm:ss"),
+      description: "Current date and time (24-hour format)",
       type: "system",
       multiUserRequired: false,
     },
@@ -232,13 +246,15 @@ const SystemPromptVariables = {
 
     try {
       const allVariables = await this.getAll(userId);
-      let result = str;
+      const resolved = new Map();
 
-      // Find all variable patterns in the string
-      const matches = str.match(/\{([^}]+)\}/g) || [];
+      // Find all variable patterns in the string. A placeholder holds no
+      // brace, so one written inside other braces ({"name": "{user.name}"})
+      // is matched on its own instead of from the outer opening brace.
+      const matches = str.match(/\{([^{}]+)\}/g) || [];
 
       // Process each match
-      for (const match of matches) {
+      for (const match of new Set(matches)) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
         // Determine if the variable is a class-based variable (workspace.X or user.X)
@@ -275,7 +291,7 @@ const SystemPromptVariables = {
                 );
                 value = `[${variableTypeDisplay} ${prop}]`;
               }
-              result = result.replace(match, value);
+              resolved.set(match, value);
             } else {
               let value;
               try {
@@ -292,11 +308,11 @@ const SystemPromptVariables = {
                 );
                 value = `[${variableTypeDisplay} ${prop}]`;
               }
-              result = result.replace(match, value);
+              resolved.set(match, value);
             }
           } else {
             // If the variable is not a function, replace the match with the variable value
-            result = result.replace(match, `[${variableTypeDisplay} ${prop}]`);
+            resolved.set(match, `[${variableTypeDisplay} ${prop}]`);
           }
           continue;
         }
@@ -313,20 +329,23 @@ const SystemPromptVariables = {
           try {
             if (variable.value.constructor.name === "AsyncFunction") {
               const value = await variable.value(userId);
-              result = result.replace(match, value);
+              resolved.set(match, value);
             } else {
               const value = variable.value();
-              result = result.replace(match, value);
+              resolved.set(match, value);
             }
           } catch (error) {
             console.error(`Error processing dynamic variable ${key}:`, error);
-            result = result.replace(match, match);
+            resolved.set(match, match);
           }
         } else {
-          result = result.replace(match, variable.value || match);
+          resolved.set(match, variable.value || match);
         }
       }
-      return result;
+      return str.replace(
+        /\{([^{}]+)\}/g,
+        (match) => resolved.get(match) ?? match
+      );
     } catch (error) {
       console.error("Error in expandSystemPromptVariables:", error);
       return str;

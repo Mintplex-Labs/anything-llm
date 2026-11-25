@@ -3,6 +3,8 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 
 require("./utils/logger")();
+require("./utils/boot/patchSdkTimeouts")();
+require("./utils/helpers/modelPricing"); // boots the model pricing cache refresh
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -15,6 +17,7 @@ const { embeddedEndpoints } = require("./endpoints/embed");
 const { embedManagementEndpoints } = require("./endpoints/embedManagement");
 const { getVectorDbClass } = require("./utils/helpers");
 const { adminEndpoints } = require("./endpoints/admin");
+const { modelRouterEndpoints } = require("./endpoints/modelRouter");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
 const { developerEndpoints } = require("./endpoints/api");
@@ -23,16 +26,32 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const {
+  agentSkillWhitelistEndpoints,
+} = require("./endpoints/agentSkillWhitelist");
+const { agentFileServerEndpoints } = require("./endpoints/agentFileServer");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
+const { themePalettesEndpoints } = require("./endpoints/themePalettes");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
 const { mobileEndpoints } = require("./endpoints/mobile");
+const { webPushEndpoints } = require("./endpoints/webPush");
+const { telegramEndpoints } = require("./endpoints/telegram");
+const { scheduledJobEndpoints } = require("./endpoints/scheduledJobs");
+const {
+  outlookAgentEndpoints,
+} = require("./endpoints/utils/outlookAgentUtils");
+const {
+  googleAgentSkillEndpoints,
+} = require("./endpoints/utils/googleAgentSkillEndpoints");
+const { memoryEndpoints } = require("./endpoints/memory");
 const { httpLogger } = require("./middleware/httpLogger");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
+const EMBED_BODY_LIMIT = "1mb";
 
 // Only log HTTP requests in development mode and if the ENABLE_HTTP_LOGGER environment variable is set to true
 if (
@@ -46,6 +65,13 @@ if (
   );
 }
 app.use(cors({ origin: true }));
+// Embed endpoints are public-facing and only accept small payloads, so parse them
+// first with a tight limit. The global parsers below skip already-parsed bodies.
+app.use("/api/embed", [
+  bodyParser.text({ limit: EMBED_BODY_LIMIT }),
+  bodyParser.json({ limit: EMBED_BODY_LIMIT }),
+  bodyParser.urlencoded({ limit: EMBED_BODY_LIMIT, extended: true }),
+]);
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
 app.use(bodyParser.json({ limit: FILE_LIMIT }));
 app.use(
@@ -54,6 +80,14 @@ app.use(
     extended: true,
   })
 );
+app.use((err, request, response, next) => {
+  if (err?.type === "entity.too.large")
+    return response.status(413).json({ error: "Request payload too large." });
+  if (err instanceof SyntaxError && "body" in err)
+    return response.status(400).json({ error: "Malformed request body." });
+  if (err) return response.status(400).json({ error: "Invalid request body." });
+  next();
+});
 
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
@@ -63,23 +97,32 @@ if (!!process.env.ENABLE_HTTPS) {
 
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
+themePalettesEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
 workspaceThreadEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);
+modelRouterEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
+agentSkillWhitelistEndpoints(apiRouter);
+agentFileServerEndpoints(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
 agentFlowEndpoints(apiRouter);
 mcpServersEndpoints(apiRouter);
 mobileEndpoints(apiRouter);
-
+webPushEndpoints(apiRouter);
+telegramEndpoints(apiRouter);
+scheduledJobEndpoints(apiRouter);
+outlookAgentEndpoints(apiRouter);
+googleAgentSkillEndpoints(apiRouter);
+memoryEndpoints(apiRouter);
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 
@@ -89,6 +132,11 @@ browserExtensionEndpoints(apiRouter);
 if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");
   const IndexPage = new MetaGenerator();
+
+  app.get("/manifest.json", async function (_, response) {
+    IndexPage.generateManifest(response);
+    return;
+  });
 
   app.use(
     express.static(path.resolve(__dirname, "public"), {
@@ -104,11 +152,6 @@ if (process.env.NODE_ENV !== "development") {
   app.get("/robots.txt", function (_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
-  });
-
-  app.get("/manifest.json", async function (_, response) {
-    IndexPage.generateManifest(response);
-    return;
   });
 
   app.use("/", function (_, response) {

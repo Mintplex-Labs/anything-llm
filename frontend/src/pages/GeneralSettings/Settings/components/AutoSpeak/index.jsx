@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
+import Toggle from "@/components/lib/Toggle";
 
 export default function AutoSpeak() {
   const [saving, setSaving] = useState(false);
@@ -8,15 +9,14 @@ export default function AutoSpeak() {
     useState(false);
   const { t } = useTranslation();
 
-  const handleChange = async (e) => {
-    const newValue = e.target.checked;
-    setAutoPlayAssistantTtsResponse(newValue);
+  const handleChange = async (checked) => {
+    setAutoPlayAssistantTtsResponse(checked);
     setSaving(true);
     try {
-      Appearance.updateSettings({ autoPlayAssistantTtsResponse: newValue });
+      Appearance.updateSettings({ autoPlayAssistantTtsResponse: checked });
     } catch (error) {
       console.error("Failed to update appearance settings:", error);
-      setAutoPlayAssistantTtsResponse(!newValue);
+      setAutoPlayAssistantTtsResponse(!checked);
     }
     setSaving(false);
   };
@@ -32,28 +32,16 @@ export default function AutoSpeak() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
-        {t("customization.chat.auto_speak.title")}
-      </p>
-      <p className="text-xs text-white/60">
-        {t("customization.chat.auto_speak.description")}
-      </p>
-      <div className="flex items-center gap-x-4">
-        <label className="relative inline-flex cursor-pointer items-center">
-          <input
-            id="auto_speak"
-            type="checkbox"
-            name="auto_speak"
-            value="yes"
-            checked={autoPlayAssistantTtsResponse}
-            onChange={handleChange}
-            disabled={saving}
-            className="peer sr-only"
-          />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-        </label>
-      </div>
+    <div className="my-4">
+      <Toggle
+        size="md"
+        variant="horizontal"
+        enabled={autoPlayAssistantTtsResponse}
+        onChange={handleChange}
+        disabled={saving}
+        label={t("customization.chat.auto_speak.title")}
+        description={t("customization.chat.auto_speak.description")}
+      />
     </div>
   );
 }

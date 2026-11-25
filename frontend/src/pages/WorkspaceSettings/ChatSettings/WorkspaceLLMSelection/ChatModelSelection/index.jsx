@@ -1,26 +1,31 @@
 import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useAutosaveForm, SavedIndicator } from "@/components/AutosaveForm";
 
-export default function ChatModelSelection({
-  provider,
-  workspace,
-  setHasChanges,
-}) {
-  const { defaultModels, customModels, loading } =
+export default function ChatModelSelection({ provider, workspace }) {
+  const { defaultModels, customModels, loading, downloadedModels } =
     useGetProviderModels(provider);
+  const { save } = useAutosaveForm();
   const { t } = useTranslation();
+
+  // A provider change is only persisted once its model list is ready so both save together.
+  useEffect(() => {
+    if (!loading) save();
+  }, [loading]);
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 
   if (loading) {
     return (
-      <div>
-        <div className="flex flex-col mt-6">
+      <div className="flex flex-col gap-y-[8px]">
+        <div className="flex flex-col gap-y-[8px]">
           <label htmlFor="name" className="block input-label">
             {t("chat.model.title")}
+            <SavedIndicator name="chatModel" />
           </label>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-white text-opacity-60 text-xs font-medium">
             {t("chat.model.description")}
           </p>
         </div>
@@ -39,12 +44,13 @@ export default function ChatModelSelection({
   }
 
   return (
-    <div>
-      <div className="flex flex-col mt-6">
+    <div className="flex flex-col gap-y-[8px]">
+      <div className="flex flex-col gap-y-[8px]">
         <label htmlFor="name" className="block input-label">
           {t("chat.model.title")}
+          <SavedIndicator name="chatModel" />
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium">
           {t("chat.model.description")}
         </p>
       </div>
@@ -52,9 +58,6 @@ export default function ChatModelSelection({
       <select
         name="chatModel"
         required={true}
-        onChange={() => {
-          setHasChanges(true);
-        }}
         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
         {defaultModels.length > 0 && (
@@ -72,6 +75,19 @@ export default function ChatModelSelection({
             })}
           </optgroup>
         )}
+        {downloadedModels.length > 0 && (
+          <optgroup label="Downloaded models">
+            {downloadedModels.map((model) => (
+              <option
+                key={model.id}
+                value={model.id}
+                selected={workspace?.chatModel === model.id}
+              >
+                {model.name || model.id}
+              </option>
+            ))}
+          </optgroup>
+        )}
         {Array.isArray(customModels) && customModels.length > 0 && (
           <optgroup label="Discovered models">
             {customModels.map((model) => {
@@ -81,7 +97,7 @@ export default function ChatModelSelection({
                   value={model.id}
                   selected={workspace?.chatModel === model.id}
                 >
-                  {model.id}
+                  {model.name || model.id}
                 </option>
               );
             })}
@@ -99,7 +115,7 @@ export default function ChatModelSelection({
                       value={model.id}
                       selected={workspace?.chatModel === model.id}
                     >
-                      {model.name}
+                      {model.name || model.id}
                     </option>
                   ))}
                 </optgroup>

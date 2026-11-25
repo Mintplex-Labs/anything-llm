@@ -29,6 +29,26 @@ async function eagerLoadContextWindows() {
       await FoundryLLM.cacheContextWindows(true);
       log("Foundry");
       break;
+    case "cerebras":
+      const { CerebrasLLM } = require("../AiProviders/cerebras");
+      await CerebrasLLM.cacheContextWindows(true);
+      log("Cerebras");
+      break;
+    case "omlx":
+      const { OMLXLLM } = require("../AiProviders/omlx");
+      await OMLXLLM.cacheContextWindows(true);
+      log("OMLX");
+      break;
+    case "localai":
+      const { LocalAiLLM } = require("../AiProviders/localAi");
+      await LocalAiLLM.cacheContextWindows(true);
+      log("LocalAI");
+      break;
+    case "llmman":
+      const { LlmmanLLM } = require("../AiProviders/llmman");
+      await LlmmanLLM.cacheContextWindows(true);
+      log("llmman");
+      break;
   }
 }
 

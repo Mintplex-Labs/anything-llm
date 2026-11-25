@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
+const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
@@ -7,6 +8,7 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
 
 async function streamChatWithForEmbed(
   response,
@@ -18,23 +20,51 @@ async function streamChatWithForEmbed(
   sessionId,
   { promptOverride, modelOverride, temperatureOverride, username }
 ) {
-  const chatMode = embed.chat_mode;
+  // Automatic mode is NOT valid for embeds, so we default to chat mode.
+  let chatMode = embed.chat_mode ?? "chat";
+  if (chatMode === "automatic") chatMode = "chat";
+
   const chatModel = embed.allow_model_override ? modelOverride : null;
 
   // If there are overrides in request & they are permitted, override the default workspace ref information.
-  if (embed.allow_prompt_override)
+  if (embed.allow_prompt_override && typeof promptOverride === "string")
     embed.workspace.openAiPrompt = promptOverride;
-  if (embed.allow_temperature_override)
-    embed.workspace.openAiTemp = parseFloat(temperatureOverride);
+  const temperatureValue = parseFloat(temperatureOverride);
+  if (embed.allow_temperature_override && !Number.isNaN(temperatureValue))
+    embed.workspace.openAiTemp = temperatureValue;
 
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider({
-    provider: embed?.workspace?.chatProvider,
-    model: chatModel ?? embed.workspace?.chatModel,
+  const messageLimit = embed.message_limit ?? 20;
+  const {
+    connector: LLMConnector,
+    routingMetadata,
+    prefetchedContext,
+    error: routerError,
+  } = await resolveLLMConnectorForEmbed({
+    embed,
+    chatModel,
+    message,
+    sessionId,
+    messageLimit,
   });
+
+  if (routerError) {
+    return writeResponseChunk(response, {
+      id: uuid,
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: routerError,
+    });
+  }
+
+  // Stopping the generation (or closing the tab) should stop the provider
+  // generating too, not just stop us reading the response.
+  abortConnectorOnClientDisconnect(response, LLMConnector);
+
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = embed.message_limit ?? 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(embed.workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(embed.workspace.slug);
 
@@ -45,6 +75,7 @@ async function streamChatWithForEmbed(
       id: uuid,
       type: "textResponse",
       textResponse:
+        embed.workspace?.queryRefusalResponse ??
         "I do not have enough information to answer that. Try another question.",
       sources: [],
       close: true,
@@ -58,31 +89,29 @@ async function streamChatWithForEmbed(
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
-  const { rawHistory, chatHistory } = await recentEmbedChatHistory(
-    sessionId,
-    embed,
-    messageLimit
-  );
+  const {
+    rawHistory,
+    chatHistory,
+    pinnedDocs: prefetchedPinnedDocs,
+  } = prefetchedContext ??
+  (await recentEmbedChatHistory(sessionId, embed, messageLimit));
 
-  // See stream.js comment for more information on this implementation.
-  await new DocumentManager({
-    workspace: embed.workspace,
-    maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
+  const pinnedDocs =
+    prefetchedPinnedDocs ??
+    (await new DocumentManager({
+      workspace: embed.workspace,
+      maxTokens: LLMConnector.promptWindowLimit(),
+    }).pinnedDocs());
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
     });
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
@@ -152,7 +181,11 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: await chatPrompt(embed.workspace, username),
+      // Embed visitors are anonymous - never pass request-supplied identity
+      // into chatPrompt and never inject stored memories into the prompt.
+      systemPrompt: await chatPrompt(embed.workspace, null, {
+        skipMemories: true,
+      }),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -167,11 +200,13 @@ async function streamChatWithForEmbed(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     const { textResponse, metrics: performanceMetrics } =
-      await LLMConnector.getChatCompletion(messages, {
-        temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-      });
+      await LLMConnector.getChatCompletion(messages);
     completeText = textResponse;
-    metrics = performanceMetrics;
+    metrics = addChatCostToMetrics(performanceMetrics, {
+      routingMetadata,
+      workspace: embed.workspace,
+      connector: LLMConnector,
+    });
     writeResponseChunk(response, {
       uuid,
       sources: [],
@@ -181,28 +216,32 @@ async function streamChatWithForEmbed(
       error: false,
     });
   } else {
-    const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const stream = await LLMConnector.streamGetChatCompletion(messages);
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources: [],
     });
-    metrics = stream.metrics;
+    metrics = addChatCostToMetrics(stream.metrics, {
+      routingMetadata,
+      workspace: embed.workspace,
+      connector: LLMConnector,
+    });
   }
 
-  await EmbedChats.new({
-    embedId: embed.id,
-    prompt: message,
-    response: { text: completeText, type: chatMode, sources, metrics },
-    connection_information: response.locals.connection
-      ? {
-          ...response.locals.connection,
-          username: !!username ? String(username) : null,
-        }
-      : { username: !!username ? String(username) : null },
-    sessionId,
-  });
+  if (completeText?.length > 0) {
+    await EmbedChats.new({
+      embedId: embed.id,
+      prompt: message,
+      response: { text: completeText, type: chatMode, sources, metrics },
+      connection_information: response.locals.connection
+        ? {
+            ...response.locals.connection,
+            username: !!username ? String(username) : null,
+          }
+        : { username: !!username ? String(username) : null },
+      sessionId,
+    });
+  }
   return;
 }
 
@@ -219,6 +258,65 @@ async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
     })
   ).reverse();
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
+}
+
+/**
+ * Resolves the LLM connector for embed chats, either directly or via the model router.
+ * @returns {Promise<{ connector: Object, error: string|null }>}
+ */
+async function resolveLLMConnectorForEmbed({
+  embed,
+  chatModel,
+  message,
+  sessionId,
+  messageLimit,
+}) {
+  // If a chat model is provided, use it to override the workspace chat model
+  // otherwise use the workspace chat model as we do everywhere else.
+  const workspace = chatModel
+    ? { ...embed?.workspace, chatModel }
+    : embed?.workspace;
+  try {
+    const embedHistory = await recentEmbedChatHistory(
+      sessionId,
+      embed,
+      messageLimit
+    );
+    const embedMessageCount = await EmbedChats.count({
+      embed_id: embed.id,
+      session_id: sessionId,
+      include: true,
+    });
+
+    const { connector, routingMetadata, prefetchedContext } =
+      await resolveProviderConnector({
+        workspace,
+        prompt: message,
+        chatHistoryOverride: embedHistory,
+        // +1 to include the current in-flight message to ensure routing rules are evaluated against the real total.
+        messageCountOverride: embedMessageCount + 1,
+      });
+
+    return {
+      connector,
+      routingMetadata,
+      prefetchedContext: prefetchedContext
+        ? {
+            rawHistory: embedHistory.rawHistory,
+            chatHistory: embedHistory.chatHistory,
+            pinnedDocs: prefetchedContext.pinnedDocs,
+          }
+        : null,
+      error: null,
+    };
+  } catch (routerError) {
+    return {
+      connector: null,
+      routingMetadata: null,
+      prefetchedContext: null,
+      error: `Model router error: ${routerError.message}`,
+    };
+  }
 }
 
 module.exports = {

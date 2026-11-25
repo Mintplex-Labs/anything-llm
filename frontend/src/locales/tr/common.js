@@ -2,70 +2,77 @@
 const TRANSLATIONS = {
   onboarding: {
     survey: {
-      email: null,
-      useCase: null,
-      useCaseWork: null,
-      useCasePersonal: null,
-      useCaseOther: null,
-      comment: null,
-      commentPlaceholder: null,
-      skip: null,
-      thankYou: null,
-      title: null,
-      description: null,
+      email: "E-posta adresiniz nedir?",
+      useCase: "AnythingLLM'yi ne için kullanacaksınız?",
+      useCaseWork: "İş için",
+      useCasePersonal: "Kişisel kullanım için",
+      useCaseOther: "Diğer",
+      comment: "AnythingLLM'yi nasıl duydunuz?",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube vb. - Bizi nasıl buldunuz?",
+      skip: "Anketi Atla",
+      thankYou: "Geri bildiriminiz için teşekkür ederiz!",
+      title: "AnythingLLM'ye Hoş Geldiniz",
+      description:
+        "AnythingLLM'yi ihtiyaçlarınıza göre oluşturmamıza yardımcı olun. İsteğe bağlı.",
     },
     home: {
-      title: null,
-      getStarted: null,
+      getStarted: "Başla",
+      welcome: "Hoş geldiniz",
     },
     llm: {
-      title: null,
-      description: null,
+      title: "LLM Tercihi",
+      description:
+        "AnythingLLM birçok LLM sağlayıcısıyla çalışabilir. Bu, sohbeti yöneten hizmet olacaktır.",
     },
     userSetup: {
-      title: null,
-      description: null,
-      howManyUsers: null,
-      justMe: null,
-      myTeam: null,
-      instancePassword: null,
-      setPassword: null,
-      passwordReq: null,
-      passwordWarn: null,
-      adminUsername: null,
-      adminUsernameReq: null,
-      adminPassword: null,
-      adminPasswordReq: null,
-      teamHint: null,
+      title: "Kullanıcı Kurulumu",
+      description: "Kullanıcı ayarlarınızı yapılandırın.",
+      howManyUsers: "Bu kurulumu kaç kişi kullanacak?",
+      justMe: "Sadece ben",
+      myTeam: "Ekibim",
+      instancePassword: "Kurulum Parolası",
+      setPassword: "Bir şifre belirlemek ister misiniz?",
+      passwordReq: "Şifreler en az 8 karakter olmalıdır.",
+      passwordWarn:
+        "Kurtarma yöntemi olmadığı için bu şifreyi kaydetmeniz önemlidir.",
+      adminUsername: "Yönetici hesap kullanıcı adı",
+      adminPassword: "Yönetici hesap şifresi",
+      adminPasswordReq: "Şifreler en az 8 karakter olmalıdır.",
+      teamHint:
+        "Varsayılan olarak tek yönetici siz olacaksınız. Kurulum tamamlandığında, diğer kişileri kullanıcı veya yönetici olarak davet edebilirsiniz. Yalnızca yöneticiler şifreleri sıfırlayabildiğinden şifrenizi kaybetmeyin.",
     },
     data: {
-      title: null,
-      description: null,
-      settingsHint: null,
-    },
-    workspace: {
-      title: null,
-      description: null,
+      title: "Veri İşleme & Gizlilik",
+      description:
+        "Kişisel verileriniz konusunda şeffaflık ve kontrol sağlamaya kararlıyız.",
+      settingsHint:
+        "Bu ayarlar istediğiniz zaman ayarlardan yeniden yapılandırılabilir.",
     },
   },
   common: {
     "workspaces-name": "Çalışma Alanları Adı",
-    error: "hata",
-    success: "başarı",
-    user: "Kullanıcı",
     selection: "Model Seçimi",
     saving: "Kaydediliyor...",
+    saved: "Kaydedildi",
     save: "Değişiklikleri Kaydet",
     previous: "Önceki Sayfa",
     next: "Sonraki Sayfa",
-    optional: null,
-    yes: null,
-    no: null,
-    search: null,
+    optional: "İsteğe bağlı",
+    yes: "Evet",
+    no: "Hayır",
+    search: "Ara",
+    username_requirements:
+      "Kullanıcı adı 2-64 karakter uzunluğunda olmalı, küçük harfle başlamalı ve yalnızca küçük harfler, rakamlar, alt çizgiler, tireler ve noktalar içermelidir.",
+    on: "Açık",
+    none: "Yok",
+    stopped: "Durdu",
+    loading: "Yükleniyor",
+    refresh: "Yenile",
+    noResults: "Hiçbir sonuç bulunamadı",
   },
   settings: {
-    title: "Instance Ayarları",
-    system: "Genel Ayarlar",
+    title: "Kurulum Ayarları",
     invites: "Davetler",
     users: "Kullanıcılar",
     workspaces: "Çalışma Alanları",
@@ -79,7 +86,6 @@ const TRANSLATIONS = {
     "voice-speech": "Ses & Konuşma",
     "vector-database": "Vektör Veritabanı",
     embeds: "Sohbet Gömme",
-    "embed-chats": "Gömme Sohbet Geçmişi",
     security: "Güvenlik",
     "event-logs": "Olay Kayıtları",
     privacy: "Gizlilik & Veri",
@@ -90,10 +96,24 @@ const TRANSLATIONS = {
     "experimental-features": "Deneysel Özellikler",
     contact: "Destekle İletişime Geçin",
     "browser-extension": "Tarayıcı Uzantısı",
-    "system-prompt-variables": null,
-    interface: null,
-    branding: null,
-    chat: null,
+    "system-prompt-variables": "Sistem İstemi Değişkenleri",
+    interface: "Arayüz Tercihleri",
+    branding: "Marka & Beyaz Etiketleme",
+    chat: "Sohbet",
+    "mobile-app": "AnythingLLM Mobil",
+    "community-hub": {
+      title: "Topluluk Merkezi",
+      trending: "Popüler olanları keşfedin",
+      "your-account": "Hesabınız",
+      "import-item": "Öğe İçe Aktar",
+    },
+    channels: "Kanallar",
+    "available-channels": {
+      telegram: "Telegram",
+    },
+    "scheduled-jobs": "Zamanlanmış Görevler",
+    "model-router": "Model Yönlendirici",
+    "image-generation": "Görsel Oluşturma",
   },
   login: {
     "multi-user": {
@@ -105,15 +125,11 @@ const TRANSLATIONS = {
       "forgot-pass": "Şifremi Unuttum",
       reset: "Sıfırla",
     },
-    "sign-in": {
-      start: "Hesabınıza",
-      end: "giriş yapın.",
-    },
+    "sign-in": "{{appName}} hesabınıza giriş yapın.",
     "password-reset": {
       title: "Şifre Sıfırlama",
       description: "Şifrenizi sıfırlamak için gerekli bilgileri aşağıya girin.",
       "recovery-codes": "Kurtarma Kodları",
-      "recovery-code": "Kurtarma Kodu {{index}}",
       "back-to-login": "Girişe Geri Dön",
     },
   },
@@ -146,13 +162,6 @@ const TRANSLATIONS = {
       heading: "Bana açıkla",
       body: "AnythingLLM'nin faydalarını",
     },
-    pfp: {
-      title: "Asistan Profil Görseli",
-      description:
-        "Bu çalışma alanı için asistanın profil resmini özelleştirin.",
-      image: "Çalışma Alanı Görseli",
-      remove: "Çalışma Alanı Görselini Kaldır",
-    },
     delete: {
       title: "Çalışma Alanını Sil",
       description:
@@ -175,21 +184,23 @@ const TRANSLATIONS = {
       title: "Çalışma Alanı Sohbet Modeli",
       description:
         "Bu çalışma alanı için kullanılacak belirli sohbet modeli. Boş bırakılırsa, sistem LLM tercihi kullanılacaktır.",
-      wait: "-- modeller bekleniyor --",
     },
     mode: {
       title: "Sohbet Modu",
       chat: {
         title: "Sohbet",
-        "desc-start": "LLM'nin genel bilgisiyle yanıtlar sunar",
-        and: "ve",
-        "desc-end": "bulunan belge bağlamını ekler.",
+        description:
+          "LLM'nin genel bilgisi <b>ve</b> bulunan belge bağlamıyla yanıt verir.<br />Araçları kullanmak için @agent komutunu kullanmanız gerekir.",
       },
       query: {
         title: "Sorgu",
-        "desc-start": "yanıtları",
-        only: "sadece",
-        "desc-end": "belge bağlamı bulunduğunda sunar.",
+        description:
+          "<b>Yalnızca</b> belge bağlamı bulunduğunda yanıt verir.<br />Araçları kullanmak için @agent komutunu kullanmanız gerekir.",
+      },
+      automatic: {
+        description:
+          "Model ve sağlayıcı yerleşik araç çağırmayı destekliyorsa araçları otomatik olarak kullanır.<br />Yerleşik araç çağırma desteklenmiyorsa araçları kullanmak için @agent komutunu kullanmanız gerekir.",
+        title: "Ajan",
       },
     },
     history: {
@@ -197,23 +208,22 @@ const TRANSLATIONS = {
       "desc-start":
         "Yanıta dahil edilecek önceki sohbetlerin sayısı (kısa süreli hafıza).",
       recommend: "20 önerilir. ",
-      "desc-end":
-        "45'ten fazlası, mesaj boyutuna göre sürekli sohbet hatalarına yol açabilir.",
     },
     prompt: {
-      title: "Komut (Prompt)",
+      title: "İstem",
       description:
-        "Bu çalışma alanında kullanılacak komut. Yapay zekanın yanıt üretmesi için bağlam ve talimatları tanımlayın. Uygun ve doğru yanıtlar almak için özenle hazırlanmış bir komut sağlamalısınız.",
+        "Bu çalışma alanında kullanılacak istem. Yapay zekânın yanıt üretirken kullanacağı bağlamı ve talimatları tanımlayın. Uygun ve doğru yanıtlar için isteminizi özenle hazırlayın.",
       history: {
-        title: null,
-        clearAll: null,
-        noHistory: null,
-        restore: null,
-        delete: null,
-        deleteConfirm: null,
-        clearAllConfirm: null,
-        expand: null,
-        publish: null,
+        title: "Sistem İstemi Geçmişi",
+        clearAll: "Tümünü Temizle",
+        noHistory: "Sistem istemi geçmişi yok",
+        restore: "Geri Yükle",
+        delete: "Sil",
+        deleteConfirm: "Bu geçmiş öğesini silmek istediğinizden emin misiniz?",
+        clearAllConfirm:
+          "Tüm geçmişi temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+        expand: "Genişlet",
+        publish: "Topluluk Merkezinde Yayımla",
       },
     },
     refusal: {
@@ -222,17 +232,35 @@ const TRANSLATIONS = {
       query: "sorgu",
       "desc-end":
         "modunda bağlam bulunamazsa, özel bir ret yanıtı döndürmek isteyebilirsiniz.",
-      "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-title": "Bunu neden görüyorum?",
+      "tooltip-description":
+        "Sorgu modundasınız; bu mod yalnızca belgelerinizdeki bilgileri kullanır. Daha esnek konuşmalar için sohbet moduna geçin veya sohbet modları hakkında daha fazla bilgi edinmek için belgelerimizi ziyaret etmek üzere buraya tıklayın.",
     },
     temperature: {
       title: "LLM Sıcaklığı",
-      "desc-start":
-        'Bu ayar, LLM yanıtlarının ne kadar "yaratıcı" olacağını kontrol eder.',
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
-      hint: "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
+      placeholder: "Sağlayıcı varsayılanı",
     },
+    reasoning_effort: {
+      title: "Akıl Yürütme Düzeyi",
+      default: "Sağlayıcı varsayılanı",
+      cannot_disable: "Bu model akıl yürütmeyi kapatamaz.",
+      levels: {
+        off: "Kapalı",
+        on: "Açık",
+        minimal: "Minimum",
+        low: "Düşük",
+        medium: "Orta",
+        high: "Yüksek",
+        xhigh: "Çok yüksek",
+        max: "Maksimum",
+      },
+    },
+    token_limit_reached:
+      "Cevap, maksimum çıktı token limitine ulaştı. Modelin maksimum çıktı token sayısını artırarak daha uzun cevaplar almayı sağlayın.",
+    no_response: "Model yanıt veremedi.",
+    agent_session_exited: "Ajan oturumunu sonlandırdınız.",
   },
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",
@@ -280,9 +308,6 @@ const TRANSLATIONS = {
       wait: "-- modeller bekleniyor --",
     },
     skill: {
-      title: "Varsayılan ajan becerileri",
-      description:
-        "Varsayılan ajanın doğal yeteneklerini, hazır oluşturulmuş bu becerilerle geliştirin. Bu yapılandırma tüm çalışma alanları için geçerlidir.",
       rag: {
         title: "RAG ve uzun vadeli hafıza",
         description:
@@ -303,17 +328,483 @@ const TRANSLATIONS = {
         description:
           "Varsayılan ajanın, sağlanan veya sohbette yer alan verilere göre çeşitli grafik türleri oluşturmasına izin verin.",
       },
-      save: {
-        title: "Tarayıcıya dosya oluştur & kaydet",
-        description:
-          "Varsayılan ajanın, oluşturduğu dosyaları kaydetmesine ve tarayıcıda indirilebilir hale getirmesine izin verin.",
-      },
       web: {
         title: "Canlı web araması ve gezinme",
-        "desc-start":
-          "Ajanınızın, bir web arama (SERP) sağlayıcısına bağlanarak sorularınızı yanıtlamak için web üzerinde arama yapmasına izin verin.",
-        "desc-end":
-          "Ajan oturumlarında web araması, bu ayar etkinleştirilene kadar çalışmayacaktır.",
+        description:
+          "Ajantınızın, web arama (SERP) sağlayıcısıyla bağlantı kurarak, sorularınızı yanıtlamak için web'i aramasını sağlayın.",
+      },
+      sql: {
+        title: "SQL Bağlayıcı",
+        description:
+          "Temsilcinizin, çeşitli SQL veri tabanı sağlayıcılarına bağlanarak SQL'i kullanarak sorularınızı yanıtlamasına olanak tanıyın.",
+      },
+      filesystem: {
+        title: "Dosya Sistemi Erişimi",
+        description:
+          "Temsilcinizin, belirli bir klasör içindeki dosyaları okuma, yazma, arama ve yönetme yeteneğini etkinleştirin. Dosya düzenleme, klasör gezinme ve içerik arama özelliklerini destekler.",
+        learnMore:
+          "Bu beceriye nasıl başlanacağını ve nasıl kullanılacağını daha detaylı bir şekilde öğrenin.",
+        configuration: "Yapılandırma",
+        readActions: "Okunmuş Eylemler",
+        writeActions: "Yapılacak İşler",
+        warning:
+          "Dosya sistemine erişim tehlikeli olabilir, çünkü dosyaları değiştirebilir veya silebilir. Bu özelliği etkinleştirmeden önce lütfen <a>belgelendirme</a>'i inceleyin.",
+        skills: {
+          "read-text-file": {
+            title: "Dosyayı aç",
+            description:
+              "Dosyalardaki içeriği okuyun (metin, kod, PDF, resimler vb.)",
+          },
+          "read-multiple-files": {
+            title: "Birden fazla dosyayı okuyun",
+            description: "Birden fazla dosyayı aynı anda okuyun",
+          },
+          "list-directory": {
+            title: "Yönerge Listesi",
+            description: "Bir klasördeki dosyaları ve dizinleri listeleyin.",
+          },
+          "search-files": {
+            title: "Dosyaları Arayın",
+            description: "Dosyaları adlarına veya içeriğine göre arayın",
+          },
+          "get-file-info": {
+            title: "Dosya Hakkında Bilgi Al",
+            description: "Dosyalara ilişkin ayrıntılı meta verileri elde edin.",
+          },
+          "edit-file": {
+            title: "Dosya Düzenle",
+            description: "Metin dosyalarında satır bazlı değişiklikler yapın.",
+          },
+          "create-directory": {
+            title: "Klasör Oluştur",
+            description: "Yeni klasörler oluşturun",
+          },
+          "move-file": {
+            title: "Dosya taşı/yeniden adlandır",
+            description:
+              "Dosyaları ve dizinleri taşıyın veya yeniden adlandırın.",
+          },
+          "copy-file": {
+            title: "Dosyayı Kopyala",
+            description: "Dosyaları ve dizinleri kopyala",
+          },
+          "write-text-file": {
+            title: "Metin dosyası oluştur",
+            description:
+              "Yeni metin dosyaları oluşturun veya mevcut metin dosyalarını üzerine yazın.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Belge Oluşturma",
+        description:
+          "Temsilcinizin, PowerPoint sunumları, Excel tabloları, Word belgeleri ve PDF dosyaları gibi ikili belge formatları oluşturmasına olanak tanıyın. Dosyalar doğrudan sohbet penceresinden indirilebilir.",
+        configuration: "Mevcut Belgeler Türleri",
+        skills: {
+          "create-text-file": {
+            title: "Metin dosyaları",
+            description:
+              "Herhangi bir içerik ve uzantıyla (örneğin .txt, .md, .json, .csv vb.) metin dosyaları oluşturun.",
+          },
+          "create-pptx": {
+            title: "PowerPoint sunumları",
+            description:
+              "Yeni PowerPoint sunumları oluşturun, slaytlar, başlıklar ve madde işaretleri ekleyin.",
+          },
+          "create-pdf": {
+            title: "PDF belgeleri",
+            description:
+              "Temel stillerle markdown veya düz metinlerden PDF belgeleri oluşturun.",
+          },
+          "create-xlsx": {
+            title: "Excel elektronik tabloları",
+            description:
+              "Tablo formatındaki veriler için, sayfalar ve stil özellikleriyle Excel belgeleri oluşturun.",
+          },
+          "create-docx": {
+            title: "Kelime belgeleri",
+            description:
+              "Temel stil ve biçimlendirme ile Word belgeleri oluşturun.",
+          },
+        },
+      },
+      gmail: {
+        title: "GMail Bağlantısı",
+        description:
+          "Ajantınızın Gmail ile etkileşim kurmasını sağlayın: e-postaları aratın, sohbetleri okuyun, taslaklar oluşturun, e-postalar gönderin ve posta kutunuzu yönetin. <a>Dokümantasyonu okuyun</a>.",
+        multiUserWarning:
+          "Gmail entegrasyonu, güvenlik nedenlerinden dolayı çoklu kullanıcı modunda mevcut değildir. Bu özelliği kullanmak için lütfen çoklu kullanıcı modunu devre dışı bırakın.",
+        configuration: "Gmail Yapılandırma",
+        deploymentId: "Dağıtım Kimliği",
+        deploymentIdHelp:
+          "Google Apps Script web uygulamanızın uygulama kimliği",
+        apiKey: "API Anahtarı",
+        apiKeyHelp:
+          "Google Apps Script kurulumunuzda yapılandırdığınız API anahtarı",
+        configurationRequired:
+          "Lütfen Dağıtım Kimliğini ve API Anahtarını yapılandırarak Gmail yeteneklerini etkinleştirin.",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Belirttiğiniz kriterlere uyan herhangi bir sonuç bulunamadı.",
+        categories: {
+          search: {
+            title: "E-postaları arayın ve okuyun",
+            description: "Gmail hesabınızdaki e-postaları arayın ve okuyun.",
+          },
+          drafts: {
+            title: "Taslak E-postalar",
+            description:
+              "E-posta taslaklarını oluşturun, düzenleyin ve yönetin.",
+          },
+          send: {
+            title: "E-postaları gönderme ve yanıt verme",
+            description:
+              "E-postalar gönderin ve tartışmalara anında yanıt verin.",
+          },
+          threads: {
+            title: "E-posta dizilerini yönetin",
+            description:
+              "E-posta dizilerini yönetin - okundu/okunmadı olarak işaretleme, arşivleme, çöp kutusuna gönderme",
+          },
+          account: {
+            title: "Entegrasyon İstatistikleri",
+            description:
+              "Post kutunuzdaki istatistikleri ve hesap bilgilerinizi görüntüleyin.",
+          },
+        },
+        skills: {
+          search: {
+            title: "E-postaları arayın",
+            description: "Gmail sorgu sözdizimi kullanarak e-postaları arayın",
+          },
+          readThread: {
+            title: "Makaleyi oku",
+            description:
+              "ID numarasına göre, e-posta iletişimin bütününü okuyun.",
+          },
+          createDraft: {
+            title: "Taslak Oluştur",
+            description: "Yeni bir e-posta taslağı oluşturun",
+          },
+          createDraftReply: {
+            title: "Taslak Yanıt Oluştur",
+            description:
+              "Mevcut bir tartışma başlığına yönelik bir yanıt taslağı oluşturun.",
+          },
+          updateDraft: {
+            title: "Taslak Güncelleme",
+            description: "Mevcut bir e-posta taslağını güncelleyin",
+          },
+          getDraft: {
+            title: "Taslakları görüntüle",
+            description: "Belirli bir taslağı, ID numarası ile alın",
+          },
+          listDrafts: {
+            title: "Taslaklar",
+            description: "Tüm taslak e-postaları listele",
+          },
+          deleteDraft: {
+            title: "Taslağı Sil",
+            description: "Bir taslak e-postayı sil",
+          },
+          sendDraft: {
+            title: "Taslak Gönder",
+            description: "Mevcut bir e-posta taslağını gönderin",
+          },
+          sendEmail: {
+            title: "E-posta gönder",
+            description: "Hemen bir e-posta gönderin",
+          },
+          replyToThread: {
+            title: "Konuya Cevap Ver",
+            description: "Bir e-posta dizisine anında yanıt verin",
+          },
+          markRead: {
+            title: "মার্ক रीड",
+            description: "Bir konuyla ilgili mesajları okundu olarak işaretle.",
+          },
+          markUnread: {
+            title: "Okunmadı olarak işaretle",
+            description: 'Bir gönderiyi "okunmamış" olarak işaretle.',
+          },
+          moveToTrash: {
+            title: "Çöp kutusuna taşı",
+            description: "Bir başlığı çöp kutusuna taşı.",
+          },
+          moveToArchive: {
+            title: "Arşiv",
+            description: "Bir konuyu arşivle",
+          },
+          moveToInbox: {
+            title: "Gelen kutusuna taşı",
+            description:
+              "Bir konuyla ilgili mesajları ana posta kutusuna taşı.",
+          },
+          getMailboxStats: {
+            title: "Posta Kutusu İstatistikleri",
+            description:
+              "Okunmamış mesaj sayılarını ve posta kutusu istatistiklerini görüntüleyin.",
+          },
+          getInbox: {
+            title: "Gelen kutusuna eriş",
+            description:
+              "Gmail'den gelen e-postaları hızlı ve kolay bir şekilde görüntüleme yolu.",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook Bağlayıcı",
+        description:
+          "Ajanınızın Microsoft Outlook ile etkileşim kurmasını sağlayın: e-postaları arayın, yazışmaları okuyun, taslaklar oluşturun, e-posta gönderin ve Microsoft Graph API aracılığıyla gelen kutunuzu yönetin. <a>Belgeleri okuyun</a>.",
+        multiUserWarning:
+          "Outlook entegrasyonu, güvenlik nedenleriyle çoklu kullanıcı modunda mevcut değildir. Bu özelliği kullanmak için lütfen çoklu kullanıcı modunu devre dışı bırakın.",
+        configuration: "Outlook Yapılandırması",
+        authType: "Hesap Türü",
+        authTypeHelp:
+          'Hangi tür Microsoft hesaplarının kimlik doğrulamasına izin verileceğini seçin. "Tüm hesaplar" hem kişisel hem de iş/okul hesaplarını destekler. "Sadece kişisel hesaplar" yalnızca kişisel Microsoft hesaplarını kısıtlar. "Sadece kuruluş hesapları" belirli bir Azure AD kiracısından iş/okul hesaplarını kısıtlar.',
+        authTypeCommon: "Tüm hesaplar (kişisel ve iş/okul)",
+        authTypeConsumers: "Sadece bireysel Microsoft hesapları",
+        authTypeOrganization:
+          "Sadece kuruluş hesapları (Kira sahibi kimlik numarası gerektirir)",
+        clientId: "Uygulama (Müşteri) Kimliği",
+        clientIdHelp:
+          "Azure AD uygulamanızın kaydından elde ettiğiniz Uygulama (Müşteri) Kimliği",
+        tenantId: "Kiralık Konut Kimlik No",
+        tenantIdHelp:
+          "Azure AD uygulamanızın kayıt bilgilerinden elde edilen (Kiralık Alan) Kimliği. Sadece kuruluş içi kimlik doğrulama için gereklidir.",
+        clientSecret: "Müşteri sırrı",
+        clientSecretHelp:
+          "Azure AD uygulamanızın kaydından elde edilen istemci sır değeri",
+        configurationRequired:
+          "Lütfen, Outlook işlevlerini etkinleştirmek için Client ID ve Client Secret değerlerini yapılandırın.",
+        authRequired:
+          "Öncelikle kimlik bilgilerinizi kaydedin, ardından kurulumu tamamlamak için Microsoft ile kimliğinizi doğrulayın.",
+        authenticateWithMicrosoft: "Microsoft ile kimliğinizi doğrulayın",
+        authenticated:
+          "Microsoft Outlook ile başarılı bir şekilde kimlik doğrulaması tamamlandı.",
+        revokeAccess: "Erişi İptal Et",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Belirttiğiniz kriterlere uyan herhangi bir sonuç bulunamadı.",
+        categories: {
+          search: {
+            title: "E-postaları arayın ve okuyun",
+            description:
+              "Outlook posta kutunuzdan e-postaları arayın ve okuyun.",
+          },
+          drafts: {
+            title: "Örnek E-postalar",
+            description: "E-posta taslaklarını oluştur, düzenle ve yönet",
+          },
+          send: {
+            title: "E-posta gönderme",
+            description:
+              "Yeni e-postalar gönderin veya mesajlara anında cevap verin.",
+          },
+          account: {
+            title: "Entegrasyon İstatistikleri",
+            description:
+              "Post kutunuzdaki istatistikleri ve hesap bilgilerinizi görüntüleyin.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Gelen kutusuna eriş",
+            description:
+              "En son gelen e-postalarınızı Outlook posta kutunuzdan alın.",
+          },
+          search: {
+            title: "E-postaları arayın",
+            description:
+              "Microsoft arama sözdizimi kullanarak e-postaları arayın",
+          },
+          readThread: {
+            title: "Sohbeti okuyun",
+            description: "Tam bir e-posta konuşma dizisini okuyun.",
+          },
+          createDraft: {
+            title: "Taslak Oluştur",
+            description:
+              "Yeni bir e-posta taslağı oluşturun veya mevcut bir mesajın yanıtını taslağına ekleyin.",
+          },
+          updateDraft: {
+            title: "Taslak Güncelleme",
+            description: "Mevcut bir e-posta taslağını güncelleyin",
+          },
+          listDrafts: {
+            title: "Taslaklar",
+            description: "Tüm taslak e-postaları listele",
+          },
+          deleteDraft: {
+            title: "Taslak Sil",
+            description: "Bir taslak e-postayı sil",
+          },
+          sendDraft: {
+            title: "Taslak Gönder",
+            description: "Mevcut bir e-posta taslağını gönderin",
+          },
+          sendEmail: {
+            title: "E-posta gönder",
+            description:
+              "Yeni bir e-posta gönderin veya mevcut bir mesajı hemen yanıtlayın.",
+          },
+          getMailboxStats: {
+            title: "Post kutusu istatistikleri",
+            description:
+              "Klasörlerin ve posta kutusu istatistiklerinin sayısını alın.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google Takvim Bağlayıcı",
+        description:
+          "Ajanınızın Google Takvim ile etkileşim kurmasını sağlayın: takvimleri görüntüleyin, etkinlikleri alın, oluşturun ve güncelleyin; katılım yanıtlarını yönetin. <a>Belgeleri okuyun</a>.",
+        multiUserWarning:
+          "Google Takvim entegrasyonu, güvenlik nedeniyle çok kullanıcılı modda kullanılamaz. Bu özelliği kullanmak için çok kullanıcılı modu devre dışı bırakın.",
+        configuration: "Google Takvim Yapılandırması",
+        deploymentId: "Dağıtım Kimliği",
+        deploymentIdHelp:
+          "Google Apps Script web uygulamanızın dağıtım kimliği",
+        apiKey: "API Anahtarı",
+        apiKeyHelp:
+          "Google Apps Script dağıtımınızda yapılandırdığınız API anahtarı",
+        configurationRequired:
+          "Lütfen Dağıtım Kimliğini ve API Anahtarını yapılandırarak Google Takvim özelliklerini etkinleştirin.",
+        configured: "Yapılandırılmış",
+        searchSkills: "Arama becerileri...",
+        noSkillsFound:
+          "Arama sonuçlarınızda eşleşen herhangi bir beceri bulunmamaktadır.",
+        categories: {
+          calendars: {
+            title: "Takvimler",
+            description: "Google Takvimlerinizi görüntüleyin ve yönetin",
+          },
+          readEvents: {
+            title: "Etkinlikleri oku",
+            description: "Takvimdeki etkinlikleri görüntüleyin ve arayın",
+          },
+          writeEvents: {
+            title: "Etkinlikleri Oluştur ve Güncelle",
+            description:
+              "Yeni etkinlikler oluşturun ve mevcut olanları değiştirin.",
+          },
+          rsvp: {
+            title: "Katılım Yönetimi",
+            description: "Etkinliklere ilişkin yanıt durumunuzu yönetin",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Takvim Listeleri",
+            description:
+              "Sahip olduğunuz veya abonelik yaptığınız tüm takvimleri listeleyin.",
+          },
+          getCalendar: {
+            title: "Takvim Detaylarını Al",
+            description: "Belirli bir takvim hakkında ayrıntılı bilgi edinin.",
+          },
+          getEvent: {
+            title: "Etkinliği Bul",
+            description: "Belirli bir etkinlikle ilgili ayrıntılı bilgi edinin",
+          },
+          getEventsForDay: {
+            title: "Gün İçindeki Etkinlikleri Öğren",
+            description:
+              "Belirli bir güne ait tüm planlanan etkinlikleri görüntüleyin.",
+          },
+          getEvents: {
+            title: "Etkinlikleri (Tarih Aralığı) görüntüle",
+            description: "Belirli bir tarih aralığındaki etkinlikleri alın",
+          },
+          getUpcomingEvents: {
+            title: "Yaklaşan Etkinlikleri Görüntüleyin",
+            description:
+              "Bugün, bu hafta veya bu ay için etkinlikleri, basit anahtar kelimeler kullanarak bulun.",
+          },
+          quickAdd: {
+            title: "Hızlı Etkinlik Ekle",
+            description:
+              'Doğal dilden bir etkinlik oluşturun (örneğin, "Yarın saat 15:00\'te bir toplantı")',
+          },
+          createEvent: {
+            title: "Etkinlik Oluştur",
+            description:
+              "Tüm özellikler üzerinde tam kontrol sağlayarak yeni bir etkinlik oluşturun.",
+          },
+          updateEvent: {
+            title: "Etkinliği Güncelle",
+            description: "Mevcut bir takvim olayını güncelleyin",
+          },
+          setMyStatus: {
+            title: "Katılım Yanıtını Ayarla",
+            description:
+              "Bir etkinliğe katılımı kabul edin, reddedin veya geçici olarak kabul edin.",
+          },
+        },
+      },
+      scheduledJob: {
+        title: "Zamanlanmış görev oluştur",
+        description:
+          'Ajanın sohbetten otomatik yinelenen görevler oluşturmasına izin verin (ör. "her hafta içi saat 09:00\'da gelen kutumu özetle ve bana e-postayla gönder"). Yalnızca tek kullanıcılı modda kullanılabilir.',
+      },
+      generateImage: {
+        title: "Görseller oluştur",
+        description:
+          "Ajanın, yapılandırılmış görsel üretim sağlayıcınızla sohbetten görsel oluşturmasına veya ekli görselleri düzenlemesine izin verin.",
+        noProvider:
+          "Yapılandırılmış bir görsel oluşturma sağlayıcısı yok, bu nedenle ajan bu beceriyi kullandığında başarısız olacak. Önce <a>bir sağlayıcı yapılandırın</a>.",
+      },
+    },
+    mcp: {
+      title: "MCP Sunucuları",
+      "loading-from-config":
+        "MCP sunucuları yapılandırma dosyasından yükleniyor",
+      "learn-more": "MCP sunucuları hakkında daha fazla bilgi edinin.",
+      "no-servers-found": "Hiçbir MCP sunucusu bulunamadı.",
+      "tool-warning":
+        "En iyi performansı elde etmek için, gereksiz araçları devre dışı bırakarak bağlamı korumayı düşünebilirsiniz.",
+      "stop-server": "MCP sunucusunu durdurun",
+      "start-server": "MCP sunucusunu başlatın",
+      "delete-server": "MCP sunucusunu sil",
+      "tool-count-warning":
+        "Bu MCP sunucusunda <b>{{count}} araç etkin</b> ve bu araçlar her sohbette bağlam tüketir.<br />Bağlamı korumak için istenmeyen araçları devre dışı bırakmayı düşünebilirsiniz.",
+      "startup-command": "Başlangıç Komutu",
+      command: "Komut",
+      arguments: "Bağımsız değişkenler",
+      "not-running-warning":
+        "Bu MCP sunucusu çalışmıyor; durdurulmuş veya başlatılırken hata vermiş olabilir.",
+      "tool-call-arguments": "Araç çağrısı bağımsız değişkenleri",
+      "tools-enabled": "araç etkin",
+    },
+    settings: {
+      title: "Ajan Becerisi Ayarları",
+      "max-tool-calls": {
+        title: "Her yanıt için maksimum araç çağrı sayısı",
+        description:
+          "Bir ajanın tek bir yanıt için art arda çağırabileceği en fazla araç sayısı. Kontrolsüz araç çağrılarını ve sonsuz döngüleri önler.",
+      },
+      "intelligent-skill-selection": {
+        title: "Akıllı Beceri Seçimi",
+        description:
+          "Sorgu başına token kullanımını %80'e kadar azaltırken sınırsız araç etkinleştirin. AnythingLLM her istek için uygun becerileri otomatik seçer.",
+        "max-tools": {
+          title: "En Fazla Araç",
+          description:
+            "Her sorgu için seçilebilecek maksimum araç sayısı. Daha büyük bağlam modelleri için bu değeri daha yüksek bir değere ayarlamayı öneririz.",
+        },
+      },
+      "clarifying-questions": {
+        title: "Ajanın açıklayıcı sorular sormasına izin ver",
+        "beta-badge": "BETA",
+        description:
+          "Etkinleştirildiğinde ajan, talimatınız belirsizse kısa açıklayıcı sorular sormak için durabilir.",
+        "max-per-turn": {
+          title: "Her turda sorulabilecek maksimum soru sayısı",
+          description:
+            "Bir turda ajanın sorabileceği en fazla açıklayıcı soru sayısı.",
+        },
       },
     },
   },
@@ -326,18 +817,45 @@ const TRANSLATIONS = {
       id: "Id",
       by: "Gönderen",
       workspace: "Çalışma Alanı",
-      prompt: "Komut (Prompt)",
+      prompt: "İstem",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
     },
   },
   api: {
-    title: "API Anahtarları",
+    title: "API anahtarları",
     description:
       "API anahtarları, bu AnythingLLM örneğine programatik olarak erişmeye ve yönetmeye olanak tanır.",
     link: "API dokümantasyonunu okuyun",
     generate: "Yeni API Anahtarı Oluştur",
+    empty: "API anahtarları bulunamadı",
+    actions: "İşlemler",
+    messages: {
+      error: "Hata: {{error}}",
+    },
+    modal: {
+      title: "Yeni API anahtarı oluştur",
+      cancel: "İptal",
+      close: "Kapat",
+      create: "API anahtarı oluştur",
+      helper:
+        "Oluşturulduktan sonra API anahtarı, bu AnythingLLM örneğine programatik olarak erişmek ve onu yapılandırmak için kullanılabilir.",
+      name: {
+        label: "Ad",
+        placeholder: "Üretim entegrasyonu",
+        helper:
+          "İsteğe bağlıdır. Bu anahtarı daha sonra kolayca tanıyabilmek için açıklayıcı bir ad kullanın.",
+      },
+    },
+    row: {
+      copy: "API anahtarını kopyala",
+      copied: "Kopyalandı",
+      unnamed: "--",
+      deleteConfirm:
+        "Bu API anahtarını devre dışı bırakmak istediğinizden emin misiniz?\nBunu yaptıktan sonra artık kullanılamaz.\n\nBu işlem geri alınamaz.",
+    },
     table: {
+      name: "Ad",
       key: "API Anahtarı",
       by: "Oluşturan",
       created: "Oluşturulma Tarihi",
@@ -350,13 +868,20 @@ const TRANSLATIONS = {
     provider: "LLM Sağlayıcısı",
     providers: {
       azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
+        azure_service_endpoint: "Azure Hizmet Uç Noktası",
+        api_key: "API Anahtarı",
+        chat_deployment_name: "Sohbet Dağıtım Adı",
+        chat_model_token_limit: "Sohbet Modeli Token Limiti",
+        model_type: "Model Türü",
+        default: "Varsayılan",
+        reasoning: "Mantıksal",
+        agent_api: "Ajan API'si",
+        agent_api_tooltip:
+          "Ajan çağrıları için kullanılan API. Dağıtımınız Responses API gerektirmiyorsa (ör. araçlarla GPT-6) Chat Completions'ı koruyun. Her model veya bölge Responses API'yi desteklemez.",
+        chat_completions: "Chat Completions",
+        responses: "Responses API",
+        model_type_tooltip:
+          'Dağıtımınız bir mantıksal model (o1, o1-mini, o3-mini vb.) kullanıyorsa, bunu "Mantıksal" olarak ayarlayın. Aksi takdirde sohbet istekleriniz başarısız olabilir.',
       },
     },
   },
@@ -418,7 +943,7 @@ const TRANSLATIONS = {
       workspace: "Çalışma Alanı",
       chats: "Gönderilen Sohbetler",
       active: "Aktif Alan Adları",
-      created: null,
+      created: "Oluşturulma Tarihi",
     },
   },
   "embed-chats": {
@@ -449,518 +974,711 @@ const TRANSLATIONS = {
     title: "Gizlilik & Veri İşleme",
     description:
       "Bağlantılı üçüncü taraf sağlayıcılarla ve AnythingLLM ile verilerinizin nasıl ele alındığını burada yapılandırabilirsiniz.",
-    llm: "LLM Seçimi",
-    embedding: "Gömme Tercihi",
-    vector: "Vektör Veritabanı",
     anonymous: "Anonim Telemetri Etkin",
   },
   connectors: {
-    "search-placeholder": null,
-    "no-connectors": null,
+    "search-placeholder": "Veri bağlayıcılarını ara",
+    "no-connectors": "Veri bağlayıcısı bulunamadı.",
     github: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+      name: "GitHub Deposu",
+      description:
+        "Tek tıklamayla tüm herkese açık veya özel GitHub deposunu içe aktarın.",
+      URL: "GitHub Depo URL'si",
+      URL_explained: "Toplamak istediğiniz GitHub deposunun URL'si.",
+      token: "GitHub Erişim Tokeni",
+      optional: "isteğe bağlı",
+      token_explained: "Hız sınırlamasını önlemek için erişim tokeni.",
+      token_explained_start: "Bir ",
+      token_explained_link1: "Kişisel Erişim Tokeni",
+      token_explained_middle:
+        " olmadan GitHub API'si, hız sınırları nedeniyle toplanabilecek dosya sayısını sınırlayabilir. Bu sorunu önlemek için ",
+      token_explained_link2: "geçici bir erişim tokeni oluşturabilirsiniz",
+      token_explained_end: ".",
+      ignores: "Dosya Yoksaymaları",
+      git_ignore:
+        "Toplama sırasında belirli dosyaları yoksaymak için .gitignore formatında liste. Kaydetmek istediğiniz her girişten sonra enter tuşuna basın.",
+      task_explained:
+        "Tamamlandığında, tüm dosyalar belge seçicide çalışma alanlarına gömülmeye hazır olacaktır.",
+      branch: "Dosyaları toplamak istediğiniz dal.",
+      branch_loading: "-- mevcut dallar yükleniyor --",
+      branch_explained: "Dosyaları toplamak istediğiniz dal.",
+      token_information:
+        "<b>GitHub Erişim Tokeni</b> doldurulmadan bu veri bağlayıcısı, GitHub'ın herkese açık API hız sınırları nedeniyle yalnızca deponun <b>üst düzey</b> dosyalarını toplayabilecektir.",
+      token_personal:
+        "Buradan ücretsiz bir Kişisel Erişim Tokeni alabilirsiniz.",
     },
     gitlab: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_description: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      fetch_issues: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+      name: "GitLab Deposu",
+      description:
+        "Tek tıklamayla tüm herkese açık veya özel GitLab deposunu içe aktarın.",
+      URL: "GitLab Depo URL'si",
+      URL_explained: "Toplamak istediğiniz GitLab deposunun URL'si.",
+      token: "GitLab Erişim Tokeni",
+      optional: "isteğe bağlı",
+      token_description: "GitLab API'sinden alınacak ek varlıkları seçin.",
+      token_explained_start: "Bir ",
+      token_explained_link1: "Kişisel Erişim Tokeni",
+      token_explained_middle:
+        " olmadan GitLab API'si, hız sınırları nedeniyle toplanabilecek dosya sayısını sınırlayabilir. Bu sorunu önlemek için ",
+      token_explained_link2: "geçici bir erişim tokeni oluşturabilirsiniz",
+      token_explained_end: ".",
+      fetch_issues: "Sorunları Belge Olarak Al",
+      ignores: "Dosya Yoksaymaları",
+      git_ignore:
+        "Toplama sırasında belirli dosyaları yoksaymak için .gitignore formatında liste. Kaydetmek istediğiniz her girişten sonra enter tuşuna basın.",
+      task_explained:
+        "Tamamlandığında, tüm dosyalar belge seçicide çalışma alanlarına gömülmeye hazır olacaktır.",
+      branch: "Dosyaları toplamak istediğiniz dal",
+      branch_loading: "-- mevcut dallar yükleniyor --",
+      branch_explained: "Dosyaları toplamak istediğiniz dal.",
+      token_information:
+        "<b>GitLab Erişim Tokeni</b> doldurulmadan bu veri bağlayıcısı, GitLab'ın herkese açık API hız sınırları nedeniyle yalnızca deponun <b>üst düzey</b> dosyalarını toplayabilecektir.",
+      token_personal:
+        "Buradan ücretsiz bir Kişisel Erişim Tokeni alabilirsiniz.",
     },
     youtube: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained_start: null,
-      URL_explained_link: null,
-      URL_explained_end: null,
-      task_explained: null,
-      language: null,
-      language_explained: null,
-      loading_languages: null,
+      name: "YouTube Transkripti",
+      description:
+        "Bir bağlantıdan tüm YouTube videosunun transkriptini içe aktarın.",
+      URL: "YouTube Video URL'si",
+      URL_explained_start:
+        "Transkriptini almak için herhangi bir YouTube videosunun URL'sini girin. Videonun ",
+      URL_explained_link: "altyazıları",
+      URL_explained_end: " mevcut olmalıdır.",
+      task_explained:
+        "Tamamlandığında, transkript belge seçicide çalışma alanlarına gömülmeye hazır olacaktır.",
     },
     "website-depth": {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      depth: null,
-      depth_explained: null,
-      max_pages: null,
-      max_pages_explained: null,
-      task_explained: null,
+      name: "Toplu Bağlantı Kazıyıcı",
+      description:
+        "Bir web sitesini ve alt bağlantılarını belirli bir derinliğe kadar kazıyın.",
+      URL: "Web Sitesi URL'si",
+      URL_explained: "Kazımak istediğiniz web sitesinin URL'si.",
+      depth: "Tarama Derinliği",
+      depth_explained:
+        "Bu, çalışanın kaynak URL'den takip edeceği alt bağlantı sayısıdır.",
+      max_pages: "Maksimum Sayfa",
+      max_pages_explained: "Kazınacak maksimum bağlantı sayısı.",
+      task_explained:
+        "Tamamlandığında, tüm kazınan içerik belge seçicide çalışma alanlarına gömülmeye hazır olacaktır.",
     },
     confluence: {
-      name: null,
-      description: null,
-      deployment_type: null,
-      deployment_type_explained: null,
-      base_url: null,
-      base_url_explained: null,
-      space_key: null,
-      space_key_explained: null,
-      username: null,
-      username_explained: null,
-      auth_type: null,
-      auth_type_explained: null,
-      auth_type_username: null,
-      auth_type_personal: null,
-      token: null,
-      token_explained_start: null,
-      token_explained_link: null,
-      token_desc: null,
-      pat_token: null,
-      pat_token_explained: null,
-      task_explained: null,
-      bypass_ssl: null,
-      bypass_ssl_explained: null,
+      name: "Confluence",
+      description: "Tek tıklamayla tüm Confluence sayfasını içe aktarın.",
+      deployment_type: "Confluence dağıtım türü",
+      deployment_type_explained:
+        "Confluence örneğinizin Atlassian bulutunda mı yoksa kendi sunucunuzda mı barındırıldığını belirleyin.",
+      base_url: "Confluence temel URL'si",
+      base_url_explained: "Bu, Confluence alanınızın temel URL'sidir.",
+      space_key: "Confluence alan anahtarı",
+      space_key_explained:
+        "Bu, kullanılacak confluence örneğinizin alan anahtarıdır. Genellikle ~ ile başlar",
+      username: "Confluence Kullanıcı Adı",
+      username_explained: "Confluence kullanıcı adınız",
+      auth_type: "Confluence Kimlik Doğrulama Türü",
+      auth_type_explained:
+        "Confluence sayfalarınıza erişmek için kullanmak istediğiniz kimlik doğrulama türünü seçin.",
+      auth_type_username: "Kullanıcı Adı ve Erişim Tokeni",
+      auth_type_personal: "Kişisel Erişim Tokeni",
+      token: "Confluence Erişim Tokeni",
+      token_explained_start:
+        "Kimlik doğrulama için bir erişim tokeni sağlamanız gerekiyor. ",
+      token_explained_link: "Buradan",
+      token_desc: "Kimlik doğrulama için erişim tokeni",
+      pat_token: "Confluence Kişisel Erişim Tokeni",
+      pat_token_explained: "Confluence kişisel erişim tokeniniz.",
+      task_explained:
+        "Tamamlandığında, sayfa içeriği belge seçicide çalışma alanlarına gömülmeye hazır olacaktır.",
+      bypass_ssl: "SSL Sertifika Doğrulamasını Atla",
+      bypass_ssl_explained:
+        "Kendinden imzalı sertifikaya sahip kendi sunucunuzda barındırılan confluence örnekleri için SSL sertifika doğrulamasını atlamak için bu seçeneği etkinleştirin",
     },
     manage: {
-      documents: null,
-      "data-connectors": null,
-      "desktop-only": null,
-      dismiss: null,
-      editing: null,
+      documents: "Belgeler",
+      "data-connectors": "Veri Bağlayıcıları",
     },
     directory: {
-      "my-documents": null,
-      "new-folder": null,
-      "search-document": null,
-      "no-documents": null,
-      "move-workspace": null,
-      name: null,
-      "delete-confirmation": null,
-      "removing-message": null,
-      "move-success": null,
-      date: null,
-      type: null,
-      no_docs: null,
-      select_all: null,
-      deselect_all: null,
-      remove_selected: null,
-      costs: null,
-      save_embed: null,
+      "my-documents": "Belgelerim",
+      "new-folder": "Yeni Klasör",
+      "search-document": "Belge ara",
+      "no-documents": "Belge Yok",
+      "move-workspace": "Çalışma Alanına Taşı",
+      "delete-confirmation":
+        "Bu dosyaları ve klasörleri silmek istediğinizden emin misiniz?\nBu, dosyaları sistemden kaldıracak ve mevcut çalışma alanlarından otomatik olarak silecektir.\nBu işlem geri alınamaz.",
+      "removing-message":
+        "{{count}} belge ve {{folderCount}} klasör kaldırılıyor. Lütfen bekleyin.",
+      "move-success": "{{count}} belge başarıyla taşındı.",
+      no_docs: "Belge Yok",
+      select_all: "Tümünü Seç",
+      deselect_all: "Tümünün Seçimini Kaldır",
+      remove_selected: "Seçilenleri Kaldır",
+      save_embed: "Kaydet ve Göm",
+      "total-documents_one": "{{count}} belge",
+      "total-documents_other": "{{count}} belge",
+      "search-results_one": "{{count}} sonuç",
+      "search-results_other": "{{count}} sonuç",
+      "in-workspace": "Çalışma alanında",
+      "upload-files": "Dosyaları yükle",
+      "add-link": "Bağlantıyı ekle",
+      "selected-count_one": "{{count}} seçildi",
+      "selected-count_other": "{{count}} seçildi",
+      "move-to-folder": "Klasöre taşı",
+      "ready-to-embed_one": "{{count}} dosya gömme için hazır",
+      "ready-to-embed_other": "{{count}} dosya gömme için hazır",
+      "add-to-queue": "Kuyruğa ekle",
+      staged: "Gömme için hazır",
+      pinned: "Sabitlendi",
+      watching: "İzleniyor",
+      pin: "Çalışma alanına sabitle",
+      unpin: "Sabitlemeyi kaldır",
+      watch: "Değişiklikleri izle",
+      unwatch: "Değişiklikleri izlemeyi durdur",
+      "remove-from-workspace": "Çalışma alanından çıkarın",
     },
     upload: {
-      "processor-offline": null,
-      "processor-offline-desc": null,
-      "click-upload": null,
-      "file-types": null,
-      "or-submit-link": null,
-      "placeholder-link": null,
-      fetching: null,
-      "fetch-website": null,
-      "privacy-notice": null,
+      "processor-offline": "Belge İşleyici Kullanılamıyor",
+      "processor-offline-desc":
+        "Belge işleyici çevrimdışı olduğu için şu anda dosyalarınızı yükleyemiyoruz. Lütfen daha sonra tekrar deneyin.",
+      "click-upload": "Yüklemek için tıklayın veya sürükleyip bırakın",
+      "file-types":
+        "metin dosyaları, csv'ler, elektronik tablolar, ses dosyaları ve daha fazlasını destekler!",
+      "or-submit-link": "veya bir bağlantı gönderin",
+      "placeholder-link": "https://ornek.com",
+      fetching: "Alınıyor...",
+      "fetch-website": "Web sitesini al",
+      "privacy-notice":
+        "Bu dosyalar, bu AnythingLLM örneğinde çalışan belge işleyiciye yüklenecektir. Bu dosyalar üçüncü taraflarla paylaşılmaz.",
     },
     pinning: {
-      what_pinning: null,
-      pin_explained_block1: null,
-      pin_explained_block2: null,
-      pin_explained_block3: null,
-      accept: null,
+      what_pinning: "Belge sabitleme nedir?",
+      pin_explained_block1:
+        "AnythingLLM'de bir belgeyi <b>sabitlediğinizde</b>, belgenin tüm içeriğini LLM'nin tam olarak anlaması için prompt pencerenize enjekte ederiz.",
+      pin_explained_block2:
+        "Bu, <b>büyük bağlam modelleri</b> veya bilgi tabanı için kritik olan küçük dosyalarla en iyi şekilde çalışır.",
+      pin_explained_block3:
+        "AnythingLLM'den varsayılan olarak istediğiniz yanıtları alamıyorsanız, sabitleme tek tıklamayla daha yüksek kaliteli yanıtlar almanın harika bir yoludur.",
+      accept: "Tamam, anladım",
     },
     watching: {
-      what_watching: null,
-      watch_explained_block1: null,
-      watch_explained_block2: null,
-      watch_explained_block3_start: null,
-      watch_explained_block3_link: null,
-      watch_explained_block3_end: null,
-      accept: null,
+      what_watching: "Bir belgeyi izlemek ne yapar?",
+      watch_explained_block1:
+        "AnythingLLM'de bir belgeyi <b>izlediğinizde</b>, belge içeriğinizi orijinal kaynağından düzenli aralıklarla <i>otomatik olarak</i> senkronize ederiz. Bu, dosyanın yönetildiği her çalışma alanında içeriği otomatik olarak günceller.",
+      watch_explained_block2:
+        "Bu özellik şu anda yalnızca çevrimiçi tabanlı içeriği desteklemektedir ve manuel olarak yüklenen belgeler için kullanılamayacaktır.",
+      watch_explained_block3_start: "Hangi belgelerin izlendiğini ",
+      watch_explained_block3_link: "Dosya yöneticisi",
+      watch_explained_block3_end: " yönetici görünümünden yönetebilirsiniz.",
+      accept: "Tamam, anladım",
     },
     obsidian: {
-      name: null,
-      description: null,
-      vault_location: null,
-      vault_description: null,
-      selected_files: null,
-      importing: null,
-      import_vault: null,
-      processing_time: null,
-      vault_warning: null,
+      vault_location: "Kasa Konumu",
+      vault_description:
+        "Tüm notları ve bağlantılarını içe aktarmak için Obsidian kasa klasörünüzü seçin.",
+      selected_files: "{{count}} markdown dosyası bulundu",
+      importing: "Kasa içe aktarılıyor...",
+      import_vault: "Kasayı İçe Aktar",
+      processing_time:
+        "Bu işlem kasanızın boyutuna bağlı olarak biraz zaman alabilir.",
+      vault_warning:
+        "Herhangi bir çakışmayı önlemek için Obsidian kasanızın şu anda açık olmadığından emin olun.",
+    },
+    gitea: {
+      name: "Gitea Deposu",
+      description:
+        "Herhangi bir Gitea örneğinden, kamu veya özel bir depoyu tek tıklamayla içe aktarın.",
+      URL: "Gitea Depo URL'si",
+      URL_explained:
+        "Gitea örneğinizde toplamak istediğiniz deponun URL'si – kendi barındırdığınız örnekler de desteklenmektedir.",
+      token: "Gitea Erişim Tokenı",
+      optional: "isteğe bağlı",
+      token_explained:
+        "Özel depoları veya kimlik doğrulama gerektiren sunuculardaki depoları toplamak için erişim token'ına ihtiyaç vardır.",
+      token_explained_start: "Bir ",
+      token_explained_link1: "Erişim Tokenı",
+      token_explained_end:
+        " olmadan yalnızca Gitea kurulumunuzdaki herkese açık depolardan veri toplanabilir.",
+      ignores: "Yok Sayılacak Dosyalar",
+      git_ignore:
+        "`.gitignore` formatında belirli dosyaların toplanma sırasında göz ardı edilmesini sağlamak için bir liste oluşturun. Kaydetmek istediğiniz her girişte Enter tuşuna basın.",
+      task_explained:
+        "İşlemler tamamlandıktan sonra, tüm dosyalar doküman seçici aracında çalışma alanlarına entegre etmek için kullanılabilir olacaktır.",
+      branch: "Dosyaların alınacağı dal.",
+      branch_loading: "-- mevcut dallar yükleniyor --",
+      branch_explained: "Dosyaların alınacağı dal.",
+      token_information:
+        "<b>Gitea Erişim Tokenı</b> girilmezse bu veri bağlayıcısı yalnızca Gitea kurulumunuzdaki <b>herkese açık</b> depoların dosyalarını toplayabilir.",
     },
   },
   chat_window: {
-    welcome: null,
-    get_started: null,
-    get_started_default: null,
-    upload: null,
-    or: null,
-    send_chat: null,
-    send_message: null,
-    attach_file: null,
-    slash: null,
-    agents: null,
-    text_size: null,
-    microphone: null,
-    send: null,
-    attachments_processing: null,
-    tts_speak_message: null,
-    copy: null,
-    regenerate: null,
-    regenerate_response: null,
-    good_response: null,
-    more_actions: null,
-    hide_citations: null,
-    show_citations: null,
-    pause_tts_speech_message: null,
-    fork: null,
-    delete: null,
-    save_submit: null,
-    cancel: null,
-    edit_prompt: null,
-    edit_response: null,
-    at_agent: null,
-    default_agent_description: null,
-    custom_agents_coming_soon: null,
-    slash_reset: null,
-    preset_reset_description: null,
-    add_new_preset: null,
-    command: null,
-    your_command: null,
-    placeholder_prompt: null,
-    description: null,
-    placeholder_description: null,
-    save: null,
-    small: null,
-    normal: null,
-    large: null,
+    loading_chat_history: "Sohbet geçmişi yükleniyor...",
+    loading_chat_recalling: "Sohbetimizi geri getiriyorum...",
+    loading_chat_remembering: "Ne konuştuğumuzu hatırlıyorum...",
+    send_message: "Mesaj gönderin",
+    attach_file: "Bu sohbete bir dosya ekleyin",
+    text_size: "Metin boyutunu değiştirin.",
+    microphone: "İsteminizi sesli söyleyin",
+    send: "Çalışma alanına istem gönder",
+    attachments_processing: "Ekler işleniyor. Lütfen bekleyin...",
+    tts_speak_message: "TTS Mesajı Seslendir",
+    copy: "Kopyala",
+    regenerate: "Yeniden Oluştur",
+    regenerate_response: "Yanıtı yeniden oluştur",
+    good_response: "İyi yanıt",
+    more_actions: "Daha fazla eylem",
+    fork: "Dallandır",
+    delete: "Sil",
+    cancel: "İptal",
+    edit_prompt: "İstemi düzenle",
+    edit_response: "Yanıtı düzenle",
+    preset_reset_description:
+      "Sohbet geçmişinizi temizleyin ve yeni bir sohbet başlatın",
+    add_new_preset: " Yeni Ön Ayar Ekle",
+    command: "Komut",
+    your_command: "sizin-komutunuz",
+    placeholder_prompt: "İsteminizin başına eklenecek içerik.",
+    description: "Açıklama",
+    placeholder_description: "LLM'ler hakkında bir şiirle yanıt verir.",
+    save: "Kaydet",
+    small: "Küçük",
+    normal: "Normal",
+    large: "Büyük",
     workspace_llm_manager: {
-      search: null,
-      loading_workspace_settings: null,
-      available_models: null,
-      available_models_description: null,
-      save: null,
-      saving: null,
-      missing_credentials: null,
-      missing_credentials_description: null,
+      search: "LLM sağlayıcılarını ara",
+      loading_workspace_settings: "Çalışma alanı ayarları yükleniyor...",
+      available_models: "{{provider}} için Mevcut Modeller",
+      available_models_description:
+        "Bu çalışma alanı için kullanılacak bir model seçin.",
+      save: "Bu modeli kullan",
+      saving: "Model çalışma alanı varsayılanı olarak ayarlanıyor...",
+      missing_credentials: "Bu sağlayıcının kimlik bilgileri eksik!",
+      missing_credentials_description:
+        "Kimlik bilgilerini ayarlamak için tıklayın",
+    },
+    submit: "Gönder",
+    edit_info_user:
+      '"Gönder" seçeneği, yapay zeka yanıtını yeniden oluşturur. "Kaydet" seçeneği, yalnızca sizin mesajınızı günceller.',
+    edit_info_assistant:
+      "Yaptığınız değişiklikler doğrudan bu yanıtın içine kaydedilecektir.",
+    see_less: "Daha az",
+    see_more: "Daha Fazla",
+    tools: "Araçlar",
+    text_size_label: "Metin Boyutu",
+    select_model: "Model Seçimi",
+    sources: "Kaynaklar",
+    document: "Belge",
+    similarity_match: "eşleşme",
+    source_count_one: "{{count}} kaynak",
+    source_count_other: "{{count}} kaynak",
+    add_new: "Yeni ekle",
+    edit: "Düzenle",
+    publish: "Yayınla",
+    stop_generating: "Yanıt üretmeyi durdurun",
+    slash_commands: "Eğik Çizgi Komutları",
+    agent_skills: "Ajan Becerileri",
+    manage_agent_skills: "Ajan becerilerini yönet",
+    agent_skills_disabled_in_session:
+      "Aktif bir ajan oturumunda becerileri değiştirilemez. İlk olarak /exit komutunu kullanarak oturumu sonlandırın.",
+    start_agent_session: "Ajan Oturumu Başlat",
+    use_agent_session_to_use_tools:
+      'Sohbette araç kullanmak için isteminizin başına "@agent" yazarak ajan oturumu başlatın.',
+    agent_invocation: {
+      model_wants_to_call: "Model şu aracı çağırmak istiyor",
+      approve: "Onayla",
+      reject: "Reddet",
+      always_allow: "{{skillName}} için her zaman izin ver",
+      tool_call_was_approved: "Araç talebi onaylandı.",
+      tool_call_was_rejected: "Araç çağrısı reddedildi.",
+      clarifying_skip: "Ajan karar versin",
+      clarifying_submit: "Gönder",
+      clarifying_skipped: "Karar ajana bırakıldı.",
+      clarifying_timeout: "Zamanında yanıt alınamadı.",
+      clarifying_pagination: "{{current}} / {{total}}",
+      clarifying_prev_aria: "Önceki soru",
+      clarifying_next_aria: "Bir sonraki soru",
+      clarifying_close_aria: "Kapat ve atla",
+      clarifying_other: "Diğer",
+      clarifying_other_placeholder: "Cevabınızı yazın",
+      batch_progress: "{{total}} sorudan {{answered}} tanesi yanıtlandı.",
+      batch_skip_this: "Bu soruyu atla",
+      batch_submit_all: "Tümünü gönder",
+      batch_next: "İleri",
+      answer_skipped: "[Kullanıcı atladı]",
+      email: {
+        send_title: "E-posta gönder",
+        reply_title: "Yanıt gönder",
+        draft_title: "Taslak oluştur",
+        draft_reply_title: "Yanıt taslağı oluştur",
+        update_draft_title: "Taslağı güncelle",
+        send_draft_title: "Taslağı gönder",
+        via_provider: "{{provider}} üzerinden",
+        to: "Kime:",
+        subject: "Konu:",
+        add_recipient: "Alıcı ekle",
+        remove_recipient: "{{email}} adresini kaldır",
+        edit: "Düzenle",
+        done: "Bitti",
+        deny: "Reddet",
+        sent_to: "Kime: {{recipients}}",
+        sent: "Gönderildi",
+        saved_to: "Taslak kaydedildi · Kime: {{recipients}}",
+        saved: "Taslak kaydedildi",
+        attachment_one: "{{count}} ek",
+        attachment_other: "{{count}} ek",
+        not_sent_denied: "Gönderilmedi · ajana durması söylendi",
+        not_sent_timeout: "Gönderilmedi · zamanında yanıt verilmedi",
+        not_saved_denied: "Kaydedilmedi · ajana durması söylendi",
+        not_saved_timeout: "Kaydedilmedi · zamanında yanıt verilmedi",
+        show_preview: "E-postayı göster",
+        hide_preview: "E-postayı gizle",
+      },
+    },
+    custom_skills: "Özel Beceri",
+    agent_flows: "Ajan Akışları",
+    no_tools_found: "Uyumlu herhangi bir araç bulunamadı",
+    loading_mcp_servers: "MCP sunucuları yükleniyor...",
+    app_integrations: "Uygulama Entegrasyonları",
+    sub_skills: "Alt beceriler",
+    memories: {
+      title: "Anılar",
+      empty:
+        "Şimdilik herhangi bir anı oluşmadı. Chatbot ile etkileşiminiz arttıkça, daha fazla anı oluşacaktır.",
+      empty_cta: "yeni bir anı yarat",
+      tab_workspace: "Çalışma alanı",
+      tab_global: "Genel",
+      toggle: {
+        label: "Kişiselleştirme özelliğini etkinleştirin",
+        description:
+          "Asistanınızın, sizin veya bu çalışma ortamıyla ilgili bilgileri hatırlamasını ve bunları konuşmalarda kullanmasını sağlayın.",
+      },
+      auto_extraction: {
+        label: "Otomatik Anılar",
+        description:
+          "Yardımcınızın, arka planda otomatik olarak anıları kaydetmesini sağlayın.",
+      },
+      menu: {
+        edit: "Düzenle",
+        delete: "Sil",
+        move_to_global: "Genel belleğe taşı",
+        move_to_workspace: "Çalışma alanı belleğine taşı",
+      },
+      modal: {
+        create_title: "Anı Oluştur",
+        edit_title: "Anıyı Düzenle",
+        create_description:
+          'Anılar, tek ve öz bir ifade şeklinde olmalıdır. Örneğin: "Kullanıcı, JavaScript yerine Python\'ı tercih ediyor"',
+        edit_description: "Bu anının içeriğini güncelleyin.",
+        label: "Anı",
+        placeholder:
+          "Örneğin, kullanıcının adı Joe, kullanıcı AnythingLLM üzerinde çalışıyor, vb.",
+        create: "Oluştur",
+        save: "Kaydet",
+        cancel: "İptal et",
+      },
+    },
+    stt_unsupported: "Bu tarayıcıda mikrofon erişimi desteklenmemektedir.",
+    stt_mic_denied: "Mikrofona erişilemedi. Lütfen izin verip tekrar deneyin.",
+    stt_transcription_failed: "Transkripsiyon başarısız: {{error}}",
+    export: "Sohbeti dışa aktar",
+    exporting: "Dışa aktarılıyor...",
+    preset_img_description: "Bir metin isteminden bir görüntü oluşturun",
+    generating_response: "Yanıt üretme",
+    response_failed: "Mesaja cevap veremedim.",
+    response_failed_reason: "Nedeni: {{reason}}",
+    thought_in_progress: "Model düşünüyor...",
+    thoughts: "Düşünceler",
+    leave_generating: {
+      title: "Yanıt üretmeyi durdurun?",
+      description:
+        "Şu anda bu sohbetten çıkıyorsunuz. Bu, modelin yanıt oluşturmasını durduracak ve bu durumun geri alınamayacağını ifade eder.",
+      cancel: "İptal et",
+      confirm: "Devam et",
     },
   },
   profile_settings: {
-    edit_account: null,
-    profile_picture: null,
-    remove_profile_picture: null,
-    username: null,
-    username_description: null,
-    new_password: null,
-    password_description: null,
-    cancel: null,
-    update_account: null,
-    theme: null,
-    language: null,
-    failed_upload: null,
-    upload_success: null,
-    failed_remove: null,
-    profile_updated: null,
-    failed_update_user: null,
-    account: null,
-    support: null,
-    signout: null,
+    edit_account: "Hesabı Düzenle",
+    profile_picture: "Profil Resmi",
+    remove_profile_picture: "Profil Resmini Kaldır",
+    username: "Kullanıcı Adı",
+    new_password: "Yeni Şifre",
+    password_description: "Şifre en az 8 karakter uzunluğunda olmalıdır",
+    cancel: "İptal",
+    update_account: "Hesabı Güncelle",
+    theme: "Tema Tercihi",
+    language: "Tercih edilen dil",
+    failed_upload: "Profil resmi yüklenemedi: {{error}}",
+    upload_success: "Profil resmi yüklendi.",
+    failed_remove: "Profil resmi kaldırılamadı: {{error}}",
+    profile_updated: "Profil güncellendi.",
+    failed_update_user: "Kullanıcı güncellenemedi: {{error}}",
+    account: "Hesap",
+    support: "Destek",
+    signout: "Çıkış Yap",
   },
   customization: {
     interface: {
-      title: null,
-      description: null,
+      title: "Arayüz Tercihleri",
+      description: "AnythingLLM için arayüz tercihlerinizi ayarlayın.",
     },
     branding: {
-      title: null,
-      description: null,
+      title: "Marka & Beyaz Etiketleme",
+      description:
+        "AnythingLLM örneğinizi özel markalamayla beyaz etiketleyin.",
+      tabs: {
+        identity: "Kimlik",
+        colors: "Renkler",
+        sidebar: "Kenar çubuğu",
+        browser: "Tarayıcı",
+      },
     },
     chat: {
-      title: null,
-      description: null,
+      title: "Sohbet",
+      description: "AnythingLLM için sohbet tercihlerinizi ayarlayın.",
       auto_submit: {
-        title: null,
-        description: null,
+        title: "Konuşma Girişini Otomatik Gönder",
+        description:
+          "Bir sessizlik süresinden sonra konuşma girişini otomatik olarak gönderin",
       },
       auto_speak: {
-        title: null,
-        description: null,
+        title: "Yanıtları Otomatik Seslendir",
+        description: "AI yanıtlarını otomatik olarak seslendirin",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "Yazım Denetimini Etkinleştir",
+        description:
+          "Sohbet giriş alanında yazım denetimini etkinleştirin veya devre dışı bırakın",
       },
     },
     items: {
       theme: {
-        title: null,
-        description: null,
+        title: "Tema",
+        description: "Uygulama için tercih ettiğiniz renk temasını seçin.",
       },
       "show-scrollbar": {
-        title: null,
-        description: null,
+        title: "Kaydırma Çubuğunu Göster",
+        description:
+          "Sohbet penceresinde kaydırma çubuğunu etkinleştirin veya devre dışı bırakın.",
       },
       "support-email": {
-        title: null,
-        description: null,
+        title: "Destek E-postası",
+        description:
+          "Kullanıcıların yardıma ihtiyaç duyduğunda erişebilecekleri destek e-posta adresini ayarlayın.",
       },
       "app-name": {
-        title: null,
-        description: null,
-      },
-      "chat-message-alignment": {
-        title: null,
-        description: null,
+        title: "Ad",
+        description:
+          "Giriş sayfasında tüm kullanıcılara gösterilen bir ad ayarlayın.",
       },
       "display-language": {
-        title: null,
-        description: null,
+        title: "Görüntüleme Dili",
+        description:
+          "AnythingLLM'nin kullanıcı arayüzünü görüntülemek için tercih edilen dili seçin - çeviriler mevcut olduğunda.",
       },
       logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
-      },
-      "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
-        "double-click": null,
-        save: null,
+        title: "Marka Logosu",
+        description: "Tüm sayfalarda göstermek için özel logonuzu yükleyin.",
+        add: "Özel logo ekle",
+        recommended: "Önerilen boyut: 800 x 200",
+        remove: "Kaldır",
+        replace: "Değiştir",
       },
       "browser-appearance": {
-        title: null,
-        description: null,
+        title: "Tarayıcı Görünümü",
+        description:
+          "Uygulama açıkken tarayıcı sekmesinin ve başlığının görünümünü özelleştirin.",
         tab: {
-          title: null,
-          description: null,
+          title: "Başlık",
+          description:
+            "Uygulama bir tarayıcıda açıkken özel bir sekme başlığı ayarlayın.",
         },
         favicon: {
-          title: null,
-          description: null,
+          title: "Favicon",
+          description: "Tarayıcı sekmesi için özel bir favicon kullanın.",
         },
       },
       "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
+        title: "Kenar Çubuğu Alt Bilgi Öğeleri",
+        description:
+          "Kenar çubuğunun altında görüntülenen alt bilgi öğelerini özelleştirin.",
+        icon: "Simge",
+        link: "Bağlantı",
       },
       "render-html": {
-        title: null,
-        description: null,
+        title: "Sohbette HTML Görüntüle",
+        description:
+          "Asistan yanıtlarında HTML yanıtlarını görüntüleyin.\nBu, çok daha yüksek kaliteli yanıt sağlayabilir, ancak potansiyel güvenlik risklerine de yol açabilir.",
+      },
+      "disable-auto-scroll": {
+        title: "Otomatik kaydırma özelliğini devre dışı bırak",
+        description:
+          "Yeni mesajlar aldığınızda sohbetin otomatik olarak en alttaki bölüme kaydırmasını devre dışı bırakın.",
+      },
+      palette: {
+        title: "Renk paleti",
+        description:
+          "Bir renk paleti seçin. Bu, hem açık hem de koyu mod için geçerlidir.",
+        enforced: "Yöneticiniz bu örnek için renk paletini belirledi.",
+        "default-badge": "Varsayılan",
+      },
+      "instance-palettes": {
+        title: "Renk paletleri",
+        description:
+          "Bir paleti, bu örnekteki herkes için varsayılan yapmak üzere tıklayın. Özel paletler; arka planı, kenar çubuğunu ve içeriği renklendiren bir ana renk ile düğmeler ve bağlantılar için bir vurgu renginden oluşur.",
+        new: "Yeni palet",
+        edit: "Paleti düzenle",
+        delete: "Paleti sil",
+        name: "Palet adı",
+        "name-required": "Palete bir ad verin.",
+        colors: {
+          main: "Ana renk",
+          accent: "Vurgu rengi",
+        },
+        "preview-note":
+          'Değişiklikler tüm uygulamada önizlenir ve "Tamam" düğmesine tıkladığınızda kaydedilir.',
+        done: "Tamam",
+        cancel: "İptal et",
+        enforce: "Varsayılan renk paletini uygulayın",
+        "enforce-description":
+          "Bu örnekteki herkes varsayılan paleti kullanır ve değiştiremez.",
+        "save-failed": "Renk paletleri kaydedilemedi: {{error}}",
       },
     },
   },
   "main-page": {
-    noWorkspaceError: null,
-    checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
-      tasks: {
-        create_workspace: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        send_chat: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        embed_document: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        visit_community: {
-          title: null,
-          description: null,
-          action: null,
-        },
+    quickActions: {
+      createAgent: "Ajan oluştur",
+      editWorkspace: "Çalışma Alanını Düzenle",
+      uploadDocument: "Bir belge yükleyin",
+    },
+    greeting: "Bugün size nasıl yardımcı olabilirim?",
+    greetings: {
+      anytime: {
+        working_on: "Ne üzerinde çalışıyoruz?",
+        on_your_mind: "Aklınızda ne var?",
+        where_to_start: "Nereden başlayalım?",
+        ready: "Hazır olduğunuzda buradayım.",
+        think_it_through: "Gelin, birlikte düşünelim.",
       },
-    },
-    quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
-    },
-    exploreMore: {
-      title: null,
-      features: {
-        customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
+      morning: {
+        good_morning: "Günaydın",
+        first_today: "Günaydın. Bugün ilk iş ne?",
+        fresh_start: "Yeni bir başlangıç. Nereden başlayalım?",
       },
-    },
-    announcements: {
-      title: null,
-    },
-    resources: {
-      title: null,
-      links: {
-        docs: null,
-        star: null,
+      afternoon: {
+        good_afternoon: "İyi günler",
+        tackling: "İyi günler. Neyi halledelim?",
+        next_on_list: "Listede sırada ne var?",
+        keep_moving: "Devam edelim.",
       },
-      keyboardShortcuts: null,
+      evening: {
+        good_evening: "İyi akşamlar",
+        finish_strong: "İyi akşamlar. Günü güçlü bitirelim.",
+      },
+      night: {
+        midnight_oil: "Geç saatlere kadar mı çalışıyorsunuz?",
+        late_one: "Uzun bir gece mi? Gelin, birlikte düşünelim.",
+        still_up: "Hâlâ uyanık mısınız? Hazır olduğunuzda buradayım.",
+      },
     },
   },
   "keyboard-shortcuts": {
-    title: null,
+    title: "Klavye Kısayolları",
     shortcuts: {
-      settings: null,
-      workspaceSettings: null,
-      home: null,
-      workspaces: null,
-      apiKeys: null,
-      llmPreferences: null,
-      chatSettings: null,
-      help: null,
-      showLLMSelector: null,
+      settings: "Ayarları Aç",
+      workspaceSettings: "Mevcut Çalışma Alanı Ayarlarını Aç",
+      home: "Ana Sayfaya Git",
+      workspaces: "Çalışma Alanlarını Yönet",
+      apiKeys: "API Anahtarları Ayarları",
+      llmPreferences: "LLM Tercihleri",
+      chatSettings: "Sohbet Ayarları",
+      help: "Klavye kısayolları yardımını göster",
+      showLLMSelector: "Çalışma alanı LLM Seçicisini Göster",
     },
   },
   community_hub: {
     publish: {
       system_prompt: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+        success_title: "Başarılı!",
+        success_description: "Sistem Promptunuz Topluluk Hub'ına yayınlandı!",
+        success_thank_you: "Topluluğa paylaştığınız için teşekkür ederiz!",
+        view_on_hub: "Topluluk Hub'ında Görüntüle",
+        modal_title: "Sistem Promptu Yayınla",
+        name_label: "Ad",
+        name_description: "Bu, sistem promptunuzun görüntü adıdır.",
+        name_placeholder: "Sistem Promptum",
+        description_label: "Açıklama",
+        description_description:
+          "Bu, sistem promptunuzun açıklamasıdır. Sistem promptunuzun amacını açıklamak için bunu kullanın.",
+        tags_label: "Etiketler",
+        tags_description:
+          "Etiketler, sistem promptunuzu daha kolay aramak için etiketlemek amacıyla kullanılır. Birden fazla etiket ekleyebilirsiniz. Maksimum 5 etiket. Etiket başına maksimum 20 karakter.",
+        tags_placeholder: "Yazın ve etiket eklemek için Enter'a basın",
+        visibility_label: "Görünürlük",
+        public_description: "Herkese açık sistem promptları herkese görünür.",
+        private_description: "Özel sistem promptları yalnızca size görünür.",
+        publish_button: "Topluluk Hub'ına Yayınla",
+        submitting: "Yayınlanıyor...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "Bu, LLM'yi yönlendirmek için kullanılacak gerçek sistem promptudur.",
+        prompt_placeholder: "Sistem promptunuzu buraya girin...",
       },
       agent_flow: {
-        public_description: null,
-        private_description: null,
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        privacy_note: null,
+        success_title: "Başarılı!",
+        success_description: "Ajan Akışınız Topluluk Hub'ına yayınlandı!",
+        success_thank_you: "Topluluğa paylaştığınız için teşekkür ederiz!",
+        view_on_hub: "Topluluk Hub'ında Görüntüle",
+        modal_title: "Ajan Akışı Yayınla",
+        name_label: "Ad",
+        name_description: "Bu, ajan akışınızın görüntü adıdır.",
+        name_placeholder: "Ajan Akışım",
+        description_label: "Açıklama",
+        description_description:
+          "Bu, ajan akışınızın açıklamasıdır. Ajan akışınızın amacını açıklamak için bunu kullanın.",
+        tags_label: "Etiketler",
+        tags_description:
+          "Etiketler, ajan akışınızı daha kolay aramak için etiketlemek amacıyla kullanılır. Birden fazla etiket ekleyebilirsiniz. Maksimum 5 etiket. Etiket başına maksimum 20 karakter.",
+        tags_placeholder: "Yazın ve etiket eklemek için Enter'a basın",
+        visibility_label: "Görünürlük",
+        submitting: "Yayınlanıyor...",
+        submit: "Topluluk Hub'ına Yayınla",
+        privacy_note:
+          "Ajan akışları, hassas verileri korumak için her zaman özel olarak yüklenir. Yayınladıktan sonra Topluluk Hub'ında görünürlüğü değiştirebilirsiniz. Lütfen yayınlamadan önce akışınızın hassas veya özel bilgi içermediğini doğrulayın.",
+      },
+      slash_command: {
+        success_title: "Başarılı!",
+        success_description:
+          "Eğik Çizgi Komutunuz Topluluk Hub'ına yayınlandı!",
+        success_thank_you: "Topluluğa paylaştığınız için teşekkür ederiz!",
+        view_on_hub: "Topluluk Hub'ında Görüntüle",
+        modal_title: "Eğik Çizgi Komutu Yayınla",
+        name_label: "Ad",
+        name_description: "Bu, eğik çizgi komutunuzun görüntü adıdır.",
+        name_placeholder: "Eğik Çizgi Komutum",
+        description_label: "Açıklama",
+        description_description:
+          "Bu, eğik çizgi komutunuzun açıklamasıdır. Eğik çizgi komutunuzun amacını açıklamak için bunu kullanın.",
+        tags_label: "Etiketler",
+        tags_description:
+          "Etiketler, eğik çizgi komutunuzu daha kolay aramak için etiketlemek amacıyla kullanılır. Birden fazla etiket ekleyebilirsiniz. Maksimum 5 etiket. Etiket başına maksimum 20 karakter.",
+        tags_placeholder: "Yazın ve etiket eklemek için Enter'a basın",
+        visibility_label: "Görünürlük",
+        public_description:
+          "Herkese açık eğik çizgi komutları herkese görünür.",
+        private_description: "Özel eğik çizgi komutları yalnızca size görünür.",
+        publish_button: "Topluluk Hub'ına Yayınla",
+        submitting: "Yayınlanıyor...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "Bu, eğik çizgi komutu tetiklendiğinde kullanılacak prompttur.",
+        prompt_placeholder: "Promptunuzu buraya girin...",
       },
       generic: {
         unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
+          title: "Kimlik Doğrulama Gerekli",
+          description:
+            "Öğeleri yayınlamadan önce AnythingLLM Topluluk Hub'ına kimlik doğrulaması yapmanız gerekir.",
+          button: "Topluluk Hub'ına Bağlan",
         },
-      },
-      slash_command: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        command_label: null,
-        command_description: null,
-        command_placeholder: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
       },
     },
   },
@@ -992,6 +1710,427 @@ const TRANSLATIONS = {
     notAssigned:
       "Şu anda hiçbir çalışma alanına atanmamışsınız.\nBir çalışma alanına erişmek için yöneticinize başvurun.",
     goToWorkspace: 'Çalışma alanına git "{{workspace}}"',
+  },
+  telegram: {
+    title: "Telegram Bot'u",
+    description:
+      "Her cihazdan çalışma alanlarınızla sohbet etmek için AnythingLLM kurulumunuzu Telegram'a bağlayın.",
+    setup: {
+      step1: {
+        title: "1. Adım: Telegram botunuzu oluşturun",
+        description:
+          "Telegram uygulamasında @BotFather'ı açın, \"<code>/newbot</code>\" komutunu <code>@BotFather</code>'e gönderin, talimatları izleyin ve API anahtarını kopyalayın.",
+        "open-botfather": "BotFather'ı aç",
+        "instruction-1": "1. Bağlantıyı açın veya QR kodunu tarayın",
+        "instruction-2":
+          "2. <code>@BotFather</code> hesabına <code>/newbot</code> komutunu gönderin.",
+        "instruction-3": "3. Botunuz için bir isim ve kullanıcı adı seçin",
+        "instruction-4": "4. Alınan API token'ı kopyalayın",
+      },
+      step2: {
+        title: "Adım 2: Botunuzu bağlayın",
+        description:
+          "Aldığınız API token'ı (@BotFather) kopyalayın ve botunuzun iletişim kuracağı varsayılan çalışma alanını seçin.",
+        "bot-token": "Bot Token",
+        connecting: "Bağlantı kuruluyor...",
+        "connect-bot": "Botu Bağla",
+      },
+      security: {
+        title: "Önerilen Güvenlik Ayarları",
+        description:
+          "Ek güvenlik için, bu ayarları @BotFather üzerinden yapılandırın.",
+        "disable-groups": "— Gruplara bot eklenmesini engelleme",
+        "disable-inline":
+          "— Bot'un, arama çubuklarında kullanılmasını engellemek",
+        "obscure-username":
+          "Daha az bilinen bir bot kullanıcı adı kullanarak görünürlüğünü azaltın.",
+      },
+      "toast-enter-token": "Lütfen bir bot tokenı girin.",
+      "toast-connect-failed": "Bot ile bağlantı kurulamadı.",
+    },
+    connected: {
+      status: "Bağlı",
+      "status-disconnected":
+        "Bağlantı kesildi — belirteç geçersiz veya süresi dolmuş olabilir",
+      "placeholder-token": "Yeni bot token'ı yapıştırın...",
+      reconnect: "Yeniden bağlantı kur",
+      workspace: "Çalışma alanı",
+      "bot-link": "Bot bağlantısı",
+      "voice-response": "Sesle etkileşim",
+      disconnecting: "Bağlantıyı kesiyorum...",
+      disconnect: "Bağlantıyı kes",
+      "voice-text-only": "Sadece metin",
+      "voice-mirror":
+        "Sesli yanıt (kullanıcı ses gönderdiğinde, sesli yanıtla cevaplayın)",
+      "voice-always": "Her zaman sesli yanıt ver",
+      "toast-disconnect-failed": "Bot'u ayırmada başarısız.",
+      "toast-reconnect-failed": "Bot yeniden bağlantı kuramadı.",
+      "toast-voice-failed": "Ses modunu güncelleme başarısız oldu.",
+      "toast-approve-failed": "Kullanıcı onaylanamadı.",
+      "toast-deny-failed": "Kullanıcı reddedilemedi.",
+      "toast-revoke-failed": "Kullanıcının erişimi kaldırılamadı.",
+    },
+    users: {
+      "pending-description":
+        "Doğrulama işlemi bekleyen kullanıcılar. Burada gösterilen eşleştirme kodunu, Telegram sohbetlerinde görüntülenen kodla karşılaştırın.",
+      unknown: "Bilinmiyor",
+    },
+  },
+  scheduledJobs: {
+    title: "Zamanlanmış Görevler",
+    enableNotifications:
+      "Görev sonuçları için tarayıcı bildirimlerini etkinleştirin",
+    description:
+      "Tekrarlayan yapay zeka görevlerini, belirli bir zaman çizelgesine göre otomatik olarak çalıştırın. Her görev, isteğe bağlı araçlarla birlikte bir sorguyu çalıştırır ve sonuçları inceleme için kaydeder.",
+    newJob: "Yeni görev",
+    loading: "Yükleniyor...",
+    emptyTitle: "Henüz zamanlanmış görev yok.",
+    emptySubtitle: "Başlamak için bir tane oluşturun.",
+    table: {
+      name: "Ad",
+      schedule: "Zamanlama",
+      status: "Durum",
+      lastRun: "Son Çalıştırma",
+      nextRun: "Sonraki Çalıştırma",
+      actions: "Eylemler",
+    },
+    confirmDelete: "Bu planlanan görevi silmekten emin misiniz?",
+    toast: {
+      deleted: "Görev silindi",
+      triggered: "Görev başlatıldı",
+      triggerFailed: "Görev başlatılamadı",
+      triggerSkipped: "Bu görev zaten çalışıyor",
+      killed: "Görev durduruldu",
+      killFailed: "Görev durdurulamadı",
+    },
+    row: {
+      neverRun: "Henüz çalıştırılmadı",
+      viewRuns: "Çalıştırma geçmişi",
+      runNow: "Şimdi çalıştır",
+      enable: "Etkinleştir",
+      disable: "Devre dışı bırak",
+      edit: "Düzenle",
+      delete: "Sil",
+    },
+    modal: {
+      titleEdit: "Zamanlanmış Görevi Düzenle",
+      titleNew: "Yeni Zamanlanmış Görev",
+      nameLabel: "Ad",
+      namePlaceholder: "Örneğin, Günlük Haber Özeti",
+      promptLabel: "İstem",
+      promptPlaceholder: "Her çalıştırmada uygulanacak talimatlar...",
+      scheduleLabel: "Zamanlama",
+      modeBuilder: "Zamanlama Oluşturucu",
+      modeCustom: "Özel",
+      cronPlaceholder: "Cron ifadesi (örneğin, 0 9 * * *)",
+      currentSchedule: "Geçerli zamanlama:",
+      toolsLabel: "Araçlar (İsteğe Bağlı)",
+      toolsDescription:
+        "Bu iş için kullanılabilen ajan araçlarını seçin. Eğer hiçbir araç seçilmezse, iş herhangi bir araç olmadan çalışacaktır.",
+      toolsSearch: "Arama",
+      toolsNoResults: "Hiçbir araç bulunamadı",
+      required: "Gereklidir",
+      requiredFieldsBanner:
+        "Görevi oluşturmak için tüm zorunlu alanları doldurun.",
+      cancel: "İptal et",
+      saving: "Kaydediliyor...",
+      updateJob: "Görevi Güncelle",
+      createJob: "Görev Oluştur",
+      jobUpdated: "Görev güncellendi",
+      jobCreated: "Görev oluşturuldu",
+    },
+    builder: {
+      fallbackWarning:
+        'Bu ifade görsel olarak düzenlenemez. Mevcut haliyle bırakmak için "Özel" seçeneğine geçin veya aşağıdaki herhangi bir alanı değiştirerek üzerine yazın.',
+      run: "Çalıştır",
+      frequency: {
+        minute: "her dakika",
+        hour: "saatlik",
+        day: "günlük",
+        week: "haftalık",
+        month: "aylık",
+      },
+      every: "Her",
+      minuteOne: "1 dakika",
+      minuteOther: "{{count}} dakika",
+      atMinute: "Dakika",
+      pastEveryHour: "geçe, her saat",
+      at: "Saat",
+      on: "Gün",
+      onDay: "Ayın günü",
+      ofEveryMonth: "her ayın",
+      weekdays: {
+        sun: "Paz",
+        mon: "Pzt",
+        tue: "Sal",
+        wed: "Çar",
+        thu: "Per",
+        fri: "Cum",
+        sat: "Cmt",
+      },
+    },
+    runHistory: {
+      back: "Görevlere dön",
+      title: "Çalıştırma Geçmişi: {{name}}",
+      schedule: "Zamanlama:",
+      emptyTitle: "Bu görev henüz çalıştırılmadı.",
+      emptySubtitle: "Sonuçları görmek için şimdi çalıştırın.",
+      runNow: "Şimdi çalıştır",
+      table: {
+        status: "Durum",
+        started: "Başlangıç",
+        duration: "Süre",
+        error: "Hata",
+      },
+      stopJob: "Görevi durdur",
+    },
+    runDetail: {
+      loading: "Çalıştırma ayrıntıları yükleniyor...",
+      notFound: "Çalıştırma bulunamadı.",
+      back: "Geri",
+      unknownJob: "Bilinmeyen İş",
+      runHeading: "{{name}} — Çalışma #{{id}}",
+      duration: "Süre: {{value}}",
+      creating: "Oluşturuluyor...",
+      threadFailed: "Sohbet oluşturulamadı.",
+      sections: {
+        prompt: "İstem",
+        error: "Hata",
+        thinking: "Düşünceler ({{count}})",
+        toolCalls: "Araç Çağrıları ({{count}})",
+        files: "Dosyalar ({{count}})",
+        response: "Cevap",
+        metrics: "Ölçüm değerleri",
+      },
+      metrics: {
+        promptTokens: "İstem tokenları:",
+        completionTokens: "Yanıt tokenları:",
+      },
+      stopJob: "Görevi durdur",
+      killing: "Durduruluyor...",
+      continueInThread: "Sohbeti devam ettir",
+    },
+    toolCall: {
+      arguments: "Bağımsız değişkenler:",
+      showResult: "Sonuçları göster",
+      hideResult: "Sonucu gizle",
+    },
+    file: {
+      unknown: "Bilinmeyen dosya",
+      download: "İndir",
+      downloadFailed: "Dosya indirme işlemi başarısız oldu",
+      types: {
+        powerpoint: "PowerPoint",
+        pdf: "PDF belgesi",
+        word: "Word belgesi",
+        spreadsheet: "Tablo",
+        generic: "Dosya",
+      },
+    },
+    status: {
+      completed: "Tamamlandı",
+      failed: "Başarısız",
+      timed_out: "Zaman aşımı",
+      running: "Çalışıyor",
+      queued: "Sırada",
+    },
+  },
+  "model-router": {
+    title: "Model Yönlendiricileri",
+    description:
+      "Model yönlendiriciler, belirli koşullara göre sohbet mesajlarını otomatik olarak farklı LLM sağlayıcılarına ve modellere yönlendirmek için kurallar tanımlamanıza olanak tanır.",
+    table: {
+      name: "Ad",
+      fallback: "Yedek hedef",
+      rules: "Kurallar",
+      workspaces: "Çalışma alanları",
+    },
+    "no-routers": "Şu anda herhangi bir model yönlendirici bulunmamaktadır.",
+    "empty-description":
+      "Henüz herhangi bir yönlendirici yapılandırılmamış. Başlamak için bir tane oluşturun.",
+    "new-router-button": "Yeni Yönlendirici",
+    "delete-confirm":
+      '"{{name}}" yönlendiricisini silmek istediğinizden emin misiniz?\n\nTüm kuralları kaldırılacak ve bu yönlendiriciyi kullanan çalışma alanlarının bağlantısı kesilecek.\n\nBu işlem geri alınamaz.',
+    "toast-deleted": "Yönlendirici silindi",
+    "toast-delete-failed": "Yönlendirici silinemedi: {{error}}",
+    "new-router": {
+      title: "Yeni bir model yönlendirici oluşturun",
+      name: "Ad",
+      "name-placeholder": "Örneğin, Maliyet Optimizasyonu",
+      description: "Açıklama",
+      "description-placeholder": "İsteğe bağlı açıklama",
+      "fallback-label": "Birincil Sağlayıcı ve Model",
+      "fallback-description":
+        "Hiçbir yönlendirme kuralı eşleşmediğinde kullanılır. LLM sınıflandırmalı kuralları değerlendirmek için de kullanılır.",
+      "cooldown-label": "Önbellek Süresi (saniye)",
+      "cooldown-help":
+        "Yol seçimi kararı, kuralların yeniden değerlendirilmeden önce ne kadar süre boyunca önbelleğe alınır? Bu değeri 0 olarak ayarlamak, önbelleklemenin devre dışı kalmasını sağlar.",
+      "name-required": "İsim zorunludur.",
+      "fallback-required": "Birincil sağlayıcı ve model gereklidir.",
+      cancel: "İptal et",
+      create: "Yönlendirici oluştur",
+    },
+    "edit-router": {
+      "back-to-routers": "Model yönlendiricilerine dön",
+      title: "Yönlendiriciyi Düzenle: {{name}}",
+      save: "Değişiklikleri Kaydet",
+      "toast-update-failed": "Yönlendirici güncellenemedi",
+    },
+    rules: {
+      title: "Yönlendirme Kuralları",
+      "title-with-name": "Yönlendirme Kuralları: {{name}}",
+      description:
+        "Hangi mesajların hangi sağlayıcı ve modellere yönlendirileceğini belirleyen kuralları tanımlayın.",
+      "add-rule": "Kuralı ekle",
+      "delete-confirm": '"{{title}}" kuralını silmek mi?',
+      "toast-delete-failed": "Kural silme işlemi başarısız oldu.",
+      "toast-reorder-failed": "Kurallar yeniden sıralanamadı",
+      "no-rules": "Henüz herhangi bir kural belirlenmemiş",
+      "empty-description":
+        "Belirli sağlayıcılara ve modellere mesajları yönlendirmeye başlamak için bir kural ekleyin.",
+      "new-rule-button": "Yeni Kural",
+      "calculated-section-label":
+        "Hesaplanan kurallar — öncelik sırasına göre değerlendirilir",
+      "llm-section-label":
+        "LLM kuralları — eğer hiçbir hesaplanmış kural eşleşmiyorsa, toplu olarak değerlendirilir.",
+      "llm-rule-body":
+        '<desc>"{{description}}"</desc> ile eşleşirse rotayı <route>{{route}}</route> olarak belirle.',
+      "calculated-no-conditions":
+        "Şart yok — rotayı <route>{{route}}</route> olarak belirle",
+      "calculated-single-condition":
+        'Eğer <prop> {{property}} </prop> {{comparator}} <val> "{{value}}" </val> ise, rotayı <route> {{route}} </route> olarak belirle.',
+      "calculated-multi-condition":
+        "Eğer {{quantifier}} <cond>{{conditions}}</cond> ise, rotayı <route>{{route}}</route> olarak belirle.",
+      "comparator-contains": "içerir",
+      "comparator-matches": "eşleşir",
+      "comparator-between": "arasında",
+      "badge-llm": "Büyük Dil Modeli",
+      "badge-calculated": "Hesaplanmış",
+      "aria-drag-to-reorder": "Yeniden sıralamak için sürükleyin",
+      "aria-edit-rule": "Kuralı düzenle",
+      "aria-delete-rule": "Kuralı sil",
+      "quantifier-any": "HERHANGİ",
+      "quantifier-all": "TÜM",
+    },
+    "rule-form": {
+      "title-label": "Başlık",
+      "rule-type": "Kural Türü",
+      "property-label": "Özellik",
+      "property-select": "Seç",
+      "comparator-label": "Karşılaştırma",
+      "comparator-select": "Seç",
+      "value-label": "Değer",
+      "add-condition": "Koşul ekle",
+      "remove-condition": "Koşulu ortadan kaldır",
+      "conditions-incomplete":
+        "Koşul {{index}} eksik — özellik, karşılaştırma ve değeri belirtin.",
+      "match-description-label": "Eşleşme Açıklaması",
+      "match-description-placeholder":
+        "Örneğin, kullanıcı yasal konular, sözleşmeler veya uyumluluk hakkında bilgi almak istiyor.",
+      "match-description-help":
+        "Bu kuralın hangi durumda uygulanması gerektiğini açıklayın. Bu, LLM'iniz tarafından değerlendirilerek, kullanılıp kullanılmaması belirlenecektir.",
+      "route-to-label": "Yönlendirilecek Sağlayıcı ve Model",
+      "route-to-description":
+        "Bu kural eşleştiğinde, bu sağlayıcıyı/modeli kullanın.",
+      cancel: "İptal et",
+      saving: "Kaydediliyor...",
+      "update-rule": "Kuralı Güncelle",
+      "create-rule": "Kural Oluştur",
+      "title-required": "Başlık zorunludur",
+      "toast-save-failed": "Kuralı kaydetme başarısız oldu",
+      "type-calculated-label": "Hesaplanmış",
+      "type-calculated-description":
+        "Mesaj özelliklerine (içerik, token sayısı veya günün saati gibi) göre eşleştirme yapın.",
+      "type-llm-label": "LLM ile Sınıflandırma",
+      "type-llm-description":
+        "Bir LLM (Büyük Dil Modeli) kullanarak, sağladığınız açıklamaya göre mesajı sınıflandırın.",
+      "prop-prompt-content": "İçerik",
+      "prop-token-count": "Konuşmadaki Token Sayısı",
+      "prop-message-count": "Mesaj Sayısı",
+      "prop-current-hour": "Mevcut Saat (0-23)",
+      "prop-has-image": "Resim eklenmiş mi?",
+      "cmp-contains": "içerir",
+      "cmp-matches-regex": "eşleşir (düzenli ifade)",
+      "cmp-equals": "eşittir",
+      "cmp-not-equals": "eşit değildir",
+      "cmp-greater-than": "daha büyük",
+      "cmp-greater-than-or-equal": "büyük veya eşit",
+      "cmp-less-than": "daha az",
+      "cmp-less-than-or-equal": "daha az veya eşit",
+      "cmp-between": "arasında (sınırlar dahil)",
+      "placeholder-between-hour": "Ör. 9,17 (09:00–17:00)",
+      "placeholder-between-numeric": "Örneğin: 10,50",
+      "placeholder-hour": "Örneğin, 18 (0-23)",
+      "placeholder-message-count": "Örneğin: 10",
+      "placeholder-numeric": "Örneğin, 4000",
+      "placeholder-contains": "örneğin, kod, Python, Rust",
+      "placeholder-matches": "Örneğin: /\\bpython\\b/i",
+      "placeholder-default": "Örneğin, kod",
+      "help-contains":
+        "Virgülle ayrılmış liste — Eğer sorgu içinde belirtilen değerlerden herhangi biri varsa eşleşir (büyük/küçük harf duyarlılığı olmadan).",
+      "help-matches":
+        "Düzenli ifade kalıbı. Büyük/küçük harf duyarlılığını belirtmek için `/pattern/flag`lerini kullanın (varsayılan olarak büyük/küçük harf duyarlılığı devre dışıdır).",
+      "bool-true": "Doğru",
+      "bool-false": "Yanlış",
+    },
+    "provider-picker": {
+      "select-provider": "Sağlayıcı seçin",
+      "setup-required": "(Kurulum gerektirir)",
+      "loading-models": "Modeller yükleniyor...",
+      "select-model": "Model seçin",
+      "enter-model": "Model adını girin",
+      "select-provider-first": "Öncelikle bir sağlayıcı seçin.",
+      "configure-to-continue": "{{name}}'ı yapılandırarak devam et",
+      "configure-provider": "{{name}}'ı yapılandırın",
+      "setup-credentials":
+        "Gerekli kimlik bilgilerini girerek {{name}}'ı yönlendirme hedefi olarak kullanın.",
+      cancel: "İptal et",
+      "save-settings": "Ayarları kaydet",
+      "toast-save-failed": "Ayarlar kaydedilemedi: {{error}}",
+    },
+    "router-selection": {
+      "loading-routers": "Model yönlendiricileri yükleniyor...",
+      "no-routers-prefix-settings":
+        "Henüz model yönlendiricisi yapılandırılmamış.",
+      "no-routers-prefix-workspace":
+        "Henüz model yönlendiricisi yapılandırılmamış.",
+      "no-routers-link": "Model Yönlendirici ayarlarından bir tane oluşturun.",
+      "model-router-label": "Model Yönlendirici",
+      "select-router": "Bir yönlendirici seçin",
+      "select-description":
+        "Bu çalışma alanı için hangi yönlendiriciyi kullanacağınızı seçin.",
+      "no-routers-chat":
+        "Hiçbir yönlendirici yapılandırılmamış. Ayarlar > Yapay Zeka Sağlayıcıları > Model Yönlendirici bölümünde bir tane oluşturun.",
+      "rule-count": "({{count}} kural)",
+    },
+    metrics: {
+      "model-router-default": "Model Yönlendirici",
+    },
+    chat: {
+      "select-router-error": "Bir yönlendirici seçin",
+      "invalid-model": "Geçersiz model seçimi",
+      "routed-to": "Yönlendirildi: <route> {{model}} </route>",
+      "routed-to-rule":
+        "<rule>{{ruleTitle}}</rule> kuralıyla <route>{{model}}</route> modeline yönlendirildi",
+    },
+  },
+  imageGeneration: {
+    title: "Görüntü Oluşturma Tercihi",
+    description:
+      "`/img` komutunu kullanarak görüntüler oluşturmak için kullanılan sağlayıcıyı yapılandırın.",
+    provider: "Görüntü Üretim Sağlayıcısı",
+    card: {
+      "failed-to-load": "Görsel yüklenemedi",
+      "alt-text": "Oluşturulan görüntü",
+      edit: "Düzenle",
+      download: "İndir",
+    },
+    pending: {
+      heading: "Görseliniz oluşturuluyor…",
+      description:
+        "Bu işlem biraz zaman alabilir. Hazır olduğunda burada görüntülenecektir.",
+      aborted: "Görsel oluşturma iptal edildi.",
+    },
   },
 };
 

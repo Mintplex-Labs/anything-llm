@@ -28,8 +28,14 @@ function makeJWT(info = {}, expiry = "30d") {
   return JWT.sign(info, process.env.JWT_SECRET, { expiresIn: expiry });
 }
 
-// Note: Only valid for finding users in multi-user mode
-// as single-user mode with password is not a "user"
+/**
+ * Gets the user from the session
+ * Note: Only valid for multi-user mode
+ * as single-user mode with password is not a "user"
+ * @param {import("express").Request} request - The request object
+ * @param {import("express").Response} response - The response object
+ * @returns {Promise<import("@prisma/client").users | null>} The user
+ */
 async function userFromSession(request, response = null) {
   if (!!response && !!response.locals?.user) {
     return response.locals.user;
@@ -95,13 +101,48 @@ function isValidUrl(urlString = "") {
     const url = new URL(urlString);
     if (!["http:", "https:"].includes(url.protocol)) return false;
     return true;
-  } catch (e) {}
+  } catch {}
   return false;
 }
 
 function toValidNumber(number = null, fallback = null) {
   if (isNaN(Number(number))) return fallback;
   return Number(number);
+}
+
+/**
+ * Parses a caller-supplied integer (query string or JSON body value) and clamps it.
+ * Anything that does not parse to a finite integer returns the fallback, so bad
+ * input never reaches Prisma as NaN, where `take`/`skip` would throw.
+ * @param {any} value - The raw value from the request.
+ * @param {number} fallback - Returned when the value is not an integer.
+ * @param {{min?: number, max?: number}} bounds - Inclusive clamp applied to parsed values.
+ * @returns {number}
+ */
+function toBoundedInt(
+  value,
+  fallback,
+  { min = -Infinity, max = Infinity } = {}
+) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(max, Math.max(min, parsed));
+}
+
+/**
+ * Decode HTML entities from a string.
+ * The DMR response is encoded with HTML entities, so we need to decode them
+ * so we can parse the JSON and report the progress percentage.
+ * @param {string} str - The string to decode.
+ * @returns {string} The decoded string.
+ */
+function decodeHtmlEntities(str) {
+  return str
+    .replace(/&#34;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
 }
 
 module.exports = {
@@ -115,4 +156,6 @@ module.exports = {
   safeJsonParse,
   isValidUrl,
   toValidNumber,
+  toBoundedInt,
+  decodeHtmlEntities,
 };

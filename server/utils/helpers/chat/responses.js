@@ -1,5 +1,21 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+const { isAbortError } = require("../abortSignals");
+const { safeJsonParse } = require("../../http");
+
+/**
+ * Extract reasoning content from a message or delta, checking all known field names.
+ * @param {Object} messageOrDelta
+ * @returns {string|undefined}
+ */
+function extractReasoningContent(messageOrDelta) {
+  return (
+    messageOrDelta?.reasoning_content ||
+    messageOrDelta?.reasoning ||
+    messageOrDelta?.thinking ||
+    undefined
+  );
+}
 
 function clientAbortedHandler(resolve, fullText) {
   console.log(
@@ -34,6 +50,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
 
   return new Promise(async (resolve) => {
     let fullText = "";
+    let reasoningText = "";
 
     // Establish listener to early-abort a streaming response
     // in case things go sideways or the user does not like the response.
@@ -51,6 +68,8 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
 
+        const reasoningToken = extractReasoningContent(message?.delta);
+
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
         // the response object is the exact same key:value pair we expect.
@@ -67,6 +86,55 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
+
+          // Cerebras sends time_info next to usage on the final chunk.
+          // Its completion_time is used as the real duration of the completion.
+          if (chunk.time_info?.completion_time) {
+            usage.duration = chunk.time_info.completion_time;
+          }
+        }
+
+        // Reasoning models will always return the reasoning text before the token text.
+        if (reasoningToken) {
+          // If the reasoning text is empty (''), we need to initialize it
+          // and send the first chunk of reasoning text.
+          if (reasoningText.length === 0) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `<think>${reasoningToken}`,
+              close: false,
+              error: false,
+            });
+            reasoningText += `<think>${reasoningToken}`;
+            continue;
+          } else {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: reasoningToken,
+              close: false,
+              error: false,
+            });
+            reasoningText += reasoningToken;
+          }
+        }
+
+        // If the reasoning text is not empty, but the reasoning token is empty
+        // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+        if (!!reasoningText && !reasoningToken && token) {
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: `</think>`,
+            close: false,
+            error: false,
+          });
+          fullText += `${reasoningText}</think>`;
+          reasoningText = "";
         }
 
         if (token) {
@@ -105,6 +173,13 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         }
       }
     } catch (e) {
+      // Cancelling the upstream request rejects the iterator - that is the client
+      // leaving, not a failure, so it is not reported as a streaming error.
+      if (isAbortError(e)) {
+        stream?.endMeasurement(usage);
+        return clientAbortedHandler(resolve, fullText);
+      }
+
       console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
       writeResponseChunk(response, {
         uuid,
@@ -124,7 +199,7 @@ function convertToChatHistory(history = []) {
   const formattedHistory = [];
   for (const record of history) {
     const { prompt, response, createdAt, feedbackScore = null, id } = record;
-    const data = JSON.parse(response);
+    const data = safeJsonParse(response, {});
 
     // In the event that a bad response was stored - we should skip its entire record
     // because it was likely an error and cannot be used in chats and will fail to render on UI.
@@ -133,7 +208,7 @@ function convertToChatHistory(history = []) {
         `[convertToChatHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
       );
       continue;
-    } else if (typeof data.text !== "string") {
+    } else if (typeof data?.text !== "string") {
       console.log(
         `[convertToChatHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
       );
@@ -157,11 +232,48 @@ function convertToChatHistory(history = []) {
         sentAt: moment(createdAt).unix(),
         feedbackScore,
         metrics: data?.metrics || {},
+        ...(data?.outputs?.length > 0 ? { outputs: data.outputs } : {}),
+        ...(data?.clarifyingQuestions?.length > 0
+          ? { clarifyingQuestions: data.clarifyingQuestions }
+          : {}),
       },
     ]);
   }
 
   return formattedHistory.flat();
+}
+
+/**
+ * Render a single saved survey as a tagged Q/A transcript for LLM history.
+ * Mirrors the answer-casing rules in formatAnswersForAgent (request-user-input.js)
+ * so the model sees the same wording it saw mid-turn when the tool resolved.
+ */
+function formatClarifyingSurveyForPrompt(survey) {
+  const questions = Array.isArray(survey?.questions) ? survey.questions : [];
+  const result = survey?.result || {};
+  if (!questions.length) return "";
+
+  let body;
+  if (result.timedOut) {
+    body = "[no response within the time limit]";
+  } else if (result.skipped) {
+    body = "[user let the agent decide]";
+  } else {
+    const answers = Array.isArray(result.answers) ? result.answers : [];
+    body = questions
+      .map((q, i) => {
+        const a = answers[i] || { skipped: true };
+        let answerText;
+        if (a.skipped) answerText = "[user skipped]";
+        else if (Array.isArray(a.answer)) answerText = a.answer.join(", ");
+        else if (a.answer === null || a.answer === undefined || a.answer === "")
+          answerText = "[no answer]";
+        else answerText = String(a.answer);
+        return `Q: ${q.question}\nA: ${answerText}`;
+      })
+      .join("\n");
+  }
+  return `<clarifying_questions>\n${body}\n</clarifying_questions>`;
 }
 
 /**
@@ -173,7 +285,7 @@ function convertToPromptHistory(history = []) {
   const formattedHistory = [];
   for (const record of history) {
     const { prompt, response } = record;
-    const data = JSON.parse(response);
+    const data = safeJsonParse(response, {});
 
     // In the event that a bad response was stored - we should skip its entire record
     // because it was likely an error and cannot be used in chats and will fail to render on UI.
@@ -182,25 +294,45 @@ function convertToPromptHistory(history = []) {
         `[convertToPromptHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
       );
       continue;
-    } else if (typeof data.text !== "string") {
+    } else if (typeof data?.text !== "string") {
       console.log(
         `[convertToPromptHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
       );
       continue;
     }
 
+    // A prompt that never got a response (failed or abandoned) stays visible
+    // in the thread but is left out of the history sent to the LLM - some
+    // providers (ex: Bedrock) reject a blank assistant message, which would
+    // break every later chat in the thread.
+    if (!data.text) continue;
+
+    // If the agent saved one or more clarifying-question surveys on this
+    // record, append them to the assistant content so future LLM turns
+    // (agent or normal chat) can recall what the user answered.
+    let assistantContent = data.text;
+    if (data?.clarifyingQuestions?.length > 0) {
+      const surveyBlocks = data.clarifyingQuestions
+        .map(formatClarifyingSurveyForPrompt)
+        .filter(Boolean)
+        .join("\n\n");
+      if (surveyBlocks)
+        assistantContent = `${assistantContent}\n\n${surveyBlocks}`;
+    }
+
+    const { chatHistoryAttachments } = require("../../files");
+    const attachments = chatHistoryAttachments(data);
+
     formattedHistory.push([
       {
         role: "user",
         content: prompt,
         // if there are attachments, add them as a property to the user message so we can reuse them in chat history later if supported by the llm.
-        ...(data?.attachments?.length > 0
-          ? { attachments: data?.attachments }
-          : {}),
+        ...(attachments.length > 0 ? { attachments } : {}),
       },
       {
         role: "assistant",
-        content: data.text,
+        content: assistantContent,
       },
     ]);
   }
@@ -220,6 +352,10 @@ function safeJSONStringify(obj) {
 }
 
 function writeResponseChunk(response, data) {
+  // The client can leave mid-stream (stop button, tab close, dropped connection).
+  // Writing then is a no-op at best and an ERR_STREAM_WRITE_AFTER_END at worst,
+  // so chunks queued after the socket closed are dropped instead.
+  if (response.writableEnded || response.destroyed) return;
   response.write(`data: ${safeJSONStringify(data)}\n\n`);
   return;
 }
@@ -275,4 +411,5 @@ module.exports = {
   clientAbortedHandler,
   formatChatHistory,
   safeJSONStringify,
+  extractReasoningContent,
 };

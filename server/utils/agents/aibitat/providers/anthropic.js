@@ -1,29 +1,68 @@
+const { reasoningParams } = require("../../../helpers/reasoningEffort");
 const Anthropic = require("@anthropic-ai/sdk");
+const { AnthropicLLM } = require("../../../AiProviders/anthropic");
 const { RetryError } = require("../error.js");
 const Provider = require("./ai-provider.js");
 const { v4 } = require("uuid");
 const { safeJsonParse } = require("../../../http");
+const { getAnythingLLMUserAgent } = require("../../../../endpoints/utils");
+const { dereferenceSchema } = require("./helpers/dereferenceSchema");
 
 /**
  * The agent provider for the Anthropic API.
- * By default, the model is set to 'claude-2'.
+ * By default, the model is set to 'claude-sonnet-4-6'.
  */
 class AnthropicProvider extends Provider {
   model;
+  maxTokens = null;
 
   constructor(config = {}) {
     const {
       options = {
         apiKey: process.env.ANTHROPIC_API_KEY,
-        maxRetries: 3,
+        defaultHeaders: {
+          "User-Agent": getAnythingLLMUserAgent(),
+        },
       },
-      model = "claude-3-5-sonnet-20240620",
+      model = "claude-sonnet-4-6",
+      reasoningEffort = null,
     } = config;
 
     const client = new Anthropic(options);
 
     super(client);
+    this.providerTag = "anthropic";
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
+  }
+
+  /**
+   * The reasoning portion of the request body. The effort is validated against
+   * the model before the provider is built, so it only needs mapping here.
+   * @returns {object}
+   */
+  get reasoningConfig() {
+    return reasoningParams("anthropic", this.reasoningEffort, this.model);
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * - Anthropic always supports tool calling.
+   * @returns {boolean}
+   */
+  supportsNativeToolCalling() {
+    return true;
+  }
+
+  /**
+   * Fetches the maximum number of tokens the model should generate in its response.
+   * This varies per model but will fallback to 4096 if the model is not found.
+   * @returns {Promise<number>} The maximum output tokens limit for API calls.
+   */
+  async assertModelMaxTokens() {
+    if (this.maxTokens) return this.maxTokens;
+    this.maxTokens = await AnthropicLLM.fetchModelMaxTokens(this.model);
+    return this.maxTokens;
   }
 
   /**
@@ -70,6 +109,18 @@ class AnthropicProvider extends Provider {
         cache_control: this.cacheControl,
       },
     ];
+  }
+
+  /**
+   * Parse a data URL into media type and base64 data
+   * @param {string} dataUrl - Data URL like "data:image/jpeg;base64,/9j/..."
+   * @returns {{mediaType: string, data: string}|null}
+   */
+  #parseDataUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith("data:")) return null;
+    const matches = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) return null;
+    return { mediaType: matches[1], data: matches[2] };
   }
 
   #prepareMessages(messages = []) {
@@ -120,6 +171,23 @@ class AnthropicProvider extends Provider {
             item.type !== "text" || (item.text && item.text.trim().length > 0)
         );
 
+        // Add image attachments if present (for vision/multimodal support)
+        if (message.attachments && message.attachments.length > 0) {
+          for (const attachment of message.attachments) {
+            const parsed = this.#parseDataUrl(attachment.contentString);
+            if (parsed) {
+              content.push({
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: parsed.mediaType,
+                  data: parsed.data,
+                },
+              });
+            }
+          }
+        }
+
         if (content.length === 0) return processedMessages;
 
         // Add a text block to assistant messages with tool use if one doesn't exist.
@@ -139,7 +207,9 @@ class AnthropicProvider extends Provider {
           // Merge consecutive messages from the same role.
           lastMessage.content.push(...content);
         } else {
-          processedMessages.push({ ...message, content });
+          // Don't pass attachments to the final message object
+          const { attachments: _, ...restOfMessage } = message;
+          processedMessages.push({ ...restOfMessage, content });
         }
 
         return processedMessages;
@@ -159,8 +229,12 @@ class AnthropicProvider extends Provider {
   // so that the call can run correctly.
   #formatFunctions(functions = []) {
     return functions.map((func) => {
-      const { name, description, parameters, required } = func;
-      const { type, properties } = parameters;
+      const { name, description, parameters } = func;
+      // Some MCP tools (e.g. Pydantic v2 nested models) describe their parameters
+      // with `$ref`/`$defs`. Anthropic's `input_schema` does not resolve local
+      // references, so we inline them here - otherwise the dangling pointer crashes
+      // the tool call. Flat schemas are left unchanged. See issue #3938.
+      const { type, properties, required } = dereferenceSchema(parameters);
       return {
         name,
         description,
@@ -180,32 +254,53 @@ class AnthropicProvider extends Provider {
    * @param {any[]} messages - The messages to send to the LLM.
    * @param {any[]} functions - The functions to use in the LLM.
    * @param {function} eventHandler - The event handler to use to report stream events.
-   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
+   * @returns {Promise<{ functionCall: any, textResponse: string, uuid: string }>} - The result of the chat completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    await this.assertModelMaxTokens();
+    this.resetUsage();
+
     try {
       const msgUUID = v4();
       const [systemPrompt, chats] = this.#prepareMessages(messages);
       const response = await this.client.messages.create(
         {
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: true,
           ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
+            ? {
+                tools: this.#formatFunctions(functions),
+                tool_choice: { type: "auto", disable_parallel_tool_use: true },
+              }
             : {}),
+          ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+      this.watchTokenLimit(response);
 
       const result = {
         functionCall: null,
         textResponse: "",
       };
 
+      // Track usage from streaming events
+      const usage = { input_tokens: 0, output_tokens: 0 };
+
       for await (const chunk of response) {
+        // Capture input tokens from message_start event
+        if (chunk.type === "message_start" && chunk.message?.usage) {
+          usage.input_tokens = chunk.message.usage.input_tokens || 0;
+        }
+
+        // Capture output tokens from message_delta event
+        if (chunk.type === "message_delta" && chunk.usage) {
+          usage.output_tokens = chunk.usage.output_tokens || 0;
+        }
+
         if (chunk.type === "content_block_start") {
           if (chunk.content_block.type === "text") {
             result.textResponse += chunk.content_block.text;
@@ -254,6 +349,8 @@ class AnthropicProvider extends Provider {
         }
       }
 
+      // Record accumulated usage
+      this.recordUsage(usage);
       if (result.functionCall) {
         result.functionCall.arguments = safeJsonParse(
           result.functionCall.arguments,
@@ -278,6 +375,7 @@ class AnthropicProvider extends Provider {
             arguments: result.functionCall.arguments,
           },
           cost: 0,
+          uuid: msgUUID,
         };
       }
 
@@ -285,6 +383,7 @@ class AnthropicProvider extends Provider {
         textResponse: result.textResponse,
         functionCall: null,
         cost: 0,
+        uuid: msgUUID,
       };
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting
@@ -311,21 +410,32 @@ class AnthropicProvider extends Provider {
    * @returns The completion.
    */
   async complete(messages, functions = []) {
+    await this.assertModelMaxTokens();
+    this.resetUsage();
+
     try {
       const [systemPrompt, chats] = this.#prepareMessages(messages);
       const response = await this.client.messages.create(
         {
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: this.maxTokens,
           system: this.#buildSystemPrompt(systemPrompt),
           messages: chats,
           stream: false,
           ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
+            ? {
+                tools: this.#formatFunctions(functions),
+                tool_choice: { type: "auto", disable_parallel_tool_use: true },
+              }
             : {}),
+          ...this.reasoningConfig,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
+      this.watchTokenLimit(response);
+
+      // Record usage from response (Anthropic uses input_tokens/output_tokens)
+      if (response.usage) this.recordUsage(response.usage);
 
       // We know that we need to call a tool. So we are about to recurse through completions/handleExecution
       // https://docs.anthropic.com/claude/docs/tool-use#how-tool-use-works
@@ -343,11 +453,11 @@ class AnthropicProvider extends Provider {
         // wtf.
         let thought = response.content.find((res) => res.type === "text");
         thought =
-          thought?.content?.length > 0
+          thought?.text?.length > 0
             ? {
-                role: thought.role,
+                role: "assistant",
                 content: [
-                  { type: "text", text: thought.content },
+                  { type: "text", text: thought.text },
                   { ...toolCall },
                 ],
               }
@@ -374,6 +484,7 @@ class AnthropicProvider extends Provider {
             arguments: functionArgs,
           },
           cost: 0,
+          usage: this.getUsage(),
         };
       }
 
@@ -383,6 +494,7 @@ class AnthropicProvider extends Provider {
           completion?.text ??
           "The model failed to complete the task and return back a valid response.",
         cost: 0,
+        usage: this.getUsage(),
       };
     } catch (error) {
       // If invalid Auth error we need to abort because no amount of waiting

@@ -50,10 +50,16 @@ function workspaceParsedFilesEndpoints(app) {
       try {
         const { fileIds = [] } = reqBody(request);
         if (!fileIds.length) return response.sendStatus(400).end();
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
         const success = await WorkspaceParsedFiles.delete({
-          id: { in: fileIds.map((id) => parseInt(id)) },
+          id: {
+            in: fileIds.map((id) => parseInt(id)),
+          },
+          ...(user ? { userId: user.id } : {}),
+          workspaceId: workspace.id,
         });
-        return response.status(success ? 200 : 500).end();
+        return response.status(success ? 200 : 403).end();
       } catch (e) {
         console.error(e.message, e);
         return response.sendStatus(500).end();
@@ -77,7 +83,11 @@ function workspaceParsedFilesEndpoints(app) {
 
         if (!fileId) return response.sendStatus(400).end();
         const { success, error, document } =
-          await WorkspaceParsedFiles.moveToDocumentsAndEmbed(fileId, workspace);
+          await WorkspaceParsedFiles.moveToDocumentsAndEmbed(
+            user,
+            fileId,
+            workspace
+          );
 
         if (!success) {
           return response.status(500).json({
@@ -90,7 +100,7 @@ function workspaceParsedFilesEndpoints(app) {
         await EventLogs.logEvent(
           "document_embedded",
           {
-            documentName: document?.name || "unknown",
+            documentName: document?.filename || "unknown",
             workspaceId: workspace.id,
           },
           user?.id
@@ -104,9 +114,36 @@ function workspaceParsedFilesEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         return response.sendStatus(500).end();
-      } finally {
-        if (!fileId) return;
-        await WorkspaceParsedFiles.delete({ id: parseInt(fileId) });
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/move-parsed-files",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async function (request, response) {
+      try {
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        const { fileIds = [] } = reqBody(request);
+        if (!Array.isArray(fileIds)) return response.sendStatus(400);
+
+        // null marks a failed move
+        const locations = await Promise.all(
+          fileIds.map((fileId) =>
+            WorkspaceParsedFiles.moveToDocuments(user, fileId, workspace).catch(
+              () => null
+            )
+          )
+        );
+        return response.status(200).json({ locations });
+      } catch (e) {
+        console.error(e.message, e);
+        return response.sendStatus(500);
       }
     }
   );
@@ -124,7 +161,7 @@ function workspaceParsedFilesEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        const { originalname, filename: hotdirFilename } = request.file;
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -134,8 +171,12 @@ function workspaceParsedFilesEndpoints(app) {
           });
         }
 
-        const { success, reason, documents } =
-          await Collector.parseDocument(originalname);
+        const { success, reason, documents } = await Collector.parseDocument(
+          hotdirFilename,
+          {
+            originalFilename: originalname,
+          }
+        );
         if (!success || !documents?.[0]) {
           return response.status(500).json({
             success: false,

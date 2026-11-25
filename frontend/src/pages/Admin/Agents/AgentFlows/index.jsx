@@ -5,6 +5,7 @@ export default function AgentFlowsList({
   flows = [],
   selectedFlow,
   handleClick,
+  activeFlowIds = [],
 }) {
   if (flows.length === 0) {
     return (
@@ -14,6 +15,7 @@ export default function AgentFlowsList({
           href="https://docs.anythingllm.com/agent-flows/getting-started"
           target="_blank"
           className="text-theme-text-secondary underline hover:text-cta-button"
+          rel="noreferrer"
         >
           Learn more about Agent Flows.
         </a>
@@ -42,7 +44,7 @@ export default function AgentFlowsList({
           <div className="text-sm font-light">{flow.name}</div>
           <div className="flex items-center gap-x-2">
             <div className="text-sm text-theme-text-secondary font-medium">
-              {flow.active ? "On" : "Off"}
+              {activeFlowIds.includes(flow.uuid) ? "On" : "Off"}
             </div>
             <CaretRight
               size={14}

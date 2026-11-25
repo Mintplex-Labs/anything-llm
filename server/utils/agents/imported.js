@@ -3,6 +3,7 @@ const path = require("path");
 const { safeJsonParse } = require("../http");
 const { isWithin, normalizePath } = require("../files");
 const { CollectorApi } = require("../collectorApi");
+const { isCloud } = require("../helpers/runtime");
 const pluginsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../storage/plugins/agent-skills")
@@ -14,9 +15,11 @@ class ImportedPlugin {
     this.config = config;
     this.handlerLocation = path.resolve(
       pluginsPath,
-      this.config.hubId,
+      normalizePath(this.config.hubId),
       "handler.js"
     );
+    if (!isWithin(pluginsPath, this.handlerLocation))
+      throw new Error("Plugin handler does not pass path validation.");
     delete require.cache[require.resolve(this.handlerLocation)];
     this.handler = require(this.handlerLocation);
     this.name = config.hubId;
@@ -63,6 +66,7 @@ class ImportedPlugin {
    */
   static activeImportedPlugins() {
     const plugins = [];
+    if (isCloud()) return plugins; // custom skills are not offered on cloud
     this.checkPluginFolderExists();
     const folders = fs.readdirSync(path.resolve(pluginsPath));
     for (const folder of folders) {
@@ -121,7 +125,8 @@ class ImportedPlugin {
     );
     if (!currentConfig) return;
 
-    const updatedConfig = { ...currentConfig, ...config };
+    const { hubId: _drop, ...safeConfig } = config;
+    const updatedConfig = { ...currentConfig, ...safeConfig };
     fs.writeFileSync(configLocation, JSON.stringify(updatedConfig, null, 2));
     return updatedConfig;
   }
@@ -154,6 +159,43 @@ class ImportedPlugin {
     return this.isValidLocation(handlerLocation);
   }
 
+  /**
+   * Creates a requestToolApproval function bound to a specific aibitat
+   * instance and skill name via closure — no `this` binding required.
+   *
+   * The returned function pauses the agent and asks the user to approve a
+   * potentially destructive action before the skill performs it.
+   *
+   * `skillName` is captured from the skill's hubId so a skill cannot spoof
+   * another tool's name to bypass its own approval.
+   *
+   * When no approval channel exists (e.g. scheduled jobs) it resolves
+   * approved so the skill still runs, matching how built-in tools fall
+   * through their approval guard.
+   *
+   * @param {object} aibitat - The aibitat instance.
+   * @param {string} skillName - The skill's hubId.
+   * @returns {function({payload?: object, description?: string}): Promise<{approved: boolean, message: string}>}
+   */
+  static createToolApprovalFn(aibitat, skillName) {
+    return async function requestToolApproval({
+      payload = {},
+      description = null,
+    } = {}) {
+      if (typeof aibitat?.requestToolApproval !== "function") {
+        return {
+          approved: true,
+          message: "Approval not required in this context.",
+        };
+      }
+      return aibitat.requestToolApproval({
+        skillName,
+        payload,
+        description,
+      });
+    };
+  }
+
   parseCallOptions() {
     const callOpts = {};
     if (!this.config.setup_args || typeof this.config.setup_args !== "object") {
@@ -184,8 +226,8 @@ class ImportedPlugin {
           config: this.config,
           runtimeArgs: this.runtimeArgs,
           description: this.config.description,
-          logger: aibitat?.handlerProps?.log || console.log, // Allows plugin to log to the console.
-          introspect: aibitat?.introspect || console.log, // Allows plugin to display a "thought" the chat window UI.
+          logger: aibitat?.handlerProps?.log || console.log,
+          introspect: aibitat?.introspect || console.log,
           runtime: "docker",
           webScraper: sharedWebScraper,
           examples: this.config.examples ?? [],
@@ -196,6 +238,14 @@ class ImportedPlugin {
             additionalProperties: false,
           },
           ...customFunctions,
+
+          // Add the requestToolApproval function to the plugin
+          // but do not allow the skill's own handler.js exports to override it.
+          // because it requires an explict shape to return elements to the UI.
+          requestToolApproval: ImportedPlugin.createToolApprovalFn(
+            aibitat,
+            this.config.name
+          ),
         });
       },
     };
@@ -277,6 +327,17 @@ class ImportedPlugin {
       // Note: https://github.com/cthackers/adm-zip?tab=readme-ov-file#electron-original-fs
       const AdmZip = require("adm-zip");
       const zip = new AdmZip(zipFilePath);
+
+      // Validate all zip entries to prevent Zip Slip path traversal attacks (CWE-22)
+      for (const entry of zip.getEntries()) {
+        const entryPath = path.resolve(pluginFolder, entry.entryName);
+        if (!isWithin(pluginFolder, entryPath) && pluginFolder !== entryPath) {
+          throw new Error(
+            `[ImportedPlugin.importCommunityItemFromUrl]: Entry "${entry.entryName}" would extract outside plugin folder - not allowed.`
+          );
+        }
+      }
+
       zip.extractAllTo(pluginFolder);
 
       // We want to make sure specific keys are set to the proper values for
