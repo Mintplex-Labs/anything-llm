@@ -48,8 +48,9 @@ function messageToSpeech(message = "") {
   text = text.replace(/^\s*\|?\s*[:\-\s|]+\|[:\-\s|]+\s*$/gm, "");
   text = text.replace(/\|/g, ", ");
 
-  // HTML tags
-  text = text.replace(/<\/?[^>]+>/g, " ");
+  // HTML tags and comments. A tag starts with a letter, so "x < 5 and y > 3"
+  // is read whole.
+  text = text.replace(/<(?:\/?[a-z]|!)[^>]*>/gi, " ");
 
   // Emoji and their modifiers, keeping the ©, ® and ™ signs
   text = text.replace(
