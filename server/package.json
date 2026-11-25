@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "engines": {
-    "node": ">=18.12.1"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
@@ -15,9 +15,6 @@
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
     "swagger": "node ./swagger/init.js"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -35,7 +32,8 @@
     "@mintplex-labs/mdpdf": "0.1.10",
     "@modelcontextprotocol/sdk": "^1.24.3",
     "@pinecone-database/pinecone": "^2.0.1",
-    "@prisma/client": "5.3.1",
+    "@prisma/adapter-better-sqlite3": "7.10.1",
+    "@prisma/client": "7.10.1",
     "@qdrant/js-client-rest": "1.18.0",
     "@vscode/ripgrep": "1.17.1",
     "@xenova/transformers": "^2.14.0",
@@ -87,7 +85,7 @@
     "pluralize": "^8.0.0",
     "posthog-node": "^3.1.1",
     "pptxgenjs": "4.0.1",
-    "prisma": "5.3.1",
+    "prisma": "7.10.1",
     "slugify": "^1.6.6",
     "strip-ansi": "^7.1.2",
     "swagger-autogen": "^2.23.5",
@@ -102,7 +100,8 @@
   },
   "resolutions": {
     "**/graphql-request/form-data": "3.0.4",
-    "form-data": "4.0.4"
+    "form-data": "4.0.4",
+    "better-sqlite3": "13.2.0"
   },
   "devDependencies": {
     "@eslint/js": "9",

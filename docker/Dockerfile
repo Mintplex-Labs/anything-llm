@@ -155,7 +155,17 @@ WORKDIR /app
 FROM build AS backend-build
 COPY --chown=anythingllm:anythingllm ./server /app/server/
 WORKDIR /app/server
-RUN yarn install --production --network-timeout 100000 && yarn cache clean
+# The image ships only the generated Prisma client; prisma/migrate.js applies migrations at boot.
+# The Prisma CLI stays a server dependency for bare metal and cloud installs, which run it directly, so it is
+# dropped from package.json only here. A one-off npx copy generates the client and is removed in this same layer,
+# along with the query compilers @prisma/client bundles for other databases - the generated client carries its
+# own SQLite one.
+RUN PRISMA_VERSION=$(node -p "require('./package.json').dependencies.prisma") && \
+    node -e "const fs=require('fs'),p=JSON.parse(fs.readFileSync('package.json'));delete p.dependencies.prisma;fs.writeFileSync('package.json',JSON.stringify(p,null,2))" && \
+    yarn install --production --network-timeout 100000 && \
+    CHECKPOINT_DISABLE=1 npx --yes prisma@$PRISMA_VERSION generate && \
+    rm -rf "$(npm config get cache)" "$HOME/.cache/prisma" node_modules/@prisma/client/runtime/query_compiler_* && \
+    yarn cache clean
 WORKDIR /app
 
 # Install collector dependencies
