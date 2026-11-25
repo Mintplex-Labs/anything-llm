@@ -85,6 +85,11 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
+  const { Observability } = require("../observability");
+  return Observability.wrapVectorDb(selectVectorDb(getExactly));
+}
+
+function selectVectorDb(getExactly = null) {
   const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
@@ -155,13 +160,15 @@ function getLLMProvider({
   model = null,
   temperature = null,
 } = {}) {
+  const { Observability } = require("../observability");
+  const providerSlug = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const connector = getLLMProviderConnector({ provider, model });
   connector.temperature = resolveTemperature(
-    provider ?? process.env.LLM_PROVIDER ?? "openai",
+    providerSlug,
     connector.model,
     temperature
   );
-  return connector;
+  return Observability.wrapLLM(connector, providerSlug);
 }
 
 /**
@@ -311,6 +318,11 @@ function getLLMProviderConnector({ provider = null, model = null } = {}) {
  * @returns {BaseEmbedderProvider}
  */
 function getEmbeddingEngineSelection() {
+  const { Observability } = require("../observability");
+  return Observability.wrapEmbedder(selectEmbeddingEngine());
+}
+
+function selectEmbeddingEngine() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
@@ -371,6 +383,11 @@ function getEmbeddingEngineSelection() {
  * @returns {import("../ImageGenerators/base").BaseImageGenerator}
  */
 function getImageGeneratorProvider() {
+  const { Observability } = require("../observability");
+  return Observability.wrapImageGenerator(selectImageGeneratorProvider());
+}
+
+function selectImageGeneratorProvider() {
   const provider = process.env.IMAGE_GEN_PROVIDER;
   switch (provider) {
     case "openai":

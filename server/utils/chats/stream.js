@@ -6,6 +6,7 @@ const { getVectorDbClass, resolveProviderConnector } = require("../helpers");
 const { addChatCostToMetrics } = require("../helpers/modelPricing");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { abortConnectorOnClientDisconnect } = require("../helpers/abortSignals");
+const { Observability } = require("../observability");
 const { grepAgents } = require("./agents");
 const {
   grepCommand,
@@ -423,5 +424,15 @@ async function resolveLLMConnector({
 
 module.exports = {
   VALID_CHAT_MODE,
-  streamChatWithWorkspace,
+  streamChatWithWorkspace: Observability.traced(
+    "workspace-chat",
+    streamChatWithWorkspace,
+    (_response, workspace, message, chatMode, user, thread) => ({
+      input: message,
+      workspace,
+      user,
+      thread,
+      metadata: { chatMode },
+    })
+  ),
 };
