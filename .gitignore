@@ -1,6 +1,7 @@
 v-env
 .env
 !.env.example
+!server/prisma/.env
 
 node_modules
 __pycache__
