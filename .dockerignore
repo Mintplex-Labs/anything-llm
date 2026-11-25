@@ -15,4 +15,5 @@
 **/tmp/**
 **/.log
 !docker/.env.example
+!server/prisma/.env
 !frontend/.env.production

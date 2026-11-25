@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# Check if STORAGE_DIR is set
-if [ -z "$STORAGE_DIR" ]; then
+{
+  cd /app/server/ || exit 1
+  database_url="$(node ./prisma/dockerDatabaseUrl.js)" || exit 1
+  if [ -n "$database_url" ]; then
+    # Use the same SQLite database for migrations and the server.
+    export ANYTHINGLLM_SQLITE_URL="$database_url"
+  else
     echo "================================================================"
     echo "⚠️  ⚠️  ⚠️  WARNING: STORAGE_DIR environment variable is not set! ⚠️  ⚠️  ⚠️"
     echo ""
@@ -14,12 +19,10 @@ if [ -z "$STORAGE_DIR" ]; then
     echo ""
     echo "⚠️  ⚠️  ⚠️  WARNING: STORAGE_DIR environment variable is not set! ⚠️  ⚠️  ⚠️"
     echo "================================================================"
-fi
+  fi
 
-{
-  cd /app/server/ &&
-    # Disable Prisma CLI telemetry (https://www.prisma.io/docs/orm/tools/prisma-cli#how-to-opt-out-of-data-collection)
-    export CHECKPOINT_DISABLE=1 &&
+  # Disable Prisma CLI telemetry (https://www.prisma.io/docs/orm/tools/prisma-cli#how-to-opt-out-of-data-collection)
+  export CHECKPOINT_DISABLE=1 &&
     npx prisma generate --schema=./prisma/schema.prisma &&
     npx prisma migrate deploy --schema=./prisma/schema.prisma &&
     node /app/server/index.js
