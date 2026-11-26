@@ -462,7 +462,10 @@ function fillSourceWindow({
   log(
     `Need to backfill ${nDocs - searchResults.length} chunks to fill in the source window for RAG!`
   );
-  const seenChunks = new Set(searchResults.map((source) => source.id));
+  // Dedupe on the chunk text rather than `id`: several vector DB providers spread the
+  // document metadata into each source, so their `id` is the parent document's id
+  // (or missing) and would mark every other chunk of that document as already seen.
+  const seenChunks = new Set(searchResults.map((source) => source.text));
 
   // We need to reverse again because we need to iterate from bottom of array (most recent chats)
   // Looking at this function by itself you may think that this loop could be extreme for long history chats,
@@ -484,15 +487,15 @@ function fillSourceWindow({
       return (
         filterIdentifiers.includes(sourceIdentifier(source)) == false && // source cannot be in current pins
         source.hasOwnProperty("score") && // source cannot have come from a pinned document that was previously pinned
-        source.hasOwnProperty("text") && // source has a valid text property we can use
-        seenChunks.has(source.id) == false // is unique
+        source.hasOwnProperty("text") // source has a valid text property we can use
       );
     });
 
     for (const validSource of validSources) {
       if (sources.length >= nDocs) break;
+      if (seenChunks.has(validSource.text)) continue; // is unique
       sources.push(validSource);
-      seenChunks.add(validSource.id);
+      seenChunks.add(validSource.text);
     }
   }
 
