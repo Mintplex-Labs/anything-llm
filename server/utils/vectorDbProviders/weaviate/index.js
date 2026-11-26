@@ -96,7 +96,11 @@ class Weaviate extends VectorDatabase {
     const collectionNames = await this.allNamespaces(client);
     var totalVectors = 0;
     for (const name of collectionNames) {
-      totalVectors += await this.namespaceCountWithClient(client, name);
+      try {
+        totalVectors += (await client.collections.get(name).length()) || 0;
+      } catch (e) {
+        this.logger(`totalVectors`, e.message);
+      }
     }
     return totalVectors;
   }
