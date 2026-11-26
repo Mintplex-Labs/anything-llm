@@ -176,6 +176,47 @@ describe("fillSourceWindow", () => {
       expect(sources.map((s) => s.id)).toEqual(["repeat", "recent", "deep"]);
     });
 
+    // PGVector, Pinecone, Milvus, Astra and Chroma return the document metadata as
+    // each source, so every chunk of a document carries that document's `id`.
+    it("backfills other chunks of a document whose sources share the document id", () => {
+      const chunk = (n) => makeSource("doc-1", { text: `doc-1 chunk ${n}` });
+      const { contextTexts } = fillSourceWindow({
+        nDocs: 4,
+        searchResults: [chunk(1)],
+        history: [
+          chatWithSources([chunk(4)]),
+          chatWithSources([chunk(1), chunk(2), chunk(3)]),
+        ],
+      });
+      expect(contextTexts).toEqual([
+        "doc-1 chunk 1",
+        "doc-1 chunk 2",
+        "doc-1 chunk 3",
+        "doc-1 chunk 4",
+      ]);
+    });
+
+    it("backfills chunks whose sources have no id", () => {
+      const chunk = (n) => ({ score: 0.5, text: `chunk ${n}` });
+      const { contextTexts } = fillSourceWindow({
+        nDocs: 3,
+        searchResults: [chunk(1)],
+        history: [chatWithSources([chunk(3)]), chatWithSources([chunk(2)])],
+      });
+      expect(contextTexts).toEqual(["chunk 1", "chunk 2", "chunk 3"]);
+    });
+
+    it("adds a chunk repeated within one chat only once", () => {
+      const { sources } = fillSourceWindow({
+        nDocs: 3,
+        searchResults: [],
+        history: [
+          chatWithSources([makeSource("a"), makeSource("a"), makeSource("b")]),
+        ],
+      });
+      expect(sources.map((s) => s.id)).toEqual(["a", "b"]);
+    });
+
     it("excludes sources from currently pinned documents (filterIdentifiers)", () => {
       const pinned = makeSource("pinned", {
         title: "pinned.txt",
