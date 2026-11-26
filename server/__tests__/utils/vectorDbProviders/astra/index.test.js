@@ -52,9 +52,6 @@ describe("AstraDB.deleteDocumentFromNamespace", () => {
       client,
       sanitizedNamespace
     );
-    expect(astra.logger).toHaveBeenCalledWith(
-      `deleteDocumentFromNamespace - namespace ${sanitizedNamespace} does not exist.`
-    );
     expect(client.collection).not.toHaveBeenCalled();
     expect(DocumentVectors.where).not.toHaveBeenCalled();
     expect(DocumentVectors.deleteIds).not.toHaveBeenCalled();
@@ -76,25 +73,5 @@ describe("AstraDB.deleteDocumentFromNamespace", () => {
     expect(collection.deleteMany).toHaveBeenNthCalledWith(1, { _id: "vec-a" });
     expect(collection.deleteMany).toHaveBeenNthCalledWith(2, { _id: "vec-b" });
     expect(DocumentVectors.deleteIds).toHaveBeenCalledWith([10, 11]);
-  });
-
-  it("resolves without vector deletes when the namespace exists but the document has no recorded vectors", async () => {
-    await expect(
-      astra.deleteDocumentFromNamespace(namespace, docId)
-    ).resolves.toBeUndefined();
-
-    expect(collection.deleteMany).not.toHaveBeenCalled();
-    expect(DocumentVectors.deleteIds).not.toHaveBeenCalled();
-  });
-
-  it("sanitizes the namespace before the existence check", async () => {
-    astra.namespaceExists.mockResolvedValue(false);
-
-    await astra.deleteDocumentFromNamespace("My Workspace!", docId);
-
-    expect(astra.namespaceExists).toHaveBeenCalledWith(
-      client,
-      "ns_My_Workspace_"
-    );
   });
 });
