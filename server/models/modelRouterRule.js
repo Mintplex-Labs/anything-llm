@@ -21,7 +21,7 @@ const VALID_COMPARATORS = [
   "neq",
   "between",
 ];
-const VALID_CONDITION_LOGIC = ["AND"];
+const VALID_CONDITION_LOGIC = ["AND", "OR"];
 const TITLE_REGEX = /^[a-z0-9_]+$/;
 
 const ModelRouterRule = {
