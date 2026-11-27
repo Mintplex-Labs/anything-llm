@@ -2,7 +2,7 @@
 function getLocalHosts() {
   const os = require("os");
   const interfaces = os.networkInterfaces();
-  const results = new Set([undefined, "0.0.0.0"]);
+  const results = new Set([undefined, "0.0.0.0", "localhost"]);
 
   for (const _interface of Object.values(interfaces)) {
     for (const config of _interface) {
