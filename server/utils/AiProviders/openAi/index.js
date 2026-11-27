@@ -62,12 +62,16 @@ class OpenAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  // Fine-tune ids are `ft:<base model>:<org>:<suffix>:<id>`, while the model
+  // map is keyed by the base model.
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.get("openai", modelName) ?? 4_096;
+    const model = String(modelName ?? "");
+    const baseModel = model.startsWith("ft:") ? model.split(":")[1] : model;
+    return MODEL_MAP.get("openai", baseModel) ?? 4_096;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.get("openai", this.model) ?? 4_096;
+    return OpenAiLLM.promptWindowLimit(this.model);
   }
 
   // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
