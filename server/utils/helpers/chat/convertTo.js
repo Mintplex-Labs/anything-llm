@@ -231,7 +231,7 @@ function escapeCsv(str) {
   if (str === null || str === undefined) return '""';
   // Prefix formula-leading characters so spreadsheets treat the cell as text (CWE-1236).
   if (/^[=+\-@\t\r]/.test(str)) str = `'${str}`;
-  return `"${str.replace(/"/g, '""').replace(/\n/g, " ")}"`;
+  return `"${str.replace(/"/g, '""').replace(/[\r\n]/g, " ")}"`;
 }
 
 async function exportChatsAsType(format = "jsonl", chatType = "workspace") {
