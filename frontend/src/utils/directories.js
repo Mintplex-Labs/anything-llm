@@ -26,15 +26,15 @@ export function middleTruncate(str, n) {
   if (str.length <= n) return str;
 
   if (extensionMatch && extensionMatch[1]) {
-    const extension = extensionMatch[1];
-    const nameWithoutExtension = str.replace(fileExtensionPattern, "");
-    const truncationPoint = Math.max(0, n - extension.length - 4);
+    const extension = str.slice(str.lastIndexOf("."));
+    const nameWithoutExtension = str.slice(0, -extension.length);
+    const truncationPoint = Math.max(0, n - extension.length - 7);
     const truncatedName =
       nameWithoutExtension.substr(0, truncationPoint) +
       "..." +
       nameWithoutExtension.slice(-4);
 
-    return truncatedName + extension;
+    return (truncatedName + extension).slice(0, n);
   } else {
     return str.length > n ? str.substr(0, n - 8) + "..." + str.slice(-4) : str;
   }
