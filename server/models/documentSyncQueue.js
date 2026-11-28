@@ -40,11 +40,11 @@ const DocumentSyncQueue = {
   writable: [],
 
   bootWorkers: function () {
-    new BackgroundService().boot();
+    return new BackgroundService().syncDocumentSyncJob(true);
   },
 
   killWorkers: function () {
-    new BackgroundService().stop();
+    return new BackgroundService().syncDocumentSyncJob(false);
   },
 
   /** Check is the Document Sync/Watch feature is enabled and can be used. */

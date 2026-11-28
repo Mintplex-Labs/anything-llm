@@ -1,3 +1,11 @@
+const mockSyncDocumentSyncJob = jest.fn().mockResolvedValue(undefined);
+
+jest.mock("../../utils/BackgroundWorkers", () => ({
+  BackgroundService: jest.fn().mockImplementation(() => ({
+    syncDocumentSyncJob: mockSyncDocumentSyncJob,
+  })),
+}));
+
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 
 const DEFAULT_STALE_AFTER = 604800000; // 7 days in MS
@@ -7,7 +15,8 @@ describe("DocumentSyncQueue.defaultStaleAfter", () => {
   const ORIGINAL_ENV = process.env.DOCUMENT_SYNC_STALE_AFTER_MS;
 
   afterEach(() => {
-    if (ORIGINAL_ENV === undefined) delete process.env.DOCUMENT_SYNC_STALE_AFTER_MS;
+    if (ORIGINAL_ENV === undefined)
+      delete process.env.DOCUMENT_SYNC_STALE_AFTER_MS;
     else process.env.DOCUMENT_SYNC_STALE_AFTER_MS = ORIGINAL_ENV;
   });
 
@@ -32,10 +41,29 @@ describe("DocumentSyncQueue.defaultStaleAfter", () => {
   });
 
   it("falls back to the default for non-positive values", () => {
-    process.env.DOCUMENT_SYNC_STALE_AFTER_MS = "0";
+    process.env.DOCUMENT_SYNC_STALE_AFTER_MS = "0"; // 1 minute
     expect(DocumentSyncQueue.defaultStaleAfter).toBe(DEFAULT_STALE_AFTER);
 
     process.env.DOCUMENT_SYNC_STALE_AFTER_MS = "-5000";
     expect(DocumentSyncQueue.defaultStaleAfter).toBe(DEFAULT_STALE_AFTER);
+  });
+});
+
+describe("DocumentSyncQueue.bootWorkers/killWorkers", () => {
+  beforeEach(() => {
+    mockSyncDocumentSyncJob.mockClear();
+    mockSyncDocumentSyncJob.mockResolvedValue(undefined);
+  });
+
+  it("routes bootWorkers to syncDocumentSyncJob(true)", async () => {
+    await DocumentSyncQueue.bootWorkers();
+    expect(mockSyncDocumentSyncJob).toHaveBeenCalledTimes(1);
+    expect(mockSyncDocumentSyncJob).toHaveBeenCalledWith(true);
+  });
+
+  it("routes killWorkers to syncDocumentSyncJob(false)", async () => {
+    await DocumentSyncQueue.killWorkers();
+    expect(mockSyncDocumentSyncJob).toHaveBeenCalledTimes(1);
+    expect(mockSyncDocumentSyncJob).toHaveBeenCalledWith(false);
   });
 });
