@@ -46,6 +46,7 @@ import Swedish from "./sv/common.js";
 import Hindi from "./hi/common.js";
 import Bulgarian from "./bg/common.js";
 import Hungarian from "./hu/common.js";
+import Urdu from "./ur/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -144,5 +145,8 @@ export const resources = {
   },
   hu: {
     common: Hungarian,
+  },
+  ur: {
+    common: Urdu,
   },
 };
