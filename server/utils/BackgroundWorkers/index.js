@@ -196,6 +196,34 @@ class BackgroundService {
     }
   }
 
+  /**
+   * Sync the document sync (live file sync) job based on current settings.
+   * Called when the experimental_live_file_sync toggle changes so that
+   * toggling the feature only adds/removes its own job instead of
+   * booting or stopping the entire background service.
+   * @param {boolean} enabled - The desired state (should the sync job run?)
+   */
+  async syncDocumentSyncJob(enabled) {
+    if (!this.bree) return;
+
+    const jobName = this.#documentSyncJobs[0].name;
+    const isCurrentlyRunning = this.bree.config.jobs.some(
+      (j) => j.name === jobName
+    );
+
+    if (enabled && !isCurrentlyRunning) {
+      this.documentSyncEnabled = true;
+      await this.bree.add(this.#documentSyncJobs[0]);
+      await this.bree.start(jobName);
+      this.#log(`Added and started ${jobName} job`);
+    } else if (!enabled && isCurrentlyRunning) {
+      this.documentSyncEnabled = false;
+      await this.bree.stop(jobName);
+      await this.bree.remove(jobName);
+      this.#log(`Stopped and removed ${jobName} job`);
+    }
+  }
+
   onError(error, _workerMetadata) {
     this.logger.error(`${error.message}`, {
       service: "bg-worker",
